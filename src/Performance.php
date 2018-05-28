@@ -1,0 +1,670 @@
+<?php
+
+namespace minga\framework;
+
+use minga\framework\locking\PerformanceLock;
+
+class Performance
+{
+	private static $time_start = null;
+	private static $time_end = null;
+
+	private static $time_paused_start = null;
+	public static $pause_ellapsed_secs = 0;
+	private static $gotFromCache = null;
+
+	private static $controller = null;
+	private static $method = null;
+	private static $hitCount = 1;
+	private static $lockedMs = 0;
+	private static $dbMs = 0;
+	private static $db_hitCount = 0;
+	private static $lockedClass = '';
+	private static $locksByClass = array();
+	private static $time_start_locked = null;
+	private static $time_start_db = null;
+	private static $daylyResetChecked = false;
+	public static $warnToday = null;
+	public static $warnYesterday = null;
+
+	public static function CacheMissed()
+	{
+		self::$gotFromCache = false;
+	}
+	public static function IsCacheMissed()
+	{
+		return self::$gotFromCache === false;
+	}
+	public static function Begin()
+	{
+		self::$time_start = microtime(true);
+	}
+	public static function BeginPause()
+	{
+		self::$time_paused_start = microtime(true);
+		Profiling::BeginTimer('Performance::Pause');
+	}
+	public static function EndPause()
+	{
+		Profiling::EndTimer();
+		$ellapsed = microtime(true) - self::$time_paused_start;
+		self::$pause_ellapsed_secs += $ellapsed;
+	}
+
+	public static function End()
+	{
+		self::$time_end = microtime(true);
+		try
+		{
+			if (Str::StartsWith(self::$controller, "_profiler") == false)
+				self::Save();
+		}
+		catch(\Exception $e)
+		{
+			Log::HandleSilentException($e);
+		}
+		self::$hitCount=0;
+	}
+
+	public static function BeginLockedWait($class)
+	{
+		self::$lockedClass = $class;
+		self::$time_start_locked = microtime(true);
+	}
+
+	public static function BeginDbWait()
+	{
+		self::$time_start_db = microtime(true);
+	}
+
+	public static function EndDbWait()
+	{
+		if (self::$time_start_db == null)
+			return;
+
+		$ellapsedSeconds = microtime(true)- self::$time_start_db;
+		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
+
+		self::$dbMs += $ellapsedMilliseconds;
+		self::$db_hitCount++;
+
+		self::$time_start_db = null;
+	}
+
+
+	public static function EndLockedWait($hadToWait)
+	{
+		if (self::$time_start_locked == null)
+			return;
+
+		$ellapsedSeconds = microtime(true)- self::$time_start_locked;
+		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
+
+		self::$lockedMs += $ellapsedMilliseconds;
+		if (array_key_exists(self::$lockedClass, self::$locksByClass))
+		{
+			$current = self::$locksByClass[self::$lockedClass];
+			self::$locksByClass[self::$lockedClass] = array($current[0] + 1, $current[1] + $ellapsedMilliseconds, $current[2] + ($hadToWait ? 1 : 0));
+		}
+		else
+		{
+			self::$locksByClass[self::$lockedClass] = array(1, $ellapsedMilliseconds, $hadToWait ? 1 : 0);
+		}
+
+		self::$time_start_locked = null;
+	}
+
+	public static function SetController($controller, $method, $forceSet = false)
+	{
+		if (self::$controller == null || $forceSet)
+		{
+			if(Str::Contains($controller, "\\"))
+			{
+				$parts = explode("\\", $controller);
+				self::$controller = end($parts);
+			}
+			else
+				self::$controller = $controller;
+			self::$method = $method;
+		}
+	}
+	public static function SetMethod($method)
+	{
+		self::$method = $method;
+	}
+	public static function AddControllerSuffix($suffix)
+	{
+		if (self::$controller == null)
+			self::$controller = "";
+
+		self::$controller .= $suffix;
+	}
+
+	private static function Save()
+	{
+		if (self::$time_start == null)
+			return;
+		PerformanceLock::BeginWrite();
+
+		$ellapsedSeconds = microtime(true)- self::$time_start - self::$pause_ellapsed_secs;
+		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
+
+		// hace válidas las múltiples llamadas a end
+		self::$time_start = self::$time_end;
+		self::$time_end = null;
+		self::$pause_ellapsed_secs = 0;
+		// completa controllers no informados
+		if (self::$controller == null)
+		{
+			self::$controller = 'na';
+			self::$method = 'na';
+		}
+		// graba mensual
+		self::SaveControllerUsage($ellapsedMilliseconds);
+		self::SaveLocks();
+		// graba diario
+		self::CheckDaylyReset();
+		self::SaveControllerUsage($ellapsedMilliseconds, 'dayly');
+		self::SaveDaylyUsage($ellapsedMilliseconds);
+		self::SaveDaylyLocks();
+		// listo
+		PerformanceLock::EndWrite();
+	}
+
+	public static function IsNewDay()
+	{
+		self::CheckDaylyReset();
+		return (self::$warnToday != null);
+	}
+
+	private static function SaveControllerUsage($ellapsedMilliseconds, $month = '')
+	{
+		$file = self::ResolveFilename($month);
+		$keyMs = self::$method;
+
+		$vals = self::ReadIfExists($file);
+		self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$db_hitCount);
+		// graba
+		IO::WriteIniFile($file, $vals);
+	}
+
+	private static function CheckDaylyReset()
+	{
+		if(self::$daylyResetChecked)
+			return;
+
+		$folder = self::ResolveFolder('dayly');
+		$path = $folder . '/today.txt';
+		$today = Date::Today();
+		if (file_exists($path))
+			$todayFolder = IO::ReadAllText($path);
+		else
+			$todayFolder = '';
+		if ($today != $todayFolder)
+		{
+			// está en un cambio de día
+			self::$warnToday = $today;
+			self::$warnYesterday = $todayFolder;
+		}
+		self::$daylyResetChecked = true;
+
+		if (self::IsNewDay())
+		{
+			// Llama a quienes precisan saber que el día cambió dentro del framework
+			self::DayCompleted(self::$warnToday);
+			Traffic::DayCompleted();
+		}
+	}
+
+	private static function DayCompleted($newDay)
+	{
+		$folder = self::ResolveFolder('dayly');
+		$path = $folder . '/today.txt';
+		$folderYesterday = self::ResolveFolder('yesterday');
+		if (file_exists($folderYesterday))
+			IO::RemoveDirectory($folderYesterday);
+		IO::Move($folder, $folderYesterday);
+		IO::CreateDirectory($folder);
+		IO::WriteAllText($path, $newDay);
+	}
+	public static function SaveDaylyUsage($ellapsedMilliseconds)
+	{
+		$daylyProcessor = self::ResolveFilenameDayly();
+		$day = Date::GetLogDayFolder();
+		$key = $day;
+		$days = self::ReadIfExists($daylyProcessor);
+
+		self::ReadCurrentKeyValues($days, $key, $prevHits, $prevDuration, $prevLock);
+
+		self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, Request::IsGoogle(), Mail::$MailsSent, self::$dbMs, self::$db_hitCount);
+
+		self::CheckLimits($days, $key, $prevHits, $prevDuration, $prevLock);
+
+		IO::WriteIniFile($daylyProcessor, $days);
+	}
+
+	public static function SaveDaylyLocks()
+	{
+		self::SaveLocks('dayly');
+	}
+	public static function SaveLocks($month = '')
+	{
+		if (sizeof(self::$locksByClass) > 0)
+		{
+			if ($month == '')
+				$month = Date::GetLogMonthFolder();
+			$path = self::ResolveFilenameLocks($month);
+			$current = self::ReadIfExists($path);
+
+			foreach(self::$locksByClass as $key => $value)
+			{
+				self::IncrementLockKey($current, $key, $value[2], $value[0], $value[1]);
+			}
+			IO::WriteIniFile($path, $current);
+		}
+	}
+
+	private static function CheckLimits($days, $key, $prevHits, $prevDuration, $prevLocked)
+	{
+		self::ReadCurrentKeyValues($days, $key, $hits, $duration, $locked);
+
+		$maxMs = Context::Settings()->Limits()->WarningDaylyExecuteMinutes * 60 * 1000;
+		$maxHits = Context::Settings()->Limits()->WarningDaylyHits;
+		$maxLockMs = Context::Settings()->Limits()->WarningDaylyLockMinutes * 60 * 1000;
+
+		if ($prevHits < $maxHits &&  $hits >= $maxHits )
+			self::SendPerformanceWarning('hits', $maxHits . ' hits', $hits . ' hits');
+		if ($prevDuration < $maxMs &&  $duration >= $maxMs)
+			self::SendPerformanceWarning('minutos de CPU', self::Format($maxMs, 1000 * 60, 'minutos'), self::Format($duration, 1000 * 60, 'minutos'));
+		if ($prevLocked < $maxLockMs &&  $locked >= $maxLockMs)
+			self::SendPerformanceWarning('tiempo de locking', self::Format($maxLockMs, 1000 * 60, 'minutos'), self::Format($locked, 1000 * 60, 'minutos'));
+
+		// Se fija si tiene que pasar a 'defensive Mode'
+		$defensiveThreshold = Context::Settings()->Limits()->DefensiveModeThresholdDaylyHits;
+		if ($prevHits < $defensiveThreshold &&  $hits >= $defensiveThreshold)
+		{
+			Traffic::GoDefensiveMode();
+			self::SendPerformanceWarning('activación de modo defensivo', $defensiveThreshold . ' hits', $hits . ' hits');
+		}
+	}
+
+	public static function SendPerformanceWarning($metric, $limit, $value)
+	{
+		if (empty(Context::Settings()->Mail()->NotifyAddress))
+			return;
+		// Manda email....
+		$server = Str::ToUpper(Context::Settings()->Servers()->Current()->name);
+
+		$mail = new Mail();
+		$mail->to = Context::Settings()->Mail()->NotifyAddress;
+		$mail->subject = 'ALERTA ADMINISTRATIVA de ' . Context::Settings()->applicationName . ' ' . $server . ' (' . $metric . ' > ' . $limit . ')';
+		$vals = array();
+		$vals['metric'] = $metric;
+		$vals['limit'] = $limit;
+		$vals['value'] = $value;
+		$mail->message = Context::Calls()->RenderMessage('performanceWarning.html.twig', $vals);
+		$mail->Send(false, true);
+	}
+
+	private static function Format($n, $divider, $unit)
+	{
+		return intval($n / $divider) . ' ' . $unit;
+	}
+	private static function ReadIfExists($file)
+	{
+		if (file_exists($file))
+			return IO::ReadIniFile($file);
+		else
+			return array();
+	}
+
+	private static function ReadCurrentKeyValues($arr, $key, &$prevHits, &$prevDuration, &$locked, &$dbMs = 0, &$dbHits = 0)
+	{
+		if (array_key_exists($key, $arr) == false)
+		{
+			$prevHits = 0;
+			$prevDuration = 0;
+			$locked = 0;
+			$dbMs = 0;
+			$dbHits = 0;
+		}
+		else
+		{
+			self::ParseHit($arr[$key], $prevHits, $prevDuration, $locked, $dbMs, $dbHits);
+		}
+	}
+	private static function IncrementKey(&$arr, $key, $value, $newHits, $newLocked, $newDbMs, $newDb_hitCount)
+	{
+		if (array_key_exists($key, $arr) == false)
+		{
+			$hits = $newHits;
+			$duration = $value;
+			$locked = $newLocked;
+			$dbMs = $newDbMs;
+			$db_hitCount = $newDb_hitCount;
+		}
+		else
+		{
+			self::ParseHit($arr[$key], $hits, $duration, $locked, $dbMs, $db_hitCount);
+
+			$hits += $newHits;
+			$duration += $value;
+			$locked += $newLocked;
+			$dbMs += $newDbMs;
+			$db_hitCount += $newDb_hitCount;
+		}
+		$arr[$key] = $hits . ';' . $duration . ';' . $locked. ';' . $dbMs . ';' . $db_hitCount;
+	}
+	private static function IncrementLockKey(&$arr, $key, $value, $newHits, $newLocked)
+	{
+		if (array_key_exists($key, $arr) == false)
+		{
+			$hits = $newHits;
+			$duration = $value;
+			$locked = $newLocked;
+		}
+		else
+		{
+			self::ParseHit($arr[$key], $hits, $duration, $locked);
+
+			$hits += $newHits;
+			$duration += $value;
+			$locked += $newLocked;
+		}
+		$arr[$key] = $hits . ';' . $duration . ';' . $locked;
+	}
+	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $googleHits, $mailCount, $newDbMs, $newDbHits)
+	{
+		if (array_key_exists($key, $arr) == false)
+		{
+			$hits = $newHits;
+			$duration = $value;
+			$locked = $newLocked;
+			$google = $googleHits;
+			$mails = $mailCount;
+			$dbMs = $newDbMs;
+			$dbHits = $newDbHits;
+		}
+		else
+		{
+			self::ParseHit($arr[$key], $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits);
+			$hits += $newHits;
+			$duration += $value;
+			$locked += $newLocked;
+			$google += $googleHits;
+			$mails += $mailCount;
+			$dbMs += $newDbMs;
+			$dbHits += $newDbHits;
+		}
+		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails. ';' . $dbMs . ';' . $dbHits;
+	}
+	private static function ParseHit($value, &$hits, &$duration, &$locked, &$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null)
+	{
+		$parts = explode(';', $value);
+		$hits = $parts[0] ;
+		$duration = $parts[1];
+		if (sizeof($parts) > 2)
+			$locked = $parts[2];
+		else
+			$locked = 0;
+		if (sizeof($parts) > 3)
+		{
+			$p4 = $parts[3];
+			$p5 = $parts[4];
+		}
+		else
+		{
+			$p4 = 0;
+			$p5 = 0;
+		}
+		if (sizeof($parts) > 5)
+		{
+			$p6 = $parts[5];
+			$p7 = $parts[6];
+		}
+		else
+		{
+			$p6 = 0;
+			$p7 = 0;
+		}
+	}
+	private static function ResolveFolder($month = '')
+	{
+		$path = Context::Paths()->GetPerformanceLocalPath();
+		if ($month == '')
+			$month = Date::GetLogMonthFolder();
+		$ret = $path . '/' . $month;
+		IO::EnsureExists($ret);
+		return $ret;
+	}
+	public static function ResolveFilename($month = '')
+	{
+		$path = self::ResolveFolder($month);
+		return $path . '/' . self::$controller . '.txt';
+	}
+	public static function ResolveFilenameDayly($month = '')
+	{
+		$path = self::ResolveFolder($month);
+		return $path . '/processor.txt';
+	}
+	public static function ResolveFilenameLocks($month = '')
+	{
+		$path = self::ResolveFolder($month);
+		return $path . '/locks.txt';
+	}
+	public static function GetDaylyTable($month)
+	{
+		$lock = new PerformanceLock();
+		$lock->LockRead();
+
+		$path = self::ResolveFilenameDayly($month);
+		$days = self::ReadIfExists($path);
+
+		$lock->Release();
+
+		$headerRow = array();
+		$dataHitRow = array();
+		$dataDbHitRow = array();
+		$dataMsRow = array();
+		$dataLockedRow = array();
+		$dataDbMsRow = array();
+		$dataAvgRow = array();
+		$googleRow = array();
+		$mailRow = array();
+
+		foreach($days as $key => $value)
+		{
+			$headerRow[] = $key;
+			self::ParseHit($value, $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits);
+			$dataHitRow[] = $hits;
+			$googleRow[] = $google;
+			$mailRow[] = $mails;
+			$dataMsRow[] = round($duration / 1000 / 60, 1);
+			$dataAvgRow[] = round($duration / $hits);
+			$dataLockedRow[] = round($locked / 1000, 1);
+			$dataDbMsRow[] = round($dbMs / 1000 / 60, 1);
+			$dataDbHitRow[] = $dbHits;
+		}
+
+		return array('Día' => $headerRow,
+								 'Hits' => $dataHitRow,
+								 'GoogleBot' => $googleRow,
+								 'Mails' => $mailRow,
+								 'Promedio (ms.)' => $dataAvgRow,
+								 'Duración (min.)' => $dataMsRow,
+								 'Base de datos (min.)' => $dataDbMsRow,
+								 'Accesos Db' => $dataDbHitRow,
+								 'Bloqueos (seg.)' => $dataLockedRow);
+	}
+	static function IsAdmin($controller)
+	{
+		if ($controller == 'Services') return true;
+		$path = Context::Paths()->GetRoot() . '/controllers/admin';
+		return file_exists($path . '/' . $controller . '.php');
+	}
+
+	public static function GetControllerTable($month, $adminControllers, $methods)
+	{
+		$lock = new PerformanceLock();
+		$lock->LockRead();
+
+		if ($month == '') $month = 'dayly';
+
+		$path = self::ResolveFolder($month);
+		$rows = array();
+
+		$controllers = array();
+		// lee los datos desde disco
+		foreach(IO::GetFiles($path, '.txt') as $file)
+			if ($file != 'processor.txt' && $file != 'locks.txt')
+			{
+				$controller = Str::Replace(IO::RemoveExtension($file), "#", "/");
+				$isAdmin = self::IsAdmin($controller);
+				if ($isAdmin == $adminControllers)
+				{
+					$data = self::ReadIfExists($path. '/' . $file);
+					$controllers[$controller] = $data;
+					foreach($data as $key => $_)
+					{
+						if (in_array($key, $methods) == false)
+							$methods[] = $key;
+					}
+				}
+			}
+
+		$lock->Release();
+
+		// arma fila de encabezados
+		$rows = array();
+		$headers = array();
+		$methodsPlusTotal = array_merge(array('Total'), $methods);
+		foreach($methodsPlusTotal as $method)
+		{
+			$headers[] = 'Hits';
+			$headers[] = 'Promedio (ms)';
+			$headers[] = 'Db (ms / dbHits)';
+			$headers[] = 'Share (%)';
+		}
+		$rows[''] = $methodsPlusTotal;
+		$rows['Controllers'] = $headers;
+
+		$totalDuration = self::CalculateTotalDuration($controllers);
+		// pone datos
+		foreach($controllers as $controller => $values)
+			{
+				$cells = array();
+				$cells[] = 0;
+				$cells[] = 0;
+				$cells[] = 0;
+				$cells[] = 0;
+				$controllerHits = 0;
+				$controllerTime = 0;
+				$dbControllerHits = 0;
+				$dbControllerMs = 0;
+				foreach($methods as $method)
+				{
+					if (array_key_exists($method, $values))
+					{
+						self::ParseHit($values[$method], $hits, $duration, $_, $dbMs, $dbHits);
+						$controllerHits += $hits;
+						$avg = round($duration / $hits);
+						$controllerTime += $duration;
+						$share = self::FormatShare($duration, $totalDuration);
+						$db = round($dbMs / $hits) . ' (' . round($dbHits / $hits, 1) . ')';
+						$dbControllerHits += $dbHits;
+						$dbControllerMs += $dbMs;
+					}
+					else
+					{
+						$hits = '-';
+						$avg = '-';
+						$db = '-';
+						$share = '-';
+					}
+					$cells[] = $hits;
+					$cells[] = $avg;
+					$cells[] = $db;
+					$cells[] = $share;
+				}
+				if ($controllerHits > 0)
+				{
+					$cells[0] = $controllerHits;
+					$cells[1] = round($controllerTime / $controllerHits);
+					$cells[2] = round($dbControllerMs / $controllerHits) . ' (' . round($dbControllerHits / $controllerHits, 1) . ')';
+				}
+				else
+				{
+					$cells[0] = '-';
+					$cells[1] = '-';
+					$cells[2] = '-';
+				}
+				$cells[3] = self::FormatShare($controllerTime, $totalDuration);
+				$rows[$controller] = $cells;
+			}
+		ksort($rows);
+		return $rows;
+	}
+	private static function FormatShare($duration, $totalDuration)
+	{
+		if ($totalDuration == 0)
+			$share = '<b>n/d</b>';
+		else
+		{
+			$shareValue = (round($duration / $totalDuration * 10000) / 100) . '%';
+			$share = $shareValue;
+			if ($shareValue > 50)
+				$share = '<span style="background-color: red">'. $share .'</span>';
+			else if ($shareValue > 25)
+				$share = '<span style="background-color: yellow">'. $share .'</span>';
+			else if ($shareValue > 5)
+				$share = '<b>'. $share .'</b>';
+
+		}
+		return $share;
+	}
+
+	public static function GetLocksTable($month)
+	{
+		$lock = new PerformanceLock();
+		$lock->LockRead();
+
+		if ($month == '') $month = 'dayly';
+		$path = self::ResolveFilenameLocks($month);
+		$rows = self::ReadIfExists($path);
+		$lock->Release();
+
+		ksort($rows);
+
+		$ret = array();
+		$ret['Clase'] = array('Locks','Promedio (ms)',  'Total (seg.)');
+
+		foreach($rows as $key => $value)
+		{
+			self::ParseHit($value, $hits, $waited, $locked);
+			if ($waited > 0)
+				$avg = round($locked / $waited);
+			else
+				$avg = '-';
+
+			$cells = array($hits . ($waited > 0 ? ' (' . $waited . ')' : '') , $avg, $locked / 1000);
+
+			$ret[$key . ($waited > 0 ? ' (waited)' : '') ] = $cells;
+		}
+		return $ret;
+	}
+
+
+	public static function CalculateTotalDuration($controllers)
+	{
+		$ret = 0;
+		foreach($controllers as $values)
+		{
+			foreach($values as $value)
+			{
+				self::ParseHit($value, $_, $duration, $_);
+				$ret += $duration;
+			}
+		}
+		return $ret;
+	}
+}

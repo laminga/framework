@@ -1,0 +1,120 @@
+<?php
+
+
+namespace minga\framework;
+
+class AttributeEntity
+{
+	public $path = '';
+	public $attributes = array();
+	public $extraAttributes = array();
+
+	public function LoadAttributesOnly($path)
+	{
+		$this->path = $path;
+		if ($path != "" && file_exists($path))
+			$this->attributes = IO::ReadEscapedIniFile($path);
+		else
+			$this->attributes = array();
+	}
+
+	function safeGet($key, $default = '')
+	{
+		if (array_key_exists($key, $this->attributes))
+			return $this->attributes[$key];
+		else if (array_key_exists($key, $this->extraAttributes))
+			return $this->extraAttributes[$key];
+		else
+			return $default;
+	}
+
+	function safeAppend($key, $valueArray)
+	{
+		// Lee los valores...
+		$current = $this->safeGetArray($key);
+		// Agrega lo propio
+		if (is_array($valueArray) == false)
+			$valueArray = array($valueArray);
+		foreach($valueArray as $value)
+		{
+			$processed = trim($value);
+			if ($processed != "" && in_array($processed, $current) == false)
+				$current[] = $processed;
+		}
+		// Guarda
+		for($n = 0; $n < sizeof($current); $n++)
+			$this->attributes[$key . ($n+1)] = $current[$n];
+		// listo
+	}
+
+	function safeGetArray($key)
+	{
+		// Lee los valores...
+		$n = 1;
+		$current = array();
+		while(array_key_exists($key . $n, $this->attributes))
+		{
+			$value = $this->attributes[$key . $n];
+			$current[] = $value;
+			$n++;
+		}
+		return $current;
+	}
+
+	function safeSetArray($key, $valueArray)
+	{
+		// Lee los valores...
+		$n = 1;
+		while(array_key_exists($key . $n, $this->attributes))
+		{
+			unset($this->attributes[$key . $n]);
+			$n++;
+		}
+		// Agrega lo propio
+		$current = array();
+		foreach($valueArray as $value)
+		{
+			$processed = trim($value);
+			if ($processed != "" && in_array($processed, $current) == false)
+				$current[] = $processed;
+		}
+		// Guarda
+		for($n = 0; $n < sizeof($current); $n++)
+			$this->attributes[$key . ($n+1)] = $current[$n];
+		// listo
+	}
+
+	public function GetAllAttributes()
+	{
+		return array_merge($this->attributes, $this->extraAttributes);
+	}
+
+	public function SaveAttributesOnly()
+	{
+		if (strlen($this->path) == 0)
+			throw new \Exception("Tried to save to an uninitialized entity.");
+		IO::WriteEscapedIniFile($this->path, $this->attributes);
+	}
+
+	function SetValue($key, $value)
+	{
+		$this->attributes[$key] = $value;
+	}
+
+	function GetValue($key)
+	{
+		return $this->attributes[$key];
+	}
+
+	function RemoveKey($key)
+	{
+		if (array_key_exists($key, $this->attributes))
+			unset($this->attributes[$key]);
+	}
+
+	function SetDefault($key, $default)
+	{
+		if (!array_key_exists($key, $this->attributes))
+			$this->attributes[$key] = $default;
+	}
+}
