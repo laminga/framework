@@ -48,6 +48,7 @@ class Context
 	{
 		return PhpSession::GetSessionValue('user');
 	}
+
 	public static function EndRequest()
 	{
 		self::Calls()->EndRequest();
