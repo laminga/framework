@@ -1,6 +1,6 @@
-# minga/framework
+# minga-framework
 ## Presentación
-El minga/framework es un nanoframework que reúne una serie de clases desarrolladas para facilitar la creación de sitios públicos en php. Ofrece funcionalidad de dos tipos:
+El minga-framework es un nanoframework que reúne una serie de clases desarrolladas para facilitar la creación de sitios públicos en PHP. Ofrece funcionalidad de dos tipos:
 
 #### Helpers
 - Compression. Unificación de las distintas vías de manejo de zip disponibles en php.
