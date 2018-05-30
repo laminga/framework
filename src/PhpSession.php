@@ -8,7 +8,6 @@ class PhpSession
 
 	public static function Destroy()
 	{
-		self::$sessionValues = null;
 		session_start();
 		session_unset();
 		session_destroy();
@@ -16,6 +15,7 @@ class PhpSession
 		session_start();
 		session_regenerate_id();
 		session_write_close();
+		self::$sessionValues = array();
 	}
 
 	public static function SetSessionValue($key, $value)
