@@ -283,7 +283,7 @@ class Traffic
 		if ($dir !== null)
 			$dir->Release();
 
-		usort($ret, array("minga\\framework\\Traffic", "SortDesc"));
+		usort($ret, array(__CLASS__, "SortDesc"));
 
 		$ret[] = Str::BuildTotalsRow($ret, 'ip', array('hits'));
 		$ret[count($ret)-1]['ip'] = 'Total (' . (sizeof($ret) - 1) .')';
