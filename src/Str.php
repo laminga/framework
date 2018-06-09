@@ -182,6 +182,14 @@ class Str
 			return substr($haystack, 0, $pos);
 	}
 
+	public static function EnsureEndsWith($haystack, $needle)
+	{
+		if (self::EndsWith($haystack, $needle))
+			return $haystack;
+		else
+			return $haystack . $needle;
+	}
+
 	public static function EndsWith($haystack, $needle)
 	{
 		$length = strlen($needle);
