@@ -13,7 +13,10 @@ class TwoLevelObjectFileCache
 	{
 		$this->cache = new TwoLevelStringFileCache($path);
 	}
-
+	public function Clear($key1 = null, $key2 = null)
+	{
+		$this->cache->Clear($key1, $key2 = null);
+	}
 	public function HasData($key1, $key2, & $out = null)
 	{
 		$stringValue = null;

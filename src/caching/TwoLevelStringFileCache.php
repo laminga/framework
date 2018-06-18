@@ -17,6 +17,33 @@ class TwoLevelStringFileCache
 		IO::EnsureExists($this->path);
 	}
 
+	public function Clear($key1 = null, $key2 = null)
+	{
+		if ($key1 == null)
+		{
+			IO::ClearDirectory($this->path);
+			return;
+		}
+		$key1 = $this->keyToString($key1);
+		$key2 = $this->keyToString($key2);
+		
+		$folder = $this->path . "/" . $key1;
+		if ($key2 === null)
+		{
+			if (file_exists($folder))
+			{
+				if (is_dir($folder))
+					IO::RemoveDirectory($folder);
+				else
+					IO::Delete($folder);
+			}
+			return;
+		}
+		$file = $this->resolveFilename($key1, $key2, false);
+		if (file_exists($file))
+			IO::Delete(file);
+	}
+
 	public function HasData($key1, $key2, &$value = null)
 	{
 		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled)

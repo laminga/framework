@@ -17,7 +17,27 @@ class System
 		foreach($flags as $flag)
 			$ret[] = array('name' => $flag['name'], 'value' => php_uname($flag['flag']));
 		$ret[] = array('name' => 'Arquitectura', 'value' => self::GetArchitecture() . "bits");
+		$ret[] = array('name' => 'PHP', 'value' => phpversion());
+		$ret[] = array('name' => 'php.ini', 'value' => php_ini_loaded_file());
 		return $ret;
+	}
+
+	public static function GetDbInfo()
+	{
+
+		$settings = array();
+		$settings [] = array('name' => 'Host', 'value' => Context::Settings()->Db()->Host);
+		if (Context::Settings()->Db()->Schema != '')
+			$settings [] = array('name' => 'Schema', 'value' => Context::Settings()->Db()->Schema);
+		$settings [] = array('name' => 'Database', 'value' => Context::Settings()->Db()->Name);
+		$settings [] = array('name' => 'User', 'value' => Context::Settings()->Db()->User);
+		$settings [] = array('name' => 'MySQL Version', 'value' => self::GetMySQLVersion());
+		return $settings;
+	}
+	public static function GetMySQLVersion()
+	{
+		$db = new Db();
+		return $db->fetchScalar("SELECT @@version;");
 	}
 	public static function GetArchitecture()
 	{

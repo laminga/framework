@@ -91,6 +91,31 @@ class ToArray
 			return $default;
 	}
 
+	public static function RemoveByField($key, $arrayTotal, $arrayItemsToRemove)
+	{
+		$ret = array();
+		foreach($arrayItemsToRemove as $item)
+		{
+			self::RemoveItemByNamedKey($arrayTotal, $item[$key]);
+		}
+		return $ret;
+	}
+	
+	public static function UniqueByField($key, $arrayTotal)
+	{
+		$ret = array();
+		$keys = array();
+		foreach($arrayTotal as $item)
+		{
+			if (in_array($item[$key], $keys) == false)
+			{
+				$ret[] = $item;
+				$keys[] = $item[$key];
+			}
+		}
+		return $ret;
+	}
+
 	public static function RemoveItem(&$array, $item)
 	{
 		foreach (array_keys($array, $item) as $key)

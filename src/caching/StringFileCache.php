@@ -11,6 +11,11 @@ class StringFileCache
 		$this->cache = new TwoLevelStringFileCache($path);  
 	}
 
+	public function Clear($key = null)
+	{
+		$this->cache->Clear($key);
+	}
+
 	public function HasData($key, & $out = null)
 	{
 		if ($this->cache->HasData($key, null, $out))

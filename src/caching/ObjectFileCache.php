@@ -13,6 +13,10 @@ class ObjectFileCache
 		$this->cache = new StringFileCache($path);
 	}
 
+	public function Clear($key = null)
+	{
+		$this->cache->Clear($key);
+	}
 
 	public function HasData($key, & $out = null)
 	{

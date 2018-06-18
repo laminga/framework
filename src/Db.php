@@ -94,6 +94,22 @@ class Db
 		return $ret;
 	}
 
+	
+	public function fetchScalarInt($sql, array $params = array())
+	{
+		return intval($this->fetchScalar($sql, $params));
+	}
+
+	public function fetchScalar($sql, array $params = array())
+	{
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$ret = $this->fetchAssoc($sql, $params);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret[array_keys($ret)[0]];
+	}
+
 	private function fetch($query, array $params = array(), $fetch_style = \PDO::FETCH_ASSOC)
 	{
 		$query = $this->parseArrayParams($query, $params);
