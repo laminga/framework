@@ -26,7 +26,7 @@ class TwoLevelStringFileCache
 		}
 		$key1 = $this->keyToString($key1);
 		$key2 = $this->keyToString($key2);
-		
+
 		$folder = $this->path . "/" . $key1;
 		if ($key2 === null)
 		{
@@ -40,8 +40,7 @@ class TwoLevelStringFileCache
 			return;
 		}
 		$file = $this->resolveFilename($key1, $key2, false);
-		if (file_exists($file))
-			IO::Delete(file);
+		IO::Delete($file);
 	}
 
 	public function HasData($key1, $key2, &$value = null)
