@@ -2,7 +2,7 @@
 
 namespace minga\framework;
 
-class ToArray
+class Arr
 {
 	public static function GetItemByNamedValue($arr, $itemName, $itemValue, $default = null)
 	{
@@ -100,7 +100,7 @@ class ToArray
 		}
 		return $ret;
 	}
-	
+
 	public static function UniqueByField($key, $arrayTotal)
 	{
 		$ret = array();

@@ -9,8 +9,8 @@ class FullNameSorter
 	{
 		$aName = $a['fullName'];
 		$bName = $b['fullName'];
-		$aDescription = ToArray::SafeGet($a, 'description');
-		$bDescription = ToArray::SafeGet($b, 'description');
+		$aDescription = Arr::SafeGet($a, 'description');
+		$bDescription = Arr::SafeGet($b, 'description');
 		if ($aName == $bName)
 		{
 			return $this->m * strcmp($aDescription, $bDescription);

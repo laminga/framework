@@ -96,8 +96,8 @@ class Traffic
 
 			if ($hits == Context::Settings()->Limits()->LogAgentThresholdDaylyHits)
 			{
-				$agent = ToArray::SafeGet($_SERVER, 'HTTP_USER_AGENT', 'null');
-				$url = ToArray::SafeGet($_SERVER, 'REQUEST_URI', 'null');
+				$agent = Arr::SafeGet($_SERVER, 'HTTP_USER_AGENT', 'null');
+				$url = Arr::SafeGet($_SERVER, 'REQUEST_URI', 'null');
 			}
 		}
 		$value = $hits . "\t" . $url . "\t" . $agent . "\t" . $deviceSet;
