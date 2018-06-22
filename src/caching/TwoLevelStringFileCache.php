@@ -24,11 +24,11 @@ class TwoLevelStringFileCache
 			IO::ClearDirectory($this->path);
 			return;
 		}
-		$key1 = $this->keyToString($key1);
-		$key2 = $this->keyToString($key2);
+		$key1 = (string)$key1;
+		$key2 = (string)$key2;
 
 		$folder = $this->path . "/" . $key1;
-		if ($key2 === null)
+		if ($key2 === '')
 		{
 			if (file_exists($folder))
 			{
@@ -39,7 +39,7 @@ class TwoLevelStringFileCache
 			}
 			return;
 		}
-		$file = $this->resolveFilename($key1, $key2, false);
+		$file = $this->ResolveFilename($key1, $key2, false);
 		IO::Delete($file);
 	}
 
@@ -49,7 +49,7 @@ class TwoLevelStringFileCache
 		{
 			return false;
 		}
-		$file = $this->resolveFilename($key1, $key2);
+		$file = $this->ResolveFilename($key1, $key2);
 		if (file_exists($file))
 		{
 			Profiling::BeginTimer();
@@ -62,11 +62,11 @@ class TwoLevelStringFileCache
 			return false;
 	}
 
-	private function resolveFilename($key1, $key2, $create = false)
+	private function ResolveFilename($key1, $key2, $create = false)
 	{
-		$key1 = $this->keyToString($key1);
-		$key2 = $this->keyToString($key2);
-		if ($key2 != null)
+		$key1 = (string)$key1;
+		$key2 = (string)$key2;
+		if ($key2 !== '')
 		{
 			$folder = $this->path . "/" . $key1;
 			if($create)
@@ -89,16 +89,8 @@ class TwoLevelStringFileCache
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
 			return;
 
-		$file = $this->resolveFilename($key1, $key2, true);
+		$file = $this->ResolveFilename($key1, $key2, true);
 		IO::WriteAllText($file, $value);
-	}
-
-	private function keyToString($key)
-	{
-		if ($key == null)
-			return "";
-		else
-			return $key . "";
 	}
 
 }
