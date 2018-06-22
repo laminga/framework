@@ -1,7 +1,7 @@
 <?php
-$name='DejaVuSans-Oblique';
-$type='TTF';
-$desc=array (
+$name = 'DejaVuSans-Oblique';
+$type = 'TTF';
+$desc = array(
 	'Ascent' => 928,
 	'Descent' => -236,
 	'CapHeight' => 928,
@@ -11,8 +11,8 @@ $desc=array (
 	'StemV' => 87,
 	'MissingWidth' => 600,
 );
-$up=-63;
-$ut=44;
-$ttffile='/var/www/code/aacademica/src/lib/tfpdf/font/unifont/DejaVuSans-Oblique.ttf';
-$originalsize=611556;
-$fontkey='dejavuI';
+$up = -63;
+$ut = 44;
+$ttffile = __DIR__ . '/DejaVuSans-Oblique.ttf';
+$originalsize = 611556;
+$fontkey = 'dejavuI';
