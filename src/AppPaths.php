@@ -68,4 +68,10 @@ class AppPaths
 	{
 		return $this->GetFrameworkPath() . '/data';
 	}
+
+	public function GetTfpdfFontsPath()
+	{
+		return $this->GetFrameworkPath() . '/tfpdf/font/unifont';
+	}
+
 }
