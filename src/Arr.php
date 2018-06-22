@@ -2,7 +2,7 @@
 
 namespace minga\framework;
 
-class ToArray
+class Arr
 {
 	public static function GetItemByNamedValue($arr, $itemName, $itemValue, $default = null)
 	{
