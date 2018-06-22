@@ -2,16 +2,13 @@
 
 namespace minga\framework;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 class Profiling
 {
+	public static $IsJson = false;
+
 	private static $stack = null;
 	private static $lockStack = "";
 	private static $profileData = null;
-	private static $IsJson = false;
-
 	private static $localIsProfiling = null;
 
 	public static function IsProfiling()
@@ -232,8 +229,8 @@ class Profiling
 			$name = self::GetMethodName($isInternalFunction);
 		if (self::$stack == null)
 		{
-			Profiling::$stack = Array();
-			Profiling::$profileData = new ProfilingItem("Total");
+			self::$stack = Array();
+			self::$profileData = new ProfilingItem("Total");
 		}
 		$newItem = new ProfilingItem($name);
 		$newItem->isInternal = $isInternalFunction;
@@ -253,40 +250,40 @@ class Profiling
 		if (self::IsProfiling() == false)
 			return;
 
-		$index = sizeof(Profiling::$stack) - 1;
+		$index = sizeof(self::$stack) - 1;
 		if ($index == -1)
 			return;
-		$item = Profiling::$stack[$index];
+		$item = self::$stack[$index];
 		$item->CompleteTimer();
 
 		self::MergeLastBrachValues();
-		Profiling::$stack = Arr::ShrinkArray(Profiling::$stack, $index);
+		self::$stack = Arr::ShrinkArray(self::$stack, $index);
 	}
 
 	public static function AppendLockInfo($info)
 	{
 		if (self::IsProfiling() == false)
 			return;
-		Profiling::$lockStack .= $info . "<br>";
+		self::$lockStack .= $info . "<br>";
 	}
 
 	public static function FinishTimers()
 	{
-		while(sizeof(Profiling::$stack) > 0)
+		while(sizeof(self::$stack) > 0)
 			self::EndTimer();
 	}
 	private static function MergeLastBrachValues()
 	{
 		// lo suma en la rama correspondiente
-		self::RecursiveMerge(Profiling::$profileData, 0);
+		self::RecursiveMerge(self::$profileData, 0);
 	}
 
 	private static function RecursiveMerge($profileData, $depth)
 	{
-		$targetItem = $profileData->GetChildrenOrCreate(Profiling::$stack[$depth]->name);
-		$item = Profiling::$stack[$depth];
+		$targetItem = $profileData->GetChildrenOrCreate(self::$stack[$depth]->name);
+		$item = self::$stack[$depth];
 
-		if (sizeof(Profiling::$stack) == $depth + 1)
+		if (sizeof(self::$stack) == $depth + 1)
 		{
 			// termina
 			$targetItem->durationMs += $item->durationMs;
@@ -300,38 +297,4 @@ class Profiling
 		}
 	}
 
-	public static function AppendResults(Request $req, Response $res)
-	{
-		if (!self::IsProfiling() || $req->getMethod() !== 'GET')
-			return;
-
-		$contentType = $res->headers->get(
-			'Content-Type'
-		);
-		$htmlContentTypes = array(
-			'text/html', ''
-		);
-		if (in_array($contentType, $htmlContentTypes))
-		{
-			$content = $res->getContent();
-			$res->setContent($content . self::GetHtmlResults());
-			return;
-		}
-		$jsonpContentTypes = array(
-			'application/json',
-			'application/json; charset=utf-8',
-			'application/javascript',
-		);
-		if (in_array($contentType, $jsonpContentTypes))
-		{
-			self::$IsJson = true;
-			$content = $res->getContent();
-			$pre = substr($content, 0, 1);
-			if ($pre == '{')
-				$pre .= ' "Profiling": ';
-			$content = substr($content, 1);
-			$res->setContent($pre . json_encode(self::GetHtmlResults())
-				. "," . $content);
-		}
-	}
 }
