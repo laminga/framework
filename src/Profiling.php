@@ -255,7 +255,7 @@ class Profiling
 		$item->CompleteTimer();
 
 		self::MergeLastBrachValues();
-		Profiling::$stack = ToArray::ShrinkArray(Profiling::$stack, $index);
+		Profiling::$stack = Arr::ShrinkArray(Profiling::$stack, $index);
 	}
 
 	public static function AppendLockInfo($info)

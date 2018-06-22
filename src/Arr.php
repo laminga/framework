@@ -96,11 +96,11 @@ class Arr
 		$ret = array();
 		foreach($arrayItemsToRemove as $item)
 		{
-			self::RemoveItemByNamedKey($arrayTotal, $item[$key]);
+			self::RemoveItemByNamedKey($arrayTotal, $item[$key], $key);
 		}
 		return $ret;
 	}
-	
+
 	public static function UniqueByField($key, $arrayTotal)
 	{
 		$ret = array();

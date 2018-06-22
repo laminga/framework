@@ -50,7 +50,7 @@ class TemplateMessage extends AttributeEntity
 				'contentTypeArticle' => $this->content->GetTypeArticle(),
 				'url' => Context::Settings()->GetMainServerPublicUrl() . $this->content->publicPath);
 
-			$contentAttributes = ToArray::AppendKeyArray($contentAttributes,
+			$contentAttributes = Arr::AppendKeyArray($contentAttributes,
 				$this->content->GetAllAttributes()
 			);
 			$this->SetValue('content', $contentAttributes);
