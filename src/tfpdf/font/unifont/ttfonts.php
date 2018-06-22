@@ -88,7 +88,10 @@ class TTFontFile
 	function getMetrics($file)
 	{
 		$this->filename = $file;
-		$this->fh = fopen($file,'rb') or die('Can\'t open file ' . $file);
+
+		$this->fh = fopen($file,'rb');
+		if($this->fh === false)
+			throw new \Exception('Can\'t open file ' . $file);
 		$this->_pos = 0;
 		$this->charWidths = '';
 		$this->glyphPos = array();
@@ -100,11 +103,11 @@ class TTFontFile
 		$this->TTCFonts = array();
 		$this->version = $version = $this->read_ulong();
 		if ($version==0x4F54544F)
-			die("Postscript outlines are not supported");
+			throw new \Exception("Postscript outlines are not supported");
 		if ($version==0x74746366)
-			die("ERROR - TrueType Fonts Collections not supported");
+			throw new \Exception("ERROR - TrueType Fonts Collections not supported");
 		if (!in_array($version, array(0x00010000,0x74727565)))
-			die("Not a TrueType font: version=".$version);
+			throw new \Exception("Not a TrueType font: version=".$version);
 		$this->readTableDirectory();
 		$this->extractInfo();
 		fclose($this->fh);
@@ -303,7 +306,7 @@ class TTFontFile
 		list($pos, $length) = $this->get_table_pos($tag);
 		if ($length == 0)
 		{
-			die('Truetype font ('.$this->filename.'): error reading table: '.$tag);
+			throw new \Exception('Truetype font ('.$this->filename.'): error reading table: '.$tag);
 		}
 		fseek($this->fh,$pos);
 		return (fread($this->fh,$length));
@@ -336,7 +339,7 @@ class TTFontFile
 		$name_offset = $this->seek_table("name");
 		$format = $this->read_ushort();
 		if ($format != 0)
-			die("Unknown name table format ".$format);
+			throw new \Exception("Unknown name table format ".$format);
 		$numRecords = $this->read_ushort();
 		$string_data_offset = $name_offset + $this->read_ushort();
 		$names = array(1=>'',2=>'',3=>'',4=>'',6=>'');
@@ -358,7 +361,7 @@ class TTFontFile
 				$opos = $this->_pos;
 				$this->seek($string_data_offset + $offset);
 				if ($length % 2 != 0)
-					die("PostScript name is UTF-16BE string of odd length");
+					throw new \Exception("PostScript name is UTF-16BE string of odd length");
 				$length /= 2;
 				$N = '';
 				while ($length > 0)
@@ -394,7 +397,7 @@ class TTFontFile
 		else
 			$psName = '';
 		if (!$psName)
-			die("Could not find PostScript font name");
+			throw new \Exception("Could not find PostScript font name");
 		$this->name = $psName;
 		if ($names[1])
 		{
@@ -446,7 +449,7 @@ class TTFontFile
 		$indexToLocFormat = $this->read_ushort();
 		$glyphDataFormat = $this->read_ushort();
 		if ($glyphDataFormat != 0)
-			die('Unknown glyph data format '.$glyphDataFormat);
+			throw new \Exception('Unknown glyph data format '.$glyphDataFormat);
 
 		///////////////////////////////////
 		// hhea metrics table
@@ -475,7 +478,7 @@ class TTFontFile
 			$fsType = $this->read_ushort();
 			if ($fsType == 0x0002 || ($fsType & 0x0300) != 0)
 			{
-				die('ERROR - Font file '.$this->filename.' cannot be embedded due to copyright restrictions.');
+				throw new \Exception('ERROR - Font file '.$this->filename.' cannot be embedded due to copyright restrictions.');
 				$this->restrictedUse = true;
 			}
 			$this->skip(20);
@@ -535,10 +538,10 @@ class TTFontFile
 		$this->skip(32);
 		$metricDataFormat = $this->read_ushort();
 		if ($metricDataFormat != 0)
-			die('Unknown horizontal metric data format '.$metricDataFormat);
+			throw new \Exception('Unknown horizontal metric data format '.$metricDataFormat);
 		$numberOfHMetrics = $this->read_ushort();
 		if ($numberOfHMetrics == 0)
-			die('Number of horizontal metrics is 0');
+			throw new \Exception('Number of horizontal metrics is 0');
 
 		///////////////////////////////////
 		// maxp - Maximum profile table
@@ -574,7 +577,7 @@ class TTFontFile
 			$this->seek($save_pos );
 		}
 		if (!$unicode_cmap_offset)
-			die('Font ('.$this->filename .') does not have cmap for Unicode (platform 3, encoding 1, format 4, or platform 0, any encoding, format 4)');
+			throw new \Exception('Font ('.$this->filename .') does not have cmap for Unicode (platform 3, encoding 1, format 4, or platform 0, any encoding, format 4)');
 
 
 		$glyphToChar = array();
@@ -596,7 +599,9 @@ class TTFontFile
 	function makeSubset($file, &$subset)
 	{
 		$this->filename = $file;
-		$this->fh = fopen($file ,'rb') or die('Can\'t open file ' . $file);
+		$this->fh = fopen($file ,'rb');
+		if($this->fh === false)
+		  	throw new \Exception('Can\'t open file ' . $file);
 		$this->_pos = 0;
 		$this->charWidths = '';
 		$this->glyphPos = array();
@@ -661,7 +666,7 @@ class TTFontFile
 		}
 
 		if (!$unicode_cmap_offset)
-			die('Font ('.$this->filename .') does not have cmap for Unicode (platform 3, encoding 1, format 4, or platform 0, any encoding, format 4)');
+			throw new \Exception('Font ('.$this->filename .') does not have cmap for Unicode (platform 3, encoding 1, format 4, or platform 0, any encoding, format 4)');
 
 
 		$glyphToChar = array();
@@ -1197,7 +1202,7 @@ class TTFontFile
 			}
 		}
 		else
-			die('Unknown location table format '.$indexToLocFormat);
+			throw new \Exception('Unknown location table format '.$indexToLocFormat);
 	}
 
 
