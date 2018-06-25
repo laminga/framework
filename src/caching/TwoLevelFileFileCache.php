@@ -22,11 +22,11 @@ class TwoLevelFileFileCache
 			IO::ClearDirectory($this->path);
 			return;
 		}
-		$key1 = $this->keyToString($key1);
-		$key2 = $this->keyToString($key2);
+		$key1 = (string)$key1;
+		$key2 = (string)$key2;
 
 		$folder = $this->path . "/" . $key1;
-		if ($key2 === null)
+		if ($key2 === '')
 		{
 			if (file_exists($folder))
 			{
@@ -37,7 +37,7 @@ class TwoLevelFileFileCache
 			}
 			return;
 		}
-		$file = $this->resolveFilename($key1, $key2, false);
+		$file = $this->ResolveFilename($key1, $key2, false);
 		IO::Delete($file);
 	}
 
@@ -46,7 +46,7 @@ class TwoLevelFileFileCache
 	 if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled && $overriteTwoState == false)
 			return false;
 
-		$file = $this->resolveFilename($key1, $key2);
+		$file = $this->ResolveFilename($key1, $key2);
 		if (file_exists($file))
 		{
 			$out = $file;
@@ -69,12 +69,12 @@ class TwoLevelFileFileCache
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
 			return;
 
-		$file = $this->resolveFilename($key1, $key2, true);
+		$file = $this->ResolveFilename($key1, $key2, true);
 		copy($filename, $file);
 		return $file;
 	}
 
-	private function resolveFilename($key1, $key2, $create = false)
+	private function ResolveFilename($key1, $key2, $create = false)
 	{
 		$folder = $this->path . "/" . $key1;
 		if($create)

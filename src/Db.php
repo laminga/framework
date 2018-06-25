@@ -27,6 +27,7 @@ class Db
 		$this->TablePrefix = Context::Settings()->Db()->Schema . "_";
 		$this->Connection();
 	}
+
 	private function Connection()
 	{
 		if (self::$db == null)
@@ -47,6 +48,7 @@ class Db
 		}
 		return self::$db;
 	}
+
 	/**
 	 * Devuelve el nombre de la tabla con el
 	 * prefijo agregado
@@ -94,7 +96,7 @@ class Db
 		return $ret;
 	}
 
-	
+
 	public function fetchScalarInt($sql, array $params = array())
 	{
 		return intval($this->fetchScalar($sql, $params));

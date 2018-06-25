@@ -1,8 +1,9 @@
 <?php
 
 namespace minga\framework;
+use minga\framework\tfpdf\tFPDF;
 
-class PdfFile extends \tFPDF
+class PdfFile extends tFPDF
 {
 	var $B;
 	var $I;

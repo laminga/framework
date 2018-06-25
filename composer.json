@@ -1,0 +1,20 @@
+{
+	"type": "library",
+	"config": {
+		"platform": {
+			"php": "5.6"
+		}
+	},
+	"autoload": {
+		"psr-4": {
+			"minga\\framework\\": "src/"
+		}
+	},
+	"require": {
+		"rodrigoq/phpmailersendgrid": "^1.0",
+		"mobiledetect/mobiledetectlib": "^2.8",
+		"geoip2/geoip2": "^2.9",
+		"paragonie/random_compat": "^2.0",
+		"twig/twig": "^1.35"
+	}
+}
