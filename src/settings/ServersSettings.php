@@ -70,7 +70,10 @@ class ServersSettings
 
 	public function GetServer($name)
 	{
-		return $this->servers[$name];
+		if(isset($this->servers[$name]))
+			return $this->servers[$name];
+		else
+			return $this->servers['core'];
 	}
 
 	public function Main()

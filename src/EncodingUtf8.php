@@ -288,7 +288,7 @@ class EncodingUtf8 {
   static function UTF8FixWin1252Chars($text){
 	  // If you received an UTF-8 string that was converted from Windows-1252 as it was ISO8859-1
 	  // (ignoring Windows-1252 chars from 80 to 9F) use this function to fix it.
-	  // See: http://en.wikipedia.org/wiki/Windows-1252
+	  // See: https://en.wikipedia.org/wiki/Windows-1252
 
 	  return str_replace(array_keys(self::$brokenUtf8ToUtf8), array_values(self::$brokenUtf8ToUtf8), $text);
   }

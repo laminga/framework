@@ -7,7 +7,7 @@ class Ghostscript
 	/**
 	 * directorio con los binarios
 	 *
-	 * origen: http://www.ghostscript.com/download/gsdnld.html
+	 * origen: https://www.ghostscript.com/download/gsdnld.html
 	 */
 	const BIN_PATH = "/cgi-bin";
 
