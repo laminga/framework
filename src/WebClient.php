@@ -117,7 +117,12 @@ class WebClient
 		$this->request_headers = array();
 		$this->request_headers[] = "Accept-Language: es-es,en";
 		$this->request_headers[] = "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8";
-
+		
+	/*$this->request_headers[] = "Pragma: no-cache";
+$this->request_headers[] = "Cache-Control: no-cache";
+$this->request_headers[] = "Connection: keep-alive";
+$this->request_headers[] = "Accept-Encoding: gzip, deflate";
+*/
 		if ($args != null)
 		{
 			$method = 'POST ';
