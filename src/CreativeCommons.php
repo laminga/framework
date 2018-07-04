@@ -82,8 +82,8 @@ class CreativeCommons
 
 	public static function ResolveUrl($entity)
 	{
-		// pattern: http://creativecommons.org/licenses/by/2.5/ar/
-		$ret = "http://creativecommons.org/licenses/by";
+		// pattern: https://creativecommons.org/licenses/by/2.5/ar/
+		$ret = "https://creativecommons.org/licenses/by";
 		$licenseType = $entity->attributes["licenseType"];
 		$licenseVersion = $entity->attributes["licenseVersion"];
 		$licenseCommercial = $entity->attributes["licenseCommercial"];
@@ -100,10 +100,10 @@ class CreativeCommons
 		$ret .= "/" . $licenseVersion;
 		return $ret;
 	}
+
 	public static function GetLeyendByUrl($url, $wide = false)
 	{
-		if (Str::StartsWith($url, "http://creativecommons.")== false &&
-			Str::StartsWith($url, "http://www.creativecommons.") == false)
+		if (self::UrlIsCC($url) == false)
 			return "";
 
 		// define texto y link
@@ -122,13 +122,20 @@ class CreativeCommons
 
 	public static function GetLicenseImageByUrl($url, $extension = "png")
 	{
-		if (Str::StartsWith($url, "http://creativecommons.")== false &&
-			Str::StartsWith($url, "http://www.creativecommons.") == false)
+		if (self::UrlIsCC($url) == false)
 			return "";
 		$availables = array("by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa");
 		foreach($availables as $image)
 			if (Str::Contains($url, "/" . $image . "/"))
 				return "/images/licenses/cc/" . $image . "." . $extension;
 		return "";
+	}
+
+	private static function UrlIsCC($url)
+	{
+		return (Str::StartsWith($url, "http://creativecommons.")
+			|| Str::StartsWith($url, "http://www.creativecommons.")
+			|| Str::StartsWith($url, "https://creativecommons.")
+			|| Str::StartsWith($url, "https://www.creativecommons."));
 	}
 }

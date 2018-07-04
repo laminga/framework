@@ -178,6 +178,27 @@ class Arr
 		return $arr;
 	}
 
+	public static function FromSortedToKeyed($arr, $field)
+	{
+		$ret = array();
+		$group = array();
+		$last = null;
+		foreach($arr as $a)
+		{
+			$id = $a[$field];
+			if ($id != $last)
+			{
+				if ($last !== null)
+					$ret[$last] = $group;
+				$group = array();
+				$last = $id;
+			}
+			$group[] = $a;
+		}
+		if ($last !== null)
+			$ret[$last] = $group;
+		return $ret;
+	}
 	public static function SanitizeIds($arr)
 	{
 		$ret = array();

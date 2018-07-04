@@ -18,6 +18,11 @@ class WebClient
 
 	private $cookie_file = "";
 
+	public function __construct($throwErrors = true)
+	{
+		$this->throwErrors = $throwErrors;
+	}
+
 	public function Initialize($path = '')
 	{
 		$agent = "Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0";

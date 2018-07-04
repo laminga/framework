@@ -108,7 +108,7 @@ class Log
 	{
 		$message = $exception->getMessage();
 		if ($silent)
-			$message .= "(silently processed)";
+			$message .= " (silently processed)";
 		return self::LogError($exception->getCode(), $message,
 			$exception->getFile(), $exception->getLine(), array(), $exception->getTraceAsString());
 	}

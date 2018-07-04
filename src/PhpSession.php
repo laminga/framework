@@ -17,7 +17,10 @@ class PhpSession
 		session_write_close();
 		self::$sessionValues = array();
 	}
-
+	public static function SessionId()
+	{
+		return session_id();
+	}
 	public static function SetSessionValue($key, $value)
 	{
 		if (session_status() == PHP_SESSION_NONE)

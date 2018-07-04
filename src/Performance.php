@@ -380,7 +380,7 @@ class Performance
 			$hits = $newHits;
 			$duration = $value;
 			$locked = $newLocked;
-			$google = $googleHits;
+			$google = (int)$googleHits;
 			$mails = $mailCount;
 			$dbMs = $newDbMs;
 			$dbHits = $newDbHits;
@@ -391,13 +391,14 @@ class Performance
 			$hits += $newHits;
 			$duration += $value;
 			$locked += $newLocked;
-			$google += $googleHits;
+			$google += (int)$googleHits;
 			$mails += $mailCount;
 			$dbMs += $newDbMs;
 			$dbHits += $newDbHits;
 		}
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails. ';' . $dbMs . ';' . $dbHits;
 	}
+
 	private static function ParseHit($value, &$hits, &$duration, &$locked, &$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null)
 	{
 		$parts = explode(';', $value);
@@ -409,8 +410,8 @@ class Performance
 			$locked = 0;
 		if (sizeof($parts) > 3)
 		{
-			$p4 = $parts[3];
-			$p5 = $parts[4];
+			$p4 = (int)$parts[3];
+			$p5 = (int)$parts[4];
 		}
 		else
 		{
@@ -419,8 +420,8 @@ class Performance
 		}
 		if (sizeof($parts) > 5)
 		{
-			$p6 = $parts[5];
-			$p7 = $parts[6];
+			$p6 = (int)$parts[5];
+			$p7 = (int)$parts[6];
 		}
 		else
 		{
