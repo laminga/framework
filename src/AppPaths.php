@@ -41,12 +41,16 @@ class AppPaths
 
 	public function GetTrafficLocalPath()
 	{
-		return $this->GetStorageRoot() . '/traffic';
+		$ret = $this->GetStorageRoot() . '/traffic';
+		IO::EnsureExists($ret);
+		return $ret;
 	}
 
 	public function GetPerformanceLocalPath()
 	{
-		return $this->GetStorageRoot() . '/performance';
+		$ret = $this->GetStorageRoot() . '/performance';
+		IO::EnsureExists($ret);
+		return $ret;
 	}
 
 	public function GetTempPath()
