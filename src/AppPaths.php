@@ -46,6 +46,13 @@ class AppPaths
 		return $ret;
 	}
 
+	public function GetSearchLogLocalPath()
+	{
+		$ret = $this->GetStorageRoot() . '/search';
+		IO::EnsureExists($ret);
+		return $ret;
+	}
+
 	public function GetPerformanceLocalPath()
 	{
 		$ret = $this->GetStorageRoot() . '/performance';
