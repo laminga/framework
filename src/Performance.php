@@ -213,7 +213,6 @@ class Performance
 			// Llama a quienes precisan saber que el día cambió dentro del framework
 			self::DayCompleted(self::$warnToday);
 			Traffic::DayCompleted();
-			SearchLog::DayCompleted();
 		}
 	}
 

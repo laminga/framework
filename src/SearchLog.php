@@ -35,16 +35,8 @@ class SearchLog
 
 		$lock->LockWrite();
 		$month = Date::GetLogMonthFolder();
-		self::SaveSearchHit('dayly', $text, $matches, $ellapsedMs);
 		self::SaveSearchHit($month, $text, $matches, $ellapsedMs);
 		$lock->Release();
-	}
-
-	public static function DayCompleted($newDay)
-	{
-		$file = self::ResolveFile('dayly');
-		$fileYesterday = self::ResolveFile('yesterday');
-		IO::Move($file, $fileYesterday);
 	}
 
 	private static function ResolveFile($item = '')
@@ -99,20 +91,29 @@ class SearchLog
 		$lock->LockRead();
 
 		if ($month == '') $month = 'dayly';
-		$path = self::ResolveFile($month);
+		$currentMonth = Date::GetLogMonthFolder();
+		if ($month !== 'dayly')
+			$path = self::ResolveFile($month);
+		else
+			$path = self::ResolveFile($currentMonth);
+	
 		$rows = self::ReadIfExists($path);
 		$lock->Release();
 
 		$ret = array();
 		$ret['Fecha'] = array('Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión');
 
-		foreach($rows as $line)
+		$currentDay = Date::FormattedArDate();
+		for($n = sizeof($rows) - 1; $n >= 0; $n--)
 		{
+			$line = $rows[$n];
 			if (self::ParseHit($line, $user, $dateTime, $text, $matches, $ellapsed))
 			{
-				$cells = array($text, $matches, $ellapsed, $user);
-
-				$ret[$dateTime] = $cells;
+				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay))
+				{
+					$cells = array($text, $matches, $ellapsed, $user);
+					$ret[$dateTime] = $cells;
+				}
 			}
 		}
 		return $ret;
