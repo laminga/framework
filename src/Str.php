@@ -355,12 +355,6 @@ class Str
 		return strtoupper(substr($cad, 0, 1)) . substr($cad, 1);
 	}
 
-	//TODO REEMPLAZAR POR TOUPPER
-	public static function Upper($cad)
-	{
-		return strtoupper($cad);
-	}
-
 	public static function StartsWithAlfabetic($cad)
 	{
 		return (substr($cad, 0, 1) >= 'a' && substr($cad, 0, 1) <= 'z');
