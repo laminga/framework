@@ -621,6 +621,7 @@ class IO
 
 	public static function RemoveDirectory($dir, $dirtyDelete = false)
 	{
+		if (!file_exists($dir)) return 0;
 		if(is_file($dir))
 		{
 			unlink($dir);

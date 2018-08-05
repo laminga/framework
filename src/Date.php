@@ -41,10 +41,18 @@ class Date
 	{
 		return self::NowGMT(-3);
 	}
+	public static function FormattedArDate()
+	{
+		return self::FormattedDateOnly(self::ArNow());
+	}
 
 	public static function FormattedArNow()
 	{
 		return self::FormattedDate(self::ArNow());
+	}
+	public static function FormattedDateOnly($date)
+	{
+		return date("Y-m-d", $date);
 	}
 
 	public static function FormattedDate($date)
