@@ -376,6 +376,7 @@ class IO
 
 	public static function GetFiles($path, $ext = '', $returnFullPath = false)
 	{
+		// $ext = .txt
 		$ret = array();
 		if ($handle = opendir($path))
 		{

@@ -8,7 +8,7 @@ class TwoLevelAttributeEntity
 	public $path = '';
 	public $sections = Array();
 	protected $keepSectionCreationDate = false;
-
+	
 	public function SetLocation($path)
 	{
 		$this->path = $path;
