@@ -10,6 +10,7 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 	public function AppendItem($section, $item)
 	{
 		$values = $this->safeGetArray($section, 'items');
+		$id = null;
 		if ($this->useInternalId)
 			$id = $this->getNextId();
 		$item['id'] = $id;
@@ -19,9 +20,9 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 	public function DeleteItem($section, $itemId)
 	{
 		// Lo busca entre los decodificados
-		$items = $this->GetItems($section, 'items');
+		$items = $this->GetItems($section);
 		if ($this->useInternalId == false)
-			throw new Exception('TwoLevelListAttributeEntity must have InternalId to be deleted');
+			throw new \Exception('TwoLevelListAttributeEntity must have InternalId to be deleted');
 		$n = Arr::IndexOfByNamedValue($items, 'id', $itemId);
 		// Lo saca de los codificados
 		$values = $this->safeGetArray($section, 'items');
