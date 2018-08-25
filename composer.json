@@ -6,6 +6,9 @@
 		}
 	},
 	"autoload": {
+		"classmap": [
+			"vendor/simple-html-dom/simple-html-dom/"
+		],
 		"psr-4": {
 			"minga\\framework\\": "src/"
 		}
@@ -13,6 +16,7 @@
 	"require": {
 		"rodrigoq/phpmailersendgrid": "^1.0",
 		"mobiledetect/mobiledetectlib": "^2.8",
+		"simple-html-dom/simple-html-dom": "*",
 		"geoip2/geoip2": "^2.9",
 		"paragonie/random_compat": "^2.0",
 		"twig/twig": "^1.35"
