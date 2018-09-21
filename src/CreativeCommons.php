@@ -119,6 +119,10 @@ class CreativeCommons
 	{
 		return self::GetLicenseImageByUrl($url, "eps");
 	}
+	public static function GetLicenseImageSvgByUrl($url)
+	{
+		return self::GetLicenseImageByUrl($url, "svg");
+	}
 
 	public static function GetLicenseImageByUrl($url, $extension = "png")
 	{
