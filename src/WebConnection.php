@@ -10,7 +10,7 @@ class WebConnection
 	protected $followRedirects = true;
 	protected $lastLocation = '';
 	protected $maxFileSize = -1;
-	protected $http_code = '';
+	protected $http_code = 0;
 	protected $error = '';
 
 	public $throwErrors = true;
