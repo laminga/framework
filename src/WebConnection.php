@@ -10,7 +10,9 @@ class WebConnection
 	protected $followRedirects = true;
 	protected $lastLocation = '';
 	protected $maxFileSize = -1;
-		
+	protected $http_code = '';
+	protected $error = '';
+
 	public $throwErrors = true;
 	public $logFile = null;
 	public $responseFile = null;
@@ -82,7 +84,7 @@ class WebConnection
 		Profiling::BeginTimer();
 		$response = $this->doExecute($url, $file, array());
 		$red = 0;
-			
+
 		while ($response->http_code == 301 || $response->http_code == 302 || $response->http_code == 307)
 		{
 			$red++;
@@ -91,15 +93,15 @@ class WebConnection
 			$response = $this->Get($location, $file);
 			if ($red > 10)
 			{
-				$this->webClient->AppendLog('Max redirects reached.');
+				$this->AppendLog('Max redirects reached.');
 				break;
 			}
 		}
 		Profiling::EndTimer();
-		
+
 		return $response;
 	}
-	
+
 	public function Post($url, $file = '', $args)
 	{
 		Profiling::BeginTimer();
@@ -114,7 +116,7 @@ class WebConnection
 		else
 			return $response;
 	}
-	
+
 
 	function stayHttps($url)
 	{
@@ -154,7 +156,7 @@ class WebConnection
 		if ($this->ch == null)
 			throw new \Exception("Initialize() method should be called first.");
 
-		$this->EnableExtraLog();		
+		$this->EnableExtraLog();
 
 		if (Str::StartsWith($url, 'http:') && Str::StartsWith($this->lastLocation, 'https:'))
 		{
@@ -167,7 +169,7 @@ class WebConnection
 		}
 
 		curl_setopt($this->ch, CURLOPT_URL, $url);
-		
+
 		$this->request_headers = array();
 		$this->request_headers[] = "Accept-Language: es-es,en";
 		$this->request_headers[] = "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8";
@@ -193,9 +195,9 @@ class WebConnection
 		curl_setopt($this->ch, CURLOPT_NOBODY, 0);
 		$this->SetReferer($this->lastLocation);
 		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->request_headers);
-		
+
 		// indica el archivo
-		$fh = null;		
+		$fh = null;
 		if ($file == '')
 			$file = IO::GetTempFilename();
 
@@ -217,7 +219,7 @@ class WebConnection
 		{
 			$fh = fopen($this->responseFile, "r");
 			// Lee headers
-			$header_text = fread($fh, $headersSize);			
+			$header_text = fread($fh, $headersSize);
 			$skipFirst = true;
 			foreach (explode("\r\n", $header_text) as $i => $line)
 			{
@@ -229,10 +231,10 @@ class WebConnection
 			// saca headers
 			$this->truncateBeggining($this->responseFile, $headersSize);
 			copy($this->responseFile, $file);
-		}	
+		}
 		// toma error
 		$this->ParseErrorCodes($ret, $file);
-		
+
 		if ($this->maxFileSize != -1)
 		{
 			if (array_key_exists("Content-Length", $headers))
@@ -306,7 +308,7 @@ class WebConnection
 		fseek($handle, $read_position);  // return to actual position
 		$write_position = 0;
 		$chunkSize = 	40960;
-    while (($chunk = fread($handle, $chunkSize)) !== FALSE) { 
+    while (($chunk = fread($handle, $chunkSize)) !== FALSE) {
 			$read_position = ftell($handle); // get actual line
 			fseek($handle, $write_position); // move to previous position
 			fwrite($handle, $chunk);           // put actual line in previous position
