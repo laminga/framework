@@ -111,8 +111,18 @@ class Mail
 
 	function PutToLog()
 	{
+		$to = '';
+		if(is_array($this->to))
+		{
+			foreach($this->to as $address)
+				$to .= $address . ', ';
+			$to = Str::RemoveEnding($to, ', ');
+		}
+		else
+			$to = $this->to;
+
 		$text = "From: " . $this->from . "\r\n" .
-			"To: " . $this->to . "\r\n" .
+			"To: " . $to . "\r\n" .
 			"Subject: " . $this->subject . "\r\n".
 			$this->message;
 		Log::PutToLog('mails', $text);
