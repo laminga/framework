@@ -43,6 +43,8 @@ class Settings
 
 	public $skipExternalLibraries = false;
 	public $useOpenId = false;
+	public $useOpenIdFacebook = false;
+	public $useOpenIdGoogle = false;
 
 	public $normalizeNames = false;
 	public $setupInstallOnly = true;
