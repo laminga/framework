@@ -21,7 +21,7 @@ class CompressedInParentDirectory
 	{
 		if ($this->expanded == false)
 			return;
-		IO::RemoveDirectory($this->expandedPath, true);
+		IO::RemoveDirectory($this->expandedPath);
 		$this->expanded = false;
 	}
 	public function GetFilename()
