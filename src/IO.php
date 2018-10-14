@@ -376,45 +376,28 @@ class IO
 
 	public static function GetFiles($path, $ext = '', $returnFullPath = false)
 	{
-		// $ext = .txt
-		$ret = array();
-		if ($handle = opendir($path))
-		{
-			while (false !== ($entry = readdir($handle)))
-			{
-				if (($ext == '' || Str::EndsWith($entry, $ext)) &&
-					$entry != '..' && $entry != '.' && is_file($path . '/'. $entry))
-				{
-					if ($returnFullPath)
-						$ret[] = $path . '/' . $entry;
-					else
-						$ret[] = $entry;
-				}
-			}
-			closedir($handle);
-		}
-		return $ret;
+		return self::GetFilesStartsWithAndExt($path, '', $ext, $returnFullPath);
 	}
 
-	public static function GetFilesStartsWith($path, $beg = '', $returnFullPath = false)
+	public static function GetFilesStartsWith($path, $start = '', $returnFullPath = false)
 	{
-		$ret = array();
-		if ($handle = opendir($path))
-		{
-			while (false !== ($entry = readdir($handle)))
-			{
-				if (($beg == '' || Str::StartsWith($entry, $beg)) &&
-					$entry != '..' && $entry != '.' && is_file($path . '/'. $entry))
-				{
-					if ($returnFullPath)
-						$ret[] = $path . '/' . $entry;
-					else
-						$ret[] = $entry;
-				}
-			}
-			closedir($handle);
-		}
-		return $ret;
+		return self::GetFilesStartsWithAndExt($path, $start, '', $returnFullPath);
+	}
+
+	private static function GetFilesStartsWithAndExt($path, $start = '', $ext = '', $returnFullPath = false)
+	{
+		if($ext != '' && Str::StartsWith($ext, '.') == false)
+			$ext = '.' . $ext;
+
+		$ret = glob($path . '/' . $start . '*'. $ext);
+
+		$ret = array_values(array_filter($ret, 'is_file'));
+
+		if ($returnFullPath)
+			return $ret;
+
+		//remueve directorio base
+		return preg_replace('/^' . preg_quote($path . '/', '/') . '/', '', $ret);
 	}
 
 	public static function HasFiles($path, $ext = '')
@@ -437,35 +420,17 @@ class IO
 
 	public static function GetFilesCount($path, $ext = '')
 	{
-		$ret = 0;
-		if ($handle = opendir($path))
-		{
-			while (false !== ($entry = readdir($handle)))
-			{
-				if (($ext == '' || Str::EndsWith($entry, $ext)) &&
-					$entry != '..' && $entry != '.' && is_file($path . '/'. $entry))
-				{
-					$ret++;
-				}
-			}
-			closedir($handle);
-		}
-		return $ret;
+		return count(self::GetFilesFullPath($path, $ext));
 	}
 
-	public static function GetDirectories($path)
+	public static function GetDirectories($path, $returnFullPath = false)
 	{
-		$ret = array();
-		if ($handle = opendir($path))
-		{
-			while (false !== ($entry = readdir($handle)))
-			{
-				if ($entry != '..' && $entry != '.' && !is_file($path . '/'. $entry))
-					$ret[] = $entry;
-			}
-			closedir($handle);
-		}
-		return $ret;
+		$ret = glob($path . "/*", GLOB_ONLYDIR);
+
+		if($returnFullPath)
+			return $ret;
+
+		return preg_replace('/^' . preg_quote($path . '/', '/') . '/', '', $ret);
 	}
 
 	public static function GetSequenceName($file, $index, $numLength = 5)
@@ -620,9 +585,10 @@ class IO
 		return true;
 	}
 
-	public static function RemoveDirectory($dir, $dirtyDelete = false)
+	public static function RemoveDirectory($dir)
 	{
-		if (!file_exists($dir)) return 0;
+		if (!file_exists($dir))
+			return 0;
 		if(is_file($dir))
 		{
 			unlink($dir);
@@ -635,12 +601,10 @@ class IO
 			{
 				if($file == '.' || $file == '..')
 					continue;
-				$n += self::RemoveDirectory($dir.'/'.$file, $dirtyDelete);
+				$n += self::RemoveDirectory($dir.'/'.$file);
 			}
 			closedir($dh);
 			rmdir($dir);
-			//if ($dirtyDelete == false)
-			//  Backup::AppendDeleted($dir);
 		}
 		return $n;
 	}
