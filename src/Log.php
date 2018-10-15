@@ -16,11 +16,11 @@ class Log
 		{
 			$e = new \Exception();
 			$st = explode("\n", $e->getTraceAsString());
-			if (sizeof($st)>2)
+			if (sizeof($st) > 2)
 			{
 				unset($st[0]);
 				unset($st[1]);
-				unset($st[sizeof($st)-1]);
+				unset($st[sizeof($st) - 1]);
 			}
 			$stack = implode("\r\n", $st);
 		}
@@ -62,14 +62,17 @@ class Log
 		if (sizeof($_POST) > 0)
 		{
 			$text .= "===========================================\r\n" .
-				"=> Post:        ". str_replace("\n", "\r\n", print_r($_POST, true));
+				"=> Post:        ". print_r($_POST, true);
 		}
 		$text .= "===========================================\r\n" .
-			"=> Context\r\n" . str_replace("\n", "\r\n", print_r($context, true));
+			"=> Context\r\n" . print_r($context, true);
 
+		// Corrige problemas de new line de las diferentes fuentes.
+		$text = str_replace("\r\n", "\n", $text);
+		$text = str_replace("\n", "<br>\r\n", $text);
 
 		if (Context::Settings()->Debug()->showErrors)
-			$textToShow = str_replace("\r\n", "<br>\r\n", $text);
+			$textToShow = $text;
 		else
 			$textToShow = "Se ha producido un error: " . $errstr . ". <p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href='mailto:soporte@aacademica.org'>soporte@aacademica.org</a> describiendo el inconveniente.";
 
@@ -137,8 +140,9 @@ class Log
 		$mail = new Mail();
 		$mail->to = Context::Settings()->Mail()->NotifyAddressErrors;
 		$mail->subject = 'Error en Acta Académica - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
-		$mail->message =  str_replace("\r\n", "<br>\r\n" , $text);
-		if (Context::Settings()->isTesting) return true;
+		$mail->message = $text;
+		if (Context::Settings()->isTesting)
+			return true;
 		$mail->Send(false, true);
 	}
 
