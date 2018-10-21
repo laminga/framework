@@ -20,7 +20,7 @@ class WebConnection
 	public $logFile2 = null;
 	public $content_type = "";
 	public $request_headers = array();
-
+	
 	private $cookie_file = "";
 
 	public function __construct($throwErrors = false)
