@@ -330,7 +330,6 @@ class Str
 		return $cad;
 	}
 
-	
 	public static function IsNullOrEmpty($cad)
 	{
 		return ($cad === '' || $cad === null);
@@ -338,10 +337,9 @@ class Str
 
 	public static function GetEndingPart($name, $separator)
 	{
-		$parts = explode($separator, $cad);
+		$parts = explode($separator, $name);
 		return $parts[sizeof($parts) - 1];
 	}
-
 
 	public static function Ellipsis($cad, $maxSize = 50)
 	{
