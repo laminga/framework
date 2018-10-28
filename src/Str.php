@@ -345,7 +345,6 @@ class Str
 		return $cad;
 	}
 
-	
 	public static function IsNullOrEmpty($cad)
 	{
 		return ($cad === '' || $cad === null);
@@ -356,7 +355,6 @@ class Str
 		$parts = explode($separator, $name);
 		return $parts[sizeof($parts) - 1];
 	}
-
 
 	public static function Ellipsis($cad, $maxSize = 50)
 	{

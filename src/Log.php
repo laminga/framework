@@ -78,21 +78,35 @@ class Log
 
 		self::PutToLog('errors', $text);
 
-		if (self::$isLoggingMailError == false)
-		{
-			self::$isLoggingMailError = true;
-			try
-			{
-				self::PutToMail($text);
-			}
-			catch(\Exception $e)
-			{
-				self::HandleSilentException($e);
-			}
-			self::$isLoggingMailError = false;
-		}
+		self::LogErrorSendMail($text);
 
 		return $textToShow;
+	}
+
+	private static function LogErrorSendMail($text)
+	{
+		if (self::$isLoggingMailError)
+			return;
+
+		try
+		{
+			self::$isLoggingMailError = true;
+
+			if(Str::Contains($text, '[passwordi]'))
+			{
+				$text = preg_replace('/(\[passwordi\] => ).*/',
+					'$1[removido]<br>', $text);
+			}
+			self::PutToMail($text);
+		}
+		catch(\Exception $e)
+		{
+			self::HandleSilentException($e);
+		}
+		finally
+		{
+			self::$isLoggingMailError = false;
+		}
 	}
 
 
