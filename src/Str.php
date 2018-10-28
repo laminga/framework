@@ -151,6 +151,21 @@ class Str
 		}
 	}
 
+	public static function TwoSplitReverse($text, $separator, &$first, &$last)
+	{
+		$pos = strrpos($text, $separator);
+		if ($pos === false)
+		{
+			$first =$text;
+			$last = '';
+		}
+		else
+		{
+			$first = substr($text, 0, $pos);
+			$last = substr($text, $pos + strlen($separator));
+		}
+	}
+
 	public static function AppendParam($url, $param, $value = "")
 	{
 		$n = strpos($url, "#");
@@ -338,7 +353,7 @@ class Str
 
 	public static function GetEndingPart($name, $separator)
 	{
-		$parts = explode($separator, $cad);
+		$parts = explode($separator, $name);
 		return $parts[sizeof($parts) - 1];
 	}
 
