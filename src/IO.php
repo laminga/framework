@@ -591,7 +591,7 @@ class IO
 			return 0;
 		if(is_file($dir))
 		{
-			unlink($dir);
+			self::Delete($dir);
 			return 1;
 		}
 		$n = 0;
@@ -714,7 +714,7 @@ class IO
 		$path = Context::Paths()->GetTempPath();
 		self::EnsureExists($path);
 		$name = tempnam($path, "");
-		unlink($name);
+		self::Delete($name);
 		return $name;
 	}
 
@@ -771,7 +771,15 @@ class IO
 
 	public static function Delete($file)
 	{
-		if (file_exists($file))
-			unlink($file);
+		try
+		{
+			if (file_exists($file))
+				unlink($file);
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() !== E_WARNING)
+				Log::HandleSilentException($e);
+		}
 	}
 }
