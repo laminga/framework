@@ -774,4 +774,8 @@ class IO
 		if (file_exists($file))
 			unlink($file);
 	}
+	public static function Exists($file)
+	{
+		return (file_exists($file));
+	}
 }
