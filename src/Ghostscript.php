@@ -100,7 +100,7 @@ class Ghostscript
 			if ($returnFirstLineOnly)
 				$ret = $out[0];
 			else
-				$ret = implode('\n', $out);
+				$ret = implode("\n", $out);
 		}
 		return $ret;
 	}
@@ -113,12 +113,12 @@ class Ghostscript
 
 		$out = self::SuperExec($exeFile, $args, $retCode);
 
-		$extraInfo = '\n---------------\nExe: ' . $exeFile . '\n Args:' . $args . '\n------------\n';
+		$extraInfo = "\n---------------\nExe: " . $exeFile . "\n Args:" . $args . "\n------------\n";
 
 		if ($retCode == 1)
 		{
 			$text = "Ghostscript exited with unrecoverable error (error: " . $out . "). " . $extraInfo;
-			$text = Str::Replace($text, '\n', '<br>');
+			$text = Str::Replace($text, "\n", '<br>');
 			Log::HandleSilentException(new \Exception($text));
 			return false;
 		}
@@ -126,7 +126,7 @@ class Ghostscript
 		if (Str::Contains($out, "GPL Ghostscript") == false)
 		{
 			$text = "Ghostscript exited with unexpected output (retcode: " . $retCode . "). " . $extraInfo;
-			$text = Str::Replace($text, '\n', '<br>');
+			$text = Str::Replace($text, "\n", '<br>');
 			Log::HandleSilentException(new \Exception($text));
 			return false;
 		}

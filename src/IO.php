@@ -162,7 +162,7 @@ class IO
 		$title = $pStart . substr($content, 0, $n) . $pEnd;
 
 		// lee resto
-		$lines = explode('\\n', substr($content, $n + 1));
+		$lines = explode("\n", substr($content, $n + 1));
 		$text = $pStart . implode($pEnd . $pStart, $lines) . $pEnd;
 	}
 
