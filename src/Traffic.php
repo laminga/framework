@@ -52,7 +52,7 @@ class Traffic
 	{
 		$path = Context::Paths()->GetTrafficLocalPath();
 		$file = $path . "/yesterday.zip";
-		if (file_exists($file)) unlink($file);
+		IO::Delete($file);
 		$zip = new Zip($file);
 
 		for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
@@ -64,7 +64,7 @@ class Traffic
 				$lock = new TrafficLock($set);
 				$lock->LockWrite();
 				$zip->AddToZip($path, array($current));
-				unlink($current);
+				IO::Delete($current);
 				$lock->Release();
 				}
 		}
@@ -308,8 +308,7 @@ class Traffic
 	public static function ClearDefensiveMode()
 	{
 		$file = self::resolveDefensiveFile();
-		if (file_exists($file))
-			unlink($file);
+		IO::Delete($file);
 	}
 	public static function IsInDefensiveMode()
 	{

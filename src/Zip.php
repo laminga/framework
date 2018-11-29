@@ -39,7 +39,7 @@ class Zip
 		$this->AddToZip($basePath, $currentfiles);
 		// delete files
 		foreach($currentfiles as $file)
-			unlink($file);
+			IO::Delete($file);
 
 		return ($currentBytes <= $bytesLimit);
 	}

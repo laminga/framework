@@ -117,8 +117,8 @@ class Zipping
 	private static function ReleaseTempFile($tmpFilename)
 	{
 		$path = dirname($tmpFilename);
-		unlink($tmpFilename);
-		rmdir($path );
+		IO::Delete($tmpFilename);
+		rmdir($path);
 	}
 	public static function ReadEscapedIniFileWithSections($filename)
 	{

@@ -75,7 +75,7 @@ class clsTbsZip {
 		$z2->close();
 		$ti2 = intval($stat['mtime']);
 		self::$timeOffset = ($ti2 - $zip->now);
-		unlink($tmpzip2);
+		IO::Delete($tmpzip2);
 	}
 
 	function CreateNew($ArchName='new.zip') {

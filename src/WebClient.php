@@ -117,7 +117,7 @@ class WebClient
 		$this->request_headers = array();
 		$this->request_headers[] = "Accept-Language: es-es,en";
 		$this->request_headers[] = "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8";
-		
+
 	/*$this->request_headers[] = "Pragma: no-cache";
 $this->request_headers[] = "Cache-Control: no-cache";
 $this->request_headers[] = "Connection: keep-alive";
@@ -357,8 +357,8 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 
 	public function ClearCookieFile()
 	{
-		if($this->cookie_file != "" && file_exists($this->cookie_file))
-			unlink($this->cookie_file);
+		if($this->cookie_file != "")
+			IO::Delete($this->cookie_file);
 
 		$this->cookie_file = "";
 	}
