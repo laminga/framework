@@ -13,20 +13,17 @@ class Ghostscript
 
 	const GHOSTSCRIPT = "/gs";
 
-	const GHOSTSCRIPT_ARGS = "-nopgbrk -enc UTF-8";
-
 	public static function Merge($coverFile, $originalFile, $targetFile, $title, $authors)
 	{
 		Profiling::BeginTimer();
 
-		$args = "-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=$targetFile ";
-		$args .= $coverFile ." ";
-		$args .= $originalFile ." ";
+		$args = '-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile='
+			. $targetFile . ' ' . $coverFile . ' ' . $originalFile . ' ';
 
 		$args .= " -c \"[/Producer(AAcademica.org)/Author "
-			. self::escapeUnicode2($authors) ." /Title " . self::escapeUnicode2($title) . " /DOCINFO pdfmark\"";
+			. self::escapeUnicode2($authors) . " /Title " . self::escapeUnicode2($title) . " /DOCINFO pdfmark\"";
 
-		IO::Delete ($targetFile);
+		IO::Delete($targetFile);
 
 		if (!self::RunGhostscript($args))
 			IO::Delete($targetFile);
@@ -36,8 +33,7 @@ class Ghostscript
 
 	private static function escapeUnicode2($cad)
 	{
-		return '<FEFF'.strtoupper(bin2hex(iconv('UTF-8', 'UCS-2BE', $cad))) . ">";
-
+		return '<FEFF' . strtoupper(bin2hex(iconv('UTF-8', 'UCS-2BE', $cad))) . '>';
 	}
 
 	public static function CreateRaw($file)
@@ -46,8 +42,8 @@ class Ghostscript
 
 		$targetFile = IO::GetTempFilename() . ".pdf";
 
-		$args = "-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=" . $targetFile . " -c .setpdfwrite -f ";
-		$args .= $file;
+		$args = "-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="
+			. $targetFile . " -c .setpdfwrite -f " . $file;
 
 		if (!self::RunGhostscript($args))
 			IO::Delete($targetFile);
@@ -60,15 +56,13 @@ class Ghostscript
 			return null;
 	}
 
-
 	public static function CreateThumbnail($file)
 	{
 		Profiling::BeginTimer();
 
 		$targetFile = IO::GetTempFilename() . ".jpg";
 
-		$args = "-dNOPAUSE -dBATCH -sDEVICE=jpeg -dFirstPage=1 -dAlignToPixels=0 -dGridFitTT=2 -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -r30 -sOutputFile=" . $targetFile . " -c .setpdfwrite -f ";
-		$args .= $file;
+		$args = "-dNOPAUSE -dBATCH -sDEVICE=jpeg -dFirstPage=1 -dAlignToPixels=0 -dGridFitTT=2 -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -r30 -sOutputFile=" . $targetFile . " -c .setpdfwrite -f " . $file;
 
 		if (!self::RunGhostscript($args))
 			IO::Delete($targetFile);
@@ -107,9 +101,9 @@ class Ghostscript
 
 	private static function RunGhostscript($args)
 	{
-		$bits = self::GetArchitecture();
+		$bits = System::GetArchitecture();
 
-		$exeFile = Context::Paths()->GetRoot(). self::BIN_PATH . self::GHOSTSCRIPT. $bits;
+		$exeFile = Context::Paths()->GetRoot() . self::BIN_PATH . self::GHOSTSCRIPT . $bits;
 
 		$out = self::SuperExec($exeFile, $args, $retCode);
 
@@ -134,16 +128,4 @@ class Ghostscript
 		return true;
 	}
 
-	private static function GetArchitecture()
-	{
-		switch(PHP_INT_SIZE)
-		{
-			case 4:
-				return "32"; //32 bit version of PHP
-			case 8:
-				return "64"; //64 bit version of PHP
-			default:
-				throw new \Exception('PHP_INT_SIZE is '.PHP_INT_SIZE);
-		}
-	}
 }
