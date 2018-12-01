@@ -21,7 +21,7 @@ class Ghostscript
 			. $targetFile . ' ' . $coverFile . ' ' . $originalFile . ' ';
 
 		$args .= " -c \"[/Producer(AAcademica.org)/Author "
-			. self::escapeUnicode2($authors) . " /Title " . self::escapeUnicode2($title) . " /DOCINFO pdfmark\"";
+			. self::EscapeUnicode2($authors) . " /Title " . self::EscapeUnicode2($title) . " /DOCINFO pdfmark\"";
 
 		IO::Delete($targetFile);
 
@@ -31,7 +31,7 @@ class Ghostscript
 		Profiling::EndTimer();
 	}
 
-	private static function escapeUnicode2($cad)
+	public static function EscapeUnicode2($cad)
 	{
 		return '<FEFF' . strtoupper(bin2hex(iconv('UTF-8', 'UCS-2BE', $cad))) . '>';
 	}
