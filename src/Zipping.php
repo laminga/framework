@@ -118,7 +118,7 @@ class Zipping
 	{
 		$path = dirname($tmpFilename);
 		IO::Delete($tmpFilename);
-		rmdir($path);
+		IO::RmDir($path);
 	}
 	public static function ReadEscapedIniFileWithSections($filename)
 	{
