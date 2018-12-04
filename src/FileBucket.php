@@ -19,7 +19,7 @@ class FileBucket
 		{
 			$directoryOnly = $directories->Current;
 			$directory = $folder . "/" . $directoryOnly;
-			if($time - filemtime($directory . "/.") >= 60 * 60 * 24) // 24 horas
+			if($time - IO::FileMTime($directory . "/.") >= 60 * 60 * 24) // 24 horas
 				IO::RemoveDirectory($directory);
 		}
 		$directories->Close();

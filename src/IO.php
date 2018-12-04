@@ -479,6 +479,20 @@ class IO
 		return $n;
 	}
 
+	public static function FileMTime($file)
+	{
+		try
+		{
+			return filemtime($file);
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() !== E_WARNING)
+				Log::HandleSilentException($e);
+		}
+		return false;
+	}
+
 	public static function MoveDirectory($dirsource, $dirdest, $dirname = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true)
 	{
 		self::CopyDirectory($dirsource, $dirdest, $dirname, $exclusions, $timeFrom, $createEmptyFolders);
@@ -520,7 +534,7 @@ class IO
 			{
 				if(!is_dir($dirsource . '/' . $file))
 				{
-					if ($timeFrom == null || filemtime($dirsource.'/'.$file) >= $timeFrom)
+					if ($timeFrom == null || self::FileMTime($dirsource . '/' . $file) >= $timeFrom)
 					{
 						copy ($dirsource.'/'.$file, $dirdest.'/'.$file);
 					}
@@ -562,7 +576,7 @@ class IO
 			{
 				if(!is_dir($dirsource . '/' . $file))
 				{
-					if ($timeFrom == null || filemtime($dirsource.'/'.$file) >= $timeFrom)
+					if ($timeFrom == null || self::FileMTime($dirsource.'/'.$file) >= $timeFrom)
 					{
 						if ($excludedExtension == '' || Str::EndsWith($file, '.' . $excludedExtension) == false)
 						{
