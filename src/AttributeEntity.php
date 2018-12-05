@@ -18,7 +18,7 @@ class AttributeEntity
 			$this->attributes = array();
 	}
 
-	function safeGet($key, $default = '')
+	public function SafeGet($key, $default = '')
 	{
 		if (array_key_exists($key, $this->attributes))
 			return $this->attributes[$key];
@@ -28,10 +28,10 @@ class AttributeEntity
 			return $default;
 	}
 
-	function safeAppend($key, $valueArray)
+	public function SafeAppend($key, $valueArray)
 	{
 		// Lee los valores...
-		$current = $this->safeGetArray($key);
+		$current = $this->SafeGetArray($key);
 		// Agrega lo propio
 		if (is_array($valueArray) == false)
 			$valueArray = array($valueArray);
@@ -47,7 +47,7 @@ class AttributeEntity
 		// listo
 	}
 
-	function safeGetArray($key)
+	public function SafeGetArray($key)
 	{
 		// Lee los valores...
 		$n = 1;
@@ -61,7 +61,7 @@ class AttributeEntity
 		return $current;
 	}
 
-	function safeSetArray($key, $valueArray)
+	public function SafeSetArray($key, $valueArray)
 	{
 		// Lee los valores...
 		$n = 1;

@@ -118,7 +118,7 @@ class WebConnection
 	}
 
 
-	function stayHttps($url)
+	private function StayHttps($url)
 	{
 		$partsLast = parse_url($this->lastLocation);
 		$parts = parse_url($url);
@@ -133,7 +133,7 @@ class WebConnection
 		return $ret;
 	}
 
-	function resolveRelativeUrl($url)
+	private function ResolveRelativeUrl($url)
 	{
 		if (Str::StartsWith($url, '/') == false)
 		{
@@ -160,12 +160,12 @@ class WebConnection
 
 		if (Str::StartsWith($url, 'http:') && Str::StartsWith($this->lastLocation, 'https:'))
 		{
-			$url = $this->stayHttps($url);
+			$url = $this->StayHttps($url);
 		}
 
 		if (Str::StartsWith($url, 'http') == false)
 		{
-			$url = $this->resolveRelativeUrl($url);
+			$url = $this->ResolveRelativeUrl($url);
 		}
 
 		curl_setopt($this->ch, CURLOPT_URL, $url);
@@ -229,7 +229,7 @@ class WebConnection
 			}
 			fclose($fh);
 			// saca headers
-			$this->truncateBeggining($this->responseFile, $headersSize);
+			$this->TruncateBeggining($this->responseFile, $headersSize);
 			copy($this->responseFile, $file);
 		}
 		// toma error
@@ -301,7 +301,7 @@ class WebConnection
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 	}
 
-	private function truncateBeggining($file, $read_position)
+	private function TruncateBeggining($file, $read_position)
 	{
 		$size = filesize($file);
 		$handle = fopen($file, "c+");
