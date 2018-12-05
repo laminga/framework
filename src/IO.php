@@ -162,7 +162,7 @@ class IO
 		$title = $pStart . substr($content, 0, $n) . $pEnd;
 
 		// lee resto
-		$lines = explode('\\n', substr($content, $n + 1));
+		$lines = explode("\n", substr($content, $n + 1));
 		$text = $pStart . implode($pEnd . $pStart, $lines) . $pEnd;
 	}
 
@@ -402,7 +402,7 @@ class IO
 
 	public static function HasFiles($path, $ext = '')
 	{
-		if ($handle = opendir($path))
+		if ($handle = self::OpenDirNoWarning($path))
 		{
 			while (false !== ($entry = readdir($handle)))
 			{
@@ -479,6 +479,20 @@ class IO
 		return $n;
 	}
 
+	public static function FileMTime($file)
+	{
+		try
+		{
+			return filemtime($file);
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() !== E_WARNING)
+				Log::HandleSilentException($e);
+		}
+		return false;
+	}
+
 	public static function MoveDirectory($dirsource, $dirdest, $dirname = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true)
 	{
 		self::CopyDirectory($dirsource, $dirdest, $dirname, $exclusions, $timeFrom, $createEmptyFolders);
@@ -512,7 +526,7 @@ class IO
 			}
 			$exclusions = $exclusionsFull;
 		}
-		$dir_handle = opendir($dirsource);
+		$dir_handle = self::OpenDirNoWarning($dirsource);
 
 		while($file = readdir($dir_handle))
 		{
@@ -520,7 +534,7 @@ class IO
 			{
 				if(!is_dir($dirsource . '/' . $file))
 				{
-					if ($timeFrom == null || filemtime($dirsource.'/'.$file) >= $timeFrom)
+					if ($timeFrom == null || self::FileMTime($dirsource . '/' . $file) >= $timeFrom)
 					{
 						copy ($dirsource.'/'.$file, $dirdest.'/'.$file);
 					}
@@ -546,7 +560,7 @@ class IO
 		// recursive function to copy all subdirectories and contents
 		$dir_handle = null;
 		if(is_dir($dirsource))
-			$dir_handle = opendir($dirsource);
+			$dir_handle = self::OpenDirNoWarning($dirsource);
 		if ($dirname == '')
 			$dirname = substr($dirsource, strrpos($dirsource, '/') + 1);
 
@@ -562,7 +576,7 @@ class IO
 			{
 				if(!is_dir($dirsource . '/' . $file))
 				{
-					if ($timeFrom == null || filemtime($dirsource.'/'.$file) >= $timeFrom)
+					if ($timeFrom == null || self::FileMTime($dirsource.'/'.$file) >= $timeFrom)
 					{
 						if ($excludedExtension == '' || Str::EndsWith($file, '.' . $excludedExtension) == false)
 						{
@@ -585,6 +599,10 @@ class IO
 		return true;
 	}
 
+	/**
+	 * Remueve directorio completo aunque
+	 * contenga archivos.
+	 */
 	public static function RemoveDirectory($dir)
 	{
 		if (!file_exists($dir))
@@ -595,7 +613,7 @@ class IO
 			return 1;
 		}
 		$n = 0;
-		if($dh = opendir($dir))
+		if($dh = self::OpenDirNoWarning($dir))
 		{
 			while(($file = readdir($dh)) !== false)
 			{
@@ -604,9 +622,44 @@ class IO
 				$n += self::RemoveDirectory($dir.'/'.$file);
 			}
 			closedir($dh);
-			rmdir($dir);
+			self::RmDir($dir);
 		}
 		return $n;
+	}
+
+	/**
+	 * Wrapper de función rmdir de php,
+	 * para evitar warnings.
+	 * Sólo borra directorios vacíos.
+	 */
+	public static function RmDir($dir)
+	{
+		try
+		{
+			if(file_exists($dir))
+				return rmdir($dir);
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() !== E_WARNING)
+				Log::HandleSilentException($e);
+		}
+		return false;
+	}
+
+	public static function OpenDirNoWarning($dir)
+	{
+		try
+		{
+			if(file_exists($dir))
+				return opendir($dir);
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() !== E_WARNING)
+				Log::HandleSilentException($e);
+		}
+		return false;
 	}
 
 	public static function GetDirectoryINodesCount($dir)
@@ -646,7 +699,7 @@ class IO
 
 	private static function GetDirectorySizeWin($dir)
 	{
-		if(($dh = opendir($dir)) == false)
+		if(($dh = self::OpenDirNoWarning($dir)) == false)
 		{
 			return array('size' => 0, 'inodes' => 0);
 		}
@@ -729,9 +782,17 @@ class IO
 
 	public static function Move($source, $target)
 	{
-		//Backup::AppendDeleted($source);
-		self::Delete($target);
-		rename($source, $target);
+		try
+		{
+			if(file_exists($source))
+				return rename($source, $target);
+		}
+		catch(\Exception $e)
+		{
+			if($e->getCode() !== E_WARNING)
+				Log::HandleSilentException($e);
+		}
+		return false;
 	}
 
 	public static function IsCompressedDirectory($path)
@@ -774,13 +835,14 @@ class IO
 		try
 		{
 			if (file_exists($file))
-				unlink($file);
+				return unlink($file);
 		}
 		catch(\Exception $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
 		}
+		return false;
 	}
 	public static function Exists($file)
 	{
