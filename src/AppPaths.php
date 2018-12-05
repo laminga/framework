@@ -38,6 +38,10 @@ class AppPaths
 	{
 		return Context::Paths()->GetRoot() . "/compilation_cache";
 	}
+	public function GetMockPath()
+	{
+		return  $this->GetStorageRoot() . "/mock";
+	}
 
 	public function GetTrafficLocalPath()
 	{

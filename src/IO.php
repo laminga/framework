@@ -844,4 +844,8 @@ class IO
 		}
 		return false;
 	}
+	public static function Exists($file)
+	{
+		return (file_exists($file));
+	}
 }
