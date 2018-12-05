@@ -7,6 +7,7 @@ use minga\framework\locking\Lock;
 class Log
 {
 	private static $isLoggingMailError = false;
+	public static $ExtraErrorTarget = null;
 
 	public static function LogError($errno, $errstr, $errfile, $errline, $context = array(), $trace = null)
 	{
@@ -144,6 +145,8 @@ class Log
 		$file = $path . '/' . $file;
 		// va
 		IO::WriteAllText($file, $text);
+		if (self::$ExtraErrorTarget !== null)
+			IO::WriteAllText(self::$ExtraErrorTarget, $text);
 	}
 
 	public static function PutToMail($text)
