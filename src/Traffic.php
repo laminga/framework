@@ -283,20 +283,12 @@ class Traffic
 		if ($dir !== null)
 			$dir->Release();
 
-		usort($ret, array(__CLASS__, "SortDesc"));
+		Arr::SortByKeyDesc($ret, 'hits');
 
 		$ret[] = Str::BuildTotalsRow($ret, 'ip', array('hits'));
 		$ret[count($ret)-1]['ip'] = 'Total (' . (sizeof($ret) - 1) .')';
 
 		return $ret;
-	}
-
-	private static function SortDesc($a, $b)
-	{
-		if ($a['hits'] == $b['hits'])
-			return 0;
-		else
-			return ($a['hits'] < $b['hits']) ? 1 : -1;
 	}
 
 	public static function GoDefensiveMode()
