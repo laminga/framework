@@ -293,20 +293,23 @@ class Traffic
 
 	public static function GoDefensiveMode()
 	{
-		$file = self::resolveDefensiveFile();
+		$file = self::ResolveDefensiveFile();
 		IO::WriteAllText($file, '1');
 
 	}
+
 	public static function ClearDefensiveMode()
 	{
-		$file = self::resolveDefensiveFile();
+		$file = self::ResolveDefensiveFile();
 		IO::Delete($file);
 	}
+
 	public static function IsInDefensiveMode()
 	{
-		return file_exists(self::resolveDefensiveFile());
+		return file_exists(self::ResolveDefensiveFile());
 	}
-	private static function resolveDefensiveFile()
+
+	private static function ResolveDefensiveFile()
 	{
 		return Context::Paths()->GetTrafficLocalPath() . '/defensive.txt';
 	}

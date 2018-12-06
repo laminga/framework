@@ -27,20 +27,20 @@ class Lock
 
 	public function LockRead()
 	{
-		if ($this->lockUsed(false))
+		if ($this->LockUsed(false))
 			return;
 		$this->doLock(LOCK_SH);
 	}
 
 	public function LockWrite()
 	{
-		if ($this->lockUsed(true))
+		if ($this->LockUsed(true))
 			return;
 		$this->doLock(LOCK_EX);
 		$this->isWriteLocked = true;
 	}
 
-	private function lockUsed($write)
+	private function LockUsed($write)
 	{
 		$file = $this->resolveFilename();
 
@@ -60,7 +60,7 @@ class Lock
 			return false;
 		}
 	}
-	private function releaseUsed()
+	private function ReleaseUsed()
 	{
 		$file = $this->resolveFilename();
 
@@ -124,7 +124,7 @@ class Lock
 
 	public function Release()
 	{
-		if ($this->releaseUsed())
+		if ($this->ReleaseUsed())
 		{
 			$this->AppendLockInfo("Tried release on used lock: ");
 			return;

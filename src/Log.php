@@ -58,7 +58,7 @@ class Log
 			"ERROR\r\n" .
 			"=> Description: ". $errstr . "\r\n" .
 			"=> File:        <a href='repath://" . $errfile . "@" .  $errline . "'>" . $errfile. ":" .  $errline. "</a>\r\n" .
-			"=> Level: " . self::getLevel($errno) . "\r\n" .
+			"=> Level: " . self::GetLevel($errno) . "\r\n" .
 			"=> Stack: " . $stack . "\r\n";
 		if (sizeof($_POST) > 0)
 		{
@@ -163,7 +163,7 @@ class Log
 		$mail->Send(false, true);
 	}
 
-	private static function getLevel($errno)
+	private static function GetLevel($errno)
 	{
 		switch($errno)
 		{
