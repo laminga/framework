@@ -18,12 +18,12 @@ class ModifiedSince
 				$c = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
 				$text .= "strtotime=" . $c . ";";
 			}
-			$timeStamp = Zipping::filemtime($filename);
+			$timeStamp = Zipping::FileMTime($filename);
 			$text .= "TIMESTAMP=" . $timeStamp . ";";
 			$text .= "_SERVER=". print_r($_SERVER, true);
 			Log::HandleSilentException(new \Exception("Google crawled download: " . $text));
 		}*/
-		return self::AddCacheHeaders(Zipping::filemtime($filename));
+		return self::AddCacheHeaders(Zipping::FileMTime($filename));
 	}
 	public static function AddCacheHeaders($timeStamp)
 	{
@@ -62,9 +62,9 @@ class ModifiedSince
 		$timeStamp1 = null;
 
 		if (file_exists($file1))
-			$timeStamp1 = filemtime($file1);
+			$timeStamp1 = IO::FileMTime($file1);
 		if ($file2 != null && Zipping::file_exists($file2))
-			$timeStamp2 = Zipping::filemtime($file2);
+			$timeStamp2 = Zipping::FileMTime($file2);
 		if ($timeStamp1 == null || ($timeStamp2 != null && $timeStamp2 > $timeStamp1))
 			$timeStamp1 = $timeStamp2;
 		if ($timeStamp1 != null)

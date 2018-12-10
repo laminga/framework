@@ -7,6 +7,7 @@ use minga\framework\locking\Lock;
 class Log
 {
 	private static $isLoggingMailError = false;
+	public static $ExtraErrorTarget = null;
 
 	public static function LogError($errno, $errstr, $errfile, $errline, $context = array(), $trace = null)
 	{
@@ -57,7 +58,7 @@ class Log
 			"ERROR\r\n" .
 			"=> Description: ". $errstr . "\r\n" .
 			"=> File:        <a href='repath://" . $errfile . "@" .  $errline . "'>" . $errfile. ":" .  $errline. "</a>\r\n" .
-			"=> Level: " . self::getLevel($errno) . "\r\n" .
+			"=> Level: " . self::GetLevel($errno) . "\r\n" .
 			"=> Stack: " . $stack . "\r\n";
 		if (sizeof($_POST) > 0)
 		{
@@ -78,21 +79,35 @@ class Log
 
 		self::PutToLog('errors', $text);
 
-		if (self::$isLoggingMailError == false)
-		{
-			self::$isLoggingMailError = true;
-			try
-			{
-				self::PutToMail($text);
-			}
-			catch(\Exception $e)
-			{
-				self::HandleSilentException($e);
-			}
-			self::$isLoggingMailError = false;
-		}
+		self::LogErrorSendMail($text);
 
 		return $textToShow;
+	}
+
+	private static function LogErrorSendMail($text)
+	{
+		if (self::$isLoggingMailError)
+			return;
+
+		try
+		{
+			self::$isLoggingMailError = true;
+
+			if(Str::Contains($text, '[passwordi]'))
+			{
+				$text = preg_replace('/(\[passwordi\] => ).*/',
+					'$1[removido]<br>', $text);
+			}
+			self::PutToMail($text);
+		}
+		catch(\Exception $e)
+		{
+			self::HandleSilentException($e);
+		}
+		finally
+		{
+			self::$isLoggingMailError = false;
+		}
 	}
 
 
@@ -130,6 +145,8 @@ class Log
 		$file = $path . '/' . $file;
 		// va
 		IO::WriteAllText($file, $text);
+		if (self::$ExtraErrorTarget !== null)
+			IO::WriteAllText(self::$ExtraErrorTarget, $text);
 	}
 
 	public static function PutToMail($text)
@@ -146,7 +163,7 @@ class Log
 		$mail->Send(false, true);
 	}
 
-	private static function getLevel($errno)
+	private static function GetLevel($errno)
 	{
 		switch($errno)
 		{

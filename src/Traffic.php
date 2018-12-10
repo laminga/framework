@@ -52,7 +52,7 @@ class Traffic
 	{
 		$path = Context::Paths()->GetTrafficLocalPath();
 		$file = $path . "/yesterday.zip";
-		if (file_exists($file)) unlink($file);
+		IO::Delete($file);
 		$zip = new Zip($file);
 
 		for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
@@ -64,7 +64,7 @@ class Traffic
 				$lock = new TrafficLock($set);
 				$lock->LockWrite();
 				$zip->AddToZip($path, array($current));
-				unlink($current);
+				IO::Delete($current);
 				$lock->Release();
 				}
 		}
@@ -283,7 +283,7 @@ class Traffic
 		if ($dir !== null)
 			$dir->Release();
 
-		usort($ret, array(__CLASS__, "SortDesc"));
+		Arr::SortByKeyDesc($ret, 'hits');
 
 		$ret[] = Str::BuildTotalsRow($ret, 'ip', array('hits'));
 		$ret[count($ret)-1]['ip'] = 'Total (' . (sizeof($ret) - 1) .')';
@@ -291,31 +291,25 @@ class Traffic
 		return $ret;
 	}
 
-	private static function SortDesc($a, $b)
-	{
-		if ($a['hits'] == $b['hits'])
-			return 0;
-		else
-			return ($a['hits'] < $b['hits']) ? 1 : -1;
-	}
-
 	public static function GoDefensiveMode()
 	{
-		$file = self::resolveDefensiveFile();
+		$file = self::ResolveDefensiveFile();
 		IO::WriteAllText($file, '1');
 
 	}
+
 	public static function ClearDefensiveMode()
 	{
-		$file = self::resolveDefensiveFile();
-		if (file_exists($file))
-			unlink($file);
+		$file = self::ResolveDefensiveFile();
+		IO::Delete($file);
 	}
+
 	public static function IsInDefensiveMode()
 	{
-		return file_exists(self::resolveDefensiveFile());
+		return file_exists(self::ResolveDefensiveFile());
 	}
-	private static function resolveDefensiveFile()
+
+	private static function ResolveDefensiveFile()
 	{
 		return Context::Paths()->GetTrafficLocalPath() . '/defensive.txt';
 	}

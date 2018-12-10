@@ -51,5 +51,12 @@ class Params
 		return $ret;
 	}
 
+	public static function GetMandatory($key)
+	{
+		$ret = self::Get($key, null);
+		if ($ret === null)
+			throw new \Exception("Parameter " . $key . " required.");
+		return $ret;
+	}
 }
 

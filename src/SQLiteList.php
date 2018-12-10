@@ -76,7 +76,7 @@ class SQLiteList
 
 		if ($existed == false)
 		{
-			$db->query(self::createSql());
+			$db->query(self::CreateSql());
 		}
 		$this->db = $db;
 
@@ -86,7 +86,8 @@ class SQLiteList
 		$this->Execute('PRAGMA journal_mode=WAL');
 
 	}
-	private function createSql()
+
+	private function CreateSql()
 	{
 		$sql = "CREATE TABLE data ("
 			. "pID     INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -125,7 +126,7 @@ class SQLiteList
 	{
 		if (is_array($args) == false)
 			$args = array($args);
-		$text = $this->paramsToText($sql, $args);
+		$text = $this->ParamsToText($sql, $args);
 		try {
 			$this->db->enableExceptions(true);
 			$statement = $this->db->prepare($sql);
@@ -139,7 +140,7 @@ class SQLiteList
 			throw new \Exception($text . '. Error nativo: ' . $e->getMessage() . ".");
 		}
 	}
-	private function paramsToText($sql, $args)
+	private function ParamsToText($sql, $args)
 	{
 		$text = 'No se ha podido completar la operación en SQLite. ';
 		if ($this->path != null)

@@ -151,6 +151,21 @@ class Str
 		}
 	}
 
+	public static function TwoSplitReverse($text, $separator, &$first, &$last)
+	{
+		$pos = strrpos($text, $separator);
+		if ($pos === false)
+		{
+			$first =$text;
+			$last = '';
+		}
+		else
+		{
+			$first = substr($text, 0, $pos);
+			$last = substr($text, $pos + strlen($separator));
+		}
+	}
+
 	public static function AppendParam($url, $param, $value = "")
 	{
 		$n = strpos($url, "#");
@@ -330,7 +345,6 @@ class Str
 		return $cad;
 	}
 
-	
 	public static function IsNullOrEmpty($cad)
 	{
 		return ($cad === '' || $cad === null);
@@ -338,10 +352,9 @@ class Str
 
 	public static function GetEndingPart($name, $separator)
 	{
-		$parts = explode($separator, $cad);
+		$parts = explode($separator, $name);
 		return $parts[sizeof($parts) - 1];
 	}
-
 
 	public static function Ellipsis($cad, $maxSize = 50)
 	{
@@ -642,7 +655,7 @@ class Str
 
 	public static function DecodeEntities($string, $quotes = ENT_COMPAT, $charset = 'UTF-8')
 	{
-$p = html_entity_decode(preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/', array('\minga\framework\Str', 'convert_entity'), $string), $quotes, $charset);
+		$p = html_entity_decode(preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/', function($a) { return self::ConvertEntity($a); }, $string), $quotes, $charset);
 		while(strpos($p, "&#") !== false)
 		{
 			$pos = strpos($p, "&#");
@@ -688,7 +701,7 @@ $p = html_entity_decode(preg_replace_callback('/&([a-zA-Z][a-zA-Z0-9]+);/', arra
 		return round($value * 100 / $total, 1) . "%";
 	}
 
-	static function convert_entity($matches, $destroy = true)
+	public static function ConvertEntity($matches, $destroy = true)
 	{
 		static $table = array(
 			'quot' => '&#34;', 'amp' => '&#38;', 'lt' => '&#60;', 'gt' => '&#62;',

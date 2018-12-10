@@ -8,7 +8,7 @@ class TwoLevelAttributeEntity
 	public $path = '';
 	public $sections = Array();
 	protected $keepSectionCreationDate = false;
-	
+
 	public function SetLocation($path)
 	{
 		$this->path = $path;
@@ -25,10 +25,10 @@ class TwoLevelAttributeEntity
 
 	public function GetCreateDate($section)
 	{
-		return $this->safeGet($section, 'created');
+		return $this->SafeGet($section, 'created');
 	}
 
-	function safeGetSection($section, $default = array())
+	public function SafeGetSection($section, $default = array())
 	{
 		if (array_key_exists($section, $this->sections))
 		{
@@ -37,7 +37,7 @@ class TwoLevelAttributeEntity
 		return $default;
 	}
 
-	function safeGet($section, $key, $default = '')
+	public function SafeGet($section, $key, $default = '')
 	{
 		if (array_key_exists($section, $this->sections))
 		{
@@ -116,9 +116,9 @@ class TwoLevelAttributeEntity
 		return sizeof($this->sections);
 	}
 
-	function safeGetArray($section, $key)
+	public function SafeGetArray($section, $key)
 	{
-		$sectionArray = $this->safeGetSection($section);
+		$sectionArray = $this->SafeGetSection($section);
 		// Lee los valores...
 		$n = 1;
 		$current = array();
@@ -131,7 +131,7 @@ class TwoLevelAttributeEntity
 		return $current;
 	}
 
-	function safeSetArray($section, $key, $valueArray)
+	public function SafeSetArray($section, $key, $valueArray)
 	{
 		if ($this->KeyExists($section) == false)
 			$this->sections[$section] = array();

@@ -38,10 +38,11 @@ class Zipping
 		}
 		return $ret;
 	}
-	public static function filemtime($filename)
+
+	public static function FileMTime($filename)
 	{
 		if (!self::isZipped($filename))
-			return filemtime($filename);
+			return IO::FileMTime($filename);
 		Profiling::BeginTimer();
 		$stat = self::GetStat($filename);
 		Profiling::EndTimer();
@@ -117,8 +118,8 @@ class Zipping
 	private static function ReleaseTempFile($tmpFilename)
 	{
 		$path = dirname($tmpFilename);
-		unlink($tmpFilename);
-		rmdir($path );
+		IO::Delete($tmpFilename);
+		IO::RmDir($path);
 	}
 	public static function ReadEscapedIniFileWithSections($filename)
 	{
@@ -214,7 +215,7 @@ class Zipping
 			else
 				$zip->FileAdd($filename[$n], $filesrc[$n], TBSZIP_FILE);
 		}
-		$time = filemtime($filesrc[0]);
+		$time = IO::FileMTime($filesrc[0]);
 		$zip->now = $time;
 		$zip->Flush(TBSZIP_FILE, $zipFile . "tmp", "");
 		$zip->Close();
