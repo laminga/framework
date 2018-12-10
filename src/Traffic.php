@@ -283,7 +283,7 @@ class Traffic
 		if ($dir !== null)
 			$dir->Release();
 
-		usort($ret, array(__CLASS__, "SortDesc"));
+		Arr::SortByKeyDesc($ret, 'hits');
 
 		$ret[] = Str::BuildTotalsRow($ret, 'ip', array('hits'));
 		$ret[count($ret)-1]['ip'] = 'Total (' . (sizeof($ret) - 1) .')';
@@ -291,30 +291,25 @@ class Traffic
 		return $ret;
 	}
 
-	private static function SortDesc($a, $b)
-	{
-		if ($a['hits'] == $b['hits'])
-			return 0;
-		else
-			return ($a['hits'] < $b['hits']) ? 1 : -1;
-	}
-
 	public static function GoDefensiveMode()
 	{
-		$file = self::resolveDefensiveFile();
+		$file = self::ResolveDefensiveFile();
 		IO::WriteAllText($file, '1');
 
 	}
+
 	public static function ClearDefensiveMode()
 	{
-		$file = self::resolveDefensiveFile();
+		$file = self::ResolveDefensiveFile();
 		IO::Delete($file);
 	}
+
 	public static function IsInDefensiveMode()
 	{
-		return file_exists(self::resolveDefensiveFile());
+		return file_exists(self::ResolveDefensiveFile());
 	}
-	private static function resolveDefensiveFile()
+
+	private static function ResolveDefensiveFile()
 	{
 		return Context::Paths()->GetTrafficLocalPath() . '/defensive.txt';
 	}

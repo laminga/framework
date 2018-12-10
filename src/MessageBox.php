@@ -102,6 +102,7 @@ class MessageBox
 			'popup' => true);
 		Context::Calls()->RenderTemplate('messagePopup.html.twig', $params);
 	}
+
 	public static function ShowDialogPopup($message, $title = 'Enviar mensaje', $params = array())
 	{
 		$params = array_merge($params, array('message' => $message,
@@ -109,6 +110,7 @@ class MessageBox
 			'popup' => true));
 		Context::Calls()->RenderTemplate('dialogPopup.html.twig', $params);
 	}
+
 	public static function ShowDocNotFound($file, $profile)
 	{
 		$profileUrl = $profile->Links()->ContentLink();
@@ -122,7 +124,7 @@ class MessageBox
 				. "Sin embargo, si así lo desea, lo invitamos a visitar el perfil de <a href='" . $profileUrl
 				. "'>" . $profile->GetFullName() . "</a> para consultar otros documentos relacionados.",
 				$profileUrl,
-				$profile->GetFullName() . ' - ' . $profile->getLocation()
+				$profile->GetFullName() . ' - ' . $profile->GetLocation()
 			);
 		}
 	}
