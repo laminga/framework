@@ -1,149 +1,130 @@
+
+
+
+
 <?php
 
 namespace minga\framework\oauth;
 
-use OAuth\Common\Consumer\Credentials;
-use OAuth\Common\Storage\Memory;
-
 use minga\framework\PhpSession;
-use minga\framework\Context;
-use minga\framework\Log;
-use minga\framework\MessageBox;
-use minga\framework\Profiling;
-use minga\framework\Str;
 
-abstract class OauthConnector
+class OauthData
 {
-	//los hijos deben declarar el provider de este modo.
-	const Provider = '';
+	public $fullName = '';
+	public $firstName = '';
+	public $lastName = '';
+	public $verified = '';
+	public $id = '';
+	public $email = '';
+	public $picture = '';
+	public $gender = '';
+	public $provider = '';
 
-	protected $storage;
-	protected $service;
-
-	public function __construct()
+	public function SetGoogleData($data)
 	{
-		$this->Setup();
+		$this->provider = 'google';
+
+		if(isset($data['name']))
+			$this->fullName = $data['name'];
+		if(isset($data['given_name']))
+			$this->firstName = $data['given_name'];
+		if(isset($data['family_name']))
+			$this->lastName = $data['family_name'];
+
+		if(isset($data['verified_email']))
+			$this->verified = $data['verified_email'];
+
+		if(isset($data['email']))
+			$this->email = $data['email'];
+		if(isset($data['id']))
+			$this->id = $data['id'];
+
+		if(isset($data['picture']))
+			$this->picture = $data['picture'];
+		if(isset($data['gender']))
+			$this->gender = $data['gender'];
 	}
 
-	public function Setup()
+	public function SetFacebookData($data, $picture)
 	{
-		$this->storage = new Memory();
+		$this->provider = 'facebook';
 
-		$credentials = new Credentials(
-			Context::Settings()->Oauth()->Credentials[static::Provider]['key'],
-			Context::Settings()->Oauth()->Credentials[static::Provider]['secret'],
-			Context::Settings()->Oauth()->Credentials[static::Provider]['callback']
-		);
-		$serviceFactory = new \OAuth\ServiceFactory();
-		$this->service = $serviceFactory->createService(static::Provider, $credentials, $this->storage, $this->GetFields());
-	}
+		if(isset($data['name']))
+			$this->fullName = $data['name'];
+		if(isset($data['first_name']))
+			$this->firstName = $data['first_name'];
+		if(isset($data['middle_name']))
+			$this->firstName .=  trim($this->firstName.' '.$data['middle_name']);
 
-	/*
-	 * Con los datos de $code y $state que devuelve el provider
-	 * obtiene el token de acceso para solicitar los datos
-	 * del usuario. Si vuelve todo bien es que el usuario autorizó
-	 * y las credenciales de oauth son válidas.
-	 */
-	public function RequestData($code, $state)
-	{
-		try
+		if(isset($data['last_name']))
+			$this->lastName = $data['last_name'];
+
+		//Si trae el email de facebook está verificado.
+		if(isset($data['email']))
 		{
-			//Sólo acá el provider es con mayúscula.
-			$provider = Str::Capitalize(static::Provider);
-
-			$this->storage->storeAuthorizationState($provider, $state);
-			$this->service->requestAccessToken($code, $state);
-
-			return $this->GetData();
+			$this->email = $data['email'];
+			$this->verified = true;
 		}
-		catch(\Exception $e)
-		{
-			Log::HandleSilentException($e);
+
+		if(isset($data['id']))
+			$this->id = $data['id'];
+		if(isset($data['gender']))
+			$this->gender = $data['gender'];
+
+		if(isset($picture['data']['is_silhouette'])
+			&& $picture['data']['is_silhouette'] == false
+			&& isset($picture['data']['url']))
+			$this->picture = $picture['data']['url'];
+	}
+
+	public function SerializeToSession()
+	{
+		$data = array();
+		$data['provider'] = $this->provider;
+		$data['id'] = $this->id;
+		$data['fullName'] = $this->fullName;
+		$data['firstName'] = $this->firstName;
+		$data['lastName'] = $this->lastName;
+		$data['email'] = $this->email;
+		$data['gender'] = $this->gender;
+		$data['picture'] = $this->picture;
+		$data['verified'] = $this->verified;
+		PhpSession::SetSessionValue('OauthData', json_encode($data));
+	}
+
+	public static function SessionHasTerms()
+	{
+		return
+			PhpSession::GetSessionValue('OauthTerms') == 'on';
+	}
+
+	public static function DeserializeFromSession()
+	{
+		$session = PhpSession::GetSessionValue('OauthData');
+		if($session == '')
 			return null;
-		}
-	}
 
-	public function ResolveRedirectProvider($url, $returnUrl, $terms)
+		$data = json_decode($session, true);
+
+		$ret = new self();
+		$ret->provider = $data['provider'];
+		$ret->id = $data['id'];
+		$ret->fullName = $data['fullName'];
+		$ret->firstName = $data['firstName'];
+		$ret->lastName = $data['lastName'];
+		$ret->email = $data['email'];
+		$ret->gender = $data['gender'];
+		$ret->picture = $data['picture'];
+		$ret->verified = $data['verified'];
+		return $ret;
+	}
+	public static function ClearSession()
 	{
-		//Setear en sesión los datos que se quieran tener para después de oauth.
-		//porque sale del sitio y no hay forma de mantener estado si no es sesión
-		//o cookie.
-		PhpSession::SetSessionValue(static::Provider.'OauthRedirect', $url);
-		PhpSession::SetSessionValue(static::Provider.'OauthReturnUrl', $returnUrl);
-		PhpSession::SetSessionValue('OauthTerms', $terms);
-
-		return $this->service->getAuthorizationUri();
+		PhpSession::SetSessionValue('OauthTerms', '');
+		PhpSession::SetSessionValue('OauthData', '');
+		PhpSession::SetSessionValue('facebookOauthRedirect', '');
+		PhpSession::SetSessionValue('googleOauthRedirect', '');
+		PhpSession::SetSessionValue('facebookOauthReturnUrl', '');
+		PhpSession::SetSessionValue('googleOauthReturnUrl', '');
 	}
-
-	public function RedirectSuccess($data)
-	{
-		if($data->email == '' || $data->verified == false)
-			$this->RedirectErrorNoEmail();
-
-		$data->SerializeToSession(static::Provider);
-		$this->RedirectSession();
-	}
-
-	public function RedirectErrorNoEmail()
-	{
-		Log::HandleSilentException(new \Exception('No email from '.$this->ProviderName()));
-
-		MessageBox::ShowDialogPopup("No se ha podido obtener una dirección de correo electrónico a través de " . $this->ProviderName() . ". Intente otro método de registro para la identificación.", "Atención");
-	}
-
-	public function RedirectError($error = null)
-	{
-		if($error != null)
-			Log::HandleSilentException(new \Exception($error));
-
-		MessageBox::ShowDialogPopup("No se ha podido realizar la interacción con " . $this->ProviderName() . " para la identificación.", "Atención");
-	}
-
-	private function RedirectSession()
-	{
-		$url = PhpSession::GetSessionValue(static::Provider.'OauthRedirect');
-		$this->CloseAndRedirect($url);
-	}
-
-	public function ProviderName()
-	{
-		$c = get_called_class();
-		return Str::Capitalize($c::Provider);
-	}
-
-	function CloseAndRedirect($target)
-	{
-		//TODO: validar el target.
-		//-Que sea de este dominio (que no redirija a otro sitio).
-		//-Que no tenga funciones inválidas (deleteUser, etc.)
-		//-No tenga código javascript (xss).
-		if($target == '')
-			throw new \Exception('No target to redirect');
-
-		$js = "window.opener.location='" . $target. "';";
-		$js .= "window.close();";
-		echo "<html><head></head><body onload=\"" . $js. "\"></body></html>";
-
-		// Guarda info de profiling
-		Profiling::SaveBeforeRedirect();
-		Context::EndRequest();
-	}
-
-	/*
-	 * Obtiene los fields que se le piden al provider
-	 * cada provider maneja los suyos.
-	 */
-	abstract protected function GetFields();
-
-	/*
-	 * Obtiene los datos del provider normalizados
-	 * en formato de OauthData.
-	 */
-	abstract protected function GetData();
-
-	/*
-	 * Valida para cada provider si los datos necesarios
-	 * fueron autorizados por el usuario.
-	 */
-	abstract protected function DataGranted();
 }
