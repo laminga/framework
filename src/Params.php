@@ -15,17 +15,28 @@ class Params
 		return $value;
 	}
 
+	public static function SafeServer($param, $default = '')
+	{
+		if (isset($_SERVER[$param]) == false)
+			return $default;
+
+		$ret = $_SERVER[$param];
+		if (is_array($ret) == false)
+			$ret = trim($ret);
+
+		return $ret;
+	}
+
 	public static function SafePost($param, $default = '')
 	{
-		if (isset($_POST[$param]))
-		{
-			$ret = $_POST[$param];
-			if (is_array($ret) == false)
-				$ret = trim($ret);
+		if (isset($_POST[$param]) == false)
+			return $default;
 
-			return $ret;
-		}
-		return $default;
+		$ret = $_POST[$param];
+		if (is_array($ret) == false)
+			$ret = trim($ret);
+
+		return $ret;
 	}
 
 	//Método usado en aacademica.

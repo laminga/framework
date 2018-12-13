@@ -34,25 +34,18 @@ class Log
 		//Convierte en links los paths del stack.
 		$stack = preg_replace("/(#\d+ )(.*)\((\d+)\)/", "$1<a href='repath://$2@$3'>$2($3)</a>", $stack);
 
-		if (array_key_exists('HTTP_USER_AGENT', $_SERVER))
-			$agent = $_SERVER['HTTP_USER_AGENT'];
-		else
-			$agent = 'null';
-		if (array_key_exists('HTTP_REFERER', $_SERVER))
-			$referer = $_SERVER['HTTP_REFERER'];
-		else
-			$referer = 'null';
-		if(isset($_SERVER['REMOTE_ADDR']))
-			  $remoteAddr = $_SERVER['REMOTE_ADDR'];
-		else
-			$remoteAddr = 'null';
+		$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
+		$referer = Params::SafeServer('HTTP_REFERER', 'null');
+		$remoteAddr = Params::SafeServer('REMOTE_ADDR', 'null');
+		$requestUri = Params::SafeServer('REQUEST_URI', 'null');
+		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
 
 		$text = "REQUEST\r\n" .
 			"=> User:        ". Context::LoggedUser(). "\r\n" .
-			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $_SERVER['REQUEST_URI'] . "'>".Context::Settings()->GetMainServerPublicUrl() . $_SERVER['REQUEST_URI']."</a>\r\n" .
+			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $requestUri . "'>".Context::Settings()->GetMainServerPublicUrl() . $requestUri . "</a>\r\n" .
 			"=> Agent:       ".  $agent . "\r\n" .
 			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
-			"=> Method:      ".  $_SERVER['REQUEST_METHOD'] . "\r\n" .
+			"=> Method:      ".  $requestMethod . "\r\n" .
 			"=> IP:          ".  $remoteAddr . "\r\n" .
 			"===========================================\r\n" .
 			"ERROR\r\n" .
