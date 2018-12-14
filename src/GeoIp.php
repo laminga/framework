@@ -54,9 +54,7 @@ class GeoIp
 
 	public static function GetClientCountryCode()
 	{
-		$ip = '';
-		if(isset($_SERVER['REMOTE_ADDR']))
-			$ip = $_SERVER['REMOTE_ADDR'];
+		$ip = Params::SafeServer('REMOTE_ADDR');
 
 		$country = self::GetCountry($ip);
 		if($country !== null)

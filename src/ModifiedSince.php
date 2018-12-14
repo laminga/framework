@@ -32,10 +32,9 @@ class ModifiedSince
 		header("Last-Modified: " . $tsstring);
 		header("Cache-Control: private");
 
-		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) &&
-			($timeStamp <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) ||
-			$tsstring == $_SERVER['HTTP_IF_MODIFIED_SINCE'])
-		)
+		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
+			&& ($timeStamp <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])
+				|| $tsstring == $_SERVER['HTTP_IF_MODIFIED_SINCE']))
 		{
 			header('HTTP/1.0 304 Not Modified');
 			return false;

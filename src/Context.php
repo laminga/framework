@@ -25,9 +25,14 @@ class Context
 
 		return self::$calls;
 	}
+
 	public static function CurrentUrl()
 	{
-		return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$ret = 'http://';
+		if(Params::SafeServer('HTTPS') == 'on')
+			$ret = 'https://';
+
+		return $ret . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	}
 
 	public static function InjectSettings($settings)
