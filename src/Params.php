@@ -15,6 +15,19 @@ class Params
 		return $value;
 	}
 
+	public static function SafePost($param, $default = '')
+	{
+		if (isset($_POST[$param]))
+		{
+			$ret = $_POST[$param];
+			if (is_array($ret) == false)
+				$ret = trim($ret);
+
+			return $ret;
+		}
+		return $default;
+	}
+
 	//Método usado en aacademica.
 	public static function SafeGet($param, $default = '')
 	{

@@ -4,10 +4,9 @@ namespace minga\framework\oauth;
 
 use OAuth\Common\Consumer\Credentials;
 use OAuth\Common\Storage\Memory;
-use minga\classes\globals\Session;
+
 use minga\framework\PhpSession;
 use minga\framework\Context;
-use minga\classes\globals\Functions;
 use minga\framework\Log;
 use minga\framework\MessageBox;
 use minga\framework\Profiling;
@@ -64,7 +63,7 @@ abstract class OauthConnector
 		}
 	}
 
-	public function RedirectProvider($url, $returnUrl, $terms)
+	public function ResolveRedirectProvider($url, $returnUrl, $terms)
 	{
 		//Setear en sesión los datos que se quieran tener para después de oauth.
 		//porque sale del sitio y no hay forma de mantener estado si no es sesión
@@ -72,8 +71,8 @@ abstract class OauthConnector
 		PhpSession::SetSessionValue(static::Provider.'OauthRedirect', $url);
 		PhpSession::SetSessionValue(static::Provider.'OauthReturnUrl', $returnUrl);
 		PhpSession::SetSessionValue('OauthTerms', $terms);
-
-		Functions::Redirect($this->service->getAuthorizationUri());
+		 
+		return $this->service->getAuthorizationUri();
 	}
 
 	public function RedirectSuccess($data)
@@ -119,7 +118,7 @@ abstract class OauthConnector
 		//-Que no tenga funciones inválidas (deleteUser, etc.)
 		//-No tenga código javascript (xss).
 		if($target == '')
-			Session::GoHome();
+			throw new \Exception("Undefined target.");
 
 		$js = "window.opener.location='" . $target. "';";
 		$js .= "window.close();";
@@ -127,7 +126,7 @@ abstract class OauthConnector
 
 		// Guarda info de profiling
 		Profiling::SaveBeforeRedirect();
-		Functions::EndRequest();
+		Context::EndRequest();
 		exit();
 	}
 

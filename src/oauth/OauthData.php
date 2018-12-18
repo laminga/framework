@@ -2,7 +2,6 @@
 
 namespace minga\framework\oauth;
 
-use minga\classes\globals\Session;
 use minga\framework\PhpSession;
 
 class OauthData
