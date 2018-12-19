@@ -10,10 +10,7 @@ class Request
 	{
 		if (self::$isGoogle == null)
 		{
-			if (array_key_exists('HTTP_USER_AGENT', $_SERVER))
-				$agent = $_SERVER['HTTP_USER_AGENT'];
-			else
-				$agent = 'null';
+			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
 			self::$isGoogle = Str::Contains($agent, "Googlebot");
 		}
 		return self::$isGoogle;

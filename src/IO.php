@@ -384,12 +384,24 @@ class IO
 		return self::GetFilesStartsWithAndExt($path, $start, '', $returnFullPath);
 	}
 
-	private static function GetFilesStartsWithAndExt($path, $start = '', $ext = '', $returnFullPath = false)
+	public static function GetFilesStartsWithAndExt($path, $start = '', $ext = '', $returnFullPath = false)
 	{
 		if($ext != '' && Str::StartsWith($ext, '.') == false)
 			$ext = '.' . $ext;
 
+		$start = str_replace(['/', "\\"], '', $start);
+
+		$notAlpha = false;
+		if($start == '@')
+		{
+			$start = '';
+			$notAlpha = true;
+		}
+
 		$ret = glob($path . '/' . $start . '*'. $ext);
+
+		if($notAlpha)
+			$ret = preg_grep('/^' . preg_quote($path . '/', '/') . '[^a-zA-Z].*/', $ret);
 
 		$ret = array_values(array_filter($ret, 'is_file'));
 
@@ -423,9 +435,21 @@ class IO
 		return count(self::GetFilesFullPath($path, $ext));
 	}
 
-	public static function GetDirectories($path, $returnFullPath = false)
+	public static function GetDirectories($path, $start = '', $returnFullPath = false)
 	{
-		$ret = glob($path . "/*", GLOB_ONLYDIR);
+		$start = str_replace(['/', "\\"], '', $start);
+
+		$notAlpha = false;
+		if($start == '@')
+		{
+			$start = '';
+			$notAlpha = true;
+		}
+
+		$ret = glob($path . '/' . $start . '*', GLOB_ONLYDIR);
+
+		if($notAlpha)
+			$ret = preg_grep('/^' . preg_quote($path . '/', '/') . '[^a-zA-Z].*/', $ret);
 
 		if($returnFullPath)
 			return $ret;
@@ -435,7 +459,7 @@ class IO
 
 	public static function GetSequenceName($file, $index, $numLength = 5)
 	{
-		$i = sprintf('%0'.((int)$numLength).'d', $index);
+		$i = sprintf('%0' . (int)$numLength . 'd', $index);
 		$info = pathinfo($file);
 		return $info['dirname'] . '/' . $info['filename'] . '_' . $i . '.' . $info['extension'];
 	}
