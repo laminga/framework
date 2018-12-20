@@ -15,19 +15,6 @@ class Params
 		return $value;
 	}
 
-<<<<<<< HEAD
-	public static function SafePost($param, $default = '')
-	{
-		if (isset($_POST[$param]))
-		{
-			$ret = $_POST[$param];
-			if (is_array($ret) == false)
-				$ret = trim($ret);
-
-			return $ret;
-		}
-		return $default;
-=======
 	public static function SafeServer($param, $default = '')
 	{
 		if (isset($_SERVER[$param]) == false)
@@ -50,7 +37,6 @@ class Params
 			$ret = trim($ret);
 
 		return $ret;
->>>>>>> 9b76752be68a90ddf719a1e07706b16d64438e11
 	}
 
 	//Método usado en aacademica.
