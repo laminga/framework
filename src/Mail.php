@@ -8,6 +8,7 @@ use PHPMailer\PHPMailer\PHPMailerSendGrid;
 class Mail
 {
 	public $to;
+	public $bcc = null;
 	public $toCaption = "";
 	public $from = "";
 	public $fromCaption = '';
@@ -38,6 +39,9 @@ class Mail
 
 		if (! empty(Context::Settings()->Mail()->NotifyAddress) && ! $isNotification && ! $this->skipNotify)
 			$this->SetBCC($mail, Context::Settings()->Mail()->NotifyAddress);
+
+		if(empty($this->bcc) == false)
+			$this->SetBCC($mail, $this->bcc);
 
 		$mail->setFrom($this->from, $this->fromCaption);
 		$mail->Subject = $this->subject;
