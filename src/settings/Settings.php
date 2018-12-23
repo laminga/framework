@@ -49,7 +49,7 @@ class Settings
 	public $normalizeNames = false;
 	public $setupInstallOnly = true;
 
-	public $checkPdfProtection = false;
+	public $decryptPdfs = true;
 
 	public $catalog = '';
 
