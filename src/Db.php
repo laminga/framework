@@ -68,7 +68,7 @@ class Db
 		return $ret;
 	}
 
-	function doExecute($query, array $data = array())
+	private function doExecute($query, array $data = array())
 	{
 		$stmt = $this->Connection()->prepare($query);
 		$stmt->execute($data);
@@ -205,7 +205,7 @@ class Db
 		}
 
 		$query = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' AND ', $criteria);
-		$ret =$this->doExecute($query, array_values($identifier));
+		$ret = $this->doExecute($query, array_values($identifier));
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
@@ -217,7 +217,7 @@ class Db
 		Performance::BeginDbWait();
 		$criteria = array_fill(0, count($values), '?');
 		$query = 'DELETE FROM ' . $tableName . ' WHERE ' . $columnName . ' IN ( ' . implode(',', $criteria) . ')';
-		$ret =$this->doExecute($query, $values);
+		$ret = $this->doExecute($query, $values);
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;

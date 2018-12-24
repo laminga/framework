@@ -111,7 +111,7 @@ class WebClient
 		return $ret;
 	}
 
-	function doExecute($url, $file = '', $args = null, $saveHeaders = false)
+	private function doExecute($url, $file = '', $args = null, $saveHeaders = false)
 	{
 		curl_setopt($this->ch, CURLOPT_URL, $url);
 		$this->request_headers = array();
@@ -182,7 +182,7 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 			return $ret;
 	}
 
-	function doExecuteForRedirect($url, $file, $args = null)
+	private function doExecuteForRedirect($url, $file, $args = null)
 	{
 		curl_setopt($this->ch, CURLOPT_URL, $url);
 
@@ -233,7 +233,8 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 		else
 			return $ret;
 	}
-	function AddPostFields($args)
+
+	private function AddPostFields($args)
 	{
 		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
@@ -274,7 +275,8 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 		else
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 	}
-	function ParseErrorCodes($ret)
+
+	private function ParseErrorCodes($ret)
 	{
 		$this->http_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		$this->error = curl_error($this->ch);
@@ -286,14 +288,15 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 			$this->AppendLogData('Content-Length', curl_getinfo($this->ch,CURLINFO_CONTENT_LENGTH_DOWNLOAD));
 	}
 
-	function printInfo()
+	public function printInfo()
 	{
 		echo("<p>");
 		$info = curl_getinfo($this->ch);
 		print_r($info);
 		echo("<p>");
 	}
-	function get_headers_from_curl_response(&$response)
+
+	private function get_headers_from_curl_response(&$response)
 	{
 		$headers = array();
 		$sep = strpos($response, "\r\n\r\n");
@@ -312,7 +315,8 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 
 		return $headers;
 	}
-	function get_headers_from_curl_response2($header_text)
+
+	private function get_headers_from_curl_response2($header_text)
 	{
 		$headers = array();
 		foreach (explode("\r\n", $header_text) as $line)
@@ -329,10 +333,12 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 
 		return $headers;
 	}
-	function get_content_from_curl_response2($header_text)
+
+	private function get_content_from_curl_response2($header_text)
 	{
 		return Str::EatUntil($header_text, "\r\n\r\n");
 	}
+
 	public function Finalize()
 	{
 		if (!$this->isClosed)
@@ -343,17 +349,18 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 				fclose($this->cherr);
 		}
 	}
+
 	public function AppendLog($value)
 	{
 		if ($this->logFile == null) return;
 		IO::AppendLine($this->logFile, "\r\n" . $value . " [" . Date::FormattedArNow() . "]");
 	}
-	function AppendLogData($key, $value)
+
+	private function AppendLogData($key, $value)
 	{
 		if ($this->logFile == null) return;
 		IO::AppendLine($this->logFile, "=> " . $key . ": " . $value);
 	}
-
 
 	public function ClearCookieFile()
 	{

@@ -402,7 +402,7 @@ class Performance
 	private static function ParseHit($value, &$hits, &$duration, &$locked, &$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null)
 	{
 		$parts = explode(';', $value);
-		$hits = $parts[0] ;
+		$hits = $parts[0];
 		$duration = $parts[1];
 		if (sizeof($parts) > 2)
 			$locked = $parts[2];
@@ -497,7 +497,8 @@ class Performance
 								 'Accesos Db' => $dataDbHitRow,
 								 'Bloqueos (seg.)' => $dataLockedRow);
 	}
-	static function IsAdmin($controller)
+
+	private static function IsAdmin($controller)
 	{
 		if ($controller == 'Services') return true;
 		$path = Context::Paths()->GetRoot() . '/controllers/admin';

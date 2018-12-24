@@ -17,7 +17,7 @@ class Mail
 	public $skipNotify = false;
 	public static $MailsSent = 0;
 
-	function __construct()
+	public function __construct()
 	{
 		$this->fromCaption = Context::Settings()->applicationName;
 		$this->from = Context::Settings()->Mail()->From;
@@ -64,7 +64,7 @@ class Mail
 	// 			));
 	// }
 
-	function SetProvider($mail)
+	public function SetProvider($mail)
 	{
 		switch(Context::Settings()->Mail()->Provider)
 		{
@@ -91,7 +91,7 @@ class Mail
 		}
 	}
 
-	function SetAddress($mail, $to, $caption)
+	private function SetAddress($mail, $to, $caption)
 	{
 		if(is_array($to))
 		{
@@ -102,7 +102,7 @@ class Mail
 			$mail->addAddress($to, $caption);
 	}
 
-	function SetBCC($mail, $bcc)
+	private function SetBCC($mail, $bcc)
 	{
 		if(is_array($bcc))
 		{
@@ -113,7 +113,7 @@ class Mail
 			$mail->addBCC($bcc);
 	}
 
-	function PutToLog()
+	public function PutToLog()
 	{
 		$to = '';
 		if(is_array($this->to))
