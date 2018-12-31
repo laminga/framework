@@ -74,7 +74,7 @@ class TwoLevelAttributeEntity
 		$this->sections[$section] = $value;
 	}
 
-	function SetValue($section, $key, $value)
+	public function SetValue($section, $key, $value)
 	{
 		if (array_key_exists($section, $this->sections) == false)
 		{
@@ -95,7 +95,7 @@ class TwoLevelAttributeEntity
 			return array_key_exists($key, $this->sections[$section]);
 	}
 
-	function Clear()
+	public function Clear()
 	{
 		$this->sections = array();
 	}

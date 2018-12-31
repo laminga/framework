@@ -103,7 +103,6 @@ class Log
 		}
 	}
 
-
 	public static function HandleSilentException($e)
 	{
 		$textToShow = self::LogException($e, true);

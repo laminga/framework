@@ -96,23 +96,23 @@ class AttributeEntity
 		IO::WriteEscapedIniFile($this->path, $this->attributes);
 	}
 
-	function SetValue($key, $value)
+	public function SetValue($key, $value)
 	{
 		$this->attributes[$key] = $value;
 	}
 
-	function GetValue($key)
+	public function GetValue($key)
 	{
 		return $this->attributes[$key];
 	}
 
-	function RemoveKey($key)
+	public function RemoveKey($key)
 	{
 		if (array_key_exists($key, $this->attributes))
 			unset($this->attributes[$key]);
 	}
 
-	function SetDefault($key, $default)
+	public function SetDefault($key, $default)
 	{
 		if (!array_key_exists($key, $this->attributes))
 			$this->attributes[$key] = $default;

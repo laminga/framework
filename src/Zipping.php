@@ -41,7 +41,7 @@ class Zipping
 
 	public static function FileMTime($filename)
 	{
-		if (!self::isZipped($filename))
+		if (!self::IsZipped($filename))
 			return IO::FileMTime($filename);
 		Profiling::BeginTimer();
 		$stat = self::GetStat($filename);
@@ -52,9 +52,9 @@ class Zipping
 			return intval($stat['mtime']);
 	}
 
-	public static function filesize($filename)
+	public static function Filesize($filename)
 	{
-		if (!self::isZipped($filename))
+		if (!self::IsZipped($filename))
 			return filesize($filename);
 
 		Profiling::BeginTimer();
@@ -89,12 +89,12 @@ class Zipping
 			}
 		}
 	}
-	public static function file_exists($filename)
+	public static function FileExists($filename)
 	{
-		if (!self::isZipped($filename))
+		if (!self::IsZipped($filename))
 			return file_exists($filename);
 		else
-			return self::compressed_file_exists($filename);
+			return self::CompressedFileExists($filename);
 	}
 
 
@@ -137,7 +137,7 @@ class Zipping
 
 	}
 
-	public static function compressed_file_exists($filename)
+	public static function CompressedFileExists($filename)
 	{
 		Profiling::BeginTimer();
 		$path = dirname($filename);
@@ -160,14 +160,14 @@ class Zipping
 		}
 	}
 
-	public static function isZipped($file)
+	public static function IsZipped($file)
 	{
 		return Str::StartsWith($file, "zip://");
 	}
 
 	private static function GetContainer($folder)
 	{
-		if (self::isZipped($folder))
+		if (self::IsZipped($folder))
 			$folder = substr($folder, 6);
 
 		$file = "content.zip";
@@ -221,6 +221,7 @@ class Zipping
 		$zip->Close();
 		IO::Move($zipFile . "tmp", $zipFile);
 	}
+
 	public static function Release()
 	{
 		foreach(self::$allFiles as $key => $value)

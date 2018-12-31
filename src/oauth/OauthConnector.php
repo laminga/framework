@@ -71,7 +71,7 @@ abstract class OauthConnector
 		PhpSession::SetSessionValue(static::Provider.'OauthRedirect', $url);
 		PhpSession::SetSessionValue(static::Provider.'OauthReturnUrl', $returnUrl);
 		PhpSession::SetSessionValue('OauthTerms', $terms);
-		 
+
 		return $this->service->getAuthorizationUri();
 	}
 
@@ -111,7 +111,7 @@ abstract class OauthConnector
 		return Str::Capitalize($c::Provider);
 	}
 
-	function CloseAndRedirect($target)
+	private function CloseAndRedirect($target)
 	{
 		//TODO: validar el target.
 		//-Que sea de este dominio (que no redirija a otro sitio).

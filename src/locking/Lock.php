@@ -42,7 +42,7 @@ class Lock
 
 	private function LockUsed($write)
 	{
-		$file = $this->resolveFilename();
+		$file = $this->ResolveFilename();
 
 		if (array_key_exists($file, self::$locks))
 		{
@@ -62,7 +62,7 @@ class Lock
 	}
 	private function ReleaseUsed()
 	{
-		$file = $this->resolveFilename();
+		$file = $this->ResolveFilename();
 
 		if (array_key_exists($file, self::$locks))
 		{
@@ -85,14 +85,14 @@ class Lock
 		}
 	}
 
-	public function resolveFilename()
+	public function ResolveFilename()
 	{
 		return $this->folder . "/" . $this->file . ".lock";
 	}
 
-	function doLock($type)
+	private function doLock($type)
 	{
-		$this->handle = fopen($this->resolveFilename(), "w+");
+		$this->handle = fopen($this->ResolveFilename(), "w+");
 
 		Performance::BeginLockedWait($this->statsKey);
 

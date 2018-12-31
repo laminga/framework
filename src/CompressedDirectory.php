@@ -44,7 +44,7 @@ class CompressedDirectory
 			$zip = new Zip($tmp);
 			$target = $this->GetFilename();
 			IO::Delete($target);
-			$zip->appendFilesToZip($this->path, "");
+			$zip->AppendFilesToZip($this->path, "");
 			// Lo mueve
 			IO::Move($tmp, $target);
 			// Vacía la carpeta

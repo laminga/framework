@@ -62,7 +62,7 @@ class ModifiedSince
 
 		if (file_exists($file1))
 			$timeStamp1 = IO::FileMTime($file1);
-		if ($file2 != null && Zipping::file_exists($file2))
+		if ($file2 != null && Zipping::FileExists($file2))
 			$timeStamp2 = Zipping::FileMTime($file2);
 		if ($timeStamp1 == null || ($timeStamp2 != null && $timeStamp2 > $timeStamp1))
 			$timeStamp1 = $timeStamp2;

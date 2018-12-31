@@ -14,17 +14,17 @@ class Zip
 		$this->lock = new ZipLock($file);
 	}
 
-	public function appendFilesToZip($basePath, $relativePathToZip, $ext = "")
+	public function AppendFilesToZip($basePath, $relativePathToZip, $ext = "")
 	{
 		$myfiles = IO::GetFiles($basePath . $relativePathToZip, $ext);
-		$myfiles = $this->addFolderToPath($myfiles, $basePath . $relativePathToZip);
+		$myfiles = $this->AddFolderToPath($myfiles, $basePath . $relativePathToZip);
 		$this->AddToZip($basePath, $myfiles);
 	}
 
-	public function appendFilesToZipDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, &$currentBytes)
+	public function AppendFilesToZipDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, &$currentBytes)
 	{
 		$myfiles = IO::GetFiles($basePath . $relativePathToZip, $ext);
-		$myfiles = $this->addFolderToPath($myfiles, $basePath . $relativePathToZip);
+		$myfiles = $this->AddFolderToPath($myfiles, $basePath . $relativePathToZip);
 		// create myfiles filtered
 		$currentfiles = array();
 		//
@@ -44,24 +44,24 @@ class Zip
 		return ($currentBytes <= $bytesLimit);
 	}
 
-	public function appendFilesToZipRecursiveDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, &$currentBytes)
+	public function AppendFilesToZipRecursiveDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, &$currentBytes)
 	{
-		if ($this->appendFilesToZipDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, $currentBytes) == false)
+		if ($this->AppendFilesToZipDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, $currentBytes) == false)
 			return false;
 		foreach(IO::GetDirectories($basePath . $relativePathToZip) as $folder)
-			if ($this->appendFilesToZipRecursiveDeletting($basePath, $relativePathToZip . "/" . $folder, $ext, $bytesLimit, $currentBytes) == false)
+			if ($this->AppendFilesToZipRecursiveDeletting($basePath, $relativePathToZip . "/" . $folder, $ext, $bytesLimit, $currentBytes) == false)
 				return false;
 		return true;
 	}
 
-	public function appendFilesToZipRecursive($basePath, $relativePathToZip, $ext = "")
+	public function AppendFilesToZipRecursive($basePath, $relativePathToZip, $ext = "")
 	{
-		$this->appendFilesToZip($basePath, $relativePathToZip, $ext);
+		$this->AppendFilesToZip($basePath, $relativePathToZip, $ext);
 		foreach(IO::GetDirectories($basePath . $relativePathToZip) as $folder)
-			$this->appendFilesToZipRecursive($basePath, $relativePathToZip . "/" . $folder, $ext);
+			$this->AppendFilesToZipRecursive($basePath, $relativePathToZip . "/" . $folder, $ext);
 	}
 
-	function addFolderToPath($files, $path)
+	private function AddFolderToPath($files, $path)
 	{
 		$ret = array();
 		foreach($files as $file)
@@ -96,7 +96,9 @@ class Zip
 			//fix archive paths
 			$fileFixed = str_replace("\\", "/", $file);
 
-			$path = str_replace($sourcefolder, "", $fileFixed); //remove the source path from the $key to return only the file-folder structure from the root of the source folder
+			//remove the source path from the $key to return only the
+			//file-folder structure from the root of the source folder
+			$path = str_replace($sourcefolder, "", $fileFixed);
 
 			if (!file_exists(realpath($file)))
 				throw new \Exception(realpath($file).' does not exist.');
@@ -121,7 +123,7 @@ class Zip
 		}
 		else
 		{
-			throw new \Exception ("Failed to extract files: ");
+			throw new \Exception("Failed to extract files: ");
 		}
 	}
 
@@ -150,7 +152,7 @@ class Zip
 		}
 		else
 		{
-			throw new \Exception ("Failed to extract files");
+			throw new \Exception("Failed to extract files");
 		}
 	}
 

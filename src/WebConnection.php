@@ -151,7 +151,7 @@ class WebConnection
 		return $newurl . $url;
 	}
 
-	function doExecute($url, $file = '', $args = null)
+	private function doExecute($url, $file = '', $args = null)
 	{
 		if ($this->ch == null)
 			throw new \Exception("Initialize() method should be called first.");
@@ -267,7 +267,7 @@ class WebConnection
 		return $response;
 	}
 
-	function AddPostFields($args)
+	private function AddPostFields($args)
 	{
 		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
@@ -321,7 +321,8 @@ class WebConnection
     ftruncate($handle, $write_position);     // drop the repeated last line
     fclose($handle);
 	}
-	function ParseErrorCodes($ret, $file)
+
+	private function ParseErrorCodes($ret, $file)
 	{
 		$this->http_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		$this->error = curl_error($this->ch);
@@ -348,17 +349,18 @@ class WebConnection
 			$this->bucket = null;
 		}
 	}
+
 	public function AppendLog($value)
 	{
 		if ($this->logFile == null) return;
 		IO::AppendLine($this->logFile, "\r\n" . $value . " [" . Date::FormattedArNow() . "]");
 	}
-	function AppendLogData($key, $value)
+
+	private function AppendLogData($key, $value)
 	{
 		if ($this->logFile == null) return;
 		IO::AppendLine($this->logFile, "=> " . $key . ": " . $value);
 	}
-
 
 	public function ClearCookieFile()
 	{

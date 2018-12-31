@@ -33,7 +33,7 @@ class ProfilingItem
 		$this->start_pause = Performance::$pause_ellapsed_secs;
 	}
 
-	function ftime()
+	private function ftime()
 	{
 		$a = gettimeofday();
 		return $a['sec'] + ($a['usec']*0.000001);
