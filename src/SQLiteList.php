@@ -1,6 +1,5 @@
 <?php
 
-
 namespace minga\framework;
 
 class SQLiteList
@@ -68,23 +67,22 @@ class SQLiteList
 			return $result->fetchArray(SQLITE3_ASSOC);
 	}
 
-	public function Open($path)
+	public function Open($path, $readonly = false)
 	{
 		$existed = file_exists($path);
-		$db = new \SQLite3($path);
+		$flag = ($readonly && $existed ? SQLITE3_OPEN_READONLY : SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+		$db = new \SQLite3($path, $flag);
 		$db->enableExceptions(true);
-
 		if ($existed == false)
 		{
 			$db->query(self::CreateSql());
 		}
 		$this->db = $db;
-
+		if ($readonly == false)
+			$this->db->busyTimeout(30000);
 		$this->path = $path;
-
 		$this->Execute('PRAGMA synchronous=OFF');
 		$this->Execute('PRAGMA journal_mode=WAL');
-
 	}
 
 	private function CreateSql()
@@ -119,6 +117,7 @@ class SQLiteList
 
 		$sql = "insert or replace into data (pID, " . $this->keyColumn . $this->commaColumns . ") values
 			((select pID from data where " . $this->keyColumn . " = :p1), :p1 " . $this->commaArgs . ");";
+
 		$this->Execute($sql, $args);
 	}
 
@@ -153,7 +152,7 @@ class SQLiteList
 		{
 			if ($paramsAsText != '')
 				$paramsAsText .= ', ';
-			$paramsAsText .=		 $arg;
+			$paramsAsText .= $arg;
 		}
 		if ($paramsAsText == '') $paramsAsText = 'Ninguno';
 		$text .= '. Parámetros: ' . $paramsAsText;
@@ -216,9 +215,8 @@ class SQLiteList
 		$res = $result->fetchArray(SQLITE3_NUM);
 
 		if ($res === false)
-		{
 			return null;
-		}else
+		else
 			return $res;
 	}
 	public function ReadRowByKey($key)
