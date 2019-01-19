@@ -68,7 +68,7 @@ class ModifiedSince
 			$timeStamp1 = $timeStamp2;
 		if ($timeStamp1 != null)
 		{
-			// Tiene una fecha válida...
+			// Tiene una fecha vÃ¡lida...
 			$generalTimeObj = \DateTime::createFromFormat('d/m/Y', Context::Settings()->forceIfModifiedReload);
 			$generalTime = $generalTimeObj->getTimeStamp();
 			if ($generalTime > $timeStamp1)

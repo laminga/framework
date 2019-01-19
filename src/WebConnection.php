@@ -128,7 +128,7 @@ class WebConnection
 		$lastPort = Arr::SafeGet($partsLast, 'port');
 		if ($port != $lastPort)
 			return $url;
-		// perdió el https pero es el mismo server
+		// perdiÃ³ el https pero es el mismo server
 		$ret = 'https://' . substr($url, 7);
 		return $ret;
 	}

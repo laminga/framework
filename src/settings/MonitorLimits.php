@@ -1,11 +1,10 @@
 <?php
 
-
 namespace minga\framework\settings;
 
 class MonitorLimits
 {
-	// Cuando este límite se excede, se deja de responder a la IP durante el día
+	// Cuando este lÃ­mite se excede, se deja de responder a la IP durante el dÃ­a
 	// y se avisa por mail del incidente
 	public $MaximumDaylyHitsPerIP = 10000;
 	public $DefensiveModeThresholdDaylyHits = 30000;
@@ -16,7 +15,7 @@ class MonitorLimits
 
 	public $LogAgentThresholdDaylyHits = 100;
 
-	// Cuando estos límites se exceden, se envía un mail de alerta
+	// Cuando estos lÃ­mites se exceden, se envÃ­a un mail de alerta
 	public $WarningDaylyHitsPerIP = 5000;
 	public $WarningDaylyHits = 20000;
 	public $WarningDaylyExecuteMinutes = 150;
