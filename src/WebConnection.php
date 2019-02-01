@@ -304,7 +304,7 @@ class WebConnection
 	private function TruncateBeggining($file, $read_position)
 	{
 		$size = filesize($file);
-		$handle = fopen($file, "c+");
+		$handle = fopen($file, "c+b");
 		fseek($handle, $read_position);  // return to actual position
 		$write_position = 0;
 		$chunkSize = 	40960;
@@ -313,7 +313,7 @@ class WebConnection
 			fseek($handle, $write_position); // move to previous position
 			fwrite($handle, $chunk);           // put actual line in previous position
 			fseek($handle, $read_position);  // return to actual position
-			$write_position += $chunkSize;    // set write position to the next loop
+			$write_position += strlen($chunk);    // set write position to the next loop
 			if ($read_position >= $size)
 				break;
     }
