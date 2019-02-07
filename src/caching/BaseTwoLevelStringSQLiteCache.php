@@ -20,14 +20,34 @@ class BaseTwoLevelStringSQLiteCache
 		$this->db = new SQLiteList('k', array('v'));
 	}
 
-	private function OpenRead($key = null)
+	private function OpenRead($key = null, $throwLockErrors = true)
 	{
-		$this->db->Open($this->ResolveFilename($key), true);
+		try 
+		{
+			$this->db->Open($this->ResolveFilename($key), true);
+			return true;
+		}
+		catch(\Exception $e)
+		{
+			if (Str::Contains($e->getMessage(), "database is locked") == false || $throwLockErrors)
+				throw $e;
+			return false;
+		}
 	}
 
-	private function OpenWrite($key = null)
+	private function OpenWrite($key = null, $throwLockErrors = true)
 	{
-		$this->db->Open($this->ResolveFilename($key));
+		try 
+		{
+			$this->db->Open($this->ResolveFilename($key));
+			return true;
+		}
+		catch(\Exception $e)
+		{
+			if (Str::Contains($e->getMessage(), "database is locked") == false || $throwLockErrors)
+				throw $e;
+			return false;
+		}
 	}
 
 	private function Close()
@@ -81,7 +101,14 @@ class BaseTwoLevelStringSQLiteCache
 		}
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
-		$this->OpenRead($levelKey);	
+
+		if ($this->OpenRead($levelKey, false) == false)	
+		{
+			sleep(1);
+			if ($this->OpenRead($levelKey, false) == false)	
+				return false;
+		}
+
 		$value = $this->db->ReadValue($valueKey, 'v');
 		$this->Close();
 		if ($value !== null)
@@ -115,7 +142,12 @@ class BaseTwoLevelStringSQLiteCache
 			return;
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
-		$this->OpenWrite($levelKey);
+		if ($this->OpenWrite($levelKey, false) == false)	
+		{
+			sleep(1);
+			if ($this->OpenWrite($levelKey, false) == false)	
+				return;
+		}
 		$this->db->InsertOrUpdate($valueKey, $value);
 		$this->Close();
 	}
