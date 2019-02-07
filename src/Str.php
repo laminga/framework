@@ -545,10 +545,7 @@ class Str
 			for($n = 0; $n < sizeof($parts); $n++)
 			{
 				$part = $parts[$n];
-				if (is_array($part))
-					$cleaned = trim($part['name']);
-				else
-					$cleaned = trim($part);
+				$cleaned = trim($part);
 
 				$cleaned = self::RemoveEnding($cleaned, ",");
 				// normaliza
