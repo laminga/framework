@@ -31,7 +31,7 @@ class TemplateMessage extends AttributeEntity
 		$viewAction['url'] = $url;
 		$viewAction['name'] = $name;
 
-		$viewAction['organization'] = 'Acta Académica';
+		$viewAction['organization'] = 'Acta AcadÃ©mica';
 		$viewAction['organization_url'] = Context::Settings()->GetMainServerPublicUrl();
 
 		$this->SetValue('viewAction', $viewAction );

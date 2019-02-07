@@ -141,7 +141,7 @@ class SQLiteList
 	}
 	private function ParamsToText($sql, $args)
 	{
-		$text = 'No se ha podido completar la operaciÛn en SQLite. ';
+		$text = 'No se ha podido completar la operaci√≥n en SQLite. ';
 		if ($this->path != null)
 		{
 			$text .= 'Path: ' . $this->path;
@@ -155,7 +155,7 @@ class SQLiteList
 			$paramsAsText .= $arg;
 		}
 		if ($paramsAsText == '') $paramsAsText = 'Ninguno';
-		$text .= '. Par·metros: ' . $paramsAsText;
+		$text .= '. Par√°metros: ' . $paramsAsText;
 		return $text;
 	}
 

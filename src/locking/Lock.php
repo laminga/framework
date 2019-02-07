@@ -46,7 +46,7 @@ class Lock
 
 		if (array_key_exists($file, self::$locks))
 		{
-			// ya está lockeado
+			// ya estÃ¡ lockeado
 			$values = self::$locks[$file];
 			if ($write && $values[1] == false)
 				throw new \Exception("WriteLock could not be taken while ReadLock is used.");
@@ -55,7 +55,7 @@ class Lock
 		}
 		else
 		{
-			// empieza él
+			// empieza Ã©l
 			self::$locks[$file] = array(1, $write);
 			return false;
 		}
@@ -66,7 +66,7 @@ class Lock
 
 		if (array_key_exists($file, self::$locks))
 		{
-			// ya está lockeado
+			// ya estÃ¡ lockeado
 			$values = self::$locks[$file];
 			if ($values[0] > 1)
 			{

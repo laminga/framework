@@ -182,7 +182,7 @@ class Traffic
 		$limit = self::GetLimit();
 		if ($hits == $limit)
 		{
-			Performance::SendPerformanceWarning('tráfico por IP', $limit . ' hits', $hits . ' hits');
+			Performance::SendPerformanceWarning('trÃ¡fico por IP', $limit . ' hits', $hits . ' hits');
 			if (self::IsInDefensiveMode())
 				$defensiveNote = ' en modo defensivo';
 			else
@@ -192,10 +192,10 @@ class Traffic
 			else
 				$device = '';
 
-			Log::HandleSilentException(new \Exception('La IP' . $device. ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
+			Log::HandleSilentException(new \Exception('La IP' . $device. ' ha llegado al mÃ¡ximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
 		}
 		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
-			Performance::SendPerformanceWarning('tráfico por IP sospechoso', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');
+			Performance::SendPerformanceWarning('trÃ¡fico por IP sospechoso', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');
 		return $limit;
 	}
 
