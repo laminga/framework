@@ -61,7 +61,7 @@ class Zip
 			$this->AppendFilesToZipRecursive($basePath, $relativePathToZip . "/" . $folder, $ext);
 	}
 
-	private function AddFolderToPath($files, $path)
+	private function AddFolderToPath(array $files, $path)
 	{
 		$ret = array();
 		foreach($files as $file)
@@ -71,7 +71,7 @@ class Zip
 		return $ret;
 	}
 
-	public function AddToZip($sourcefolder, $files)
+	public function AddToZip($sourcefolder, array $files)
 	{
 		$sourcefolder = str_replace("\\", "/", $sourcefolder);
 		if (Str::EndsWith($sourcefolder, "/") == false) $sourcefolder.= "/";
