@@ -107,7 +107,7 @@ class Log
 	{
 		$textToShow = self::LogException($e, true);
 
-		if(Context::Settings()->Debug()->debug && Str::StartsWith($e->getMessage(), "Error running: \"pdf") == false )
+		if(Context::Settings()->Debug()->debug && Str::StartsWith($e->getMessage(), "Error running: \"pdf") == false)
 		{
 			MessageBox::ThrowBackMessage($textToShow);
 			exit();
