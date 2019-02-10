@@ -96,13 +96,17 @@ class Str
 		return $text;
 	}
 
+	//Contains case insensitve
+	public static function ContainsI($haystack, $needle)
+	{
+		$pos = stripos($haystack , $needle);
+		return ($pos !== false);
+	}
+
 	public static function Contains($haystack, $needle)
 	{
 		$pos = strpos($haystack , $needle);
-		if ($pos === false)
-			return false;
-		else
-			return true;
+		return ($pos !== false);
 	}
 
 	public static function EscapeJavascript($string)
