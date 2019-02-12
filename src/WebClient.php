@@ -1,6 +1,6 @@
 <?php
-namespace minga\framework;
 
+namespace minga\framework;
 
 class WebClient
 {
@@ -96,6 +96,7 @@ class WebClient
 		Profiling::EndTimer();
 		return $ret;
 	}
+
 	public function ExecuteForRedirect($url, $file = '', $args = array())
 	{
 		Profiling::BeginTimer();
@@ -118,11 +119,11 @@ class WebClient
 		$this->request_headers[] = "Accept-Language: es-es,en";
 		$this->request_headers[] = "Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8";
 
-	/*$this->request_headers[] = "Pragma: no-cache";
-$this->request_headers[] = "Cache-Control: no-cache";
-$this->request_headers[] = "Connection: keep-alive";
-$this->request_headers[] = "Accept-Encoding: gzip, deflate";
-*/
+		// $this->request_headers[] = "Pragma: no-cache";
+		// $this->request_headers[] = "Cache-Control: no-cache";
+		// $this->request_headers[] = "Connection: keep-alive";
+		// $this->request_headers[] = "Accept-Encoding: gzip, deflate";
+
 		if ($args != null)
 		{
 			$method = 'POST ';
@@ -147,7 +148,8 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 			curl_setopt($this->ch, CURLOPT_NOBODY, 0);
 		}
 		// indica el archivo
-		$fh = null;		if ($file != '')
+		$fh = null;
+		if ($file != '')
 		{
 			$fh = fopen($file, 'w');
 			curl_setopt($this->ch, CURLOPT_FILE, $fh);
