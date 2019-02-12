@@ -136,7 +136,7 @@ class SQLiteList
 		}
 		catch(\Exception $e)
 		{
-			throw new \Exception($text . '. Error nativo: ' . $e->getMessage() . ".");
+			throw new ErrorException($text . '. Error nativo: ' . $e->getMessage() . ".");
 		}
 	}
 	private function ParamsToText($sql, $args)

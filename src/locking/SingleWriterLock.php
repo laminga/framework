@@ -3,6 +3,7 @@
 namespace minga\framework\locking;
 
 use minga\framework\Log;
+use minga\framework\ErrorException;
 
 abstract class SingleWriterLock extends Lock
 {
@@ -49,7 +50,7 @@ abstract class SingleWriterLock extends Lock
 	{
 		if (self::$writeLock == null)
 		{
-			$e = new \Exception("Se ha intentado finalizar un " . get_called_class() . " sin una inicialización asociada.");
+			$e = new ErrorException("Se ha intentado finalizar un " . get_called_class() . " sin una inicialización asociada.");
 			Log::HandleSilentException($e);
 			return;
 		}

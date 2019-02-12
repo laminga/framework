@@ -81,12 +81,12 @@ class Zip
 		if (!file_exists($this->targetFile))
 		{
 			if ($zip->open($this->targetFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true)
-				throw new \Exception ("Could not open archive");
+				throw new ErrorException ("Could not open archive");
 		}
 		else
 		{
 			if ($zip->open($this->targetFile) !== true)
-				throw new \Exception ("Could not open archive");
+				throw new ErrorException ("Could not open archive");
 		}
 
 		// adds files to the file list
@@ -101,11 +101,11 @@ class Zip
 			$path = str_replace($sourcefolder, "", $fileFixed);
 
 			if (!file_exists(realpath($file)))
-				throw new \Exception(realpath($file).' does not exist.');
+				throw new ErrorException(realpath($file).' does not exist.');
 
-			//if (!is_readable($file)) { throw new \Exception($file.' not readable.'); }
+			//if (!is_readable($file)) { throw new ErrorException($file.' not readable.'); }
 			if($zip->addFile(realpath($file), $path) == false)
-				throw new \Exception ("ERROR: Could not add file: ... </br> numFile:");
+				throw new ErrorException ("ERROR: Could not add file: ... </br> numFile:");
 		}
 		// closes the archive
 		$zip->close();
@@ -123,7 +123,7 @@ class Zip
 		}
 		else
 		{
-			throw new \Exception("Failed to extract files: ");
+			throw new ErrorException("Failed to extract files: ");
 		}
 	}
 
@@ -142,7 +142,7 @@ class Zip
 				// pone fecha
 				$stat = $zip->statIndex($i);
 				if($stat === false)
-					throw new \Exception ("Failed to extract files");
+					throw new ErrorException ("Failed to extract files");
 				$mtime = intval($stat['mtime']);
 				$extracted = $path . "/" . $filename;
 				touch($extracted, $mtime, time());
@@ -152,7 +152,7 @@ class Zip
 		}
 		else
 		{
-			throw new \Exception("Failed to extract files");
+			throw new ErrorException("Failed to extract files");
 		}
 	}
 

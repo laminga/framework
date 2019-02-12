@@ -2,6 +2,8 @@
 
 namespace minga\framework;
 
+use minga\framework\ErrorException;
+
 class CompressedInParentDirectory
 {
 	public $path;
@@ -45,7 +47,7 @@ class CompressedInParentDirectory
 		else
 		{
 			Profiling::EndTimer();
-			throw new \Exception('Could not access contents.');
+			throw new ErrorException('Could not access contents.');
 		}
 		Profiling::EndTimer();
 		return $hasSubdir;
@@ -109,7 +111,7 @@ class CompressedInParentDirectory
 		}
 		else
 		{
-			throw new \Exception('Could not access contents.');
+			throw new ErrorException('Could not access contents.');
 		}
 
 		Profiling::EndTimer();

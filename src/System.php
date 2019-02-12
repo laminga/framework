@@ -48,7 +48,7 @@ class System
 			case 8:
 				return "64"; //64 bit version of PHP
 			default:
-				throw new \Exception('PHP_INT_SIZE is '.PHP_INT_SIZE);
+				throw new ErrorException('PHP_INT_SIZE is '.PHP_INT_SIZE);
 		}
 	}
 

@@ -185,7 +185,7 @@ class Zipping
 				Profiling::BeginTimer('Zipping::GetContainer');
 				$ret = new \ZipArchive();
 				if ($ret->open($filename) !== true)
-					throw new \Exception("Could not open archive");
+					throw new ErrorException("Could not open archive");
 				$lock = new ZipLock($filename);
 				$lock->LockRead();
 				self::$allFiles[$filename] = $ret;

@@ -373,7 +373,7 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 	public function GetCookieFile()
 	{
 		if($this->cookie_file == "")
-			throw new \Exception("Create cookie first.");
+			throw new ErrorException("Create cookie first.");
 
 		return $this->cookie_file;
 	}

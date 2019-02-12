@@ -79,7 +79,7 @@ class Params
 	{
 		$ret = self::Get($key, null);
 		if ($ret === null)
-			throw new \Exception("Parameter " . $key . " required.");
+			throw new ErrorException("Parameter " . $key . " required.");
 		return $ret;
 	}
 }

@@ -3,6 +3,8 @@
 
 namespace minga\framework;
 
+use minga\framework\ErrorException;
+
 class CompressedDirectory
 {
 	public $path;
@@ -78,7 +80,7 @@ class CompressedDirectory
 		}
 		else
 		{
-			throw new \Exception('Could not access contents.');
+			throw new ErrorException('Could not access contents.');
 		}
 
 		Profiling::EndTimer();

@@ -1,6 +1,7 @@
 <?php
 
 namespace minga\framework\settings;
+use minga\framework\ErrorException;
 
 class ServersSettings
 {
@@ -48,16 +49,16 @@ class ServersSettings
 		if ($this->currentServer == null)
 		{
 			if (sizeof($this->servers) > 1)
-				throw new \Exception("Many servers are set in configuration but no current server is specificied. Call Context::Settings()->Servers()->SetCurrentServer(name) to set one.");
+				throw new ErrorException("Many servers are set in configuration but no current server is specificied. Call Context::Settings()->Servers()->SetCurrentServer(name) to set one.");
 			if (sizeof($this->servers) == 0)
-				throw new \Exception("No servers are set in configuration file.");
+				throw new ErrorException("No servers are set in configuration file.");
 			$keys = array_keys($this->servers);
 			return $this->servers[$keys[0]];
 		}
 
 		if (array_key_exists($this->currentServer, $this->servers) == false)
 		{
-			throw new \Exception("'" . $this->currentServer . "' is specified as current server but no server with such name is registered in the configuration settings .");
+			throw new ErrorException("'" . $this->currentServer . "' is specified as current server but no server with such name is registered in the configuration settings .");
 		}
 
 		return $this->servers[$this->currentServer];
@@ -79,7 +80,7 @@ class ServersSettings
 	public function Main()
 	{
 		if ($this->mainServerObj == null)
-			throw new \Exception('No main server is set in configuration settings.');
+			throw new ErrorException('No main server is set in configuration settings.');
 		else
 			return $this->mainServerObj;
 	}

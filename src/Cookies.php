@@ -21,7 +21,7 @@ class Cookies
 
 		if($ret === false)
 		{
-			$ex = new \Exception('SetCookie');
+			$ex = new ErrorException('SetCookie');
 			Log::HandleSilentException($ex);
 		}
 	}

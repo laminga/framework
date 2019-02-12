@@ -8,12 +8,12 @@ class MessageBox
 	{
 		if(Context::Settings()->isTesting)
 			echo("ERROR. " . $message . '<br>');
-		Log::HandleSilentException(new \Exception($message));
+		Log::HandleSilentException(new ErrorException($message));
 	}
 
 	public static function ThrowAndLogMessage($message, $action = '')
 	{
-			Log::HandleSilentException(new \Exception($message));
+			Log::HandleSilentException(new ErrorException($message));
 			self::ThrowMessage($message, $action);
 	}
 	public static function ThrowMessage($message, $action = '', $title = 'Atención', $caption = 'Continuar')

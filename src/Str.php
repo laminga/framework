@@ -599,7 +599,7 @@ class Str
 			$cad = self::Replace($cad, "  ", " ");
 			return $cad;
 		}
-		throw new \Exception('Invalid normalization argument.');
+		throw new ErrorException('Invalid normalization argument.');
 	}
 
 	public static function Initials($cad)

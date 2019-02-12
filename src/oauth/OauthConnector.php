@@ -11,6 +11,8 @@ use minga\framework\Log;
 use minga\framework\MessageBox;
 use minga\framework\Profiling;
 use minga\framework\Str;
+use minga\framework\ErrorException;
+use minga\framework\MessageException;
 
 abstract class OauthConnector
 {
@@ -86,7 +88,7 @@ abstract class OauthConnector
 
 	public function RedirectErrorNoEmail()
 	{
-		Log::HandleSilentException(new \Exception('No email from '.$this->ProviderName()));
+		Log::HandleSilentException(new MessageException('No email from '.$this->ProviderName()));
 
 		MessageBox::ShowDialogPopup("No se ha podido obtener una dirección de correo electrónico a través de " . $this->ProviderName() . ". Intente otro método de registro para la identificación.", "Atención");
 	}
@@ -94,7 +96,7 @@ abstract class OauthConnector
 	public function RedirectError($error = null)
 	{
 		if($error != null)
-			Log::HandleSilentException(new \Exception($error));
+			Log::HandleSilentException(new ErrorException($error));
 
 		MessageBox::ShowDialogPopup("No se ha podido realizar la interacción con " . $this->ProviderName() . " para la identificación.", "Atención");
 	}
@@ -118,7 +120,7 @@ abstract class OauthConnector
 		//-Que no tenga funciones inválidas (deleteUser, etc.)
 		//-No tenga código javascript (xss).
 		if($target == '')
-			throw new \Exception("Undefined target.");
+			throw new ErrorException("Undefined target.");
 
 		$js = "window.opener.location='" . $target. "';";
 		$js .= "window.close();";

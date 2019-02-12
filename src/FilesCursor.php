@@ -28,7 +28,7 @@ class FilesCursor
 		if ($this->handle == null)
 		{
 			if (($this->handle = IO::OpenDirNoWarning($this->path)) === false)
-				throw new \Exception('Invalid directory.');
+				throw new ErrorException('Invalid directory.');
 		}
 		while(true)
 		{

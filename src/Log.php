@@ -15,7 +15,7 @@ class Log
 
 		if ($trace == null)
 		{
-			$e = new \Exception();
+			$e = new ErrorException();
 			$st = explode("\n", $e->getTraceAsString());
 			if (sizeof($st) > 2)
 			{

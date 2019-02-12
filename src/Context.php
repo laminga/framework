@@ -21,7 +21,7 @@ class Context
 	public static function Calls()
 	{
 		if(self::$calls === null)
-			throw new \Exception('Framework context Calls must be initialized.');
+			throw new ErrorException('Framework context Calls must be initialized.');
 
 		return self::$calls;
 	}

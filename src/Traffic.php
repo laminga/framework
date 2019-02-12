@@ -192,7 +192,7 @@ class Traffic
 			else
 				$device = '';
 
-			Log::HandleSilentException(new \Exception('La IP' . $device. ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
+			Log::HandleSilentException(new MessageException('La IP' . $device. ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
 		}
 		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
 			Performance::SendPerformanceWarning('tráfico por IP sospechoso', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');

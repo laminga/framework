@@ -79,13 +79,13 @@ class Ghostscript
 	private static function SuperExec($file, $args, &$returnCode = null, $returnFirstLineOnly = false)
 	{
 		if (file_exists($file) == false)
-			throw new \Exception("File not found for SuperExec ('" . $file. "').");
+			throw new ErrorException("File not found for SuperExec ('" . $file. "').");
 
 		if (Str::StartsWith($args, " ") == false) $args = " " . $args;
 		exec($file . $args, $out, $returnCode);
 
 		if ($returnCode == 126)
-			throw new \Exception("Execute permissions not available for SuperExec ('" . $file. "').");
+			throw new ErrorException("Execute permissions not available for SuperExec ('" . $file. "').");
 
 		if (is_array($out) == false || sizeof($out) == 0)
 			$ret = "";
@@ -113,7 +113,7 @@ class Ghostscript
 		{
 			$text = "Ghostscript exited with unrecoverable error (error: " . $out . "). " . $extraInfo;
 			$text = Str::Replace($text, "\n", '<br>');
-			Log::HandleSilentException(new \Exception($text));
+			Log::HandleSilentException(new ErrorException($text));
 			return false;
 		}
 
@@ -121,7 +121,7 @@ class Ghostscript
 		{
 			$text = "Ghostscript exited with unexpected output (retcode: " . $retCode . "). " . $extraInfo;
 			$text = Str::Replace($text, "\n", '<br>');
-			Log::HandleSilentException(new \Exception($text));
+			Log::HandleSilentException(new ErrorException($text));
 			return false;
 		}
 

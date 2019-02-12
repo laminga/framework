@@ -345,7 +345,7 @@ class IO
 		{
 			mkdir($directory);
 		}
-		catch (\Exception $e)
+		catch (ErrorException $e)
 		{
 			/* Este catch está porque incluso chequeando con if exists antes,
 				pueda haber concurrencia entre if exists y mkdir, y en consecuencia
@@ -509,7 +509,7 @@ class IO
 		{
 			return filemtime($file);
 		}
-		catch(\Exception $e)
+		catch(ErrorException $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -663,7 +663,7 @@ class IO
 			if(file_exists($dir))
 				return rmdir($dir);
 		}
-		catch(\Exception $e)
+		catch(ErrorException $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -678,7 +678,7 @@ class IO
 			if(file_exists($dir))
 				return opendir($dir);
 		}
-		catch(\Exception $e)
+		catch(ErrorException $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -760,7 +760,7 @@ class IO
 		self::Delete($zipFile);
 		$zip = new \ZipArchive();
 		if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true)
-			throw new \Exception("Could not open archive");
+			throw new ErrorException("Could not open archive");
 
 		// adds files to the file list
 		$sourcefolder = str_replace("\\", "/", $sourcefolder);
@@ -773,14 +773,14 @@ class IO
 			$path = str_replace($sourcefolder, "", $fileFixed); //remove the source path from the $key to return only the file-folder structure from the root of the source folder
 
 			if (!file_exists($file))
-				throw new \Exception('file does not exist. Please contact your administrator or try again later.');
+				throw new ErrorException('file does not exist. Please contact your administrator or try again later.');
 			if (!is_readable($file))
-				throw new \Exception('file not readable. Please contact your administrator or try again later.');
+				throw new ErrorException('file not readable. Please contact your administrator or try again later.');
 
 			if($zip->addFromString($path, $file) == false)
-				throw new \Exception("ERROR: Could not add file: ... </br> numFile:");
+				throw new ErrorException("ERROR: Could not add file: ... </br> numFile:");
 			if($zip->addFile(realpath($file), $path) == false)
-				throw new \Exception("ERROR: Could not add file: ... </br> numFile:");
+				throw new ErrorException("ERROR: Could not add file: ... </br> numFile:");
 		}
 		// closes the archive
 		$zip->close();
@@ -811,7 +811,7 @@ class IO
 			if(file_exists($source))
 				return rename($source, $target);
 		}
-		catch(\Exception $e)
+		catch(ErrorException $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -861,7 +861,7 @@ class IO
 			if (file_exists($file))
 				return unlink($file);
 		}
-		catch(\Exception $e)
+		catch(ErrorException $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);

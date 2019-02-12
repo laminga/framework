@@ -137,11 +137,11 @@ class WebConnection
 	{
 		if (Str::StartsWith($url, '/') == false)
 		{
-			throw new \Exception('Relative URL or redirect not supported');
+			throw new ErrorException('Relative URL or redirect not supported');
 		}
 		if ($this->lastLocation == '')
 		{
-			throw new \Exception('Relative URL or redirect require referer');
+			throw new ErrorException('Relative URL or redirect require referer');
 		}
 		$parts = parse_url($this->lastLocation);
 		$newurl = $parts['scheme'] . '://' . $parts['host'];
@@ -154,7 +154,7 @@ class WebConnection
 	private function doExecute($url, $file = '', $args = null)
 	{
 		if ($this->ch == null)
-			throw new \Exception("Initialize() method should be called first.");
+			throw new ErrorException("Initialize() method should be called first.");
 
 		$this->EnableExtraLog();
 
@@ -373,7 +373,7 @@ class WebConnection
 	public function GetCookieFile()
 	{
 		if($this->cookie_file == "")
-			throw new \Exception("Create cookie first.");
+			throw new ErrorException("Create cookie first.");
 
 		return $this->cookie_file;
 	}

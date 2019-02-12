@@ -2,6 +2,7 @@
 
 
 namespace minga\framework\settings;
+use minga\framework\ErrorException;
 
 class KeysSettings
 {
@@ -16,7 +17,7 @@ class KeysSettings
 	public function GetHashKeyedKey()
 	{
 		if($this->hashKeyedKey == '')
-			throw new \Exception('HashKeyed key not set. Please, add it to /config/settings.php file.');
+			throw new ErrorException('HashKeyed key not set. Please, add it to /config/settings.php file.');
 
 		return base64_decode($this->hashKeyedKey);
 	}
@@ -24,7 +25,7 @@ class KeysSettings
 	public function GetRememberKey()
 	{
 		if($this->rememberKey == '')
-			throw new \Exception('Remember key not set. Please, add it to /config/settings.php file.');
+			throw new ErrorException('Remember key not set. Please, add it to /config/settings.php file.');
 
 		return bin2hex(base64_decode($this->rememberKey));
 	}

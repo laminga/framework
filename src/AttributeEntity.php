@@ -3,6 +3,8 @@
 
 namespace minga\framework;
 
+use minga\framework\ErrorException;
+
 class AttributeEntity
 {
 	public $path = '';
@@ -92,7 +94,7 @@ class AttributeEntity
 	public function SaveAttributesOnly()
 	{
 		if (strlen($this->path) == 0)
-			throw new \Exception("Tried to save to an uninitialized entity.");
+			throw new ErrorException("Tried to save to an uninitialized entity.");
 		IO::WriteEscapedIniFile($this->path, $this->attributes);
 	}
 

@@ -19,7 +19,7 @@ class Date
 	public static function NowGMT($offset)
 	{
 		if ($offset < -12 || $offset > 12)
-			throw new \Exception("Time offset out of range: " . $offset);
+			throw new ErrorException("Time offset out of range: " . $offset);
 		return self::UniversalNow() + 60 * 60 * $offset;
 	}
 
@@ -54,7 +54,10 @@ class Date
 	{
 		return date("Y-m-d", $date);
 	}
-
+	public static function DateToDDMMYYYY($date)
+	{
+		return date("d/m/YYYY", $date);
+	}
 	public static function FormattedDate($date)
 	{
 		return date("Y-m-d@H.i.s", $date);
@@ -258,11 +261,11 @@ class Date
 
 		$days = (int)$days;
 		if($days < 0)
-			throw new \Exception('Days must be a positive integer');
+			throw new ErrorException('Days must be a positive integer');
 
 		$dt = self::FormattedDateToDateTime($date);
 		if($dt === false)
-			throw new \Exception('Invalid Date');
+			throw new ErrorException('Invalid Date');
 
 		$dt->add(new \DateInterval('P'.$days.'D'));
 		$now = new \DateTime('now');
@@ -292,7 +295,7 @@ class Date
 		$month = null;
 		$year = null;
 		$bret = self::TryParseDate($date, $day, $month, $year);
-		if (!$bret) throw new \Exception('Fecha no válida.');
+		if (!$bret) throw new ErrorException('Invalid date.');
 		return $year . '-' . $month .'-' . $day;
 	}
 }

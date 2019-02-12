@@ -51,7 +51,7 @@ class TwoLevelAttributeEntity
 	public function SaveAttributesOnly()
 	{
 		if (strlen($this->path) == 0)
-			throw new \Exception("Tried to save to an uninitialized entity.");
+			throw new ErrorException("Tried to save to an uninitialized entity.");
 		IO::WriteEscapedIniFileWithSections($this->path, $this->sections);
 	}
 

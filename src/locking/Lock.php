@@ -5,6 +5,7 @@ namespace minga\framework\locking;
 use minga\framework\IO;
 use minga\framework\Performance;
 use minga\framework\Profiling;
+use minga\framework\ErrorException;
 
 class Lock
 {
@@ -49,7 +50,7 @@ class Lock
 			// ya está lockeado
 			$values = self::$locks[$file];
 			if ($write && $values[1] == false)
-				throw new \Exception("WriteLock could not be taken while ReadLock is used.");
+				throw new ErrorException("WriteLock could not be taken while ReadLock is used.");
 			self::$locks[$file] = array(++$values[0], $values[1]);
 			return true;
 		}
@@ -81,7 +82,7 @@ class Lock
 		}
 		else
 		{
-			throw new \Exception("The lock could not be released.");
+			throw new ErrorException("The lock could not be released.");
 		}
 	}
 
@@ -114,7 +115,7 @@ class Lock
 				$this->handle = null;
 				$this->isLocked = false;
 				Performance::EndLockedWait($hadToWait);
-				throw new \Exception("No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.");
+				throw new ErrorException("No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.");
 			}
 		}
 		$this->isLocked = true;

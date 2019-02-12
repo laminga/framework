@@ -21,7 +21,7 @@ class ModifiedSince
 			$timeStamp = Zipping::FileMTime($filename);
 			$text .= "TIMESTAMP=" . $timeStamp . ";";
 			$text .= "_SERVER=". print_r($_SERVER, true);
-			Log::HandleSilentException(new \Exception("Google crawled download: " . $text));
+			Log::HandleSilentException(new ErrorException("Google crawled download: " . $text));
 		}*/
 		return self::AddCacheHeaders(Zipping::FileMTime($filename));
 	}
