@@ -742,7 +742,14 @@ class clsTbsZip {
 			echo $data; // donwload
 		} elseif ($this->OutputMode===TBSZIP_STRING) {
 			$this->OutputSrc .= $data; // to string
-		} elseif (TBSZIP_FILE) {
+		// Esto estaba así en el código original:
+		// } elseif (TBSZIP_FILE) {
+		// Es siempre true y parece que es un error
+		// y debería ser así:
+		// } elseif ($this->OutputMode===TBSZIP_FILE) {
+		// Pero como siempre funcionó así, quizás se
+		// rompe algo así que lo dejo como true siempre
+		} else {
 			fwrite($this->OutputHandle, $data); // to file
 		}
 	}

@@ -1,3 +1,7 @@
+
+
+
+
 <?php
 
 
@@ -7,3 +11,6 @@ class MessageException extends MingaException
 {
 
 }
+
+
+

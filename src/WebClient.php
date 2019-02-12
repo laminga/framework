@@ -385,64 +385,6 @@ $this->request_headers[] = "Accept-Encoding: gzip, deflate";
 
 		return $this->cookie_file;
 	}
-	public function RemoteLogin($url, $user, $pass)
-	{
-		$ch = curl_init();
-
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, "ppusername=".$user."&pppassword=".$pass."&login=1&is_framed=0&returnUrl=&loginUrl=".$url);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_COOKIESESSION, true);
-		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->CreateCookieFile());
-
-		$ret = curl_exec($ch);
-
-		if (curl_errno($ch))
-		{
-			$this->ParseErrorCodes($ret);
-
-			if ($this->throwErrors)
-				MessageBox::ThrowMessage("Error: " . $this->error);
-
-			$ret = false;
-		}
-		else
-			$ret = true;
-
-		curl_close($ch);
-		return $ret;
-	}
-
-	public function RemoteLogout($url)
-	{
-		$ch = curl_init();
-
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->GetCookieFile());
-
-		$ret = curl_exec($ch);
-		if (curl_errno($ch))
-		{
-			$this->ParseErrorCodes($ret);
-
-			if ($this->throwErrors)
-				MessageBox::ThrowMessage("Error: " . $this->error);
-
-			$ret = false;
-		}
-		else
-			$ret = true;
-
-		curl_close($ch);
-
-		$this->ClearCookieFile();
-
-		return $ret;
-	}
 
 	public function Upload($url, $path, array $postData = array())
 	{

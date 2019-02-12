@@ -90,13 +90,14 @@ class Date
 
 	public static function ParseTime($span)
 	{
-		if ($span == "") return -1;
+		if ($span == "")
+			return -1;
 		$span = strtolower($span);
 		$span = str_replace("hs", "", $span);
 		$parts = explode(':', $span);
-		$minutes = 60 * $parts[0];
+		$minutes = 60 * (int)$parts[0];
 		if (sizeof($parts) > 1)
-			$minutes += $parts[1];
+			$minutes += (int)$parts[1];
 		return $minutes;
 	}
 
@@ -113,9 +114,9 @@ class Date
 		$span = strtolower($span);
 		$span = str_replace("hs", "", $span);
 		$parts = explode(':', $span);
-		$minutes = 60 * $parts[0];
+		$minutes = 60 * (int)$parts[0];
 		if (sizeof($parts) > 1)
-			$minutes += $parts[1];
+			$minutes += (int)$parts[1];
 		return $minutes;
 	}
 

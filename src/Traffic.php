@@ -26,6 +26,9 @@ class Traffic
 	private static function Save($ipaddr)
 	{
 		$addr = inet_pton($ipaddr);
+		if($addr === false)
+			throw new \Exception('Invalid address.');
+
 		$chars = str_split($addr);
 
 		$set = self::NumberToFile(ord($chars[sizeof($chars)-1]) / self::C_FACTOR +1);

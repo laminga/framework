@@ -5,8 +5,9 @@ namespace minga\framework\caching;
 use minga\framework\Context;
 use minga\framework\IO;
 use minga\framework\Profiling;
-use minga\framework\settings\CacheSettings;
 use minga\framework\SQLiteList;
+use minga\framework\Str;
+use minga\framework\settings\CacheSettings;
 
 class BaseTwoLevelStringSQLiteCache
 {
@@ -22,7 +23,7 @@ class BaseTwoLevelStringSQLiteCache
 
 	private function OpenRead($key = null, $throwLockErrors = true)
 	{
-		try 
+		try
 		{
 			$this->db->Open($this->ResolveFilename($key), true);
 			return true;
@@ -37,7 +38,7 @@ class BaseTwoLevelStringSQLiteCache
 
 	private function OpenWrite($key = null, $throwLockErrors = true)
 	{
-		try 
+		try
 		{
 			$this->db->Open($this->ResolveFilename($key));
 			return true;
@@ -67,7 +68,7 @@ class BaseTwoLevelStringSQLiteCache
 		if ($levelKey !== null)
 		{
 			// Es de 2 niveles
-			$this->OpenWrite($levelKey);	
+			$this->OpenWrite($levelKey);
 			$this->db->Delete($valueKey);
 			$this->db->Close();
 		}
@@ -77,14 +78,14 @@ class BaseTwoLevelStringSQLiteCache
 			if (file_exists($file))
 			{
 				// Es de 1 nivel y pide borrar el key
-				$this->OpenWrite(null);	
+				$this->OpenWrite(null);
 				$this->db->Delete($valueKey);
 				$this->db->Close();
 			}
 			else
-			{	
+			{
 				// Es de 2 niveles y pide borrar todo
-				$this->OpenWrite($key1);	
+				$this->OpenWrite($key1);
 				$this->db->DeleteAll();
 				$this->db->Close();
 				$file = $this->ResolveFilename($key1);
@@ -102,10 +103,10 @@ class BaseTwoLevelStringSQLiteCache
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
 
-		if ($this->OpenRead($levelKey, false) == false)	
+		if ($this->OpenRead($levelKey, false) == false)
 		{
 			sleep(1);
-			if ($this->OpenRead($levelKey, false) == false)	
+			if ($this->OpenRead($levelKey, false) == false)
 				return false;
 		}
 
@@ -124,7 +125,7 @@ class BaseTwoLevelStringSQLiteCache
 	{
 		if ($key1 === null)
 			$key1 = 'cache';
-	
+
 		$file = $this->path . "/" . $key1 . ".db";
 		return $file;
 	}
@@ -142,10 +143,10 @@ class BaseTwoLevelStringSQLiteCache
 			return;
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
-		if ($this->OpenWrite($levelKey, false) == false)	
+		if ($this->OpenWrite($levelKey, false) == false)
 		{
 			sleep(1);
-			if ($this->OpenWrite($levelKey, false) == false)	
+			if ($this->OpenWrite($levelKey, false) == false)
 				return;
 		}
 		$this->db->InsertOrUpdate($valueKey, $value);
