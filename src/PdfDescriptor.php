@@ -33,7 +33,6 @@ class PdfDescriptor
 		try
 		{
 			Profiling::BeginTimer();
-			if ($filePlace == "") $filePlace = $file;
 			$ret = implode(" ", self::RunPdfToText($file));
 			$ret = trim(preg_replace('/\s+/', ' ', $ret));
 			return $ret;
@@ -50,7 +49,7 @@ class PdfDescriptor
 	}
 	public static function GetPages($file)
 	{
-		$info = self::GetMetadataInfo($file);	
+		$info = self::GetMetadataInfo($file);
 		return $info['pages'];
 	}
 	public static function GetMetadataInfo($file)

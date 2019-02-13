@@ -38,7 +38,6 @@ class Zip
 
 		foreach($relativePathsToZip as $relPath)
 		{
-
 			$files = new \RecursiveIteratorIterator(
 				new \RecursiveDirectoryIterator(realpath($basePath . $relPath),
 				\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
@@ -88,18 +87,46 @@ class Zip
 		return ($currentBytes <= $bytesLimit);
 	}
 
-	//TODO: hacer refactor de esta funcion que abre y cierra un zip por cada archivo,
-	//usar la lógica de AppendFilesToZipRecursive que no llama a AddToZip cada vez.
-	public function AppendFilesToZipRecursiveDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, &$currentBytes)
+	public function AppendFilesToZipRecursiveDeletting($basePath, array $relativePathsToZip, $ext, $bytesLimit, &$currentBytes)
 	{
-		if ($this->AppendFilesToZipDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, $currentBytes) == false)
-			return false;
-		foreach(IO::GetDirectories($basePath . $relativePathToZip) as $folder)
+		$zip = $this->OpenCreate();
+
+		$basePath = str_replace("\\", '/', $basePath);
+		if (Str::EndsWith($basePath, '/') == false)
+			$basePath .= '/';
+
+		$currentfiles = [];
+		foreach($relativePathsToZip as $relPath)
 		{
-			if ($this->AppendFilesToZipRecursiveDeletting($basePath, $relativePathToZip . '/' . $folder, $ext, $bytesLimit, $currentBytes) == false)
-				return false;
+			$files = new \RecursiveIteratorIterator(
+				new \RecursiveDirectoryIterator(realpath($basePath . $relPath),
+				\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+
+			foreach($files as $file)
+			{
+				if($ext != '' && Str::EndsWith($file, $ext) == false)
+					continue;
+
+				$file = str_replace("\\", '/', $file);
+				$relFile = str_replace($basePath, '', $file);
+
+				$currentBytes += filesize($file);
+				$currentfiles[] = $file;
+				if ($currentBytes >= $bytesLimit)
+					break;
+
+				if($zip->addFile($file, $relFile) == false)
+					throw new \Exception('Could not add file.');
+			}
+			if ($currentBytes >= $bytesLimit)
+				break;
 		}
-		return true;
+		$zip->close();
+
+		foreach($currentfiles as $file)
+			IO::Delete($file);
+
+		return ($currentBytes <= $bytesLimit);
 	}
 
 	private function AddFolderToPath(array $files, $path)
