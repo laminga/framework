@@ -9,6 +9,11 @@ class AppPaths
 		return Context::Settings()->rootPath;
 	}
 
+	public function GetSourcePath()
+	{
+		return realpath($this->GetRoot() . "/src");
+	}
+
 	public function GetStorageRoot()
 	{
 		return realpath($this->GetRoot() . "/storage");
