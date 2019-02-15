@@ -8,7 +8,6 @@ class PdfDescriptor
 	/**
 	 * directorio con los binarios
 	 */
-	const BIN_PATH = "/cgi-bin";
 
 	const PDF_TO_TEXT = "./pdftotext";
 
@@ -118,7 +117,7 @@ class PdfDescriptor
 	private static function RunCommand($command)
 	{
 		$prevDir = getcwd();
-		chdir(Context::Paths()->GetRoot() . self::BIN_PATH);
+		chdir(Context::Paths()->GetBinPath());
 
 		if(System::IsOnIIS())
 		{

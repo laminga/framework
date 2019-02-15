@@ -9,8 +9,6 @@ class Ghostscript
 	 *
 	 * origen: https://www.ghostscript.com/download/gsdnld.html
 	 */
-	const BIN_PATH = "/cgi-bin";
-
 	const GHOSTSCRIPT = "/gs";
 
 	public static function Merge($coverFile, $originalFile, $targetFile, $title, $authors)
@@ -102,8 +100,8 @@ class Ghostscript
 	private static function RunGhostscript($args)
 	{
 		$bits = System::GetArchitecture();
-		// esto no es compatible con AA
-		$exeFile = Context::Paths()->GetRoot() . self::BIN_PATH . self::GHOSTSCRIPT . $bits;
+
+		$exeFile = Context::Paths()->GetBinPath() . self::GHOSTSCRIPT . $bits;
 
 		$out = self::SuperExec($exeFile, $args, $retCode);
 

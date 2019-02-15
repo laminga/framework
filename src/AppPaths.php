@@ -14,10 +14,16 @@ class AppPaths
 		return realpath($this->GetRoot() . "/src");
 	}
 
+	public function GetBinPath()
+	{
+		return realpath($this->GetSourcePath() . "/cgi-bin");
+	}
+
 	public function GetStorageRoot()
 	{
 		return realpath($this->GetRoot() . "/storage");
 	}
+
 
 	public function GetStorageData()
 	{
