@@ -11,7 +11,7 @@ class AppPaths
 
 	public function GetStorageRoot()
 	{
-		return realpath($this->GetRoot() . "/../storage");
+		return realpath($this->GetRoot() . "/storage");
 	}
 
 	public function GetStorageData()
