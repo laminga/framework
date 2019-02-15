@@ -41,7 +41,7 @@ class AppPaths
 
 	public static function GetTwigCache()
 	{
-		return Context::Paths()->GetRoot() . "/compilation_cache";
+		return Context::Paths()->GetSourcePath() . "/compilation_cache";
 	}
 	public function GetMockPath()
 	{

@@ -102,7 +102,7 @@ class Ghostscript
 	private static function RunGhostscript($args)
 	{
 		$bits = System::GetArchitecture();
-
+		// esto no es compatible con AA
 		$exeFile = Context::Paths()->GetRoot() . self::BIN_PATH . self::GHOSTSCRIPT . $bits;
 
 		$out = self::SuperExec($exeFile, $args, $retCode);
