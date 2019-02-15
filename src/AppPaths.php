@@ -4,6 +4,8 @@ namespace minga\framework;
 
 class AppPaths
 {
+	private static $useBinFromRoot = false;
+
 	public function GetRoot()
 	{
 		return Context::Settings()->rootPath;
@@ -13,10 +15,16 @@ class AppPaths
 	{
 		return realpath($this->GetRoot() . "/src");
 	}
-
+	public function UseBinFromRoot()
+	{
+		self::$useBinFromRoot = true;
+	}
 	public function GetBinPath()
 	{
-		return realpath($this->GetSourcePath() . "/cgi-bin");
+		if (self::$useBinFromRoot)
+			return realpath($this->GetRoot() . "/cgi-bin");
+		else
+			return realpath($this->GetSourcePath() . "/cgi-bin");
 	}
 
 	public function GetStorageRoot()
