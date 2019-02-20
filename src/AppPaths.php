@@ -25,7 +25,6 @@ class AppPaths
 			return realpath($this->GetRoot() . "/../storage");
 	}
 
-
 	public function GetStorageData()
 	{
 		return $this->GetStorageRoot() . "/data";
@@ -98,6 +97,7 @@ class AppPaths
 
 	public function GetTfpdfFontsPath()
 	{
+		//TODO: borrar esto y la llamada. Revisar cache actual en vendor...
 		return $this->GetFrameworkPath() . '/tfpdf/font/unifont';
 	}
 
