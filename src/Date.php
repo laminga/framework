@@ -111,6 +111,8 @@ class Date
 
 	public static function ParseSpan($span)
 	{
+		if($span == '')
+			return 0;
 		$span = strtolower($span);
 		$span = str_replace("hs", "", $span);
 		$parts = explode(':', $span);

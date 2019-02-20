@@ -1,7 +1,7 @@
 <?php
 
-
 namespace minga\framework\settings;
+
 use minga\framework\ErrorException;
 
 class KeysSettings

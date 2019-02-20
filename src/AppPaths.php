@@ -4,6 +4,7 @@ namespace minga\framework;
 
 class AppPaths
 {
+
 	public function GetRoot()
 	{
 		return Context::Settings()->rootPath;
