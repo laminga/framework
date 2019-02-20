@@ -4,6 +4,7 @@ namespace minga\framework;
 
 class AppPaths
 {
+	public static $useStorageFromRoot = false;
 
 	public function GetRoot()
 	{
@@ -17,7 +18,11 @@ class AppPaths
 
 	public function GetStorageRoot()
 	{
-		return realpath($this->GetRoot() . "/../storage");
+		if (self::$useStorageFromRoot)
+			// esto es para zafar que no me se me rompa lo de mapas
+			return realpath($this->GetRoot() . "/storage");
+		else
+			return realpath($this->GetRoot() . "/../storage");
 	}
 
 
