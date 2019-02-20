@@ -9,19 +9,14 @@ class AppPaths
 		return Context::Settings()->rootPath;
 	}
 
-	public function GetSourcePath()
-	{
-		return realpath($this->GetRoot() . "/src");
-	}
-
 	public function GetBinPath()
 	{
-		return realpath($this->GetSourcePath() . "/cgi-bin");
+		return realpath($this->GetRoot() . "/cgi-bin");
 	}
 
 	public function GetStorageRoot()
 	{
-		return realpath($this->GetRoot() . "/storage");
+		return realpath($this->GetRoot() . "/../storage");
 	}
 
 
@@ -47,7 +42,7 @@ class AppPaths
 
 	public static function GetTwigCache()
 	{
-		return Context::Paths()->GetSourcePath() . "/compilation_cache";
+		return Context::Paths()->GetRoot() . "/compilation_cache";
 	}
 	public function GetMockPath()
 	{

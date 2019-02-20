@@ -501,7 +501,7 @@ class Performance
 	private static function IsAdmin($controller)
 	{
 		if ($controller == 'Services') return true;
-		$path = Context::Paths()->GetSourcePath() . '/controllers/admin';
+		$path = Context::Paths()->GetRoot() . '/controllers/admin';
 		return file_exists($path . '/' . $controller . '.php');
 	}
 
