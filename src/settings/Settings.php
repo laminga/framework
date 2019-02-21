@@ -84,11 +84,14 @@ class Settings
 	public $useAnalytics = false;
 	public $analyticsId = '';
 
-	public function Initialize($rootPath)
+	public function Initialize($rootPath, $storageAtSameLevel = false)
 	{
 		$this->catalog = 'mySql';
 		$this->rootPath = $rootPath;
-		$this->storagePath = realpath($rootPath . '/../storage');
+		if ($storageAtSameLevel)
+			$this->storagePath = realpath($rootPath . '/../storage');
+		else
+			$this->storagePath = realpath($rootPath . '/storage');
 	}
 
 	public function HasSSL()
