@@ -4,8 +4,6 @@ namespace minga\framework;
 
 class AppPaths
 {
-	public static $useStorageFromRoot = false;
-
 	public function GetRoot()
 	{
 		return Context::Settings()->rootPath;
@@ -13,16 +11,12 @@ class AppPaths
 
 	public function GetBinPath()
 	{
-		return realpath($this->GetRoot() . "/cgi-bin");
+		return $this->GetRoot() . "/cgi-bin";
 	}
 
 	public function GetStorageRoot()
 	{
-		if (self::$useStorageFromRoot)
-			// esto es para zafar que no me se me rompa lo de mapas
-			return realpath($this->GetRoot() . "/storage");
-		else
-			return realpath($this->GetRoot() . "/../storage");
+		return Context::Settings()->storagePath;
 	}
 
 	public function GetStorageData()
@@ -49,6 +43,7 @@ class AppPaths
 	{
 		return Context::Paths()->GetRoot() . "/compilation_cache";
 	}
+
 	public function GetMockPath()
 	{
 		return  $this->GetStorageRoot() . "/mock";
