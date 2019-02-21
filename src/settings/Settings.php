@@ -72,6 +72,8 @@ class Settings
 	public $isFramed = false;
 	public $timerStart = '';
 
+	public $storagePath = '';
+
 	// Mirrors
 	public $publicCacheURL = '';
 
@@ -82,9 +84,11 @@ class Settings
 	public $useAnalytics = false;
 	public $analyticsId = '';
 
-	public function Initialize()
+	public function Initialize($rootPath)
 	{
 		$this->catalog = 'mySql';
+		$this->rootPath = $rootPath;
+		$this->storagePath = realpath($rootPath . '/../storage');
 	}
 
 	public function HasSSL()
@@ -99,6 +103,7 @@ class Settings
 
 		return $this->keys;
 	}
+
 	public function Mail()
 	{
 		if ($this->mail == null)
@@ -106,6 +111,7 @@ class Settings
 
 		return $this->mail;
 	}
+
 	public function Db()
 	{
 		if ($this->db == null)
@@ -159,16 +165,19 @@ class Settings
 		$server = $this->Servers()->Current();
 		return $server->publicUrl;
 	}
+
 	public function GetPublicSecureUrl()
 	{
 		$server = $this->Servers()->Current();
 		return $server->publicSecureUrl;
 	}
+
 	public function GetMainServerPublicUrl()
 	{
 		$server = $this->Servers()->Main();
 		return $server->publicUrl;
 	}
+
 	public function GetMainServerPublicSecureUrl()
 	{
 		$server = $this->Servers()->Main();

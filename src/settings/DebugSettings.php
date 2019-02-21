@@ -1,6 +1,5 @@
 <?php
 
-
 namespace minga\framework\settings;
 
 class DebugSettings

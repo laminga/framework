@@ -1,6 +1,5 @@
 <?php
 
-
 namespace minga\framework\settings;
 
 class ServerItem
@@ -16,5 +15,5 @@ class ServerItem
 		$this->type = $type;
 		$this->publicUrl = $publicUrl;
 		$this->publicSecureUrl = $publicSecureUrl;
-		}
+	}
 }

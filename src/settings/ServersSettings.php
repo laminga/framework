@@ -1,11 +1,12 @@
 <?php
 
 namespace minga\framework\settings;
+
 use minga\framework\ErrorException;
 
 class ServersSettings
 {
-	private $servers = array();
+	private $servers = [];
 	private $currentServer = null;
 
 	private $currentServerObj = null;
@@ -13,13 +14,15 @@ class ServersSettings
 
 	public function RegisterServer($name, $url, $sslUrl = null, $isCDN = false)
 	{
-		if ($sslUrl == null) $sslUrl = $url;
+		if ($sslUrl == null)
+			$sslUrl = $url;
 		$type = ($isCDN ? 'cdns' : 'main');
 		$server = new ServerItem($name, $type, $url, $sslUrl);
 		if ($type == 'main')
 			$this->mainServerObj = $server;
 		$this->servers[$name] = $server;
 	}
+
 	public function RegisterCDNServer($name, $url, $sslUrl = null)
 	{
 		$this->RegisterServer($name, $url, $sslUrl, true);
@@ -49,16 +52,17 @@ class ServersSettings
 		if ($this->currentServer == null)
 		{
 			if (sizeof($this->servers) > 1)
-				throw new ErrorException("Many servers are set in configuration but no current server is specificied. Call Context::Settings()->Servers()->SetCurrentServer(name) to set one.");
+				throw new ErrorException('Many servers are set in configuration but no current server is specificied. Call Context::Settings()->Servers()->SetCurrentServer(name) to set one.');
 			if (sizeof($this->servers) == 0)
-				throw new ErrorException("No servers are set in configuration file.");
+				throw new ErrorException('No servers are set in configuration file.');
 			$keys = array_keys($this->servers);
 			return $this->servers[$keys[0]];
 		}
 
 		if (array_key_exists($this->currentServer, $this->servers) == false)
 		{
-			throw new ErrorException("'" . $this->currentServer . "' is specified as current server but no server with such name is registered in the configuration settings .");
+			throw new ErrorException('"'. $this->currentServer
+				. '" is specified as current server but no server with such name is registered in the configuration settings .');
 		}
 
 		return $this->servers[$this->currentServer];
