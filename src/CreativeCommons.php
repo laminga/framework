@@ -95,7 +95,7 @@ class CreativeCommons
 		if ($licenseOpen == "never")
 			$ret .= "-nd";
 		else
-			if ($licenseOpen == "never")
+			if ($licenseOpen == "same")
 				$ret .= "-sa";
 		$ret .= "/" . $licenseVersion;
 		return $ret;
