@@ -90,10 +90,11 @@ class AppPaths
 		return $this->GetFrameworkPath() . '/data';
 	}
 
-	public function GetTfpdfFontsPath()
+	public function GetMpdfTempPath()
 	{
-		//TODO: borrar esto y la llamada. Revisar cache actual en vendor...
-		return $this->GetFrameworkPath() . '/tfpdf/font/unifont';
+		$ret = $this->GetTempPath() . '/mpdftemp';
+		IO::EnsureExists($ret);
+		return $ret;
 	}
 
 }
