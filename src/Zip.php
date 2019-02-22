@@ -38,9 +38,15 @@ class Zip
 
 		foreach($relativePathsToZip as $relPath)
 		{
-			$files = new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator(realpath($basePath . $relPath),
-				\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+			$fullPath = realpath($basePath . $relPath);
+			if(is_dir($fullPath))
+			{
+				$files = new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator($fullPath,
+					\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+			}
+			else
+				$files = [$fullPath];
 
 			foreach($files as $file)
 			{
@@ -98,9 +104,15 @@ class Zip
 		$currentfiles = [];
 		foreach($relativePathsToZip as $relPath)
 		{
-			$files = new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator(realpath($basePath . $relPath),
-				\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+			$fullPath = realpath($basePath . $relPath);
+			if(is_dir($fullPath))
+			{
+				$files = new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator($fullPath,
+					\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+			}
+			else
+				$files = [$fullPath];
 
 			foreach($files as $file)
 			{
