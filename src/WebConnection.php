@@ -1,6 +1,6 @@
 <?php
-namespace minga\framework;
 
+namespace minga\framework;
 
 class WebConnection
 {
@@ -191,24 +191,33 @@ class WebConnection
 		$this->AppendLog($method . $url);
 		$this->AppendLogData('File', $file);
 
-		curl_setopt($this->ch, CURLOPT_HEADER, 1);
+		curl_setopt($this->ch, CURLOPT_HEADER, false);
 		curl_setopt($this->ch, CURLOPT_NOBODY, 0);
 		$this->SetReferer($this->lastLocation);
 		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->request_headers);
 
 		// indica el archivo
-		$fh = null;
 		if ($file == '')
 			$file = IO::GetTempFilename();
+
+		$headerFile = $file . '.headers.txt';
+
+		$this->AppendLogData('HeaderFile', $headerFile);
+
+		$fheader = fopen($headerFile, 'w');
+		curl_setopt($this->ch, CURLOPT_WRITEHEADER, $fheader);
 
 		$fh = fopen($this->responseFile, 'w');
 		curl_setopt($this->ch, CURLOPT_FILE, $fh);
 		// Execute the request
 		$ret = curl_exec($this->ch);
+
+		fclose($fheader);
 		fclose($fh);
+
 		$this->lastLocation = $url;
 		// toma headers
-		$headers = array();
+		$headers = [];
 		$headersSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
 		if ($headersSize == 0)
 		{
@@ -217,19 +226,14 @@ class WebConnection
 		}
 		else
 		{
-			$fh = fopen($this->responseFile, "r");
 			// Lee headers
-			$header_text = fread($fh, $headersSize);
-			$skipFirst = true;
-			foreach (explode("\r\n", $header_text) as $i => $line)
+			$header = file_get_contents($headerFile);
+			foreach (explode("\r\n", $header) as $i => $line)
 			{
 				$i = strpos($line, ': ');
 				if ($i)
 					$headers[substr($line, 0, $i)] = substr($line, $i + 2);
 			}
-			fclose($fh);
-			// saca headers
-			$this->TruncateBeggining($this->responseFile, $headersSize);
 			copy($this->responseFile, $file);
 		}
 		// toma error
@@ -243,7 +247,7 @@ class WebConnection
 				if ($length > $this->maxFileSize)
 				{
 					IO::Delete($file);
-				$ret = false;
+					$ret = false;
 				}
 			}
 		}
@@ -289,7 +293,6 @@ class WebConnection
 			{
 				if ($cad != '') $cad = $cad . '&';
 				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, "@"))
-
 					$hasFile = true;
 				else
 					$cad = $cad . $key . '=' . urlencode($subValues);
@@ -299,27 +302,6 @@ class WebConnection
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $cad);
 		else
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
-	}
-
-	private function TruncateBeggining($file, $read_position)
-	{
-		$size = filesize($file);
-		$handle = fopen($file, "c+b");
-		fseek($handle, $read_position);  // return to actual position
-		$write_position = 0;
-		$chunkSize = 	40960;
-    while (($chunk = fread($handle, $chunkSize)) !== FALSE) {
-			$read_position = ftell($handle); // get actual line
-			fseek($handle, $write_position); // move to previous position
-			fwrite($handle, $chunk);           // put actual line in previous position
-			fseek($handle, $read_position);  // return to actual position
-			$write_position += strlen($chunk);    // set write position to the next loop
-			if ($read_position >= $size)
-				break;
-    }
-    fflush($handle);                         // write any pending change to file
-    ftruncate($handle, $write_position);     // drop the repeated last line
-    fclose($handle);
 	}
 
 	private function ParseErrorCodes($ret, $file)
