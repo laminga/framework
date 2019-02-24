@@ -2,9 +2,9 @@
 
 namespace minga\framework\caching;
 
-use minga\framework\settings\CacheSettings;
 use minga\framework\Context;
 use minga\framework\IO;
+use minga\framework\settings\CacheSettings;
 
 class TwoLevelFileFileCache
 {

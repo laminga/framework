@@ -2,10 +2,10 @@
 
 namespace minga\framework\locking;
 
+use minga\framework\ErrorException;
 use minga\framework\IO;
 use minga\framework\Performance;
 use minga\framework\Profiling;
-use minga\framework\ErrorException;
 
 class Lock
 {

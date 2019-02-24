@@ -96,7 +96,7 @@ class SearchLog
 			$path = self::ResolveFile($month);
 		else
 			$path = self::ResolveFile($currentMonth);
-	
+
 		$rows = self::ReadIfExists($path);
 		$lock->Release();
 

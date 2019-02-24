@@ -2,8 +2,8 @@
 
 namespace minga\framework;
 
-use minga\framework\locking\TrafficLock;
 use minga\framework\GeoIp;
+use minga\framework\locking\TrafficLock;
 
 class Traffic
 {

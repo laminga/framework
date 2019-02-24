@@ -2,7 +2,6 @@
 
 namespace minga\framework\locking;
 
-
 use minga\framework\Context;
 
 class PerformanceLock extends SingleWriterLock

@@ -6,12 +6,13 @@ class IO
 {
 	private static $compressedDirectories;
 
-		public static function AppendAllBytes($filename, $bytes)
+	public static function AppendAllBytes($filename, $bytes)
 	{
 		$fp = fopen($filename, 'a');
 		fwrite($fp, $bytes);
 		fclose($fp);
 	}
+
 	public static function Execute($command, array $args = array(), array &$lines = array(), $redirectStdErr = true)
 	{
 		$stdErr = '';
@@ -24,7 +25,6 @@ class IO
 		exec($command.' '.trim($str).$stdErr, $lines, $val);
 		return $val;
 	}
-
 
 	public static function MoveDirectoryContents($dirsource, $target)
 	{
@@ -115,6 +115,7 @@ class IO
 			$flags = JSON_PRETTY_PRINT;
 		return self::WriteAllText($path, json_encode($text, $flags));
 	}
+
 	public static function ReadFileChunked($filepath)
 	{
 		$handle = fopen($filepath, 'rb');
@@ -131,7 +132,6 @@ class IO
 
 		return fclose($handle);
 	}
-
 
 	public static function ReadJson($path)
 	{
@@ -832,9 +832,13 @@ class IO
 	public static function GetCompressedDirectory($path)
 	{
 		if (self::$compressedDirectories != null)
+		{
 			foreach(self::$compressedDirectories as $folder)
+			{
 				if ($folder->path == $path)
 					return $folder;
+			}
+		}
 		$dir = new CompressedDirectory($path);
 		if ($dir->IsCompressed() == false)
 			$dir = new CompressedInParentDirectory($path);

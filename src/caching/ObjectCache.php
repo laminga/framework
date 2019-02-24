@@ -2,8 +2,8 @@
 
 namespace minga\framework\caching;
 
-use minga\framework\Serializator;
 use minga\framework\Context;
+use minga\framework\Serializator;
 
 class ObjectCache
 {
