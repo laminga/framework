@@ -4,15 +4,14 @@ namespace minga\framework\oauth;
 
 use OAuth\Common\Consumer\Credentials;
 use OAuth\Common\Storage\Memory;
-
-use minga\framework\PhpSession;
 use minga\framework\Context;
+use minga\framework\ErrorException;
 use minga\framework\Log;
 use minga\framework\MessageBox;
+use minga\framework\MessageException;
+use minga\framework\PhpSession;
 use minga\framework\Profiling;
 use minga\framework\Str;
-use minga\framework\ErrorException;
-use minga\framework\MessageException;
 
 abstract class OauthConnector
 {

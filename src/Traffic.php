@@ -2,8 +2,8 @@
 
 namespace minga\framework;
 
-use minga\framework\locking\TrafficLock;
 use minga\framework\GeoIp;
+use minga\framework\locking\TrafficLock;
 
 class Traffic
 {
@@ -53,23 +53,33 @@ class Traffic
 
 	public static function DayCompleted()
 	{
-		$path = Context::Paths()->GetTrafficLocalPath();
-		$file = $path . "/yesterday.zip";
-		IO::Delete($file);
-		$zip = new Zip($file);
-
-		for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
+		$locks = [];
+		$toZip = [];
+		try
 		{
-			$set = self::NumberToFile($n);
-			$current = $path . '/' . $set . '.txt';
-			if (file_exists($current))
+			$path = Context::Paths()->GetTrafficLocalPath();
+			for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
 			{
-				$lock = new TrafficLock($set);
-				$lock->LockWrite();
-				$zip->AddToZip($path, array($current));
-				IO::Delete($current);
-				$lock->Release();
+				$set = self::NumberToFile($n);
+				$current = $path . '/' . $set . '.txt';
+				if (file_exists($current))
+				{
+					$lock = new TrafficLock($set);
+					$lock->LockWrite();
+					$locks[] = $lock;
+					$toZip[] = $current;
 				}
+			}
+
+			$file = $path . "/yesterday.zip";
+			IO::Delete($file);
+			$zip = new Zip($file);
+			$zip->AddToZipDeleting($path, $toZip);
+		}
+		finally
+		{
+			foreach($locks as $lock)
+				$lock->Release();
 		}
 		self::ClearDefensiveMode();
 	}

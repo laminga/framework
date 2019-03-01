@@ -1,6 +1,5 @@
 <?php
 
-
 namespace minga\framework;
 
 use minga\framework\ErrorException;
@@ -79,9 +78,7 @@ class CompressedDirectory
 			$this->expanded = true;
 		}
 		else
-		{
 			throw new ErrorException('Could not access contents.');
-		}
 
 		Profiling::EndTimer();
 	}

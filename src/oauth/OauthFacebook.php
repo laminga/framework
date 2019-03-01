@@ -1,6 +1,5 @@
 <?php
 
-
 namespace minga\framework\oauth;
 
 class OauthFacebook extends OauthConnector
@@ -35,7 +34,6 @@ class OauthFacebook extends OauthConnector
 		}
 		return false;
 	}
-
 
 	protected function GetData()
 	{

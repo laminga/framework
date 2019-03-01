@@ -1,6 +1,5 @@
 <?php
 
-
 namespace minga\framework\locking;
 
 class NullLock

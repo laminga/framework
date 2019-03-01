@@ -2,8 +2,6 @@
 
 namespace minga\framework;
 
-
-
 class DirectoriesCursor
 {
 	private $path;

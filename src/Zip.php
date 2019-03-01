@@ -38,9 +38,15 @@ class Zip
 
 		foreach($relativePathsToZip as $relPath)
 		{
-			$files = new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator(realpath($basePath . $relPath),
-				\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+			$fullPath = realpath($basePath . $relPath);
+			if(is_dir($fullPath))
+			{
+				$files = new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator($fullPath,
+					\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+			}
+			else
+				$files = [$fullPath];
 
 			foreach($files as $file)
 			{
@@ -64,7 +70,7 @@ class Zip
 		$this->AddToZip($basePath, $myfiles);
 	}
 
-	public function AppendFilesToZipDeletting($basePath, $relativePathToZip, $ext, $bytesLimit, &$currentBytes)
+	public function AppendFilesToZipDeleting($basePath, $relativePathToZip, $ext, $bytesLimit, &$currentBytes)
 	{
 		$myfiles = IO::GetFiles($basePath . $relativePathToZip, $ext);
 		$myfiles = $this->AddFolderToPath($myfiles, $basePath . $relativePathToZip);
@@ -87,7 +93,7 @@ class Zip
 		return ($currentBytes <= $bytesLimit);
 	}
 
-	public function AppendFilesToZipRecursiveDeletting($basePath, array $relativePathsToZip, $ext, $bytesLimit, &$currentBytes)
+	public function AppendFilesToZipRecursiveDeleting($basePath, array $relativePathsToZip, $ext, $bytesLimit, &$currentBytes)
 	{
 		$zip = $this->OpenCreate();
 
@@ -98,9 +104,15 @@ class Zip
 		$currentfiles = [];
 		foreach($relativePathsToZip as $relPath)
 		{
-			$files = new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator(realpath($basePath . $relPath),
-				\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+			$fullPath = realpath($basePath . $relPath);
+			if(is_dir($fullPath))
+			{
+				$files = new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator($fullPath,
+					\RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS));
+			}
+			else
+				$files = [$fullPath];
 
 			foreach($files as $file)
 			{
@@ -136,6 +148,13 @@ class Zip
 			$ret[] = $path . '/' . $file;
 
 		return $ret;
+	}
+
+	public function AddToZipDeleting($sourcefolder, array $files)
+	{
+		$this->AddToZip($sourcefolder, $files);
+		foreach($files as $file)
+			IO::Delete($file);
 	}
 
 	public function AddToZip($sourcefolder, array $files)

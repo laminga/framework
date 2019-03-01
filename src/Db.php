@@ -2,7 +2,6 @@
 
 namespace minga\framework;
 
-
 class Db
 {
 	public $Host = 'localhost';

@@ -2,8 +2,8 @@
 
 namespace minga\framework\locking;
 
-use minga\framework\Log;
 use minga\framework\ErrorException;
+use minga\framework\Log;
 
 abstract class SingleWriterLock extends Lock
 {

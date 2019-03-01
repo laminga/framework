@@ -1,6 +1,5 @@
 <?php
 
-
 namespace minga\framework;
 
 class ZipArchiveExtended extends \ZipArchive

@@ -1,6 +1,7 @@
 <?php
 
 namespace minga\framework;
+
 use minga\framework\Params;
 
 class FileBucket

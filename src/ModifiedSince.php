@@ -2,7 +2,6 @@
 
 namespace minga\framework;
 
-
 class ModifiedSince
 {
 	public static function AddCacheHeadersByFile($filename)
