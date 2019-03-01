@@ -243,6 +243,11 @@ class Arr
 
 	/*** Sorter Wrappers ***/
 
+	public static function SortByField(&$arr, $field)
+	{
+		usort($arr, function($a, $b) use ($field) { return Sorter::ByField($a, $b, $field); });
+	}
+
 	public static function SortAssocByKey(&$arr, $key)
 	{
 		uasort($arr, function($a, $b) use ($key) { return Sorter::ByKey($a, $b, $key); });

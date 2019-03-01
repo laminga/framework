@@ -24,6 +24,16 @@ class Sorter
 			return 0;
 	}
 
+	public static function ByField($a, $b, $field)
+	{
+		if ($a->$field > $b->$field)
+			return 1;
+		elseif ($a->$field < $b->$field)
+			return -1;
+		else
+			return 0;
+	}
+
 	public static function ByKeyDesc($a, $b, $key)
 	{
 		return -1 * self::ByKey($a, $b, $key);
