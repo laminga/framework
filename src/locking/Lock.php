@@ -15,11 +15,11 @@ class Lock
 	public $isLocked = false;
 	public $isWriteLocked = false;
 
-	protected $statsKey = "default";
+	protected $statsKey = 'default';
 
-	private static $locks = array();
+	private static $locks = [];
 
-	public function __construct($folder, $file="lock")
+	public function __construct($folder, $file = 'lock')
 	{
 		$this->file = $file;
 		$this->folder = $folder;
@@ -50,17 +50,18 @@ class Lock
 			// ya está lockeado
 			$values = self::$locks[$file];
 			if ($write && $values[1] == false)
-				throw new ErrorException("WriteLock could not be taken while ReadLock is used.");
-			self::$locks[$file] = array(++$values[0], $values[1]);
+				throw new ErrorException('WriteLock could not be taken while ReadLock is used.');
+			self::$locks[$file] = [++$values[0], $values[1]];
 			return true;
 		}
 		else
 		{
 			// empieza él
-			self::$locks[$file] = array(1, $write);
+			self::$locks[$file] = [1, $write];
 			return false;
 		}
 	}
+
 	private function ReleaseUsed()
 	{
 		$file = $this->ResolveFilename();
@@ -71,7 +72,7 @@ class Lock
 			$values = self::$locks[$file];
 			if ($values[0] > 1)
 			{
-				self::$locks[$file] = array(--$values[0], $values[1]);
+				self::$locks[$file] = [--$values[0], $values[1]];
 				return true;
 			}
 			else
@@ -81,33 +82,31 @@ class Lock
 			}
 		}
 		else
-		{
-			throw new ErrorException("The lock could not be released.");
-		}
+			throw new ErrorException('The lock could not be released.');
 	}
 
 	public function ResolveFilename()
 	{
-		return $this->folder . "/" . $this->file . ".lock";
+		return $this->folder . '/' . $this->file . '.lock';
 	}
 
 	private function doLock($type)
 	{
-		$this->handle = fopen($this->ResolveFilename(), "w+");
+		$this->handle = fopen($this->ResolveFilename(), 'w+');
 
 		Performance::BeginLockedWait($this->statsKey);
 
-		$SLEEP_TIME = 100; // milliseconds
-		$WAIT = 10; // seconds
+		$sleepTime = 100; // milliseconds
+		$wait = 10; // seconds
 
-		$max_cycles = $WAIT * 1000 / $SLEEP_TIME;
+		$max_cycles = $wait * 1000 / $sleepTime;
 		$hadToWait = false;
 		$loops = 0;
 		while (flock($this->handle, $type | LOCK_NB) === false)
 		{
 			$hadToWait = true;
 			// pausa por 100 ms
-			usleep($SLEEP_TIME * 1000);
+			usleep($sleepTime * 1000);
 			$loops++;
 			if ($loops == $max_cycles)
 			{
@@ -115,11 +114,11 @@ class Lock
 				$this->handle = null;
 				$this->isLocked = false;
 				Performance::EndLockedWait($hadToWait);
-				throw new ErrorException("No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.");
+				throw new ErrorException('No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.');
 			}
 		}
 		$this->isLocked = true;
-		$this->AppendLockInfo("Locked ", $type);
+		$this->AppendLockInfo('Locked ', $type);
 		Performance::EndLockedWait($hadToWait);
 	}
 
@@ -127,23 +126,24 @@ class Lock
 	{
 		if ($this->ReleaseUsed())
 		{
-			$this->AppendLockInfo("Tried release on used lock: ");
+			$this->AppendLockInfo('Tried release on used lock: ');
 			return;
 		}
 		if ($this->handle != null)
 		{
-			$this->AppendLockInfo("Release: ");
+			$this->AppendLockInfo('Release: ');
 
 			flock($this->handle, LOCK_UN);
 			fclose($this->handle);
 			$this->handle = null;
 		}
 		else
-			$this->AppendLockInfo("Tried release on null lock: ");
+			$this->AppendLockInfo('Tried release on null lock: ');
 
 		$this->isLocked = false;
 		$this->isWriteLocked = false;
 	}
+
 	private function AppendLockInfo($info, $type = -1)
 	{
 		if (Profiling::IsProfiling() == false)
@@ -151,13 +151,13 @@ class Lock
 		if ($type != -1)
 		{
 			if ($type == LOCK_EX)
-				$info .= " write: ";
+				$info .= ' write: ';
 			else
-				$info .= " read: ";
+				$info .= ' read: ';
 		}
 		$folder = IO::GetRelativePath($this->folder);
 
-		Profiling::AppendLockInfo($this->statsKey  . ": " . $info . $folder . "/" . $this->file);
+		Profiling::AppendLockInfo($this->statsKey . ': ' . $info . $folder . '/' . $this->file);
 	}
 
 	public static function ReleaseAllStaticLocks()

@@ -9,7 +9,7 @@ class Log
 	private static $isLoggingMailError = false;
 	public static $ExtraErrorTarget = null;
 
-	public static function LogError($errno, $errstr, $errfile, $errline, $context = array(), $trace = null)
+	public static function LogError($errno, $errstr, $errfile, $errline, $context = [], $trace = null)
 	{
 		Lock::ReleaseAllStaticLocks();
 
@@ -28,11 +28,11 @@ class Log
 		else
 			$stack = $trace;
 
-		$stack = str_replace("#", "                #", $stack);
-		$stack = str_replace("          #1", "#1", $stack);
+		$stack = str_replace('#', '                #', $stack);
+		$stack = str_replace('          #1', '#1', $stack);
 
 		//Convierte en links los paths del stack.
-		$stack = preg_replace("/(#\d+ )(.*)\((\d+)\)/", "$1<a href='repath://$2@$3'>$2($3)</a>", $stack);
+		$stack = preg_replace('/(#\d+ )(.*)\((\d+)\)/', "$1<a href='repath://$2@$3'>$2($3)</a>", $stack);
 
 		$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
 		$referer = Params::SafeServer('HTTP_REFERER', 'null');
@@ -41,22 +41,22 @@ class Log
 		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
 
 		$text = "REQUEST\r\n" .
-			"=> User:        ". Context::LoggedUser(). "\r\n" .
+			'=> User:        '. Context::LoggedUser(). "\r\n" .
 			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $requestUri . "'>".Context::Settings()->GetMainServerPublicUrl() . $requestUri . "</a>\r\n" .
-			"=> Agent:       ".  $agent . "\r\n" .
+			'=> Agent:       '.  $agent . "\r\n" .
 			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
-			"=> Method:      ".  $requestMethod . "\r\n" .
-			"=> IP:          ".  $remoteAddr . "\r\n" .
+			'=> Method:      '.  $requestMethod . "\r\n" .
+			'=> IP:          '.  $remoteAddr . "\r\n" .
 			"===========================================\r\n" .
 			"ERROR\r\n" .
-			"=> Description: ". $errstr . "\r\n" .
-			"=> File:        <a href='repath://" . $errfile . "@" .  $errline . "'>" . $errfile. ":" .  $errline. "</a>\r\n" .
-			"=> Level: " . self::GetLevel($errno) . "\r\n" .
-			"=> Stack: " . $stack . "\r\n";
+			'=> Description: '. $errstr . "\r\n" .
+			"=> File:        <a href='repath://" . $errfile . '@' .  $errline . "'>" . $errfile. ':' .  $errline. "</a>\r\n" .
+			'=> Level: ' . self::GetLevel($errno) . "\r\n" .
+			'=> Stack: ' . $stack . "\r\n";
 		if (sizeof($_POST) > 0)
 		{
 			$text .= "===========================================\r\n" .
-				"=> Post:        ". print_r($_POST, true);
+				'=> Post:        ' . print_r($_POST, true);
 		}
 		$text .= "===========================================\r\n" .
 			"=> Context\r\n" . print_r($context, true);
@@ -68,7 +68,7 @@ class Log
 		if (Context::Settings()->Debug()->showErrors)
 			$textToShow = $text;
 		else
-			$textToShow = "Se ha producido un error: " . $errstr . ". <p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href='mailto:soporte@aacademica.org'>soporte@aacademica.org</a> describiendo el inconveniente.";
+			$textToShow = 'Se ha producido un error: ' . $errstr . ". <p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href='mailto:soporte@aacademica.org'>soporte@aacademica.org</a> describiendo el inconveniente.";
 
 		self::PutToLog('errors', $text);
 
@@ -107,7 +107,7 @@ class Log
 	{
 		$textToShow = self::LogException($e, true);
 
-		if(Context::Settings()->Debug()->debug && Str::StartsWith($e->getMessage(), "Error running: \"pdf") == false)
+		if(Context::Settings()->Debug()->debug && Str::StartsWith($e->getMessage(), 'Error running: "pdf') == false)
 		{
 			MessageBox::ThrowBackMessage($textToShow);
 			exit();
@@ -118,9 +118,9 @@ class Log
 	{
 		$message = $exception->getMessage();
 		if ($silent)
-			$message .= " (silently processed)";
+			$message .= ' (silently processed)';
 		return self::LogError($exception->getCode(), $message,
-			$exception->getFile(), $exception->getLine(), array(), $exception->getTraceAsString());
+			$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString());
 	}
 
 	public static function PutToLog($branch, $text)
@@ -153,6 +153,8 @@ class Log
 		if (Context::Settings()->isTesting)
 			return true;
 		$mail->Send(false, true);
+		return true;
+
 	}
 
 	private static function GetLevel($errno)
