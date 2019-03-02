@@ -148,7 +148,7 @@ class Log
 		// Manda email....
 		$mail = new Mail();
 		$mail->to = Context::Settings()->Mail()->NotifyAddressErrors;
-		$mail->subject = 'Error en Acta Académica - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
+		$mail->subject = 'Error ' . Context::Settings()->applicationName . ' - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
 		$mail->message = $text;
 		if (Context::Settings()->isTesting)
 			return true;
