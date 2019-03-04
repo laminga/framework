@@ -36,7 +36,7 @@ class System
 	{
 		$file = Context::Paths()->GetRoot() . '/version';
 		if (file_exists($file))
-			$value = file_get_contents($file) . ' (' . date('Y-m-d H:i:s', IO::FileMTime($file) - 60 * 60 * 3) . ')';
+			$value = trim(file_get_contents($file)) . ' (' . date('Y-m-d H:i:s', IO::FileMTime($file) - 60 * 60 * 3) . ')';
 		else
 			$value = 'Version file not found.';
 
