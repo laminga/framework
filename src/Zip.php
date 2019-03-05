@@ -28,7 +28,7 @@ class Zip
 		return $zip;
 	}
 
-	public function AppendFilesToZipRecursive($basePath, array $relativePathsToZip, $ext = '')
+	public function AppendFilesToZipRecursive($basePath, array $relativePathsToZip, $ext = '', $excludeEnd = '')
 	{
 		$zip = $this->OpenCreate();
 
@@ -50,8 +50,11 @@ class Zip
 
 			foreach($files as $file)
 			{
-				if($ext != '' && Str::EndsWith($file, $ext) == false)
+				if(($ext != '' && Str::EndsWith($file, $ext) == false)
+					|| ($excludeEnd != '' && Str::EndsWith($file, $excludeEnd)))
+				{
 					continue;
+				}
 
 				$file = str_replace("\\", '/', $file);
 				$relFile = str_replace($basePath, '', $file);
