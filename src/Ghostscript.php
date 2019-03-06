@@ -33,7 +33,7 @@ class Ghostscript
 		Profiling::EndTimer();
 	}
 
-	public static function TruncateMetadata(&$title, &$authors)
+	private static function TruncateMetadata(&$title, &$authors)
 	{
 		$lenTitle = strlen($title);
 		if(strlen($authors) + $lenTitle > self::MetadataMaxLen)
