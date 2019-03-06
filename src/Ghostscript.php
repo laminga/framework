@@ -11,8 +11,6 @@ class Ghostscript
 	 */
 	const GHOSTSCRIPT = "/gs";
 
-	// dejo un margen por caracteres unicode
-	// el máximo es en bytes pero los strings son multibyte.
 	const MetadataMaxLen = 400;
 
 	public static function Merge($coverFile, $originalFile, $targetFile, $title, $authors)
@@ -43,10 +41,10 @@ class Ghostscript
 			if($lenTitle > self::MetadataMaxLen)
 			{
 				$authors = '';
-				$title = Str::Substr($title, 0, self::MetadataMaxLen);
+				$title = mb_strcut($title, 0, self::MetadataMaxLen);
 			}
 			else
-				$authors = Str::Substr($authors, 0, self::MetadataMaxLen - $lenTitle);
+				$authors = mb_strcut($authors, 0, self::MetadataMaxLen - $lenTitle);
 		}
 	}
 
