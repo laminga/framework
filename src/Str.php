@@ -56,7 +56,23 @@ class Str
 		// listo
 		return $results;
 	}
-
+	public static function CultureCmp($a, $b)
+	{
+		$a2 = self::RemoveAccents($a);
+		$b2 = self::RemoveAccents($b);
+		return strcasecmp($a2, $b2);
+	}
+	public static function IntCmp($a, $b)
+	{
+		if ($a === null && $b === null)
+			return 0;
+		else if ($b === null)
+			return 1;
+		else if ($a === null)
+			return -1;
+		else
+			return $a - $b;
+	}
 	public static function UrlencodeFriendly($cad)
 	{
 		return str_replace('%40', '@', urlencode($cad));

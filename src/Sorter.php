@@ -6,7 +6,7 @@ class Sorter
 {
 	public static function ByAttribute($a, $b, $key)
 	{
-		return strcasecmp($a->attributes[$key], $b->attributes[$key]);
+		return Str::CultureCmp($a->attributes[$key], $b->attributes[$key]);
 	}
 
 	public static function ByAttributeDesc($a, $b, $key)
@@ -105,7 +105,7 @@ class Sorter
 	{
 		$c = self::CleanString($a[$key]);
 		$d = self::CleanString($b[$key]);
-		return strcmp($c, $d);
+		return Str::CultureCmp($c, $d);
 	}
 
 	public static function ByArray($a, $b)
@@ -163,7 +163,7 @@ class Sorter
 		else if (!Str::StartsWith($aFull, "[") && Str::StartsWith($bFull, "["))
 			return $mult * 1;
 
-		return $mult * strcasecmp($aFull, $bFull);
+		return $mult * Str::CultureCmp($aFull, $bFull);
 	}
 
 }

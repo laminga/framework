@@ -6,11 +6,39 @@ class Profiling
 {
 	public static $IsJson = false;
 
+	private static $showQueries = false;
+
 	private static $stack = null;
 	private static $lockStack = "";
 	private static $profileData = null;
 	private static $localIsProfiling = null;
 
+	public static function BeginShowQueries()
+	{
+		self::$showQueries = true;
+	}
+	public static function EndShowQueries()
+	{
+		self::$showQueries = false;
+	}
+	public static function ShowQuery($sql, $params, $types)
+	{
+		if (self::$showQueries === false) return;
+//		$e = new ErrorException();
+	//			echo $e->getTraceAsString();
+		echo 'SQL: ' . $sql;
+		if ($params !== null && sizeof($params) > 0)
+		{
+			echo '<br>';
+			print_r($params);
+		}
+		if ($types !== null && sizeof($types) > 0)
+		{
+			echo '<br>';
+			print_r($types);
+		}
+		echo '<br>';
+	}
 	public static function IsProfiling()
 	{
 		if (self::$localIsProfiling === null)
@@ -113,6 +141,7 @@ class Profiling
 		$ret = self::CreateRow($tdStyle, $cellFormat , $cellFormatClose, $depth,
 			$profileData->name,
 			$profileData->hits,
+			$profileData->dbHits,
 			round($profileData->durationMs,0),
 			Str::FormatPercentage($profileData->durationMs, $parentMs),
 			Str::FormatPercentage($profileData->durationMs, $totalMs),
@@ -123,6 +152,7 @@ class Profiling
 
 		$residual = new ProfilingItem("User code");
 		$residual->durationMs = $profileData->durationMs;
+		$residual->dbHits = $profileData->dbHits;
 		$residual->memory = $profileData->memory;
 		$residual->memoryPeak = $profileData->memoryPeak;
 		$residual->hits = "-";
@@ -132,16 +162,17 @@ class Profiling
 			// suma el total para hacer después el residual de user-code
 			$residual->durationMs -= $child->durationMs;
 			$residual->memory -= $child->memory;
+			$residual->dbHits -= $child->dbHits;
 			$residual->memoryPeak -= $child->memoryPeak;
 		}
-		if (sizeof($profileData->children) > 0 && $residual->durationMs >= 1)
+		if (sizeof($profileData->children) > 0 && ($residual->durationMs >= 1 || $residual->dbHits >= 1))
 		{
 			$ret .= self::RecursiveShow($residual, $depth+1, $totalMs, $profileData->durationMs, false, true);
 		}
 		return $ret;
 	}
 	private static function CreateRow($tdStyle, $cellFormat , $cellFormatClose, $depth,
-		$v1, $v2, $v3, $v4, $v5, $v6, $v7, $v8)
+		$v1, $v2, $v3, $v4, $v5, $v6, $v7, $v8, $v9)
 	{
 		$v1Parts = explode('\\', $v1);
 		$v1 = $v1Parts[sizeof($v1Parts)-1];
@@ -153,8 +184,9 @@ class Profiling
 				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v4 . $cellFormatClose . "</td>"
 				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v5 . $cellFormatClose . "</td>"
 				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v6 . $cellFormatClose . "</td>"
-				."<td " . $tdStyle . " align='right'>" . $cellFormat . $v7 . $cellFormatClose . "</td>"
+				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v7 . $cellFormatClose . "</td>"
 				."<td " . $tdStyle . " align='right'>" . $cellFormat . $v8 . $cellFormatClose . "</td>"
+				."<td " . $tdStyle . " align='right'>" . $cellFormat . $v9 . $cellFormatClose . "</td>"
 				."</tr>";
 		}
 		else
@@ -162,11 +194,12 @@ class Profiling
 			return self::FixColWidth(str_repeat("_", $depth * 2).  $v1, 71, true) .
 				self::FixColWidth($v2, 7) .
 				self::FixColWidth($v3, 7) .
-				self::FixColWidth($v4, 8) .
+				self::FixColWidth($v4, 7) .
 				self::FixColWidth($v5, 8) .
-				self::FixColWidth($v6, 11) .
+				self::FixColWidth($v6, 8) .
 				self::FixColWidth($v7, 11) .
-				self::FixColWidth($v8, 11) . "\n";
+				self::FixColWidth($v8, 11) .
+				self::FixColWidth($v9, 11) . "\n";
 		}
 	}
 	private static function FixColWidth($val, $width, $textAlignLeft = false)
@@ -191,6 +224,7 @@ class Profiling
 		$ret .= self::CreateRow($tdStyle, $cellFormat , $cellFormatClose, 0,
 			'Profiling items',
 			'Hits',
+			'DbHits',
 			'Ms',
 			'% share',
 			'% total',
@@ -245,6 +279,7 @@ class Profiling
 			Context::EndRequest();
 		}
 	}
+
 	public static function EndTimer()
 	{
 		if (self::IsProfiling() == false)
@@ -258,6 +293,11 @@ class Profiling
 
 		self::MergeLastBrachValues();
 		self::$stack = Arr::ShrinkArray(self::$stack, $index);
+	}
+	public static function RegisterDbHit()
+	{
+		foreach(self::$stack as $item)
+			$item->dbHits++;
 	}
 
 	public static function AppendLockInfo($info)
@@ -290,6 +330,7 @@ class Profiling
 			$targetItem->memory += $item->memory;
 			$targetItem->memoryPeak += $item->memoryPeak;
 			$targetItem->hits += $item->hits;
+			$targetItem->dbHits += $item->dbHits;
 		}
 		else
 		{

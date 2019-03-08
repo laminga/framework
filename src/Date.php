@@ -151,6 +151,10 @@ class Date
 	{
 		return self::DbDate(self::ArNow());
 	}
+	public static function DateTimeArNow()
+	{
+		return new \DateTime(self::ArNow());
+	}
 	public static function Today()
 	{
 		return date("Y-m-d");

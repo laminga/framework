@@ -14,6 +14,7 @@ class ProfilingItem
 	public $memoryPeak;
 	public $durationMs;
 	public $hits;
+	public $dbHits;
 	public $isInternal;
 	private $start_pause;
 
@@ -27,6 +28,8 @@ class ProfilingItem
 		$this->startMemoryPeak = memory_get_peak_usage();
 		$this->durationMs = 0;
 		$this->hits = 0;
+		$this->dbHits = 0;
+		$this->queries = [];
 		$this->memory = 0;
 		$this->memoryPeak = 0;
 		$this->start_pause = Performance::$pause_ellapsed_secs;
@@ -58,10 +61,12 @@ class ProfilingItem
 		$this->memoryPeak = 0;
 		$this->durationMs = 0;
 		$this->hits = 0;
+		$this->dbHits = 0;
 		foreach($this->children as $child)
 		{
 			$this->durationMs += $child->durationMs;
 			$this->hits += $child->hits;
+			$this->dbHits += $child->dbHits;
 			$this->memory += $child->memory;
 			$this->memoryPeak += $child->memoryPeak;
 		}

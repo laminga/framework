@@ -82,5 +82,17 @@ class Params
 			throw new ErrorException("Parameter " . $key . " required.");
 		return $ret;
 	}
+
+	public static function GetJsonMandatory($param){
+		$value = self::GetMandatory($param);
+		return json_decode($value, true);
+	}
+	public static function GetJson($param){
+		$value = Params::Get($param);
+		if ($value === null)
+			return null;
+		else
+			return json_decode($value, true);
+	}
 }
 
