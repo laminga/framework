@@ -33,7 +33,7 @@ class Mail
 		$this->SetProvider($mail);
 		// $this->SetSSL($mail);
 
-		$mail->CharSet="UTF-8";
+		$mail->CharSet = "UTF-8";
 
 		$this->SetAddress($mail, $this->to, $this->toCaption);
 

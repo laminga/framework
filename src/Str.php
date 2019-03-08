@@ -377,6 +377,10 @@ class Str
 
 	public static function Ellipsis($cad, $maxSize = 50)
 	{
+		//TODO: se puede reemplazar por
+		//return mb_strimwidth($cad, 0, $maxSize, '…', 'UTF-8');
+		//hay que probarlo.
+
 		if (self::Length($cad) > $maxSize)
 			$cad = mb_substr($cad, 0, $maxSize - 2, "UTF-8") . "…";
 		return $cad;
@@ -386,7 +390,7 @@ class Str
 	{
 		if (strlen($cad) > $maxSize)
 		{
-			$cad = substr($cad, 0, $maxSize - strlen($signal)+1);
+			$cad = substr($cad, 0, $maxSize - strlen($signal) + 1);
 			if (self::EndsWith($cad, ' ') == false)
 				$cad .= ' ' . $signal;
 			else
@@ -397,12 +401,14 @@ class Str
 
 	public static function Capitalize($cad)
 	{
-		return strtoupper(substr($cad, 0, 1)) . substr($cad, 1);
+		return mb_strtoupper(mb_substr($cad, 0, 1)) . mb_substr($cad, 1);
 	}
 
 	public static function StartsWithAlfabetic($cad)
 	{
-		return (substr($cad, 0, 1) >= 'a' && substr($cad, 0, 1) <= 'z');
+		//TODO: no tiene en cuenta si empieza con á .. ñ, etc.
+		//TODO: no tiene en cuenta mayúsculas.
+		return (mb_substr($cad, 0, 1) >= 'a' && mb_substr($cad, 0, 1) <= 'z');
 	}
 
 	public static function TextAreaTextToHtml($cad)

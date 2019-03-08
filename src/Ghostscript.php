@@ -11,22 +11,41 @@ class Ghostscript
 	 */
 	const GHOSTSCRIPT = "/gs";
 
+	const MetadataMaxLen = 400;
+
 	public static function Merge($coverFile, $originalFile, $targetFile, $title, $authors)
 	{
 		Profiling::BeginTimer();
 
-		$args = '-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile='
-			. $targetFile . ' ' . $coverFile . ' ' . $originalFile . ' ';
+		self::TruncateMetadata($title, $authors);
 
-		$args .= " -c \"[/Producer(AAcademica.org)/Author "
-			. self::EscapeUnicode2($authors) . " /Title " . self::EscapeUnicode2($title) . " /DOCINFO pdfmark\"";
+		$args = '-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile='
+			. $targetFile . ' ' . $coverFile . ' ' . $originalFile
+			. ' -c "[/Producer(AAcademica.org)/Author '
+			. self::EscapeUnicode2($authors) . ' /Title '
+			. self::EscapeUnicode2($title) . ' /DOCINFO pdfmark"';
 
 		IO::Delete($targetFile);
 
-		if (!self::RunGhostscript($args))
+		if (self::RunGhostscript($args) == false)
 			IO::Delete($targetFile);
 
 		Profiling::EndTimer();
+	}
+
+	private static function TruncateMetadata(&$title, &$authors)
+	{
+		$lenTitle = strlen($title);
+		if(strlen($authors) + $lenTitle > self::MetadataMaxLen)
+		{
+			if($lenTitle > self::MetadataMaxLen)
+			{
+				$authors = '';
+				$title = mb_strcut($title, 0, self::MetadataMaxLen);
+			}
+			else
+				$authors = mb_strcut($authors, 0, self::MetadataMaxLen - $lenTitle);
+		}
 	}
 
 	public static function EscapeUnicode2($cad)
@@ -43,7 +62,7 @@ class Ghostscript
 		$args = "-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="
 			. $targetFile . " -c .setpdfwrite -f " . $file;
 
-		if (!self::RunGhostscript($args))
+		if (self::RunGhostscript($args) == false)
 			IO::Delete($targetFile);
 
 		Profiling::EndTimer();
@@ -62,7 +81,7 @@ class Ghostscript
 
 		$args = "-dNOPAUSE -dBATCH -sDEVICE=jpeg -dFirstPage=1 -dAlignToPixels=0 -dGridFitTT=2 -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -r30 -sOutputFile=" . $targetFile . " -c .setpdfwrite -f " . $file;
 
-		if (!self::RunGhostscript($args))
+		if (self::RunGhostscript($args) == false)
 			IO::Delete($targetFile);
 
 		Profiling::EndTimer();
