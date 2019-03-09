@@ -26,14 +26,17 @@ class ModifiedSince
 	}
 	public static function AddCacheHeaders($timeStamp)
 	{
-		$tsstring = gmdate('D, d M Y H:i:s ', $timeStamp) . 'GMT';
+		if($timeStamp === false)
+			$timeStamp = time();
 
-		header("Last-Modified: " . $tsstring);
+		$tsHeader = gmdate('D, d M Y H:i:s ', $timeStamp) . 'GMT';
+
+		header("Last-Modified: " . $tsHeader);
 		header("Cache-Control: private");
 
 		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
 			&& ($timeStamp <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])
-				|| $tsstring == $_SERVER['HTTP_IF_MODIFIED_SINCE']))
+				|| $tsHeader == $_SERVER['HTTP_IF_MODIFIED_SINCE']))
 		{
 			header('HTTP/1.0 304 Not Modified');
 			return false;
@@ -60,11 +63,20 @@ class ModifiedSince
 		$timeStamp1 = null;
 
 		if (file_exists($file1))
+		{
 			$timeStamp1 = IO::FileMTime($file1);
+			if($timeStamp1 === false)
+				$timeStamp1 = null;
+		}
 		if ($file2 != null && Zipping::FileExists($file2))
+		{
 			$timeStamp2 = Zipping::FileMTime($file2);
-		if ($timeStamp1 == null || ($timeStamp2 != null && $timeStamp2 > $timeStamp1))
+			if($timeStamp2 === false)
+				$timeStamp2 = null;
+		}
+		if ($timeStamp1 === null || ($timeStamp2 !== null && $timeStamp2 > $timeStamp1))
 			$timeStamp1 = $timeStamp2;
+
 		if ($timeStamp1 != null)
 		{
 			// Tiene una fecha válida...

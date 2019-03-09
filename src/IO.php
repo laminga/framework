@@ -517,109 +517,101 @@ class IO
 		return false;
 	}
 
-	public static function MoveDirectory($dirsource, $dirdest, $dirname = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true)
+	public static function MoveDirectory($dirSource, $dirDest, $dirName = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true)
 	{
-		self::CopyDirectory($dirsource, $dirdest, $dirname, $exclusions, $timeFrom, $createEmptyFolders);
-		self::RemoveDirectory($dirsource);
+		self::CopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders);
+		self::RemoveDirectory($dirSource);
 	}
 
-	public static function CopyDirectory($dirsource, $dirdest, $dirname = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true, $excludedExtension = '')
+	public static function CopyDirectory($dirSource, $dirDest, $dirName = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true, $excludedExtension = '')
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
 		{
-			$exclusionsFull = array();
+			$exclusionsFull = [];
 			foreach($exclusions as $exclusion)
-			{
-				$exclusionsFull[] = $dirsource . "/" . $exclusion;
-			}
+				$exclusionsFull[] = $dirSource . "/" . $exclusion;
 			$exclusions = $exclusionsFull;
 		}
-		return self::doCopyDirectory($dirsource, $dirdest, $dirname, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
+		return self::doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
 	}
 
-	public static function CopyFiles($dirsource, $dirdest, $exclusions = null, $timeFrom = null)
+	public static function CopyFiles($dirSource, $dirDest, $exclusions = null, $timeFrom = null)
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
 		{
-			$exclusionsFull = array();
+			$exclusionsFull = [];
 			foreach($exclusions as $exclusion)
-			{
-				$exclusionsFull[] = $dirsource . "/" . $exclusion;
-			}
+				$exclusionsFull[] = $dirSource . "/" . $exclusion;
 			$exclusions = $exclusionsFull;
 		}
-		$dir_handle = self::OpenDirNoWarning($dirsource);
+		$dirHandle = self::OpenDirNoWarning($dirSource);
 
-		while($file = readdir($dir_handle))
+		while($file = readdir($dirHandle))
 		{
-			if($file != '.' && $file != '..')
+			if($file != '.' && $file != '..'
+				&& is_dir($dirSource . '/' . $file) == false
+				&& ($timeFrom == null
+					|| self::FileMTime($dirSource . '/' . $file) >= $timeFrom))
 			{
-				if(!is_dir($dirsource . '/' . $file))
-				{
-					if ($timeFrom == null || self::FileMTime($dirsource . '/' . $file) >= $timeFrom)
-					{
-						copy ($dirsource.'/'.$file, $dirdest.'/'.$file);
-					}
-				}
+				copy ($dirSource . '/' . $file, $dirDest . '/' . $file);
 			}
 		}
-		closedir($dir_handle);
+		closedir($dirHandle);
 		return true;
 	}
 
-	private static function doCopyDirectory($dirsource, $dirdest, $dirname, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension ='')
+	private static function doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension ='')
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
 		{
 			foreach($exclusions as $exclusion)
 			{
-				if ($exclusion == $dirsource)
+				if ($exclusion == $dirSource)
 					return;
 			}
 		}
 
 		// recursive function to copy all subdirectories and contents
-		$dir_handle = null;
-		if(is_dir($dirsource))
-			$dir_handle = self::OpenDirNoWarning($dirsource);
-		if ($dirname == '')
-			$dirname = substr($dirsource, strrpos($dirsource, '/') + 1);
+		$dirHandle = null;
+		if(is_dir($dirSource))
+			$dirHandle = self::OpenDirNoWarning($dirSource);
+		if ($dirName == '')
+			$dirName = substr($dirSource, strrpos($dirSource, '/') + 1);
 
 		if ($createEmptyFolders)
 		{
-			self::EnsureExists($dirdest);
-			mkdir($dirdest.'/'.$dirname, 0750);
+			self::EnsureExists($dirDest);
+			mkdir($dirDest . '/' . $dirName, 0750);
 		}
 
-		while($file = readdir($dir_handle))
+		while($file = readdir($dirHandle))
 		{
 			if($file != '.' && $file != '..')
 			{
-				if(!is_dir($dirsource . '/' . $file))
+				if(is_dir($dirSource . '/' . $file) == false)
 				{
-					if ($timeFrom == null || self::FileMTime($dirsource.'/'.$file) >= $timeFrom)
+					if (($timeFrom == null || self::FileMTime($dirSource . '/' . $file) >= $timeFrom)
+						&& ($excludedExtension == '' || Str::EndsWith($file, '.' . $excludedExtension) == false))
 					{
-						if ($excludedExtension == '' || Str::EndsWith($file, '.' . $excludedExtension) == false)
-						{
-							if ($createEmptyFolders == false)
-								self::EnsureExists($dirdest.'/'.$dirname);
+						if ($createEmptyFolders == false)
+							self::EnsureExists($dirDest . '/' . $dirName);
 
-							//if (file_exists($dirdest.'/'.$dirname.'/'.$file) == false || filesize($dirdest.'/'.$dirname.'/'.$file) != filesize($dirsource.'/'.$file))
-							copy ($dirsource.'/'.$file, $dirdest.'/'.$dirname.'/'.$file);
-						}
+						//if (file_exists($dirDest . '/' . $dirName . '/' . $file) == false
+						//|| filesize($dirDest . '/' . $dirName . '/' . $file) != filesize($dirSource . '/' . $file))
+						copy ($dirSource . '/' . $file, $dirDest . '/' . $dirName . '/' . $file);
 					}
 				}
 				else
 				{
-					$dirdest1 = $dirdest.'/'.$dirname;
-					self::doCopyDirectory($dirsource.'/'.$file, $dirdest1, '', $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
+					$dirdest1 = $dirDest . '/' . $dirName;
+					self::doCopyDirectory($dirSource . '/' . $file, $dirdest1, '', $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
 				}
 			}
 		}
-		closedir($dir_handle);
+		closedir($dirHandle);
 		return true;
 	}
 
@@ -872,6 +864,7 @@ class IO
 		}
 		return false;
 	}
+
 	public static function Exists($file)
 	{
 		return (file_exists($file));

@@ -41,6 +41,7 @@ class Date
 	{
 		return self::NowGMT(-3);
 	}
+
 	public static function FormattedArDate()
 	{
 		return self::FormattedDateOnly(self::ArNow());
@@ -50,22 +51,27 @@ class Date
 	{
 		return self::FormattedDate(self::ArNow());
 	}
+
 	public static function FormattedDateOnly($date)
 	{
 		return date("Y-m-d", $date);
 	}
+
 	public static function DateToDDMMYYYY($date)
 	{
 		return date("d/m/YYYY", $date);
 	}
+
 	public static function FormattedDate($date)
 	{
 		return date("Y-m-d@H.i.s", $date);
 	}
+
 	public static function DbDate($date)
 	{
 		return date("Y-m-d H:i:s", $date);
 	}
+
 	public static function ConvertFormattedDateDDMMYYYYHHMM($date)
 	{
 		if ($date == "") return "";
@@ -147,14 +153,17 @@ class Date
 	{
 		return date("d/m/Y g:i:s (\G\M\T-3)", $date - 60 * 60 * 3);
 	}
+
 	public static function DbArNow()
 	{
 		return self::DbDate(self::ArNow());
 	}
+
 	public static function DateTimeArNow()
 	{
 		return new \DateTime(self::ArNow());
 	}
+
 	public static function Today()
 	{
 		return date("Y-m-d");
@@ -171,6 +180,7 @@ class Date
 		// formato: 2015-02-29
 		return substr($day, 0, 4);
 	}
+
 	public static function GetMonthFromDay($day)
 	{
 		// formato: 2015-02-29
@@ -287,9 +297,12 @@ class Date
 		$parts = explode('/', $date);
 		if (sizeof($parts) != 3) return false;
 		foreach($parts as $part)
+		{
 			if (intval($part) . "" != $part)
 				return false;
-		if (!checkdate( $parts[1] , $parts[0] , $parts[2])) return false;
+		}
+		if (checkdate( $parts[1] , $parts[0] , $parts[2]) == false)
+			return false;
 		$day = intval($parts[0]);
 		$month = intval($parts[1]);
 		$year = intval($parts[2]);
@@ -302,7 +315,8 @@ class Date
 		$month = null;
 		$year = null;
 		$bret = self::TryParseDate($date, $day, $month, $year);
-		if (!$bret) throw new ErrorException('Invalid date.');
+		if ($bret == false)
+			throw new ErrorException('Invalid date.');
 		return $year . '-' . $month .'-' . $day;
 	}
 }
