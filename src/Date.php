@@ -130,10 +130,12 @@ class Date
 
 	public static function FormatSpan($minutes)
 	{
-		if ($minutes == "") return "";
+		if ($minutes == "")
+			return "";
 		$mod = $minutes % 60;
 		$ret = floor($minutes / 60);
-		if ($mod > 0) $ret .= ":" . ($mod <= 9 ? '0' : '') . $mod;
+		if ($mod > 0)
+		  	$ret .= ":" . ($mod <= 9 ? '0' : '') . $mod;
 		return $ret . "hs";
 	}
 
@@ -142,10 +144,14 @@ class Date
 		$date = str_replace("-", "/", $date);
 		$date = str_replace(" ", "", $date);
 		$parts = explode('/', $date);
-		if (sizeof($parts) != 3) return $date;
-		if (strlen($parts[0]) == 1) $parts[0] = '0' . $parts[0];
-		if (strlen($parts[1]) == 1) $parts[1] = '0' . $parts[1];
-		if (strlen($parts[2]) == 2) $parts[2] = '20' . $parts[2];
+		if (sizeof($parts) != 3)
+			return $date;
+		if (strlen($parts[0]) == 1)
+			$parts[0] = '0' . $parts[0];
+		if (strlen($parts[1]) == 1)
+			$parts[1] = '0' . $parts[1];
+		if (strlen($parts[2]) == 2)
+			$parts[2] = '20' . $parts[2];
 		return $parts[0] . '/' . $parts[1] . '/' . $parts[2];
 	}
 
