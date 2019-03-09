@@ -850,13 +850,17 @@ class clsTbsZip {
 	function _MsDos_Debug($date, $time) {
 		// Display the formated date and time. Just for debug purpose.
 		// date end time are encoded on 16 bits (2 bytes) : date = yyyyyyymmmmddddd , time = hhhhhnnnnnssssss
-		$y = ($date & 65024)/512 + 1980;
-		$m = ($date & 480)/32;
+		$y = ($date & 65024) / 512 + 1980;
+		$m = ($date & 480) / 32;
 		$d = ($date & 31);
-		$h = ($time & 63488)/2048;
-		$i = ($time & 1984)/32;
+		$h = ($time & 63488) / 2048;
+		$i = ($time & 1984) / 32;
 		$s = ($time & 31) * 2; // seconds have been rounded to an even number in order to save 1 bit
-		return $y.'-'.str_pad($m,2,'0',STR_PAD_LEFT).'-'.str_pad($d,2,'0',STR_PAD_LEFT).' '.str_pad($h,2,'0',STR_PAD_LEFT).':'.str_pad($i,2,'0',STR_PAD_LEFT).':'.str_pad($s,2,'0',STR_PAD_LEFT);
+		return $y . '-' . str_pad((string)$m, 2, '0', STR_PAD_LEFT) . '-'
+			. str_pad((string)$d, 2, '0', STR_PAD_LEFT) . ' '
+			. str_pad((string)$h, 2, '0', STR_PAD_LEFT) . ':'
+			. str_pad((string)$i, 2, '0', STR_PAD_LEFT) . ':'
+			. str_pad((string)$s, 2, '0', STR_PAD_LEFT);
 	}
 
 	function _TxtPos($pos) {

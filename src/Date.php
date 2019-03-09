@@ -12,7 +12,7 @@ class Date
 
 	public static function GetLogMonthFolder($offset = 0)
 	{
-		$time = mktime(0, 0, 0, date("m") + $offset, 1, date("Y"));
+		$time = mktime(0, 0, 0, (int)date("m") + $offset, 1, (int)date("Y"));
 		return date("Y-m", $time);
 	}
 
@@ -295,17 +295,20 @@ class Date
 		$date = str_replace("-", "/", $date);
 		$date = str_replace(" ", "", $date);
 		$parts = explode('/', $date);
-		if (sizeof($parts) != 3) return false;
-		foreach($parts as $part)
+		if (sizeof($parts) != 3)
+		  	return false;
+		for($i = 0; $i < count($parts); $i++)
 		{
-			if (intval($part) . "" != $part)
+			$prev = $parts[$i];
+			$parts[$i] = (int)$parts[$i];
+			if ((string)$parts[$i] != $prev)
 				return false;
 		}
-		if (checkdate( $parts[1] , $parts[0] , $parts[2]) == false)
+		if (checkdate($parts[1] , $parts[0] , $parts[2]) == false)
 			return false;
-		$day = intval($parts[0]);
-		$month = intval($parts[1]);
-		$year = intval($parts[2]);
+		$day = $parts[0];
+		$month = $parts[1];
+		$year = $parts[2];
 		return true;
 	}
 
