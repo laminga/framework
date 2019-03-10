@@ -324,10 +324,9 @@ class IO
 	public static function RemoveExtension($filename)
 	{
 		$n = strrpos($filename, '.');
-		if ($n <= 0)
+		if ($n === false || $n <= 0)
 			return $filename;
-		$file = substr($filename, 0, $n);
-		return $file;
+		return substr($filename, 0, $n);
 	}
 
 	public static function EnsureExists($directory)

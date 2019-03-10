@@ -91,6 +91,13 @@ class WebConnection
 		while ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$red++;
+
+			if(isset($response->headers['Location']) == false)
+			{
+				$this->AppendLog('Header Location not found.');
+				break;
+			}
+
 			$location = $response->headers['Location'];
 			$this->AppendLog('Redirecting to ' . $location);
 			$response = $this->Get($location, $file);
@@ -262,8 +269,12 @@ class WebConnection
 
 	private function HeadersToArray($headerFile)
 	{
-		$lines = explode("\r\n",
-		  	file_get_contents($headerFile));
+		$lines = [];
+		if(file_exists($headerFile))
+		{
+			$lines = explode("\r\n",
+				file_get_contents($headerFile));
+		}
 
 		$headers = [];
 		foreach ($lines as $i => $line)
