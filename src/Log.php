@@ -91,6 +91,11 @@ class Log
 				$text = preg_replace('/(\[passwordi\] => ).*/',
 					'$1[removido]<br>', $text);
 			}
+			if(Str::Contains($text, '[password]'))
+			{
+				$text = preg_replace('/(\[password\] => ).*/',
+					'$1[removido]<br>', $text);
+			}
 			self::PutToMail($text);
 		}
 		catch(\Exception $e)
