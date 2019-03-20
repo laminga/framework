@@ -344,7 +344,7 @@ class IO
 		{
 			mkdir($directory);
 		}
-		catch (ErrorException $e)
+		catch (\Exception $e)
 		{
 			/* Este catch está porque incluso chequeando con if exists antes,
 				pueda haber concurrencia entre if exists y mkdir, y en consecuencia
@@ -508,7 +508,7 @@ class IO
 		{
 			return filemtime($file);
 		}
-		catch(ErrorException $e)
+		catch(\Exception $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -654,7 +654,7 @@ class IO
 			if(file_exists($dir))
 				return rmdir($dir);
 		}
-		catch(ErrorException $e)
+		catch(\Exception $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -669,7 +669,7 @@ class IO
 			if(file_exists($dir))
 				return opendir($dir);
 		}
-		catch(ErrorException $e)
+		catch(\Exception $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -802,7 +802,7 @@ class IO
 			if(file_exists($source))
 				return rename($source, $target);
 		}
-		catch(ErrorException $e)
+		catch(\Exception $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -856,7 +856,7 @@ class IO
 			if (file_exists($file))
 				return unlink($file);
 		}
-		catch(ErrorException $e)
+		catch(\Exception $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
@@ -866,6 +866,6 @@ class IO
 
 	public static function Exists($file)
 	{
-		return (file_exists($file));
+		return file_exists($file);
 	}
 }
