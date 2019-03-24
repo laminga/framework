@@ -68,6 +68,7 @@ class Settings
 	public $isEmbeddedList = false;
 	public $isEmbeddedMembers = false;
 	public $isBoxed = false;
+	public $isBoxValid = false;
 	public $boxingContent;
 	public $isFramed = false;
 	public $timerStart = '';
