@@ -6,8 +6,8 @@ use minga\framework\locking\ZipLock;
 
 class Zipping
 {
-	private static $allFiles = array();
-	private static $allLocks = array();
+	private static $allFiles = [];
+	private static $allLocks = [];
 
 	public static function GetStream($filename)
 	{
@@ -28,8 +28,8 @@ class Zipping
 	{
 		$container = self::GetContainer($filesPath);
 		if ($container == null)
-			return array();
-		$ret = array();
+			return [];
+		$ret = [];
 		for($i = 0; $i < $container->numFiles; $i++)
 		{
 			$cad = $container->getNameIndex($i);
@@ -41,30 +41,31 @@ class Zipping
 
 	public static function FileMTime($filename)
 	{
-		if (!self::IsZipped($filename))
+		if (self::IsZipped($filename) == false)
 			return IO::FileMTime($filename);
 		Profiling::BeginTimer();
 		$stat = self::GetStat($filename);
 		Profiling::EndTimer();
 		if ($stat == null)
-			return "";
-		else
-			return intval($stat['mtime']);
+			return false;
+
+		return intval($stat['mtime']);
 	}
 
 	public static function Filesize($filename)
 	{
-		if (!self::IsZipped($filename))
+		if (self::IsZipped($filename) == false)
 			return filesize($filename);
 
 		Profiling::BeginTimer();
 		$stat = self::GetStat($filename);
 		Profiling::EndTimer();
 		if ($stat == null)
-			return "";
-		else
-			return $stat['size'];
+			return false;
+
+		return $stat['size'];
 	}
+
 	public static function GetStat($filename)
 	{
 		$path = dirname($filename);
@@ -72,31 +73,24 @@ class Zipping
 		$container = self::GetContainer($path);
 
 		if ($container == null)
-		{
 			return null;
-		}
 		else
 		{
 			$index = $container->locateName($file);
 			if ($index === false)
-			{
 				return null;
-			}
 			else
-			{
-				$stat = $container->statIndex($index);
-				return $stat;
-			}
+				return $container->statIndex($index);
 		}
 	}
+
 	public static function FileExists($filename)
 	{
-		if (!self::IsZipped($filename))
+		if (self::IsZipped($filename) == false)
 			return file_exists($filename);
 		else
 			return self::CompressedFileExists($filename);
 	}
-
 
 	private static function ExtractToGetTempFile($filename)
 	{
@@ -105,9 +99,7 @@ class Zipping
 		$container = self::GetContainer($path);
 
 		if ($container == null)
-		{
 			return "";
-		}
 		else
 		{
 			$tmpfile = IO::GetTempFilename();
@@ -115,12 +107,14 @@ class Zipping
 			return $tmpfile . '/' . $file;
 		}
 	}
+
 	private static function ReleaseTempFile($tmpFilename)
 	{
 		$path = dirname($tmpFilename);
 		IO::Delete($tmpFilename);
 		IO::RmDir($path);
 	}
+
 	public static function ReadEscapedIniFileWithSections($filename)
 	{
 		Profiling::BeginTimer();
@@ -176,10 +170,8 @@ class Zipping
 			return self::$allFiles[$filename];
 		else
 		{
-			if (!file_exists($filename))
-			{
+			if (file_exists($filename) == false)
 				return null;
-			}
 			else
 			{
 				Profiling::BeginTimer('Zipping::GetContainer');
@@ -216,6 +208,8 @@ class Zipping
 				$zip->FileAdd($filename[$n], $filesrc[$n], TBSZIP_FILE);
 		}
 		$time = IO::FileMTime($filesrc[0]);
+		if($time === false)
+			$time = time();
 		$zip->now = $time;
 		$zip->Flush(TBSZIP_FILE, $zipFile . "tmp", "");
 		$zip->Close();
@@ -230,8 +224,7 @@ class Zipping
 		foreach(self::$allLocks as $key => $lock)
 			$lock->Release();
 
-		self::$allLocks= array();
-		self::$allFiles = array();
-
+		self::$allLocks= [];
+		self::$allFiles = [];
 	}
 }
