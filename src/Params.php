@@ -83,6 +83,28 @@ class Params
 		return $ret;
 	}
 
+	public static function GetIntMandatory($param)
+	{
+		$value = self::GetMandatory($param);
+		return self::processIntValue($value);
+	}
+
+	public static function GetInt($param, $default = null)
+	{
+		$value = self::Get($param, $default);
+		if ($value === null)
+			return null;
+		return self::processIntValue($value);
+	}
+	private static function processIntValue($value)
+	{
+		$i = intval($value);
+		if ($i . '' !== $value)
+			throw new ErrorException('Parameter value of ' . $key . ' is invalid.');
+		else
+			return $i;
+	}
+
 	public static function GetJsonMandatory($param){
 		$value = self::GetMandatory($param);
 		return json_decode($value, true);

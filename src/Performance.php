@@ -373,14 +373,14 @@ class Performance
 		}
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked;
 	}
-	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $googleHits, $mailCount, $newDbMs, $newDbHits)
+	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits)
 	{
 		if (array_key_exists($key, $arr) == false)
 		{
 			$hits = $newHits;
 			$duration = $value;
 			$locked = $newLocked;
-			$google = (int)$googleHits;
+			$google = ($isGoogleHit ? 1 : 0);
 			$mails = $mailCount;
 			$dbMs = $newDbMs;
 			$dbHits = $newDbHits;
@@ -391,7 +391,7 @@ class Performance
 			$hits += $newHits;
 			$duration += $value;
 			$locked += $newLocked;
-			$google += (int)$googleHits;
+			$google += ($isGoogleHit ? 1 : 0);
 			$mails += $mailCount;
 			$dbMs += $newDbMs;
 			$dbHits += $newDbHits;
