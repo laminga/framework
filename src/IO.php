@@ -13,19 +13,6 @@ class IO
 		fclose($fp);
 	}
 
-	public static function Execute($command, array $args = array(), array &$lines = array(), $redirectStdErr = true)
-	{
-		$stdErr = '';
-		if($redirectStdErr)
-			$stdErr = ' 2>&1';
-		$str = '';
-		foreach($args as $arg)
-			$str .= escapeshellarg($arg).' ';
-		$val = 0;
-		exec($command.' '.trim($str).$stdErr, $lines, $val);
-		return $val;
-	}
-
 	public static function MoveDirectoryContents($dirsource, $target)
 	{
 		IO::EnsureExists($target);
@@ -680,21 +667,26 @@ class IO
 	public static function GetDirectoryINodesCount($dir)
 	{
 		Profiling::BeginTimer();
-		$ret = exec("find " . $dir . "/. | wc -l");
+		$ret = System::RunCommandRaw('find ' . $dir . '/. | wc -l');
 		Profiling::EndTimer();
-		return $ret;
+		return $ret['lastLine'];
 	}
 
 	public static function GetDirectorySizeUnix($dir)
 	{
-		Profiling::BeginTimer();
-		$ret = exec("/usr/bin/du -sb " . $dir);
-		$pos = strpos($ret, "\t");
-		if($pos === false)
-			return 0;
-		$size = substr($ret, 0, $pos);
-		Profiling::EndTimer();
-		return $size;
+		try
+		{
+			Profiling::BeginTimer();
+			$ret = System::RunCommandRaw('/usr/bin/du -sb ' . $dir);
+			$pos = strpos($ret['lastLine'], "\t");
+			if($pos === false)
+				return 0;
+			return substr($ret['lastLine'], 0, $pos);
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	public static function GetDirectorySize($dir, $sizeOnly = false)

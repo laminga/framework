@@ -92,37 +92,13 @@ class Ghostscript
 			return null;
 	}
 
-	//TODO: Buscar una mejor clase para poner este método.
-	private static function SuperExec($file, $args, &$returnCode = null, $returnFirstLineOnly = false)
-	{
-		if (file_exists($file) == false)
-			throw new ErrorException("File not found for SuperExec ('" . $file. "').");
-
-		if (Str::StartsWith($args, " ") == false) $args = " " . $args;
-		exec($file . $args, $out, $returnCode);
-
-		if ($returnCode == 126)
-			throw new ErrorException("Execute permissions not available for SuperExec ('" . $file. "').");
-
-		if (is_array($out) == false || sizeof($out) == 0)
-			$ret = "";
-		else
-		{
-			if ($returnFirstLineOnly)
-				$ret = $out[0];
-			else
-				$ret = implode("\n", $out);
-		}
-		return $ret;
-	}
-
 	private static function RunGhostscript($args)
 	{
 		$bits = System::GetArchitecture();
 
 		$exeFile = Context::Paths()->GetBinPath() . self::GHOSTSCRIPT . $bits;
 
-		$out = self::SuperExec($exeFile, $args, $retCode);
+		$out = System::RunCommandGS($exeFile, $args, $retCode);
 
 		$extraInfo = "\n---------------\nExe: " . $exeFile . "\n Args:" . $args . "\n------------\n";
 

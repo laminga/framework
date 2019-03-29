@@ -4,11 +4,9 @@ namespace minga\framework;
 
 class PdfDescriptor
 {
-
 	/**
 	 * directorio con los binarios
 	 */
-
 	const PDF_TO_TEXT = "./pdftotext";
 
 	/**
@@ -22,7 +20,7 @@ class PdfDescriptor
 	public static function Truncate64k($cad)
 	{
 		if (strlen($cad) > 65534)
-			return substr($cad, 0, 65534);
+			return mb_strcut($cad, 0, 65534);
 		else
 			return $cad;
 	}
@@ -96,7 +94,7 @@ class PdfDescriptor
 		$command = self::PDF_TO_TEXT.$bits.
 			' '.self::PDF_TO_TEXT_ARGS.
 			' '.escapeshellarg($file).' -';
-		return self::RunCommand($command);
+		return System::RunCommandOnPath($command);
 	}
 
 	private static function RunPdfInfo($file)
@@ -105,35 +103,7 @@ class PdfDescriptor
 		$command = self::PDF_INFO.$bits.
 			' '.self::PDF_INFO_ARGS.
 			' '.escapeshellarg($file);
-		return self::RunCommand($command);
+		return System::RunCommandOnPath($command);
 	}
 
-	/**
-	 * Ejecuta un comando en el directorio del
-	 * binario, para ello guarda el directorio
-	 * inicial, cambia al del ejecutable y
-	 * vuelve al directorio inicial.
-	 */
-	private static function RunCommand($command)
-	{
-		$prevDir = getcwd();
-		chdir(Context::Paths()->GetBinPath());
-
-		if(System::IsOnIIS())
-		{
-			$command = Str::RemoveBegining($command, "./");
-		}
-		$lastLine = exec($command, $output, $return);
-
-		if($return !== 0)
-		{
-			if ($return == 126)
-				throw new \Exception("Execute permissions not available for exec: " . $command);
-			else
-				throw new \Exception('Error running: "' . $command .
-				'", retval: ' . $return .  ', last line: "' . $lastLine . '"');
-		}
-		chdir($prevDir);
-		return $output;
-	}
 }

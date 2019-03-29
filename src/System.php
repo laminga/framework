@@ -102,4 +102,99 @@ class System
 		$software = Str::ToLower($_SERVER['SERVER_SOFTWARE']);
 		return (strpos($software, 'microsoft-iis') !== false);
 	}
+
+	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	//TODO: unificar estos cuatro métodos de Execute o RunCommand en uno.
+	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+	/**
+	 * Ejecuta un comando en el directorio del
+	 * binario, para ello guarda el directorio
+	 * inicial, cambia al del ejecutable y
+	 * vuelve al directorio inicial.
+	 */
+	public static function RunCommandOnPath($command, $path = null)
+	{
+		if($path === null)
+			$path = Context::Paths()->GetBinPath();
+
+		$prevDir = getcwd();
+		chdir($path);
+
+		if(System::IsOnIIS())
+			$command = Str::RemoveBegining($command, './');
+
+		$lastLine = exec($command, $output, $return);
+
+		if($return !== 0)
+		{
+			if ($return == 126)
+				throw new ErrorException('Error de permisos: "' . $command . '".');
+			else
+				throw new ErrorException('Error RunCommandOnPath: "' . $command
+				.  '", retval: ' . $return .  ', last line: "' . $lastLine . '"');
+		}
+
+		chdir($prevDir);
+		return $output;
+	}
+
+	/**
+	 * Execute usado por mapas.
+	 */
+	public static function Execute($command, array $args = [], array &$lines = [], $redirectStdErr = true)
+	{
+		$stdErr = '';
+		if($redirectStdErr)
+			$stdErr = ' 2>&1';
+
+		$str = '';
+		foreach($args as $arg)
+			$str .= escapeshellarg($arg) . ' ';
+
+		$val = 0;
+		exec($command . ' ' . trim($str) . $stdErr, $lines, $val);
+		return $val;
+	}
+
+	public static function RunCommandGS($command, $args, &$returnCode = null, $returnFirstLineOnly = false)
+	{
+		if (file_exists($command) == false)
+			throw new ErrorException('No se encontró el binario: "' . $command. '".');
+
+		if (Str::StartsWith($args, ' ') == false)
+		  	$args = ' ' . $args;
+
+		exec($command . $args, $out, $returnCode);
+
+		if ($returnCode == 126)
+			throw new ErrorException('Error de permisos: "' . $command . '".');
+
+		if (is_array($out) == false || count($out) == 0)
+			return '';
+		else if ($returnFirstLineOnly)
+			return $out[0];
+		else
+			return implode("\n", $out);
+	}
+
+	public static function RunCommandRaw($command)
+	{
+		$output = [];
+		$return = '';
+		$lastLine = exec($command, $output, $return);
+
+		if ($return == 126)
+			throw new ErrorException('Error de permisos: "' . $command . '".');
+
+		return [
+			'command' => $command,
+		  	'output' => implode("\n", $output),
+		  	'lastLine' => $lastLine,
+			'return' => $return
+		];
+	}
+
 }
