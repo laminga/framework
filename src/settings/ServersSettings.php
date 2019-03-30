@@ -12,20 +12,18 @@ class ServersSettings
 	private $currentServerObj = null;
 	private $mainServerObj = null;
 
-	public function RegisterServer($name, $url, $sslUrl = null, $isCDN = false)
+	public function RegisterServer($name, $url, $isCDN = false)
 	{
-		if ($sslUrl == null)
-			$sslUrl = $url;
 		$type = ($isCDN ? 'cdns' : 'main');
-		$server = new ServerItem($name, $type, $url, $sslUrl);
+		$server = new ServerItem($name, $type, $url);
 		if ($type == 'main')
 			$this->mainServerObj = $server;
 		$this->servers[$name] = $server;
 	}
 
-	public function RegisterCDNServer($name, $url, $sslUrl = null)
+	public function RegisterCDNServer($name, $url)
 	{
-		$this->RegisterServer($name, $url, $sslUrl, true);
+		$this->RegisterServer($name, $url, true);
 	}
 
 	public function SetCurrentServer($name)
