@@ -10,19 +10,15 @@ class Cookies
 		$expire = time() + 60 * 60 * 24 * $expireDays;
 
 		//Si tiene https no importa el entorno, es segura.
-		//$secure  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on');
-		// PHP_URL_SCHEME
 		$scheme = parse_url(Context::Settings()->GetMainServerPublicUrl(), PHP_URL_SCHEME);
 		$secure = ($scheme == "https");
-		// $host = 'aacademica.org';
+
 		$host = parse_url(Context::Settings()->GetMainServerPublicUrl(), PHP_URL_HOST);
+
 		$ret = setcookie($name, $value, $expire, '/', $host, $secure, true);
 
 		if($ret === false)
-		{
-			$ex = new ErrorException('SetCookie');
-			Log::HandleSilentException($ex);
-		}
+			Log::HandleSilentException(new ErrorException('SetCookie'));
 	}
 
 	public static function RenewCookie($name, $expireDays = 30)
@@ -36,8 +32,8 @@ class Cookies
 	{
 		if(isset($_COOKIE[$name]))
 			return $_COOKIE[$name];
-		else
-			return '';
+
+		return '';
 	}
 
 	public static function DeleteCookie($name)
