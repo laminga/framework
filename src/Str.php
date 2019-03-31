@@ -538,13 +538,35 @@ class Str
 
 	public static function FormatDateDMY($str)
 	{
-		if ($str == "") return "-";
+		if ($str == "")
+			return "-";
 		return substr($str, 8, 2) . "/" . substr($str, 5, 2) . "/" . substr($str, 2, 2);
 	}
 
 	public static function IsNumber($cad)
 	{
 		return is_numeric($cad);
+	}
+
+	/**
+	 * Devuelve strings bien formados para XML.
+	 */
+	public static function CleanXmlString($str)
+	{
+		// Los caracteres ascii bajos (menores a 0x20 espacio)
+		// rompen los parsers de xml (pasa en chrome y firefox).
+		$replace = [
+			chr(0x0000), chr(0x0001), chr(0x0002), chr(0x0003),
+			chr(0x0004), chr(0x0005), chr(0x0006), chr(0x0007),
+			chr(0x0008), chr(0x0009), chr(0x000a), chr(0x000b),
+			chr(0x000c), chr(0x000d), chr(0x000e), chr(0x000f),
+			chr(0x0010), chr(0x0011), chr(0x0012), chr(0x0013),
+			chr(0x0014), chr(0x0015), chr(0x0016), chr(0x0017),
+			chr(0x0018), chr(0x0019), chr(0x001a), chr(0x001b),
+			chr(0x001c), chr(0x001d), chr(0x001e), chr(0x001f),
+		];
+		return htmlspecialchars(
+			str_replace($replace, '', $str));
 	}
 
 	public static function SmartImplode($partsRaw, $trailingCad = "", $normalization = 0)
