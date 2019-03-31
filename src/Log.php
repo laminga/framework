@@ -42,7 +42,7 @@ class Log
 
 		$text = "REQUEST\r\n" .
 			'=> User:        '. Context::LoggedUser(). "\r\n" .
-			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $requestUri . "'>".Context::Settings()->GetMainServerPublicUrl() . $requestUri . "</a>\r\n" .
+			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $requestUri . "'>" . Context::Settings()->GetMainServerPublicUrl() . $requestUri . "</a>\r\n" .
 			'=> Agent:       '.  $agent . "\r\n" .
 			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
 			'=> Method:      '.  $requestMethod . "\r\n" .
@@ -68,7 +68,7 @@ class Log
 		if (Context::Settings()->Debug()->showErrors)
 			$textToShow = $text;
 		else
-			$textToShow = 'Se ha producido un error: ' . $errorMessage . ". <p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href='mailto:soporte@aacademica.org'>soporte@aacademica.org</a> describiendo el inconveniente.";
+			$textToShow = 'Se produjo un error: ' . $errorMessage . ". <p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href='mailto:soporte@aacademica.org'>soporte@aacademica.org</a> describiendo el inconveniente.";
 
 		self::PutToLog('errors', $text);
 
