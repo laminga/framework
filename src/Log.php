@@ -65,10 +65,37 @@ class Log
 		$text = str_replace("\r\n", "\n", $text);
 		$text = str_replace("\n", "<br>\r\n", $text);
 
+		$filtered = false;
 		if (Context::Settings()->Debug()->showErrors)
 			$textToShow = $text;
 		else
-			$textToShow = 'Se produjo un error: ' . $errorMessage . ". <p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href='mailto:soporte@aacademica.org'>soporte@aacademica.org</a> describiendo el inconveniente.";
+		{
+			//Filtro temporal (esperemos) para que no muestre
+			//mensajes de error con código de excepciones no
+			//capturadas. La solución correcta sería usar
+			//tipos de excepciones para errores propios y
+			//filtrar las que son tipo \Exception.
+			if(Str::Contains($errorMessage, '/')
+				|| Str::Contains($errorMessage, "\\")
+				|| Str::Contains($errorMessage, '(')
+				|| Str::Contains($errorMessage, ')')
+				|| Str::Contains($errorMessage, '[')
+				|| Str::Contains($errorMessage, ']')
+				|| Str::Contains($errorMessage, ':')
+				|| Str::Contains($errorMessage, ';')
+				|| Str::Contains($errorMessage, '>'))
+			{
+				$filtered = true;
+				$textToShow = 'Se produjo un error';
+			}
+			else
+				$textToShow = 'Se produjo un error: ' . $errorMessage;
+
+			$textToShow .= '.<p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href="mailto:soporte@aacademica.org">soporte@aacademica.org</a> describiendo el inconveniente.';
+		}
+
+		if($filtered)
+			$text .= '[texto filtrado al usuario].';
 
 		self::PutToLog('errors', $text);
 
