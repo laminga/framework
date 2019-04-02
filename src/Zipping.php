@@ -190,30 +190,37 @@ class Zipping
 
 	public static function AddOrUpdate($zipFile, $filename, $filesrc)
 	{
-		$zip = new clsTbsZip();
-		if (file_exists($zipFile) == false)
-			$zip->CreateNew();
-		else
-			$zip->Open($zipFile);
-		if (is_array($filename) == false)
+		try
 		{
-			$filename = array($filename);
-			$filesrc = array($filesrc);
-		}
-		for($n = 0; $n < sizeof($filename); $n++)
-		{
-			if ($zip->FileExists($filename[$n]))
-				$zip->FileReplace($filename[$n], $filesrc[$n], TBSZIP_FILE);
+			$zip = new clsTbsZip();
+			if (file_exists($zipFile) == false)
+				$zip->CreateNew();
 			else
-				$zip->FileAdd($filename[$n], $filesrc[$n], TBSZIP_FILE);
+				$zip->Open($zipFile);
+			if (is_array($filename) == false)
+			{
+				$filename = array($filename);
+				$filesrc = array($filesrc);
+			}
+			for($n = 0; $n < sizeof($filename); $n++)
+			{
+				if ($zip->FileExists($filename[$n]))
+					$zip->FileReplace($filename[$n], $filesrc[$n], TBSZIP_FILE);
+				else
+					$zip->FileAdd($filename[$n], $filesrc[$n], TBSZIP_FILE);
+			}
+			$time = IO::FileMTime($filesrc[0]);
+			if($time === false)
+				$time = time();
+			$zip->now = $time;
+			$zip->Flush(TBSZIP_FILE, $zipFile . "tmp", "");
+			$zip->Close();
+			IO::Move($zipFile . "tmp", $zipFile);
 		}
-		$time = IO::FileMTime($filesrc[0]);
-		if($time === false)
-			$time = time();
-		$zip->now = $time;
-		$zip->Flush(TBSZIP_FILE, $zipFile . "tmp", "");
-		$zip->Close();
-		IO::Move($zipFile . "tmp", $zipFile);
+		catch(\Exception $e)
+		{
+			Log::HandleSilentException($e);
+		}
 	}
 
 	public static function Release()
