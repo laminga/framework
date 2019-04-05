@@ -7,9 +7,9 @@ use minga\framework\locking\Lock;
 class Log
 {
 	private static $isLoggingMailError = false;
-	public static $ExtraErrorTarget = null;
+	public static $extraErrorTarget = null;
 
-	public static function LogError($errno, $errstr, $errfile, $errline, $context = [], $trace = null)
+	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine, $context = [], $trace = null)
 	{
 		Lock::ReleaseAllStaticLocks();
 
@@ -17,11 +17,11 @@ class Log
 		{
 			$e = new ErrorException();
 			$st = explode("\n", $e->getTraceAsString());
-			if (sizeof($st) > 2)
+			if (count($st) > 2)
 			{
 				unset($st[0]);
 				unset($st[1]);
-				unset($st[sizeof($st) - 1]);
+				unset($st[count($st) - 1]);
 			}
 			$stack = implode("\r\n", $st);
 		}
@@ -42,18 +42,18 @@ class Log
 
 		$text = "REQUEST\r\n" .
 			'=> User:        '. Context::LoggedUser(). "\r\n" .
-			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $requestUri . "'>".Context::Settings()->GetMainServerPublicUrl() . $requestUri . "</a>\r\n" .
+			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $requestUri . "'>" . Context::Settings()->GetMainServerPublicUrl() . $requestUri . "</a>\r\n" .
 			'=> Agent:       '.  $agent . "\r\n" .
 			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
 			'=> Method:      '.  $requestMethod . "\r\n" .
 			'=> IP:          '.  $remoteAddr . "\r\n" .
 			"===========================================\r\n" .
 			"ERROR\r\n" .
-			'=> Description: '. $errstr . "\r\n" .
-			"=> File:        <a href='repath://" . $errfile . '@' .  $errline . "'>" . $errfile. ':' .  $errline. "</a>\r\n" .
-			'=> Level: ' . self::GetLevel($errno) . "\r\n" .
+			'=> Description: '. $errorMessage . "\r\n" .
+			"=> File:        <a href='repath://" . $errorFile . '@' .  $errorLine . "'>" . $errorFile. ':' .  $errorLine. "</a>\r\n" .
+			'=> Level: ' . self::GetLevel($errorNumber) . "\r\n" .
 			'=> Stack: ' . $stack . "\r\n";
-		if (sizeof($_POST) > 0)
+		if (count($_POST) > 0)
 		{
 			$text .= "===========================================\r\n" .
 				'=> Post:        ' . print_r($_POST, true);
@@ -65,10 +65,37 @@ class Log
 		$text = str_replace("\r\n", "\n", $text);
 		$text = str_replace("\n", "<br>\r\n", $text);
 
+		$filtered = false;
 		if (Context::Settings()->Debug()->showErrors)
 			$textToShow = $text;
 		else
-			$textToShow = 'Se ha producido un error: ' . $errstr . ". <p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href='mailto:soporte@aacademica.org'>soporte@aacademica.org</a> describiendo el inconveniente.";
+		{
+			//Filtro temporal (esperemos) para que no muestre
+			//mensajes de error con código de excepciones no
+			//capturadas. La solución correcta sería usar
+			//tipos de excepciones para errores propios y
+			//filtrar las que son tipo \Exception.
+			if(Str::Contains($errorMessage, '/')
+				|| Str::Contains($errorMessage, "\\")
+				|| Str::Contains($errorMessage, '(')
+				|| Str::Contains($errorMessage, ')')
+				|| Str::Contains($errorMessage, '[')
+				|| Str::Contains($errorMessage, ']')
+				|| Str::Contains($errorMessage, ':')
+				|| Str::Contains($errorMessage, ';')
+				|| Str::Contains($errorMessage, '>'))
+			{
+				$filtered = true;
+				$textToShow = 'Se produjo un error';
+			}
+			else
+				$textToShow = 'Se produjo un error: ' . $errorMessage;
+
+			$textToShow .= '.<p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href="mailto:soporte@aacademica.org">soporte@aacademica.org</a> describiendo el inconveniente.';
+		}
+
+		if($filtered)
+			$text .= '[texto filtrado al usuario].';
 
 		self::PutToLog('errors', $text);
 
@@ -142,8 +169,8 @@ class Log
 		$file = $path . '/' . $file;
 		// va
 		IO::WriteAllText($file, $text);
-		if (self::$ExtraErrorTarget !== null)
-			IO::WriteAllText(self::$ExtraErrorTarget, $text);
+		if (self::$extraErrorTarget !== null)
+			IO::WriteAllText(self::$extraErrorTarget, $text);
 	}
 
 	public static function PutToMail($text)
@@ -162,9 +189,9 @@ class Log
 
 	}
 
-	private static function GetLevel($errno)
+	private static function GetLevel($errorNumber)
 	{
-		switch($errno)
+		switch($errorNumber)
 		{
 			case E_ERROR:
 				return 'E_ERROR'; // 1
@@ -197,7 +224,7 @@ class Log
 			case E_USER_DEPRECATED:
 				return 'E_USER_DEPRECATED'; // 16384
 			default:
-				return $errno;
+				return $errorNumber;
 		}
 	}
 }

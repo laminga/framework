@@ -2,6 +2,7 @@
 
 namespace minga\framework\settings;
 
+use minga\framework\Context;
 use minga\framework\Str;
 
 class Settings
@@ -94,7 +95,8 @@ class Settings
 
 	public function HasSSL()
 	{
-		return (Str::StartsWith($this->GetMainServerPublicSecureUrl(), "https:"));
+		$scheme = parse_url(Context::Settings()->GetMainServerPublicUrl(), PHP_URL_SCHEME);
+		return $scheme == "https";
 	}
 
 	public function Keys()
@@ -167,21 +169,9 @@ class Settings
 		return $server->publicUrl;
 	}
 
-	public function GetPublicSecureUrl()
-	{
-		$server = $this->Servers()->Current();
-		return $server->publicSecureUrl;
-	}
-
 	public function GetMainServerPublicUrl()
 	{
 		$server = $this->Servers()->Main();
 		return $server->publicUrl;
-	}
-
-	public function GetMainServerPublicSecureUrl()
-	{
-		$server = $this->Servers()->Main();
-		return $server->publicSecureUrl;
 	}
 }

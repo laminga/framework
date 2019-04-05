@@ -96,20 +96,24 @@ class Params
 			return null;
 		return self::processIntValue($value);
 	}
+
 	private static function processIntValue($value)
 	{
-		$i = intval($value);
-		if ($i . '' !== $value)
+		$i = (int)$value;
+		if ((string)$i !== $value)
 			throw new ErrorException('Parameter value of ' . $value . ' is invalid.');
 		else
 			return $i;
 	}
 
-	public static function GetJsonMandatory($param){
+	public static function GetJsonMandatory($param)
+	{
 		$value = self::GetMandatory($param);
 		return json_decode($value, true);
 	}
-	public static function GetJson($param){
+
+	public static function GetJson($param)
+	{
 		$value = Params::Get($param);
 		if ($value === null)
 			return null;

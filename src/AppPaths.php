@@ -87,7 +87,7 @@ class AppPaths
 
 	public function GetFrameworkDataPath()
 	{
-		return $this->GetFrameworkPath() . '/data';
+		return realpath($this->GetFrameworkPath() . '/../data');
 	}
 
 	public function GetMpdfTempPath()

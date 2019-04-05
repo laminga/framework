@@ -229,4 +229,16 @@ class Zip
 		return $ret;
 	}
 
+	public function DeleteFiles(array $files)
+	{
+		$zip = new \ZipArchive();
+		if ($zip->open($this->targetFile) !== true)
+			throw new \Exception('Failed to open file');
+
+		foreach($files as $file)
+			$zip->deleteName($file);
+
+		$zip->close();
+	}
+
 }

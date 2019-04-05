@@ -39,7 +39,7 @@ abstract class OauthConnector
 		$this->service = $serviceFactory->createService(static::Provider, $credentials, $this->storage, $this->GetFields());
 	}
 
-	/*
+	/**
 	 * Con los datos de $code y $state que devuelve el provider
 	 * obtiene el token de acceso para solicitar los datos
 	 * del usuario. Si vuelve todo bien es que el usuario autorizó
@@ -69,8 +69,8 @@ abstract class OauthConnector
 		//Setear en sesión los datos que se quieran tener para después de oauth.
 		//porque sale del sitio y no hay forma de mantener estado si no es sesión
 		//o cookie.
-		PhpSession::SetSessionValue(static::Provider.'OauthRedirect', $url);
-		PhpSession::SetSessionValue(static::Provider.'OauthReturnUrl', $returnUrl);
+		PhpSession::SetSessionValue(static::Provider . 'OauthRedirect', $url);
+		PhpSession::SetSessionValue(static::Provider . 'OauthReturnUrl', $returnUrl);
 		PhpSession::SetSessionValue('OauthTerms', $terms);
 
 		return $this->service->getAuthorizationUri();
@@ -87,9 +87,9 @@ abstract class OauthConnector
 
 	public function RedirectErrorNoEmail()
 	{
-		Log::HandleSilentException(new MessageException('No email from '.$this->ProviderName()));
+		Log::HandleSilentException(new MessageException('No email from ' . $this->ProviderName()));
 
-		MessageBox::ShowDialogPopup("No se ha podido obtener una dirección de correo electrónico a través de " . $this->ProviderName() . ". Intente otro método de registro para la identificación.", "Atención");
+		MessageBox::ShowDialogPopup('No se ha podido obtener una dirección de correo electrónico a través de ' . $this->ProviderName() . '. Intente otro método de registro para la identificación.', 'Atención');
 	}
 
 	public function RedirectError($error = null)
@@ -97,12 +97,12 @@ abstract class OauthConnector
 		if($error != null)
 			Log::HandleSilentException(new ErrorException($error));
 
-		MessageBox::ShowDialogPopup("No se ha podido realizar la interacción con " . $this->ProviderName() . " para la identificación.", "Atención");
+		MessageBox::ShowDialogPopup('No se ha podido realizar la interacción con ' . $this->ProviderName() . ' para la identificación.', 'Atención');
 	}
 
 	private function RedirectSession()
 	{
-		$url = PhpSession::GetSessionValue(static::Provider.'OauthRedirect');
+		$url = PhpSession::GetSessionValue(static::Provider . 'OauthRedirect');
 		$this->CloseAndRedirect($url);
 	}
 
@@ -119,31 +119,30 @@ abstract class OauthConnector
 		//-Que no tenga funciones inválidas (deleteUser, etc.)
 		//-No tenga código javascript (xss).
 		if($target == '')
-			throw new ErrorException("Undefined target.");
+			throw new ErrorException('Undefined target.');
 
-		$js = "window.opener.location='" . $target. "';";
-		$js .= "window.close();";
-		echo "<!doctype html><html lang='es'><head><meta charset='utf-8'></head><body onload=\"" . $js. "\"></body></html>";
+		$js = "window.opener.location='" . $target . "';";
+		$js .= 'window.close();';
+		echo '<!doctype html><html lang="es"><head><meta charset="utf-8"></head><body onload="' . $js . '"></body></html>';
 
 		// Guarda info de profiling
 		Profiling::SaveBeforeRedirect();
 		Context::EndRequest();
-		exit();
 	}
 
-	/*
+	/**
 	 * Obtiene los fields que se le piden al provider
 	 * cada provider maneja los suyos.
 	 */
 	abstract protected function GetFields();
 
-	/*
+	/**
 	 * Obtiene los datos del provider normalizados
 	 * en formato de OauthData.
 	 */
 	abstract protected function GetData();
 
-	/*
+	/**
 	 * Valida para cada provider si los datos necesarios
 	 * fueron autorizados por el usuario.
 	 */
