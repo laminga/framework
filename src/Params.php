@@ -100,7 +100,7 @@ class Params
 	{
 		$i = intval($value);
 		if ($i . '' !== $value)
-			throw new ErrorException('Parameter value of ' . $key . ' is invalid.');
+			throw new ErrorException('Parameter value of ' . $value . ' is invalid.');
 		else
 			return $i;
 	}
