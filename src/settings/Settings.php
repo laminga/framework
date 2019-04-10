@@ -168,10 +168,7 @@ class Settings
 		$server = $this->Servers()->Current();
 		return $server->publicUrl;
 	}
-	public function	GetMainServerPublicSecureUrl()
-	{
-		return $this->GetMainServerPublicUrl();
-	}
+
 	public function GetMainServerPublicUrl()
 	{
 		$server = $this->Servers()->Main();
