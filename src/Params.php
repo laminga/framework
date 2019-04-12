@@ -100,8 +100,10 @@ class Params
 	private static function processIntValue($value)
 	{
 		$i = (int)$value;
-		if ((string)$i !== $value)
+		if ((string)$i !== (string)$value)
+		{
 			throw new ErrorException('Parameter value of ' . $value . ' is invalid.');
+		}
 		else
 			return $i;
 	}
