@@ -327,22 +327,14 @@ class IO
 
 	public static function CreateDirectory($directory)
 	{
-		try
-		{
-			mkdir($directory);
-		}
-		catch (\Exception $e)
-		{
-			/* Este catch está porque incluso chequeando con if exists antes,
-				pueda haber concurrencia entre if exists y mkdir, y en consecuencia
-				sale el mkdir con error de 'directorio ya existe'. Salir con ese
-				error no es útil, dado que el objetivo de este método es crear
-				el directorio. Se podría generar un lock a nivel aplicación para
-				hacer un if exist con lock, pero el beneficio es poco claro.
+			if (!is_dir($directory))
+				@mkdir($directory);
+			/* Este manejo de errores es porque varias páginas pueden
+			 * querer crear una carpeta al mismo tiempo, y da un warning
+			 * de 'carpeta ya existe' incluso si se verifica en la línea anterior.
 			 */
 			if (!is_dir($directory))
-				throw $e;
-		}
+				throw new \ErrorException('Could not create directory');
 	}
 
 	public static function GetFilesCursor($path, $ext = '')
