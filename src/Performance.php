@@ -303,10 +303,11 @@ class Performance
 		$mail = new Mail();
 		$mail->to = Context::Settings()->Mail()->NotifyAddress;
 		$mail->subject = 'ALERTA ADMINISTRATIVA de ' . Context::Settings()->applicationName . ' ' . $server . ' (' . $metric . ' > ' . $limit . ')';
-		$vals = [];
-		$vals['metric'] = $metric;
-		$vals['limit'] = $limit;
-		$vals['value'] = $value;
+		$vals = [
+			'metric' => $metric,
+			'limit' => $limit,
+			'value' => $value,
+		];
 		$mail->message = Context::Calls()->RenderMessage('performanceWarning.html.twig', $vals);
 		$mail->Send(false, true);
 	}
@@ -523,7 +524,8 @@ class Performance
 		$lock = new PerformanceLock();
 		$lock->LockRead();
 
-		if ($month == '') $month = 'dayly';
+		if ($month == '')
+			$month = 'dayly';
 
 		$path = self::ResolveFolder($month);
 		$rows = [];
@@ -531,6 +533,7 @@ class Performance
 		$controllers = [];
 		// lee los datos desde disco
 		foreach(IO::GetFiles($path, '.txt') as $file)
+		{
 			if ($file != 'processor.txt' && $file != 'locks.txt')
 			{
 				$controller = Str::Replace(IO::RemoveExtension($file), '#', '/');
@@ -546,6 +549,7 @@ class Performance
 					}
 				}
 			}
+		}
 
 		$lock->Release();
 
@@ -566,56 +570,52 @@ class Performance
 		$totalDuration = self::CalculateTotalDuration($controllers);
 		// pone datos
 		foreach($controllers as $controller => $values)
+		{
+			$cells = [0, 0, 0, 0];
+			$controllerHits = 0;
+			$controllerTime = 0;
+			$dbControllerHits = 0;
+			$dbControllerMs = 0;
+			foreach($methods as $method)
 			{
-				$cells = [];
-				$cells[] = 0;
-				$cells[] = 0;
-				$cells[] = 0;
-				$cells[] = 0;
-				$controllerHits = 0;
-				$controllerTime = 0;
-				$dbControllerHits = 0;
-				$dbControllerMs = 0;
-				foreach($methods as $method)
+				if (array_key_exists($method, $values))
 				{
-					if (array_key_exists($method, $values))
-					{
-						self::ParseHit($values[$method], $hits, $duration, $_, $dbMs, $dbHits);
-						$controllerHits += $hits;
-						$avg = round($duration / $hits);
-						$controllerTime += $duration;
-						$share = self::FormatShare($duration, $totalDuration);
-						$db = round($dbMs / $hits) . ' (' . round($dbHits / $hits, 1) . ')';
-						$dbControllerHits += $dbHits;
-						$dbControllerMs += $dbMs;
-					}
-					else
-					{
-						$hits = '-';
-						$avg = '-';
-						$db = '-';
-						$share = '-';
-					}
-					$cells[] = $hits;
-					$cells[] = $avg;
-					$cells[] = $db;
-					$cells[] = $share;
-				}
-				if ($controllerHits > 0)
-				{
-					$cells[0] = $controllerHits;
-					$cells[1] = round($controllerTime / $controllerHits);
-					$cells[2] = round($dbControllerMs / $controllerHits) . ' (' . round($dbControllerHits / $controllerHits, 1) . ')';
+					self::ParseHit($values[$method], $hits, $duration, $_, $dbMs, $dbHits);
+					$controllerHits += $hits;
+					$avg = round($duration / $hits);
+					$controllerTime += $duration;
+					$share = self::FormatShare($duration, $totalDuration);
+					$db = round($dbMs / $hits) . ' (' . round($dbHits / $hits, 1) . ')';
+					$dbControllerHits += $dbHits;
+					$dbControllerMs += $dbMs;
 				}
 				else
 				{
-					$cells[0] = '-';
-					$cells[1] = '-';
-					$cells[2] = '-';
+					$hits = '-';
+					$avg = '-';
+					$db = '-';
+					$share = '-';
 				}
-				$cells[3] = self::FormatShare($controllerTime, $totalDuration);
-				$rows[$controller] = $cells;
+				$cells[] = $hits;
+				$cells[] = $avg;
+				$cells[] = $db;
+				$cells[] = $share;
 			}
+			if ($controllerHits > 0)
+			{
+				$cells[0] = $controllerHits;
+				$cells[1] = round($controllerTime / $controllerHits);
+				$cells[2] = round($dbControllerMs / $controllerHits) . ' (' . round($dbControllerHits / $controllerHits, 1) . ')';
+			}
+			else
+			{
+				$cells[0] = '-';
+				$cells[1] = '-';
+				$cells[2] = '-';
+			}
+			$cells[3] = self::FormatShare($controllerTime, $totalDuration);
+			$rows[$controller] = $cells;
+		}
 		ksort($rows);
 		return $rows;
 	}
@@ -634,7 +634,6 @@ class Performance
 				$share = '<span style="background-color: yellow">'. $share .'</span>';
 			else if ($shareValue > 5)
 				$share = '<b>'. $share .'</b>';
-
 		}
 		return $share;
 	}
@@ -651,8 +650,7 @@ class Performance
 
 		ksort($rows);
 
-		$ret = [];
-		$ret['Clase'] = ['Locks','Promedio (ms)', 'Total (seg.)'];
+		$ret = ['Clase' => 'Locks','Promedio (ms)', 'Total (seg.)'];
 
 		foreach($rows as $key => $value)
 		{

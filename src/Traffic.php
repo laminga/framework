@@ -11,21 +11,24 @@ class Traffic
 
 	public static function RegisterIP($ip)
 	{
-		Profiling::BeginTimer();
 		try
 		{
+			Profiling::BeginTimer();
 			self::Save($ip);
 		}
 		catch(\Exception $e)
 		{
 			Log::HandleSilentException($e);
 		}
-		Profiling::EndTimer();
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
-	private static function Save($ipaddr)
+	private static function Save($ip)
 	{
-		$addr = inet_pton($ipaddr);
+		$addr = inet_pton($ip);
 		if($addr === false)
 			throw new \Exception('Invalid address.');
 
@@ -37,10 +40,10 @@ class Traffic
 		$lock = new TrafficLock($set);
 
 		$lock->LockWrite();
-		$hits = self::SaveIpHit($set, $ipaddr, $device);
+		$hits = self::SaveIpHit($set, $ip, $device);
 		$lock->Release();
 
-		$limit = self::CheckLimits($hits);
+		$limit = self::CheckLimits($hits, $ip);
 		if ($hits >= $limit)
 		{
 			header('HTTP/1.1 503 Service Temporarily Unavailable');
@@ -54,9 +57,9 @@ class Traffic
 	public static function DayCompleted()
 	{
 		$locks = [];
-		$toZip = [];
 		try
 		{
+			$toZip = [];
 			$path = Context::Paths()->GetTrafficLocalPath();
 			for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
 			{
@@ -192,12 +195,12 @@ class Traffic
 		return Context::Settings()->Limits()->MaximumMobileDaylyHitsPerIP;
 	}
 
-	private static function CheckLimits($hits)
+	private static function CheckLimits($hits, $ip)
 	{
 		$limit = self::GetLimit();
 		if ($hits == $limit)
 		{
-			Performance::SendPerformanceWarning('tráfico por IP', $limit . ' hits', $hits . ' hits');
+			Performance::SendPerformanceWarning('tráfico por IP (' . $ip . ')', $limit . ' hits', $hits . ' hits');
 			$defensiveNote= '';
 			if (self::IsInDefensiveMode())
 				$defensiveNote = ' en modo defensivo';
@@ -206,10 +209,10 @@ class Traffic
 			if (self::IsMobileOrTablet())
 				$device = ' (' .  self::GetDevice() .')';
 
-			Log::HandleSilentException(new MessageException('La IP' . $device. ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
+			Log::HandleSilentException(new MessageException('La IP (' . $ip . ')' . $device. ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
 		}
 		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
-			Performance::SendPerformanceWarning('tráfico por IP sospechoso', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');
+			Performance::SendPerformanceWarning('tráfico por IP sospechoso (' . $ip . ')', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');
 		return $limit;
 	}
 
