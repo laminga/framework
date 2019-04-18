@@ -214,7 +214,7 @@ class Profiling
 	{
 		// headers
 		if (self::$IsJson == false)
-			$ret = "<div class='dProfiling'><table border='0' cellpadding='2' cellspacing='0' style='width:650px; border: 1px solid grey;'>";
+			$ret = "<div class='dProfiling'><table border='0' cellpadding='2' class='cellspacing0' style='width:650px; border: 1px solid grey;'>";
 		else
 			$ret = "";
 		$tdStyle = "style='background-color: " . $colorHeader . "'";
