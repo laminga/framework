@@ -30,8 +30,12 @@ class BaseTwoLevelStringSQLiteCache
 		}
 		catch(\Exception $e)
 		{
+			if (Str::Contains($e->getMessage(), "Unable to execute statement: attempt to write a readonly database"))
+				unlink($this->ResolveFilename($key));
+
 			if (Str::Contains($e->getMessage(), "database is locked") == false || $throwLockErrors)
 				throw $e;
+
 			return false;
 		}
 	}
