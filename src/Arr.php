@@ -376,7 +376,7 @@ class Arr
 		for($i = 0; $i < $newSize; $i++)
 			$ret[$keys[$i]] = $arr[$keys[$i]];
 		for($i = $newSize; $i < sizeof($arr); $i++)
-			$total = intval(gmp_add($total, $arr[$keys[$i]]));
+			$total = intval($total + $arr[$keys[$i]]);
 		$ret['Otros'] = $total;
 		return $ret;
 	}
@@ -386,7 +386,7 @@ class Arr
 		$total = 0;
 		$keys = array_keys($arr);
 		for($i = 0; $i < sizeof($arr); $i++)
-			$total = intval(gmp_add($total, $arr[$keys[$i]]));
+			$total = intval(($total + $arr[$keys[$i]]));
 		$ret = [];
 		for($i = 0; $i < sizeof($arr); $i++)
 		{
