@@ -11,36 +11,39 @@ class Traffic
 
 	public static function RegisterIP($ip)
 	{
-		Profiling::BeginTimer();
 		try
 		{
+			Profiling::BeginTimer();
 			self::Save($ip);
 		}
 		catch(\Exception $e)
 		{
 			Log::HandleSilentException($e);
 		}
-		Profiling::EndTimer();
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
-	private static function Save($ipaddr)
+	private static function Save($ip)
 	{
-		$addr = inet_pton($ipaddr);
+		$addr = inet_pton($ip);
 		if($addr === false)
 			throw new \Exception('Invalid address.');
 
 		$chars = str_split($addr);
 
-		$set = self::NumberToFile(ord($chars[sizeof($chars)-1]) / self::C_FACTOR +1);
+		$set = self::NumberToFile(ord($chars[sizeof($chars) - 1]) / self::C_FACTOR + 1);
 
 		$device = 'n/d'; // comentado por performance self::GetDevice();
 		$lock = new TrafficLock($set);
 
 		$lock->LockWrite();
-		$hits = self::SaveIpHit($set, $ipaddr, $device);
+		$hits = self::SaveIpHit($set, $ip, $device);
 		$lock->Release();
 
-		$limit = self::CheckLimits($hits);
+		$limit = self::CheckLimits($hits, $ip);
 		if ($hits >= $limit)
 		{
 			header('HTTP/1.1 503 Service Temporarily Unavailable');
@@ -54,9 +57,9 @@ class Traffic
 	public static function DayCompleted()
 	{
 		$locks = [];
-		$toZip = [];
 		try
 		{
+			$toZip = [];
 			$path = Context::Paths()->GetTrafficLocalPath();
 			for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
 			{
@@ -71,7 +74,7 @@ class Traffic
 				}
 			}
 
-			$file = $path . "/yesterday.zip";
+			$file = $path . '/yesterday.zip';
 			IO::Delete($file);
 			$zip = new Zip($file);
 			$zip->AddToZipDeleting($path, $toZip);
@@ -144,10 +147,11 @@ class Traffic
 	private static function GetDevicePlural($device)
 	{
 		if (Str::EndsWith($device, 'r'))
-			return $device . "es";
-		else
-			return $device . "s";
+			return $device . 'es';
+
+		return $device . 's';
 	}
+
 	private static function GetDevice()
 	{
 		$detect = new \Mobile_Detect();
@@ -179,36 +183,36 @@ class Traffic
 	{
 		if (self::IsInDefensiveMode())
 			return Context::Settings()->Limits()->DefensiveModeMaximumDaylyHitsPerIP;
-		else
-			return Context::Settings()->Limits()->MaximumDaylyHitsPerIP;
+
+		return Context::Settings()->Limits()->MaximumDaylyHitsPerIP;
 	}
+
 	private static function GetMobileLimit()
 	{
 		if (self::IsInDefensiveMode())
 			return Context::Settings()->Limits()->DefensiveModeMaximumMobileDaylyHitsPerIP;
-		else
-			return Context::Settings()->Limits()->MaximumMobileDaylyHitsPerIP;
+
+		return Context::Settings()->Limits()->MaximumMobileDaylyHitsPerIP;
 	}
 
-	private static function CheckLimits($hits)
+	private static function CheckLimits($hits, $ip)
 	{
 		$limit = self::GetLimit();
 		if ($hits == $limit)
 		{
-			Performance::SendPerformanceWarning('tráfico por IP', $limit . ' hits', $hits . ' hits');
+			Performance::SendPerformanceWarning('tráfico por IP (' . $ip . ')', $limit . ' hits', $hits . ' hits');
+			$defensiveNote= '';
 			if (self::IsInDefensiveMode())
 				$defensiveNote = ' en modo defensivo';
-			else
-				$defensiveNote= '';
+
+			$device = '';
 			if (self::IsMobileOrTablet())
 				$device = ' (' .  self::GetDevice() .')';
-			else
-				$device = '';
 
-			Log::HandleSilentException(new MessageException('La IP' . $device. ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
+			Log::HandleSilentException(new MessageException('La IP (' . $ip . ')' . $device. ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
 		}
 		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
-			Performance::SendPerformanceWarning('tráfico por IP sospechoso', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');
+			Performance::SendPerformanceWarning('tráfico por IP sospechoso (' . $ip . ')', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');
 		return $limit;
 	}
 
@@ -216,8 +220,8 @@ class Traffic
 	{
 		if (file_exists($file))
 			return IO::ReadIniFile($file);
-		else
-			return array();
+
+		return [];
 	}
 
 	private static function ResolveFolder()
@@ -226,10 +230,12 @@ class Traffic
 		IO::EnsureExists($ret);
 		return $ret;
 	}
+
 	public static function NumberToFile($number)
 	{
 		return 'hits-' . str_pad(strtoupper(dechex($number)), 2, '0', STR_PAD_LEFT);
 	}
+
 	public static function ResolveFilename($set)
 	{
 		$path = self::ResolveFolder();
@@ -238,12 +244,12 @@ class Traffic
 
 	public static function GetTraffic($getYesterday, &$totalIps, &$totalHits)
 	{
-		$ret = array();
+		$ret = [];
 		$path = Context::Paths()->GetTrafficLocalPath();
 
 		if ($getYesterday)
 		{
-			$dir = new CompressedDirectory($path, "yesterday.zip");
+			$dir = new CompressedDirectory($path, 'yesterday.zip');
 			$dir->Expand();
 			$folder = $dir->expandedPath;
 		}
@@ -253,7 +259,7 @@ class Traffic
 			$folder = $path;
 		}
 		$threshold = Context::Settings()->Limits()->LogAgentThresholdDaylyHits;
-		$totalIps = array();
+		$totalIps = [];
 		$totalHits = 0;
 
 		for($n = 1; $n <= 256 / self::C_FACTOR; $n++)
@@ -273,7 +279,7 @@ class Traffic
 					self::ParseHit($value, $hits, $agent, $url, $device);
 					if ($hits >= $threshold)
 					{
-						$item = array();
+						$item = [];
 						$item['ip'] = $key;
 						$item['hits'] = $hits;
 						$item['country'] = GeoIp::GetCountryName($key);
@@ -282,15 +288,15 @@ class Traffic
 						$item['url'] = $url;
 						$item['device'] = $device;
 						$ret[] = $item;
-						}
-						$totalHits += $hits;
-						$devicePlural = self::GetDevicePlural($device);
-						if(isset($totalIps[$devicePlural]) == false)
-							$totalIps[$devicePlural] = 1;
-						else
-							$totalIps[$devicePlural] += 1;
 					}
+					$totalHits += $hits;
+					$devicePlural = self::GetDevicePlural($device);
+					if(isset($totalIps[$devicePlural]) == false)
+						$totalIps[$devicePlural] = 1;
+					else
+						$totalIps[$devicePlural] += 1;
 				}
+			}
 		}
 
 		if ($dir !== null)
@@ -298,7 +304,7 @@ class Traffic
 
 		Arr::SortByKeyDesc($ret, 'hits');
 
-		$ret[] = Str::BuildTotalsRow($ret, 'ip', array('hits'));
+		$ret[] = Str::BuildTotalsRow($ret, 'ip', ['hits']);
 		$ret[count($ret)-1]['ip'] = 'Total (' . (sizeof($ret) - 1) .')';
 
 		return $ret;
@@ -308,7 +314,6 @@ class Traffic
 	{
 		$file = self::ResolveDefensiveFile();
 		IO::WriteAllText($file, '1');
-
 	}
 
 	public static function ClearDefensiveMode()

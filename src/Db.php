@@ -34,8 +34,8 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 
-			$db = new \PDO('mysql:host='.$this->Host.
-				';dbname='.$this->Name.';charset='.$this->Charset,
+			$db = new \PDO('mysql:host=' . $this->Host .
+				';dbname=' . $this->Name . ';charset=' . $this->Charset,
 				$this->User,
 				$this->Password);
 			$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -57,7 +57,7 @@ class Db
 		return $this->TablePrefix . $tableName;
 	}
 
-	public function execute($query, array $data = array())
+	public function execute($query, array $data = [])
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
@@ -67,7 +67,7 @@ class Db
 		return $ret;
 	}
 
-	private function doExecute($query, array $data = array())
+	private function doExecute($query, array $data = [])
 	{
 		$stmt = $this->Connection()->prepare($query);
 		$stmt->execute($data);
@@ -82,7 +82,7 @@ class Db
 	 * @paran int $fetch_style Fetch style PDO Constant
 	 * @return array
 	 */
-	public function fetchAll($query, array $params = array(), $fetch_style = \PDO::FETCH_ASSOC)
+	public function fetchAll($query, array $params = [], $fetch_style = \PDO::FETCH_ASSOC)
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
@@ -96,12 +96,12 @@ class Db
 	}
 
 
-	public function fetchScalarInt($sql, array $params = array())
+	public function fetchScalarInt($sql, array $params = [])
 	{
 		return intval($this->fetchScalar($sql, $params));
 	}
 
-	public function fetchScalar($sql, array $params = array())
+	public function fetchScalar($sql, array $params = [])
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
@@ -111,7 +111,7 @@ class Db
 		return $ret[array_keys($ret)[0]];
 	}
 
-	private function fetch($query, array $params = array(), $fetch_style = \PDO::FETCH_ASSOC)
+	private function fetch($query, array $params = [], $fetch_style = \PDO::FETCH_ASSOC)
 	{
 		$query = $this->parseArrayParams($query, $params);
 		$stmt = $this->Connection()->prepare($query);
@@ -119,15 +119,14 @@ class Db
 		return $stmt->fetch($fetch_style);
 	}
 
-	public function fetchAllColumn($query, array $params = array())
+	public function fetchAllColumn($query, array $params = [])
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
 		$data = $this->fetchAll($query, $params);
 		for($i=0;$i<count($data);$i++)
-		{
 			$data[$i] = reset($data[$i]);
-		}
+
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $data;
@@ -142,7 +141,7 @@ class Db
 	 * @param int $colnum 0-indexed column number to retrieve
 	 * @return mixed
 	 */
-	public function fetchColumn($query, array $params = array(), $colnum = 0)
+	public function fetchColumn($query, array $params = [], $colnum = 0)
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
@@ -168,8 +167,8 @@ class Db
 		Performance::BeginDbWait();
 
 		// column names are specified as array keys
-		$cols = array();
-		$placeholders = array();
+		$cols = [];
+		$placeholders = [];
 
 		foreach ($data as $columnName => $_)
 		{
@@ -197,11 +196,9 @@ class Db
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
-		$criteria = array();
+		$criteria = [];
 		foreach (array_keys($identifier) as $columnName)
-		{
 			$criteria[] = $columnName . ' = ?';
-		}
 
 		$query = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' AND ', $criteria);
 		$ret = $this->doExecute($query, array_values($identifier));
@@ -230,7 +227,7 @@ class Db
 	 * @param array $params The query parameters.
 	 * @return array|false
 	 */
-	public function fetchAssoc($statement, array $params = array())
+	public function fetchAssoc($statement, array $params = [])
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
@@ -253,7 +250,7 @@ class Db
 		{
 			if(is_array($v))
 			{
-				$query = str_replace(':'.$k, $this->arrayToList($v), $query);
+				$query = str_replace(':' . $k, $this->arrayToList($v), $query);
 				unset($params[$k]);
 			}
 		}
@@ -270,9 +267,8 @@ class Db
 	{
 		$ret = '';
 		foreach($arr as $v)
-		{
-			$ret .= $this->Connection()->quote($v, $this->getParamType($v)).', ';
-		}
+			$ret .= $this->Connection()->quote($v, $this->getParamType($v)) . ', ';
+
 		return trim($ret, ', ');
 	}
 
@@ -302,7 +298,7 @@ class Db
 	 * @param array $params             prepared statement params
 	 * @return array
 	 */
-	public function fetchArray($statement, array $params = array())
+	public function fetchArray($statement, array $params = [])
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
@@ -340,11 +336,10 @@ class Db
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
-		$set = array();
+		$set = [];
 		foreach ($data as $columnName => $_)
-		{
 			$set[] = $columnName . ' = ?';
-		}
+
 		$params = array_merge(array_values($data), array_values($identifier));
 
 		$sql  = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $set)

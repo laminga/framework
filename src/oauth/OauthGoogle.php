@@ -8,7 +8,7 @@ class OauthGoogle extends OauthConnector
 
 	protected function GetFields()
 	{
-		return array('userinfo_email', 'userinfo_profile');
+		return ['userinfo_email', 'userinfo_profile'];
 	}
 
 	protected function GetData()

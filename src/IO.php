@@ -329,7 +329,8 @@ class IO
 	{
 		try
 		{
-			mkdir($directory);
+			if (is_dir($directory) == false)
+				mkdir($directory);
 		}
 		catch (\Exception $e)
 		{
@@ -340,8 +341,8 @@ class IO
 				el directorio. Se podría generar un lock a nivel aplicación para
 				hacer un if exist con lock, pero el beneficio es poco claro.
 			 */
-			if (!is_dir($directory))
-				throw $e;
+			if (is_dir($directory) == false)
+				throw new \ErrorException('Could not create directory');
 		}
 	}
 

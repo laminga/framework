@@ -75,16 +75,17 @@ class OauthData
 
 	public function SerializeToSession()
 	{
-		$data = array();
-		$data['provider'] = $this->provider;
-		$data['id'] = $this->id;
-		$data['fullName'] = $this->fullName;
-		$data['firstName'] = $this->firstName;
-		$data['lastName'] = $this->lastName;
-		$data['email'] = $this->email;
-		$data['gender'] = $this->gender;
-		$data['picture'] = $this->picture;
-		$data['verified'] = $this->verified;
+		$data = [
+			'provider' => $this->provider,
+			'id' => $this->id,
+			'fullName' => $this->fullName,
+			'firstName' => $this->firstName,
+			'lastName' => $this->lastName,
+			'email' => $this->email,
+			'gender' => $this->gender,
+			'picture' => $this->picture,
+			'verified' => $this->verified,
+		];
 		PhpSession::SetSessionValue('OauthData', json_encode($data));
 	}
 

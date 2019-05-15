@@ -100,8 +100,10 @@ class Params
 	private static function processIntValue($value)
 	{
 		$i = (int)$value;
-		if ((string)$i !== $value)
+		if ((string)$i !== (string)$value)
+		{
 			throw new ErrorException('Parameter value of ' . $value . ' is invalid.');
+		}
 		else
 			return $i;
 	}
@@ -109,7 +111,7 @@ class Params
 	public static function GetJsonMandatory($param)
 	{
 		$value = self::GetMandatory($param);
-		return json_decode($value, true);
+		return json_decode($value);
 	}
 
 	public static function GetJson($param)
@@ -118,7 +120,7 @@ class Params
 		if ($value === null)
 			return null;
 		else
-			return json_decode($value, true);
+			return json_decode($value);
 	}
 }
 
