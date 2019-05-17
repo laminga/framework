@@ -353,7 +353,7 @@ class Str
 	public static function RemoveEnding($cad, $part)
 	{
 		if (self::EndsWith($cad, $part))
-			$cad = substr($cad, 0, strlen($cad)-strlen($part));
+			$cad = substr($cad, 0, strlen($cad) - strlen($part));
 		return $cad;
 	}
 
