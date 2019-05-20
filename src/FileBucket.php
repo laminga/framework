@@ -26,7 +26,7 @@ class FileBucket
 		$directories->Close();
 	}
 
-	private function GetBucketFolder()
+	public function GetBucketFolder()
 	{
 		$ret = Context::Paths()->GetBucketsPath();
 		IO::EnsureExists($ret);
@@ -73,6 +73,10 @@ class FileBucket
 
 	private function ResolvePath($id)
 	{
+		if ($id === null || trim($id) === '' || ctype_alnum($id) === false || sizeof($id) > 40)
+		{	// verifica este parámetro para evitar saltos en el filesystem fuera de tmp
+			throw new ErrorException('Invalid bucket Id');
+		}
 		$this->id = $id;
 		$email = Context::LoggedUser();
 		if ($email == '')
