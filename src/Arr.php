@@ -13,6 +13,13 @@ class Arr
 			return $arr[$index];
 	}
 
+
+	public static function AddRange(&$arr1, $arr2)
+	{
+		$arr1 = array_merge($arr1, $arr2);
+		return $arr1;
+	}
+
 	public static function Increment(&$arr, $itemName, $n = 1)
 	{
 		self::CheckSubZero($arr, $itemName);

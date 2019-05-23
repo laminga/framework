@@ -59,7 +59,7 @@ class Date
 
 	public static function DateToDDMMYYYY($date)
 	{
-		return date("d/m/YYYY", $date);
+		return date("d/m/Y", $date);
 	}
 
 	public static function FormattedDate($date)
