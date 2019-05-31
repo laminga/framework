@@ -97,7 +97,8 @@ class Log
 		if($filtered)
 			$text .= '[texto filtrado al usuario].';
 
-		self::PutToLog('errors', $text);
+		if (Context::Settings()->Log()->LogErrorsToDisk)
+			self::PutToLog('errors', $text);
 
 		self::LogErrorSendMail($text);
 

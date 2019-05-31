@@ -7,8 +7,10 @@ use minga\framework\Str;
 
 class Settings
 {
-	// Campos para subclases
+	// Fields para subclases
 	private $mail = null;
+	private $log = null;
+	private $performance = null;
 	private $oauth = null;
 	private $limits = null;
 	private $db = null;
@@ -137,6 +139,22 @@ class Settings
 			$this->cache = new CacheSettings();
 
 		return $this->cache;
+	}
+
+	public function Performance()
+	{
+		if ($this->performance == null)
+			$this->performance = new PerformanceSettings();
+
+		return $this->performance;
+	}
+
+	public function Log()
+	{
+		if ($this->log == null)
+			$this->log = new LogSettings();
+
+		return $this->log;
 	}
 
 	public function Debug()

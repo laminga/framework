@@ -5,6 +5,7 @@ namespace minga\framework\caching;
 use minga\framework\Context;
 use minga\framework\Profiling;
 use minga\framework\Serializator;
+use minga\framework\Log;
 
 class TwoLevelObjectCache
 {
@@ -20,17 +21,26 @@ class TwoLevelObjectCache
 	}
 	public function HasData($key1, $key2, & $out = null)
 	{
-		$stringValue = null;
-		if ($this->cache->HasData($key1, $key2, $stringValue))
+		try
 		{
-			Profiling::BeginTimer();
-			$out = Serializator::Deserialize($stringValue);
-			Profiling::EndTimer();
-			return true;
+			$stringValue = null;
+			if ($this->cache->HasData($key1, $key2, $stringValue))
+			{
+				Profiling::BeginTimer();
+				$out = Serializator::Deserialize($stringValue);
+				Profiling::EndTimer();
+				return true;
+			}
+			else
+			{
+				$out = null;
+				return false;
+			}
 		}
-		else
+		catch(\Exception $e)
 		{
 			$out = null;
+			Log::HandleSilentException($e);
 			return false;
 		}
 	}
@@ -42,7 +52,14 @@ class TwoLevelObjectCache
 
 	public function PutData($key1, $key2, $value)
 	{
-		$this->cache->PutData($key1, $key2, Serializator::Serialize($value));
+		try
+		{
+			$this->cache->PutData($key1, $key2, Serializator::Serialize($value));
+		}
+		catch(\Exception $e)
+		{
+			Log::HandleSilentException($e);
+		}
 	}
 }
 

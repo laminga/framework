@@ -47,6 +47,7 @@ class TwoLevelFileFileCache
 			return false;
 
 		$file = $this->ResolveFilename($key1, $key2);
+
 		if (file_exists($file))
 		{
 			$out = $file;

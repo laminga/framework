@@ -165,10 +165,12 @@ class Performance
 		}
 		// graba mensual
 		self::SaveControllerUsage($ellapsedMilliseconds);
+		self::SaveUserUsage($ellapsedMilliseconds);
 		self::SaveLocks();
 		// graba diario
 		self::CheckDaylyReset();
 		self::SaveControllerUsage($ellapsedMilliseconds, 'dayly');
+		self::SaveUserUsage($ellapsedMilliseconds, 'dayly');
 		self::SaveDaylyUsage($ellapsedMilliseconds);
 		self::SaveDaylyLocks();
 		// listo
@@ -179,6 +181,25 @@ class Performance
 	{
 		self::CheckDaylyReset();
 		return (self::$warnToday != null);
+	}
+
+	private static function SaveUserUsage($ellapsedMilliseconds, $month = '')
+	{
+		if (!Context::Settings()->Performance()->PerformancePerUser) return;
+
+		$file = self::ResolveUserFilename($month);
+
+		if (Str::StartsWith(self::$controller, 'services#backoffice#'))
+			$keyMs = 'admin';
+		else if (self::$controller === 'admin' || Str::StartsWith(self::$controller, 'admin#'))
+			$keyMs = 'admin';
+		else
+			$keyMs = 'público';
+
+		$vals = self::ReadIfExists($file);
+		self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$dbHitCount);
+		// graba
+		IO::WriteIniFile($file, $vals);
 	}
 
 	private static function SaveControllerUsage($ellapsedMilliseconds, $month = '')
@@ -452,6 +473,12 @@ class Performance
 		$path = self::ResolveFolder($month);
 		return $path . '/' . self::$controller . '.txt';
 	}
+	public static function ResolveUserFilename($month = '')
+	{
+		$path = self::ResolveFolder($month);
+		$user = '@' . Str::UrlencodeFriendly(Context::LoggedUser());
+		return $path . '/' . $user . '.txt';
+	}
 
 	public static function ResolveFilenameDayly($month = '')
 	{
@@ -516,10 +543,14 @@ class Performance
 	{
 		if ($controller == 'Services') return true;
 		$path = Context::Paths()->GetRoot() . '/controllers/admin';
-		return file_exists($path . '/' . $controller . '.php');
+
+		$path2 = Context::Paths()->GetRoot() . '/src/controllers/admin';
+		if ($controller === 'admin') $controller = 'admin/activity';
+		$file2 = $path2 . '/c' . Str::Capitalize(Str::Replace($controller, 'admin/', '')) . '.php';
+		return file_exists($path . '/' . $controller . '.php') || file_exists($file2);
 	}
 
-	public static function GetControllerTable($month, $adminControllers, $methods)
+	public static function GetControllerTable($month, $adminControllers, $getUsers, $methods)
 	{
 		$lock = new PerformanceLock();
 		$lock->LockRead();
@@ -537,15 +568,19 @@ class Performance
 			if ($file != 'processor.txt' && $file != 'locks.txt')
 			{
 				$controller = Str::Replace(IO::RemoveExtension($file), '#', '/');
-				$isAdmin = self::IsAdmin($controller);
-				if ($isAdmin == $adminControllers)
+				if ($getUsers === Str::StartsWith($controller, '@'))
 				{
-					$data = self::ReadIfExists($path. '/' . $file);
-					$controllers[$controller] = $data;
-					foreach($data as $key => $_)
+					if ($getUsers) $controller = substr($controller, 1);
+					$isAdmin = self::IsAdmin($controller);
+					if ($isAdmin == $adminControllers)
 					{
-						if (in_array($key, $methods) == false)
-							$methods[] = $key;
+						$data = self::ReadIfExists($path. '/' . $file);
+						$controllers[$controller] = $data;
+						foreach($data as $key => $_)
+						{
+							if (in_array($key, $methods) == false)
+								$methods[] = $key;
+						}
 					}
 				}
 			}

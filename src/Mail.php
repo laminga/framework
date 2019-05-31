@@ -26,8 +26,8 @@ class Mail
 	//TODO: Si va a logear todos los emails quitar el parámetro, o agregar uno a Context::Settings
 	public function Send($log = true, $isNotification = false, $throwException = true)
 	{
-		// if ($log)
-		$this->PutToLog();
+		if (Context::Settings()->Log()->LogEmailsToDisk)
+			$this->PutToLog();
 
 		$mail = new PHPMailerSendGrid($throwException);
 		$this->SetProvider($mail);
