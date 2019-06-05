@@ -40,9 +40,16 @@ class Log
 		$requestUri = Params::SafeServer('REQUEST_URI', 'null');
 		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
 
+		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
+		if ($fullUrlData !== null)
+			$fullUrl = $fullUrlData . "\r\n";
+		else
+			$fullUrl = '';
+
 		$text = "REQUEST\r\n" .
 			'=> User:        '. Context::LoggedUser(). "\r\n" .
 			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $requestUri . "'>" . Context::Settings()->GetMainServerPublicUrl() . $requestUri . "</a>\r\n" .
+			$fullUrl .
 			'=> Agent:       '.  $agent . "\r\n" .
 			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
 			'=> Method:      '.  $requestMethod . "\r\n" .

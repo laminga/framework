@@ -77,6 +77,96 @@ class Str
 	{
 		return str_replace('%40', '@', urlencode($cad));
 	}
+	public static function FixEncoding($cad)
+	{
+		$cad = self::Replace($cad, 'Â¡', 'á');
+		$cad = self::Replace($cad, 'Â¢', 'â');
+		$cad = self::Replace($cad, 'Â£', 'ã');
+		$cad = self::Replace($cad, 'Â¤', 'ä');
+		$cad = self::Replace($cad, 'Â¥', 'å');
+		$cad = self::Replace($cad, 'Â¦', 'æ');
+		$cad = self::Replace($cad, 'Â§', 'ç');
+		$cad = self::Replace($cad, 'Â¨', 'è');
+		$cad = self::Replace($cad, 'Â©', 'é');
+		$cad = self::Replace($cad, 'Âª', 'ê');
+		$cad = self::Replace($cad, 'Â«', 'ë');
+		$cad = self::Replace($cad, 'Â­', 'í');
+		$cad = self::Replace($cad, 'Â®', 'î');
+		$cad = self::Replace($cad, 'Â¯', 'ï');
+		$cad = self::Replace($cad, 'Â°', 'ð');
+		$cad = self::Replace($cad, 'Â±', 'ñ');
+		$cad = self::Replace($cad, 'Â²', 'ò');
+		$cad = self::Replace($cad, 'Â³', 'ó');
+		$cad = self::Replace($cad, 'Â´', 'ô');
+		$cad = self::Replace($cad, 'Âµ', 'õ');
+		$cad = self::Replace($cad, 'Â·', '÷');
+		$cad = self::Replace($cad, 'Â¸', 'ø');
+		$cad = self::Replace($cad, 'Â¹', 'ù');
+		$cad = self::Replace($cad, 'Âº', 'ú');
+		$cad = self::Replace($cad, 'Â»', 'û');
+		$cad = self::Replace($cad, 'Â¼', 'ü');
+		$cad = self::Replace($cad, 'Â½', 'ý');
+		$cad = self::Replace($cad, 'Â¾', 'þ');
+		$cad = self::Replace($cad, 'Â¿', 'ÿ');
+		$cad = self::Replace($cad, 'Ã€', 'À');
+		$cad = self::Replace($cad, 'Ã', 'Á');
+		$cad = self::Replace($cad, 'Ã‚', 'Â');
+		$cad = self::Replace($cad, 'Ãƒ', 'Ã');
+		$cad = self::Replace($cad, 'Ã„', 'Ä');
+		$cad = self::Replace($cad, 'Ã…', 'Å');
+		$cad = self::Replace($cad, 'Ã†', 'Æ');
+		$cad = self::Replace($cad, 'Ã‡', 'Ç');
+		$cad = self::Replace($cad, 'Ãˆ', 'È');
+		$cad = self::Replace($cad, 'Ã‰', 'É');
+		$cad = self::Replace($cad, 'ÃŠ', 'Ê');
+		$cad = self::Replace($cad, 'Ã‹', 'Ë');
+		$cad = self::Replace($cad, 'ÃŒ', 'Ì');
+		$cad = self::Replace($cad, 'ÃŽ', 'Î');
+		$cad = self::Replace($cad, 'Ã‘', 'Ñ');
+		$cad = self::Replace($cad, 'Ã’', 'Ò');
+		$cad = self::Replace($cad, 'Ã“', 'Ó');
+		$cad = self::Replace($cad, 'Ã”', 'Ô');
+		$cad = self::Replace($cad, 'Ã•', 'Õ');
+		$cad = self::Replace($cad, 'Ã–', 'Ö');
+		$cad = self::Replace($cad, 'Ã—', '×');
+		$cad = self::Replace($cad, 'Ã˜', 'Ø');
+		$cad = self::Replace($cad, 'Ã™', 'Ù');
+		$cad = self::Replace($cad, 'Ãš', 'Ú');
+		$cad = self::Replace($cad, 'Ã›', 'Û');
+		$cad = self::Replace($cad, 'Ãœ', 'Ü');
+		$cad = self::Replace($cad, 'Ãž', 'Þ');
+		$cad = self::Replace($cad, 'ÃŸ', 'ß');
+		$cad = self::Replace($cad, 'Ã¡', 'á');
+		$cad = self::Replace($cad, 'Ã¢', 'â');
+		$cad = self::Replace($cad, 'Ã£', 'ã');
+		$cad = self::Replace($cad, 'Ã¤', 'ä');
+		$cad = self::Replace($cad, 'Ã¥', 'å');
+		$cad = self::Replace($cad, 'Ã¦', 'æ');
+		$cad = self::Replace($cad, 'Ã§', 'ç');
+		$cad = self::Replace($cad, 'Ã¨', 'è');
+		$cad = self::Replace($cad, 'Ã©', 'é');
+		$cad = self::Replace($cad, 'Ãª', 'ê');
+		$cad = self::Replace($cad, 'Ã«', 'ë');
+		$cad = self::Replace($cad, 'Ã­', 'í');
+		$cad = self::Replace($cad, 'Ã®', 'î');
+		$cad = self::Replace($cad, 'Ã¯', 'ï');
+		$cad = self::Replace($cad, 'Ã°', 'ð');
+		$cad = self::Replace($cad, 'Ã±', 'ñ');
+		$cad = self::Replace($cad, 'Ã²', 'ò');
+		$cad = self::Replace($cad, 'Ã³', 'ó');
+		$cad = self::Replace($cad, 'Ã´', 'ô');
+		$cad = self::Replace($cad, 'Ãµ', 'õ');
+		$cad = self::Replace($cad, 'Ã·', '÷');
+		$cad = self::Replace($cad, 'Ã¸', 'ø');
+		$cad = self::Replace($cad, 'Ã¹', 'ù');
+		$cad = self::Replace($cad, 'Ãº', 'ú');
+		$cad = self::Replace($cad, 'Ã»', 'û');
+		$cad = self::Replace($cad, 'Ã¼', 'ü');
+		$cad = self::Replace($cad, 'Ã½', 'ý');
+		$cad = self::Replace($cad, 'Ã¾', 'þ');
+		$cad = self::Replace($cad, 'Ã¿', 'ÿ');
+		return $cad;
+	}
 
 	public static function UrldecodeFriendly($cad)
 	{
