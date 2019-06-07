@@ -69,7 +69,6 @@ class AppPaths
 		IO::EnsureExists($ret);
 		return $ret;
 	}
-
 	public function GetTempPath()
 	{
 		return $this->GetStorageRoot() . '/temp';

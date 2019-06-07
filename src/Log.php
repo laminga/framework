@@ -42,7 +42,7 @@ class Log
 
 		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
 		if ($fullUrlData !== null)
-			$fullUrl = $fullUrlData . "\r\n";
+			$fullUrl = '=> Client:      '. $fullUrlData . "\r\n";
 		else
 			$fullUrl = '';
 

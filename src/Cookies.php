@@ -10,17 +10,27 @@ class Cookies
 		$expire = time() + 60 * 60 * 24 * $expireDays;
 
 		//Si tiene https no importa el entorno, es segura.
-		$scheme = parse_url(Context::Settings()->GetMainServerPublicUrl(), PHP_URL_SCHEME);
-		$secure = ($scheme == "https");
-
-		$host = parse_url(Context::Settings()->GetMainServerPublicUrl(), PHP_URL_HOST);
-
+		$secure = self::isSecure();
+		$host = $_SERVER['HTTP_HOST'];
+		if (!$host)
+		{
+			$host = parse_url(Context::Settings()->GetMainServerPublicUrl(), PHP_URL_HOST);
+		}
 		$ret = setcookie($name, $value, $expire, '/', $host, $secure, true);
 
 		if($ret === false)
 			Log::HandleSilentException(new ErrorException('SetCookie'));
 	}
-
+	private static function isSecure()
+	{
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+			return true;
+		}
+		elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on') {
+			return true;
+		}
+		return false;
+	}
 	public static function RenewCookie($name, $expireDays = 30)
 	{
 		$cookie = self::GetCookie($name);

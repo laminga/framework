@@ -2,6 +2,7 @@
 
 namespace minga\framework\settings;
 
+
 class DebugSettings
 {
 	public $useHtAccessRewrite = true;
