@@ -28,15 +28,15 @@ class FileBucket
 
 	public function GetBucketFolder()
 	{
-		$ret = Context::Paths()->GetBucketsPath();
-		IO::EnsureExists($ret);
-		return $ret;
+		return $this->path;
 	}
 
-	public static function Create()
+	public static function Create($defaultBucketId = null)
 	{
 		self::CleanUp();
-		return self::Load(self::CreateId());
+		if ($defaultBucketId === null)
+			$defaultBucketId = self::CreateId();
+		return self::Load($defaultBucketId);
 	}
 
 	public static function CreateId()
@@ -81,7 +81,7 @@ class FileBucket
 		$email = Context::LoggedUser();
 		if ($email == '')
 			$email = "global";
-		$this->path = $this->GetBucketFolder() . "/" .
+		$this->path = Context::Paths()->GetBucketsPath() . "/" .
 			Str::UrlencodeFriendly($email) . "-" . $id;
 	}
 

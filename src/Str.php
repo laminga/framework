@@ -638,6 +638,14 @@ class Str
 		return is_numeric($cad);
 	}
 
+	public static function IsNumberNotPlaceheld($cad)
+	{
+		if (strlen($cad) > 1 && $cad[0] === '0' && $cad[1] !== '.')
+			return false;
+		else
+			return self::IsNumber($cad);
+	}
+
 	/**
 	 * Devuelve strings bien formados para XML.
 	 */

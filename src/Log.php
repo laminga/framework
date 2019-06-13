@@ -8,6 +8,7 @@ class Log
 {
 	private static $isLoggingMailError = false;
 	public static $extraErrorTarget = null;
+	public static $extraErrorInfo = null;
 
 	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine, $context = [], $trace = null)
 	{
@@ -66,8 +67,12 @@ class Log
 				'=> Post:        ' . print_r($_POST, true);
 		}
 		$text .= "===========================================\r\n" .
-			"=> Context\r\n" . print_r($context, true);
-
+			"=> Context:\r\n" . print_r($context, true);
+		if (self::$extraErrorInfo !== null)
+		{
+			$text .= "===========================================\r\n" .
+				'=> Info:        ' . print_r(self::$extraErrorInfo, true);
+		}
 		// Corrige problemas de new line de las diferentes fuentes.
 		$text = str_replace("\r\n", "\n", $text);
 		$text = str_replace("\n", "<br>\r\n", $text);
@@ -111,7 +116,12 @@ class Log
 
 		return $textToShow;
 	}
-
+	public static function AppendExtraInfo($info)
+	{
+		if (self::$extraErrorInfo === null)
+			self::$extraErrorInfo = array();
+		self::$extraErrorInfo[] = $info;
+	}
 	private static function LogErrorSendMail($text)
 	{
 		if (self::$isLoggingMailError)
