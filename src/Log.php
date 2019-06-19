@@ -49,7 +49,7 @@ class Log
 
 		$text = "REQUEST\r\n" .
 			'=> User:        '. Context::LoggedUser(). "\r\n" .
-			"=> Url:         <a href='". Context::Settings()->GetMainServerPublicUrl() . $requestUri . "'>" . Context::Settings()->GetMainServerPublicUrl() . $requestUri . "</a>\r\n" .
+			"=> Url:         <a href='". Context::Settings()->GetPublicUrl() . $requestUri . "'>" . Context::Settings()->GetPublicUrl() . $requestUri . "</a>\r\n" .
 			$fullUrl .
 			'=> Agent:       '.  $agent . "\r\n" .
 			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .

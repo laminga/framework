@@ -14,7 +14,7 @@ class Cookies
 		$host = $_SERVER['HTTP_HOST'];
 		if (!$host)
 		{
-			$host = parse_url(Context::Settings()->GetMainServerPublicUrl(), PHP_URL_HOST);
+			$host = parse_url(Context::Settings()->GetPublicUrl(), PHP_URL_HOST);
 		}
 		$ret = setcookie($name, $value, $expire, '/', $host, $secure, true);
 
