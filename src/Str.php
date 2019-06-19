@@ -536,7 +536,10 @@ class Str
 
 	public static function CountWords($str)
 	{
-		return count(preg_split('/\s+/ui', $str,
+		$unicode = '';
+		if(self::IsUtf8($str))
+			$unicode = 'u';
+		return count(preg_split('/\s+/i' . $unicode, $str,
 			null, PREG_SPLIT_NO_EMPTY));
 	}
 
@@ -553,9 +556,17 @@ class Str
 		return $cad2;
 	}
 
+	public static function IsUtf8($str)
+	{
+		return mb_check_encoding($str, 'UTF-8');
+	}
+
 	public static function GetNWords($str, $n)
 	{
-		$words = preg_split('/\s+/ui', $str,
+		$unicode = '';
+		if(self::IsUtf8($str))
+			$unicode = 'u';
+		$words = preg_split('/\s+/i' . $unicode, $str,
 			null, PREG_SPLIT_NO_EMPTY);
 		return implode(' ', array_slice($words, 0, $n));
 	}
@@ -620,7 +631,10 @@ class Str
 
 	public static function GetLastNWords($str, $n)
 	{
-		$words = preg_split('/\s+/ui', $str,
+		$unicode = '';
+		if(self::IsUtf8($str))
+			$unicode = 'u';
+		$words = preg_split('/\s+/i' . $unicode, $str,
 			null, PREG_SPLIT_NO_EMPTY);
 		return implode(' ',
 			array_slice($words, count($words) - $n, $n));

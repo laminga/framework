@@ -166,28 +166,39 @@ class Zip
 		if (Str::EndsWith($sourcefolder, '/') == false)
 			$sourcefolder .= '/';
 
-		$zip = $this->OpenCreate();
-
-		// adds files to the file list
-		for($n = 0; $n < count($files); $n++)
+		$zip = null;
+		try
 		{
-			$file = $files[$n];
-			//fix archive paths
-			$fileFixed = str_replace("\\", '/', $file);
+			$zip = $this->OpenCreate();
 
-			//remove the source path from the $key to return only the
-			//file-folder structure from the root of the source folder
-			$path = str_replace($sourcefolder, '', $fileFixed);
+			// adds files to the file list
+			for($n = 0; $n < count($files); $n++)
+			{
+				$file = $files[$n];
+				//fix archive paths
+				$fileFixed = str_replace("\\", '/', $file);
 
-			if (file_exists(realpath($file)) == false)
-				throw new \Exception(realpath($file).' does not exist.');
+				//remove the source path from the $key to return only the
+				//file-folder structure from the root of the source folder
+				$path = str_replace($sourcefolder, '', $fileFixed);
 
-			//if (is_readable($file) == false) throw new \Exception($file.' not readable.');
-			if($zip->addFile(realpath($file), $path) == false)
-				throw new \Exception('ERROR: Could not add file: ... </br> numFile:');
+				$file = realpath($file);
+
+				if(trim($file) == '')
+					continue;
+
+				if (file_exists($file) == false)
+					throw new \Exception($file . ' does not exist.');
+
+				if($zip->addFile($file, $path) == false)
+					throw new \Exception('ERROR: Could not add file: ' . $file);
+			}
 		}
-		// closes the archive
-		$zip->close();
+		finally
+		{
+			if($zip != null)
+				$zip->close();
+		}
 	}
 
 	public function Extract($path)
