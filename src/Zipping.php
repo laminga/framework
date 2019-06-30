@@ -26,17 +26,25 @@ class Zipping
 
 	public static function GetFiles($filesPath, $pattern)
 	{
-		$container = self::GetContainer($filesPath);
-		if ($container == null)
-			return [];
-		$ret = [];
-		for($i = 0; $i < $container->numFiles; $i++)
+		Profiling::BeginTimer();
+		try
 		{
-			$cad = $container->getNameIndex($i);
-			if (Str::EndsWith($cad, $pattern))
-				$ret[] = $cad;
+			$container = self::GetContainer($filesPath);
+			if ($container == null)
+				return [];
+			$ret = [];
+			for($i = 0; $i < $container->numFiles; $i++)
+			{
+				$cad = $container->getNameIndex($i);
+				if (Str::EndsWith($cad, $pattern))
+					$ret[] = $cad;
+			}
+			return $ret;
 		}
-		return $ret;
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	public static function FileMTime($filename)

@@ -201,7 +201,7 @@ class Zip
 		}
 	}
 
-	public function Extract($path)
+	public function Extract($path, array $files = null)
 	{
 		$zip = new \ZipArchive();
 
@@ -209,7 +209,7 @@ class Zip
 			throw new \Exception('Failed to extract files: ');
 
 		$ret = $zip->numFiles;
-		$zip->extractTo($path);
+		$zip->extractTo($path, $files);
 		$zip->close();
 		return $ret;
 	}
