@@ -8,6 +8,7 @@ class IO
 
 	public static function AppendAllBytes($filename, $bytes)
 	{
+		//TODO: Agregar manejo de errores.
 		$fp = fopen($filename, 'a');
 		fwrite($fp, $bytes);
 		fclose($fp);
@@ -18,8 +19,8 @@ class IO
 		IO::EnsureExists($target);
 		// limpia
 		$dirname = substr($dirsource,strrpos($dirsource,"/")+1);
-		if (file_exists($target."/".$dirname))
-			IO::RemoveDirectory($target."/".$dirname);
+		if (file_exists($target . "/" . $dirname))
+			IO::RemoveDirectory($target . "/" . $dirname);
 		// copia
 		IO::CopyDirectory($dirsource, $target);
 		// borra
@@ -71,6 +72,7 @@ class IO
 
 	public static function ReadText($path, $length)
 	{
+		//TODO: Agregar manejo de errores.
 		$handle = fopen($path, "r");
 		$contents = fread($handle, $length);
 		fclose($handle);
@@ -79,9 +81,10 @@ class IO
 
 	public static function ReadAllLines($path)
 	{
+		//TODO: Agregar manejo de errores.
 		$handle = fopen($path, 'r');
-		$ret = array();
-		while (!feof($handle))
+		$ret = [];
+		while (feof($handle) == false)
 		{
 			$currentLine = fgets($handle) ;
 			$ret[] = $currentLine;
@@ -128,10 +131,14 @@ class IO
 
 	public static function AppendLine($path, $line)
 	{
-		if (!$handle = fopen($path, 'a'))
+		$handle = fopen($path, 'a');
+		if ($handle === false)
 			return false;
-		if (!fwrite($handle, $line . "\r\n"))
+		if (fwrite($handle, $line . "\r\n") === false)
+		{
+			fclose($handle);
 			return false;
+		}
 		fclose($handle);
 		return true;
 	}
@@ -155,8 +162,9 @@ class IO
 
 	public static function ReadKeyValueCSVFile($path)
 	{
+		//TODO: Agregar manejo de errores.
 		$fp = fopen($path, 'r');
-		$ret = array();
+		$ret = [];
 		while (($data = fgetcsv($fp)) !== false)
 		{
 			if (sizeof($data) == 2)
@@ -168,44 +176,46 @@ class IO
 
 	public static function WriteKeyValueCSVFile($path, $assoc_arr)
 	{
+		//TODO: Agregar manejo de errores.
 		$fp = fopen($path, 'w');
 		foreach ($assoc_arr as $key => $value)
-			fputcsv($fp, array($key, $value));
+			fputcsv($fp, [$key, $value]);
 		fclose($fp);
 	}
 
-	public static function CompareFileSize($file_a, $file_b)
+	public static function CompareFileSize($fileA, $fileB)
 	{
-		if (file_exists($file_a) == false || file_exists($file_b) == false)
+		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
 
-		return (filesize($file_a) == filesize($file_b));
+		return (filesize($fileA) == filesize($fileB));
 
 	}
 
-	public static function CompareBinaryFile($file_a, $file_b)
+	public static function CompareBinaryFile($fileA, $fileB)
 	{
-		if (file_exists($file_a) == false || file_exists($file_b) == false)
+		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
 
-		if (filesize($file_a) == filesize($file_b))
+		if (filesize($fileA) == filesize($fileB))
 		{
-			$fp_a = fopen($file_a, 'rb');
-			$fp_b = fopen($file_b, 'rb');
+			//TODO: Agregar manejo de errores.
+			$fpA = fopen($fileA, 'rb');
+			$fpB = fopen($fileB, 'rb');
 
-			while (($b = fread($fp_a, 4096)) !== false)
+			while (($b = fread($fpA, 4096)) !== false)
 			{
-				$b_b = fread($fp_b, 4096);
+				$b_b = fread($fpB, 4096);
 				if ($b !== $b_b)
 				{
-					fclose($fp_a);
-					fclose($fp_b);
+					fclose($fpA);
+					fclose($fpB);
 					return false;
 				}
 			}
 
-			fclose($fp_a);
-			fclose($fp_b);
+			fclose($fpA);
+			fclose($fpB);
 
 			return true;
 		}
@@ -241,13 +251,18 @@ class IO
 			$content .= self::AssocArraySectionToString($section, $values);
 
 		$directory = dirname($path);
-		if (!file_exists($directory))
-			mkdir($directory);
 
-		if (!$handle = fopen($path, 'w'))
+		self::CreateDirectory($directory);
+
+		$handle = fopen($path, 'w');
+		if ($handle === false)
 			return false;
-		if (!fwrite($handle, $content))
+
+		if (fwrite($handle, $content) === false)
+		{
+			fclose($handle);
 			return false;
+		}
 
 		fclose($handle);
 		return true;
@@ -272,14 +287,19 @@ class IO
 
 	public static function WriteIniFile($path, $assoc_arr)
 	{
-		if (!$handle = fopen($path, 'w'))
+		$handle = fopen($path, 'w');
+		if ($handle === false)
 			return false;
 		$content = "";
 		foreach ($assoc_arr as $key => $elem)
+			$content .= $key . '="' . $elem . "\"\r\n";
+
+		if(fwrite($handle, $content) === false)
 		{
-			$content .= $key."=\"".$elem."\"\r\n";
+			fclose($handle);
+			return false;
 		}
-		fwrite($handle, $content);
+
 		fclose($handle);
 		return true;
 	}
@@ -287,8 +307,8 @@ class IO
 	public static function WriteEscapedIniFile($path, $assoc_arr, $keepSections = false)
 	{
 		$directory = dirname($path);
-		if (!file_exists($directory))
-			mkdir($directory);
+
+		self::CreateDirectory($directory);
 
 		// se fija si tiene que mantener secciones
 		if ($keepSections && file_exists($path))
@@ -299,10 +319,14 @@ class IO
 		}
 		$content = self::AssocArraySectionToString('General', $assoc_arr);
 		// empieza a grabar
-		if (!$handle = fopen($path, 'w'))
+		$handle = fopen($path, 'w');
+		if ($handle === false)
 			return false;
-		if (!fwrite($handle, $content))
+		if (fwrite($handle, $content) === false)
+		{
+			fclose($handle);
 			return false;
+		}
 
 		fclose($handle);
 		return true;
@@ -318,7 +342,7 @@ class IO
 
 	public static function EnsureExists($directory)
 	{
-		if (!is_dir($directory))
+		if (is_dir($directory) == false)
 		{
 			self::EnsureExists(dirname($directory));
 			self::CreateDirectory($directory);
@@ -453,7 +477,7 @@ class IO
 
 	public static function ClearDirectory($dir, $recursive = false)
 	{
-		if (!file_exists($dir))
+		if (file_exists($dir) == false)
 			return 0;
 		$n = 0;
 		$files = self::GetFiles($dir);
@@ -472,7 +496,7 @@ class IO
 
 	public static function ClearFiles($dir, $extension, $recursive = false, $showOnly = false)
 	{
-		if (!file_exists($dir))
+		if (file_exists($dir) == false)
 			return 0;
 		$n = 0;
 		$files = self::GetFiles($dir, "." . $extension);
@@ -542,7 +566,7 @@ class IO
 				&& ($timeFrom == null
 					|| self::FileMTime($dirSource . '/' . $file) >= $timeFrom))
 			{
-				copy ($dirSource . '/' . $file, $dirDest . '/' . $file);
+				copy($dirSource . '/' . $file, $dirDest . '/' . $file);
 			}
 		}
 		closedir($dirHandle);
@@ -588,7 +612,7 @@ class IO
 
 						//if (file_exists($dirDest . '/' . $dirName . '/' . $file) == false
 						//|| filesize($dirDest . '/' . $dirName . '/' . $file) != filesize($dirSource . '/' . $file))
-						copy ($dirSource . '/' . $file, $dirDest . '/' . $dirName . '/' . $file);
+						copy($dirSource . '/' . $file, $dirDest . '/' . $dirName . '/' . $file);
 					}
 				}
 				else
@@ -608,7 +632,7 @@ class IO
 	 */
 	public static function RemoveDirectory($dir)
 	{
-		if (!file_exists($dir))
+		if (file_exists($dir) == false)
 			return 0;
 		if(is_file($dir))
 		{
@@ -622,7 +646,7 @@ class IO
 			{
 				if($file == '.' || $file == '..')
 					continue;
-				$n += self::RemoveDirectory($dir.'/'.$file);
+				$n += self::RemoveDirectory($dir . '/' . $file);
 			}
 			closedir($dh);
 			self::RmDir($dir);
@@ -697,7 +721,7 @@ class IO
 			$ret = self::GetDirectorySizeWin($dir);
 		else
 		{
-			$ret = array('size' => self::GetDirectorySizeUnix($dir));
+			$ret = ['size' => self::GetDirectorySizeUnix($dir)];
 			if ($sizeOnly == false)
 				$ret['inodes'] = self::GetDirectoryINodesCount($dir);
 		}
@@ -709,7 +733,7 @@ class IO
 	{
 		if(($dh = self::OpenDirNoWarning($dir)) == false)
 		{
-			return array('size' => 0, 'inodes' => 0);
+			return ['size' => 0, 'inodes' => 0];
 		}
 
 		$size = 0;
@@ -719,7 +743,7 @@ class IO
 		{
 			if($file !== '.' && $file !== '..')
 			{
-				$item = $dir.'/'.$file;
+				$item = $dir . '/' . $file;
 				if (is_file($item))
 				{
 					$size += filesize($item);
@@ -736,7 +760,7 @@ class IO
 		}
 		closedir($dh);
 
-		return array('size' => $size, 'inodes' => $inodes);
+		return ['size' => $size, 'inodes' => $inodes];
 	}
 
 	public static function SendFilesToZip($zipFile, $files, $sourcefolder)
@@ -748,7 +772,7 @@ class IO
 
 		// adds files to the file list
 		$sourcefolder = str_replace("\\", "/", $sourcefolder);
-		if (!Str::EndsWith($sourcefolder, "/"))
+		if (Str::EndsWith($sourcefolder, "/") == false)
 			$sourcefolder .= "/";
 		foreach ($files as $file)
 		{
@@ -756,9 +780,9 @@ class IO
 			$fileFixed = str_replace("\\", "/", $file);
 			$path = str_replace($sourcefolder, "", $fileFixed); //remove the source path from the $key to return only the file-folder structure from the root of the source folder
 
-			if (!file_exists($file))
+			if (file_exists($file) == false)
 				throw new ErrorException('file does not exist. Please contact your administrator or try again later.');
-			if (!is_readable($file))
+			if (is_readable($file) == false)
 				throw new ErrorException('file not readable. Please contact your administrator or try again later.');
 
 			if($zip->addFromString($path, $file) == false)
@@ -828,7 +852,7 @@ class IO
 			$dir = new CompressedInParentDirectory($path);
 
 		if (self::$compressedDirectories == null)
-			self::$compressedDirectories = array();
+			self::$compressedDirectories = [];
 		self::$compressedDirectories[] = $dir;
 		return $dir;
 	}
