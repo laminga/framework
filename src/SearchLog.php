@@ -58,8 +58,12 @@ class SearchLog
 	private static function CreateKey($text, $matches, $ellapsedMs)
 	{
 		$user = Context::LoggedUser();
-		if (!$user) $user = PhpSession::SessionId();
+		if ($user == false)
+			$user = PhpSession::SessionId();
 		$now = Date::FormattedArNow();
+
+		if(is_array($text) || is_array($matches))
+			return "";
 
 		$value = $user . "\t" . $now . "\t" .  $matches . "\t" . Str::Replace($text, '\t', ' ') . "\t" . $ellapsedMs;
 		return $value;
