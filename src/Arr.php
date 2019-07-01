@@ -13,22 +13,39 @@ class Arr
 			return $arr[$index];
 	}
 
-	public static function CastColumnAsFloat(&$arr, $column)
-	{
-		for($n = 0; $n < sizeof($arr); $n++)
-		{
-			$value = $arr[$n][$column];
-			if ($value !== null)
-				$arr[$n][$column] = floatval($value);
-		}
-	}
-
 	public static function AddRange(&$arr1, $arr2)
 	{
 		$arr1 = array_merge($arr1, $arr2);
 		return $arr1;
 	}
+	public static function AssocToString($arr, $includeKeys = true, $ommitEmpty = false)
+	{
+		$ret = '';
+		foreach($arr as $key => $value)
+		{
+			if (!$ommitEmpty || $value)
+			{
+				if ($ret !== '') $ret .= ",";
+				if ($includeKeys) $ret .= $key . "=";
+				$ret .= $value;
+			}
+			return $ret;
+		}
+	}
 
+	public static function ToString($arr, $ommitEmpty = false)
+	{
+		$ret = '';
+		foreach($arr as $key => $value)
+		{
+			if (!$ommitEmpty || $value)
+			{
+				if ($ret !== '') $ret .= ",";
+				$ret .= $value;
+			}
+			return $ret;
+		}
+	}
 	public static function Increment(&$arr, $itemName, $n = 1)
 	{
 		self::CheckSubZero($arr, $itemName);
