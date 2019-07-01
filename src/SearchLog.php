@@ -18,6 +18,10 @@ class SearchLog
 		Profiling::BeginTimer();
 		try
 		{
+			if (is_array($text))
+			{
+				$text = Arr::AssocToString($arr, true, true);
+			}
 			self::Save($text, $matches);
 		}
 		catch(\Exception $e)
