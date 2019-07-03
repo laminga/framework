@@ -13,6 +13,16 @@ class Arr
 			return $arr[$index];
 	}
 
+	public static function CastColumnAsFloat(&$arr, $column)
+	{
+		for($n = 0; $n < sizeof($arr); $n++)
+		{
+			$value = $arr[$n][$column];
+			if ($value !== null)
+				$arr[$n][$column] = floatval($value);
+		}
+	}
+
 	public static function AddRange(&$arr1, $arr2)
 	{
 		$arr1 = array_merge($arr1, $arr2);
