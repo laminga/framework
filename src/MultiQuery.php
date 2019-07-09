@@ -65,10 +65,23 @@ class MultiQuery
 
 	public function dump()
 	{
-		echo $this->sql;
+		echo 'Template: <br>' . $this->sql;
+		echo '<br>&nbsp;<br>Params: <br>';
 		print_r($this->params);
+		echo '<br>&nbsp;<br>Query: <br>' . $this->includeParams($this->sql, $this->params);
+
 		exit();
 	}
-
+	private function includeParams($str, $params)
+	{
+		$n = strpos($str, '?');
+		$i = 0;
+		while($n !== FALSE)
+		{
+			$str = substr($str, 0, $n) . Str::CheapSqlEscape($params[$i++]) . substr($str, $n + 1);
+			$n = strpos($str, '?');
+		}
+		return $str;
+	}
 }
 
