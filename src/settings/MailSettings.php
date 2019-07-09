@@ -35,4 +35,5 @@ class MailSettings
 	public $SMTPPassword = "";
 	public $SMTPAuth = false;
 
+	public $ExcludedAddresses = array();
 }
