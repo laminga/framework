@@ -228,6 +228,56 @@ class Str
 			return "No";
 	}
 
+
+	public static function SpanishSingle($value)
+	{
+		if (self::EndsWith($value, "les"))
+		{
+			$value = self::RemoveEnding($value, "es");
+		}
+		else if (self::EndsWith($value, "s"))
+		{
+			$value = self::RemoveEnding($value, "s");
+		}
+		return $value;
+	}
+
+	public static function AppendFullTextEndsWithAndRequiredSigns($originalQuery)
+	{
+		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
+					$subQuery = join("* +", $keywords);
+					if ($subQuery != '') $subQuery = '+' . $subQuery . '*';
+					return $subQuery;
+				});
+	}
+
+	private static function ProcessQuotedBlock($originalQuery, $replacer)
+	{
+		// Agrega + al inicio de todas las palabras para que el query funcione como 'todas las palabras'
+		$query = self::Replace($originalQuery, "'", '"');
+		$quoteParts = explode('"', trim($originalQuery));
+		$even = true;
+		$ret = '';
+		foreach($quoteParts as $part)
+		{
+			if ($part !== '' && in_array($part, array('+', '-', '*'), true) === false)
+			{
+				if ($even)
+				{
+					$keywords = explode(" ", trim($part));
+					$ret .= $replacer($keywords) . " ";
+				}
+				else
+				{
+					$ret .= $replacer(array('"' . $part . '"')) . ' ';
+				}
+			}
+			$even = !$even;
+		}
+		// Listo
+		return trim($ret);
+	}
+
 	public static function EatUntil($haystack, $needle)
 	{
 		$pos = mb_strpos($haystack, $needle);
