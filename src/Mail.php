@@ -70,7 +70,7 @@ class Mail
 		{
 			case MailSettings::SendGrid:
 				$mail->isSendGrid();
-				$mail->SendGridApiKey = Context::Settings()->Mail()->SendGridApiKey;
+				$mail->SendGridApiKey = Context::Settings()->Keys()->SendGridApiKey;
 				break;
 			case MailSettings::SparkPost:
 				$mail->isSparkPost();

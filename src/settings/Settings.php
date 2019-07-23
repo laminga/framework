@@ -84,10 +84,6 @@ class Settings
 	// otras globales
 	public $section = '';
 
-	//google analytics
-	public $useAnalytics = false;
-	public $analyticsId = '';
-
 	public function Initialize($rootPath)
 	{
 		$this->catalog = 'mySql';

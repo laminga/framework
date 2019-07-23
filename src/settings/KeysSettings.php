@@ -6,16 +6,17 @@ use minga\framework\ErrorException;
 
 class KeysSettings
 {
+	// Internas para firmado y hashing
 	public $RememberKey = '';
 	public $HashKeyedKey = '';
-	public $RecaptchaKey = '';
 	public $ExportNavigationKey = '';
 
+	// Obtenidas de terceros
+	public $RecaptchaKey = '';
 	public $GoogleAnalyticsKey = '';
 	public $GoogleMapsKey = '';
 	public $AddThisKey = '';
-
-	public $SendGridApiKey = "";
+	public $SendGridApiKey = '';
 
 	public function GetHashKeyedKey()
 	{

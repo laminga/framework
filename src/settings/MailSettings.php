@@ -18,9 +18,6 @@ class MailSettings
 	// Mandrill Settings
 	public $MandrillApiKey = "";
 
-	// SendGrid Settings
-	public $SendGridApiKey = "";
-
 	// SparkPost Settings
 	public $SparkPostApiKey = "";
 
