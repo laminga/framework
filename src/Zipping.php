@@ -51,23 +51,24 @@ class Zipping
 	{
 		if (self::IsZipped($filename) == false)
 			return IO::FileMTime($filename);
-		Profiling::BeginTimer();
+
 		$stat = self::GetStat($filename);
-		Profiling::EndTimer();
 		if ($stat == null)
 			return false;
 
-		return intval($stat['mtime']);
+		return (int)$stat['mtime'];
 	}
 
 	public static function Filesize($filename)
 	{
 		if (self::IsZipped($filename) == false)
-			return filesize($filename);
+		{
+			if(file_exists($filename))
+				return filesize($filename);
+			return false;
+		}
 
-		Profiling::BeginTimer();
 		$stat = self::GetStat($filename);
-		Profiling::EndTimer();
 		if ($stat == null)
 			return false;
 
@@ -76,19 +77,27 @@ class Zipping
 
 	public static function GetStat($filename)
 	{
-		$path = dirname($filename);
-		$file = Str::EatUntil(basename($filename), '#');
-		$container = self::GetContainer($path);
-
-		if ($container == null)
-			return null;
-		else
+		Profiling::BeginTimer();
+		try
 		{
-			$index = $container->locateName($file);
-			if ($index === false)
+			$path = dirname($filename);
+			$file = Str::EatUntil(basename($filename), '#');
+			$container = self::GetContainer($path);
+
+			if ($container == null)
 				return null;
 			else
-				return $container->statIndex($index);
+			{
+				$index = $container->locateName($file);
+				if ($index === false)
+					return null;
+				else
+					return $container->statIndex($index);
+			}
+		}
+		finally
+		{
+			Profiling::EndTimer();
 		}
 	}
 

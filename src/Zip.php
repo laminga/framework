@@ -196,7 +196,7 @@ class Zip
 		}
 		finally
 		{
-			if($zip != null)
+			if($zip != null && file_exists($this->targetFile))
 				$zip->close();
 		}
 	}
