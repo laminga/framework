@@ -93,17 +93,19 @@ class IO
 		return $ret;
 	}
 
-	public static function WriteAllText($path, $text)
+	public static function WriteAllText($file, $text)
 	{
-		return file_put_contents($path, $text);
+		$ret = file_put_contents($file, $text);
+		Backup::AppendModified($file);
+		return $ret;
 	}
 
-	public static function WriteJson($path, $text, $pretty = false)
+	public static function WriteJson($file, $text, $pretty = false)
 	{
 		$flags = 0;
 		if($pretty)
 			$flags = JSON_PRETTY_PRINT;
-		return self::WriteAllText($path, json_encode($text, $flags));
+		return self::WriteAllText($file, json_encode($text, $flags));
 	}
 
 	public static function ReadFileChunked($filepath)
@@ -129,9 +131,9 @@ class IO
 		return json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
 	}
 
-	public static function AppendLine($path, $line)
+	public static function AppendLine($file, $line)
 	{
-		$handle = fopen($path, 'a');
+		$handle = fopen($file, 'a');
 		if ($handle === false)
 			return false;
 		if (fwrite($handle, $line . "\r\n") === false)
@@ -140,6 +142,7 @@ class IO
 			return false;
 		}
 		fclose($handle);
+		Backup::AppendModified($file);
 		return true;
 	}
 
@@ -174,13 +177,14 @@ class IO
 		return $ret;
 	}
 
-	public static function WriteKeyValueCSVFile($path, $assoc_arr)
+	public static function WriteKeyValueCSVFile($file, $assoc_arr)
 	{
 		//TODO: Agregar manejo de errores.
-		$fp = fopen($path, 'w');
+		$fp = fopen($file, 'w');
 		foreach ($assoc_arr as $key => $value)
 			fputcsv($fp, [$key, $value]);
 		fclose($fp);
+		Backup::AppendModified($file);
 	}
 
 	public static function CompareFileSize($fileA, $fileB)
@@ -244,17 +248,17 @@ class IO
 		return $attributes;
 	}
 
-	public static function WriteEscapedIniFileWithSections($path, $assoc_arr)
+	public static function WriteEscapedIniFileWithSections($file, $assoc_arr)
 	{
 		$content = "";
 		foreach($assoc_arr as $section => $values)
 			$content .= self::AssocArraySectionToString($section, $values);
 
-		$directory = dirname($path);
+		$directory = dirname($file);
 
 		self::CreateDirectory($directory);
 
-		$handle = fopen($path, 'w');
+		$handle = fopen($file, 'w');
 		if ($handle === false)
 			return false;
 
@@ -265,6 +269,7 @@ class IO
 		}
 
 		fclose($handle);
+		Backup::AppendModified($file);
 		return true;
 	}
 
@@ -285,9 +290,9 @@ class IO
 		return $content;
 	}
 
-	public static function WriteIniFile($path, $assoc_arr)
+	public static function WriteIniFile($file, $assoc_arr)
 	{
-		$handle = fopen($path, 'w');
+		$handle = fopen($file, 'w');
 		if ($handle === false)
 			return false;
 		$content = "";
@@ -301,25 +306,26 @@ class IO
 		}
 
 		fclose($handle);
+		Backup::AppendModified($file);
 		return true;
 	}
 
-	public static function WriteEscapedIniFile($path, $assoc_arr, $keepSections = false)
+	public static function WriteEscapedIniFile($file, $assoc_arr, $keepSections = false)
 	{
-		$directory = dirname($path);
+		$directory = dirname($file);
 
 		self::CreateDirectory($directory);
 
 		// se fija si tiene que mantener secciones
-		if ($keepSections && file_exists($path))
+		if ($keepSections && file_exists($file))
 		{
-			$sections = self::ReadEscapedIniFileWithSections($path);
+			$sections = self::ReadEscapedIniFileWithSections($file);
 			$sections['General'] = $assoc_arr;
-			return self::WriteEscapedIniFileWithSections($path, $sections);
+			return self::WriteEscapedIniFileWithSections($file, $sections);
 		}
 		$content = self::AssocArraySectionToString('General', $assoc_arr);
 		// empieza a grabar
-		$handle = fopen($path, 'w');
+		$handle = fopen($file, 'w');
 		if ($handle === false)
 			return false;
 		if (fwrite($handle, $content) === false)
@@ -329,6 +335,7 @@ class IO
 		}
 
 		fclose($handle);
+		Backup::AppendModified($file);
 		return true;
 	}
 
@@ -354,7 +361,10 @@ class IO
 		try
 		{
 			if (is_dir($directory) == false)
+			{
+				Backup::AppendDirectoryCreated($directory);
 				mkdir($directory);
+			}
 		}
 		catch (\Exception $e)
 		{
@@ -566,7 +576,9 @@ class IO
 				&& ($timeFrom == null
 					|| self::FileMTime($dirSource . '/' . $file) >= $timeFrom))
 			{
-				copy($dirSource . '/' . $file, $dirDest . '/' . $file);
+				$target = $dirDest . '/' . $file;
+				copy($dirSource . '/' . $file, $target);
+				Backup::AppendModified($target);
 			}
 		}
 		closedir($dirHandle);
@@ -609,10 +621,9 @@ class IO
 					{
 						if ($createEmptyFolders == false)
 							self::EnsureExists($dirDest . '/' . $dirName);
-
-						//if (file_exists($dirDest . '/' . $dirName . '/' . $file) == false
-						//|| filesize($dirDest . '/' . $dirName . '/' . $file) != filesize($dirSource . '/' . $file))
-						copy($dirSource . '/' . $file, $dirDest . '/' . $dirName . '/' . $file);
+						$target = $dirDest . '/' . $dirName . '/' . $file;
+						copy($dirSource . '/' . $file, $target);
+						Backup::AppendModified($target);
 					}
 				}
 				else
@@ -664,7 +675,10 @@ class IO
 		try
 		{
 			if(file_exists($dir))
+			{
+				Backup::AppendDirectoryDeleted($dir);
 				return rmdir($dir);
+			}
 		}
 		catch(\Exception $e)
 		{
@@ -792,6 +806,7 @@ class IO
 		}
 		// closes the archive
 		$zip->close();
+		Backup::AppendModified($zipFile);
 	}
 
 	public static function GetTempFilename()
@@ -807,6 +822,7 @@ class IO
 	{
 		Profiling::BeginTimer();
 
+		Backup::AppendModified($target);
 		copy($source, $target);
 
 		Profiling::EndTimer();
@@ -817,7 +833,12 @@ class IO
 		try
 		{
 			if(file_exists($source))
-				return rename($source, $target);
+			{
+				Backup::AppendDeleted($source);
+				Backup::AppendModified($target);
+				$ret = rename($source, $target);
+				return $ret;
+			}
 		}
 		catch(\Exception $e)
 		{
@@ -871,7 +892,10 @@ class IO
 		try
 		{
 			if (file_exists($file))
+			{
+				Backup::AppendDeleted($file);
 				return unlink($file);
+			}
 		}
 		catch(\Exception $e)
 		{
