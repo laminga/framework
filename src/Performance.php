@@ -116,6 +116,21 @@ class Performance
 		self::$timeStartLocked = null;
 	}
 
+	public static function ResolveControllerFromUri()
+	{
+		// Resuelve el methodName default de performance
+		$uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+		if (Str::StartsWith($uri, '/'))
+			$uri = substr($uri, 1);
+		if (Str::EndsWith($uri, '/'))
+			$uri = substr($uri, 0, strlen($uri) - 1);
+		$uri = Str::Replace($uri, '/', '#');
+		if (Str::EndsWith($uri, 'Post'))
+			self::SetController(substr($uri, 0, strlen($uri) - 4), "post");
+		else
+			self::SetController($uri, strtolower($_SERVER['REQUEST_METHOD']));
+	}
+
 	public static function SetController($controller, $method, $forceSet = false)
 	{
 		if (self::$controller == null || $forceSet)

@@ -39,11 +39,6 @@ class AppPaths
 		return $this->GetStorageRoot() . '/log';
 	}
 
-	public function GetBackupLocalPath()
-	{
-		return $this->GetStorageRoot() . '/backup';
-	}
-
 	public static function GetTwigCache()
 	{
 		return Context::Paths()->GetRoot() . "/compilation_cache";
