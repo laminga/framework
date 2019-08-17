@@ -119,7 +119,10 @@ abstract class OauthConnector
 		//-Que no tenga funciones inválidas (deleteUser, etc.)
 		//-No tenga código javascript (xss).
 		if($target == '')
-			throw new ErrorException('Undefined target.');
+		{
+			Log::HandleSilentException(new ErrorException('Undefined target.'));
+			$target = Context::Settings()->GetMainServerPublicUrl();
+		}
 
 		$js = "window.opener.location='" . $target . "';";
 		$js .= 'window.close();';
