@@ -36,8 +36,8 @@ class BaseTwoLevelStringFileCache
 					IO::RemoveDirectory($folder);
 				else
 					IO::Delete($folder);
+				return;
 			}
-			return;
 		}
 		$file = $this->ResolveFilename($key1, $key2, false);
 		IO::Delete($file);

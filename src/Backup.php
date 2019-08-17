@@ -107,8 +107,8 @@ class Backup
 
 	private function initializeFolder()
 	{
-		$backupFolderWorkingFolder =  $backupFolder . "/backup";
 		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolderWorkingFolder =  $backupFolder . "/backup";
 		$filename = $backupFolder . "/backup.zip";
 		IO::Delete($filename);
 		// Copia todo lo modificado hasta la actualidad
@@ -120,8 +120,8 @@ class Backup
 
 	public function CreateLocalCopySite()
 	{
-		$backupFolderWorkingFolder =  $backupFolder . "/backup";
 		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolderWorkingFolder =  $backupFolder . "/backup";
 
 		self::CheckState("CHECKPOINTCREATED");
 		self::Log("Begin site backup");
