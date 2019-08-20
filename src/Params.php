@@ -89,6 +89,21 @@ class Params
 		return self::processIntValue($value);
 	}
 
+
+	public static function GetBoolMandatory($param)
+	{
+		$value = self::GetIntMandatory($param);
+		return self::processIntValue($value) !== 0;
+	}
+
+	public static function GetBool($param, $default = false)
+	{
+		$value = self::Get($param, $default);
+		if ($value === null)
+			return null;
+		return self::processIntValue($value) !== 0;
+	}
+
 	public static function GetInt($param, $default = null)
 	{
 		$value = self::Get($param, $default);
