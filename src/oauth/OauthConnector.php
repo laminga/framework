@@ -72,7 +72,6 @@ abstract class OauthConnector
 		PhpSession::SetSessionValue(static::Provider . 'OauthRedirect', $url);
 		PhpSession::SetSessionValue(static::Provider . 'OauthReturnUrl', $returnUrl);
 		PhpSession::SetSessionValue('OauthTerms', $terms);
-
 		return $this->service->getAuthorizationUri();
 	}
 

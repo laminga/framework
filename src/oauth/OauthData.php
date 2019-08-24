@@ -91,8 +91,7 @@ class OauthData
 
 	public static function SessionHasTerms()
 	{
-		return
-			PhpSession::GetSessionValue('OauthTerms') == 'on';
+		return PhpSession::GetSessionValue('OauthTerms') == 'on';
 	}
 
 	public static function DeserializeFromSession()
