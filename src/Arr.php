@@ -23,6 +23,17 @@ class Arr
 		}
 	}
 
+	public static function IntToBoolean(&$arr, $fields)
+	{
+		foreach($arr as &$item)
+		{
+			foreach($fields as $field)
+			{
+				$item[$field] = ($item[$field] == true);
+			}
+		}
+		return $arr;
+	}
 	public static function AddRange(&$arr1, $arr2)
 	{
 		$arr1 = array_merge($arr1, $arr2);
@@ -185,9 +196,7 @@ class Arr
 
 	public static function RemoveAt(&$itemParam, $pos)
 	{
-		for($n = $pos; $n < sizeof($itemParam) - 1; $n++)
-			$itemParam[$n] = $itemParam[$n+1];
-		unset($itemParam[sizeof($itemParam) - 1]);
+		array_splice($itemParam, $pos, 1);
 		return $itemParam;
 	}
 

@@ -3,48 +3,56 @@
 namespace minga\framework;
 
 use minga\framework\locking\BackupLock;
+use minga\classes\globals\Multipart;
+use minga\website\common\controllers\cDownload;
 
 class Backup
 {
 	const MAX_ZIP_SIZE = 5000000;
-	private static $blocks = array("file_modified", "file_deleted", "directory_created", "directory_deleted");
+	private static $blocks = ["file_modified", "file_deleted", "directory_created", "directory_deleted"];
 
-	public static $exclusions = array("/caches",
-																			"/temp",
-																			"/dump",
-																			"/log",
-																			"/sitemap",
-																			"/traffic",
-																			"/yearly",
-																			"/performance",
-																			"/buckets",
-																			"/backup",
-																			"/tokens",
-																			"/stats");
+	public static $exclusions = [
+		"/caches",
+		"/temp",
+		"/dump",
+		"/log",
+		"/sitemap",
+		"/traffic",
+		"/yearly",
+		"/performance",
+		"/buckets",
+		"/backup",
+		"/tokens",
+		"/stats"
+	];
 
 	public static function AppendModified($file)
 	{
 		self::AppendEntry("file_modified", $file);
 	}
+
 	public static function AppendDeleted($file)
 	{
 		self::AppendEntry("file_deleted", $file);
 	}
+
 	public static function AppendDirectoryCreated($file)
 	{
 		self::AppendEntry("directory_created", $file);
 	}
+
 	public static function AppendDirectoryDeleted($file)
 	{
 		self::AppendEntry("directory_deleted", $file);
 	}
+
 	public static function AppendEntry($set, $file)
 	{
 		if (self::GetState() == "") return;
 		$relative = self::GetRelativePath($file);
 		if ($relative !== null && self::IsInExcludedFolder($relative) == false)
 		{
-			$backupFolder =  Context::Paths()->GetBackupLocalPath();
+			$backupFolder = Context::Paths()->GetBackupLocalPath();
 			$lock = new BackupLock($set);
 			$file = FiledQueue::Create($lock, $backupFolder, $set . ".txt");
 			$lock->LockWrite();
@@ -62,6 +70,7 @@ class Backup
 		}
 		return null;
 	}
+
 	private static function IsInExcludedFolder($file)
 	{
 		$file = Str::Replace($file, "\\", "/");
@@ -75,14 +84,13 @@ class Backup
 		return false;
 	}
 
-
 	public function CreateCheckpoint()
 	{
 		self::CheckState("DOWNLOADED");
 
 		// Mueve el deleted
 		// 1. prepara
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		IO::Delete($backupFolder . "/deleted_checkpoint.txt");
 		// 2. Guarda hora en memoria
 		$now = time();
@@ -107,9 +115,8 @@ class Backup
 
 	private function initializeFolder()
 	{
-		$backupFolderWorkingFolder =  $backupFolder . "/backup";
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
-		$filename = $backupFolder . "/backup.zip";
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
+		$backupFolderWorkingFolder = $backupFolder . "/backup";		$filename = $backupFolder . "/backup.zip";
 		IO::Delete($filename);
 		// Copia todo lo modificado hasta la actualidad
 		IO::RemoveDirectory($backupFolderWorkingFolder . '/root');
@@ -118,11 +125,20 @@ class Backup
 		IO::EnsureExists($backupFolderWorkingFolder . '/storage');
 	}
 
+	public function CreateLocalCopyProfiles()
+	{
+		throw new \Exception('No implementado.');
+	}
+
+	public function CreateLocalCopyEvents()
+	{
+		throw new \Exception('No implementado.');
+	}
+
 	public function CreateLocalCopySite()
 	{
-		$backupFolderWorkingFolder =  $backupFolder . "/backup";
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
-
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
+		$backupFolderWorkingFolder = $backupFolder . "/backup";
 		self::CheckState("CHECKPOINTCREATED");
 		self::Log("Begin site backup");
 		//
@@ -130,10 +146,10 @@ class Backup
 		// Copia todo lo modificado hasta la actualidad
 
 		// 1. Deja archivos con entradas únicas.
-	//	private static $blocks = array("file_modified", "file_deleted", "directory_created", "directory_deleted");
+		//	private static $blocks = ["file_modified", "file_deleted", "directory_created", "directory_deleted"];
 
 		// 2. Valida y consolida creado y borrado
-//		private static $blocks = array("file_modified", "file_deleted", "directory_created", "directory_deleted");
+		//		private static $blocks = ["file_modified", "file_deleted", "directory_created", "directory_deleted"];
 
 		// 3. Hace copia física de creado
 		self::Log("Begin copy", true);
@@ -152,12 +168,12 @@ class Backup
 		self::CheckState("COPYEVENTSDONE");
 		self::Log("Begin splitting", true);
 
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$filename = $backupFolder . "/backup.zip";
 		$zip = new Zip($filename);
 		$zip->lock->LockWrite();
 		// Se fija si hay archivo que tienen que viajar en múltiples volúmenes
-		$backupFolderWorkingFolder =  $backupFolder . "/backup";
+		$backupFolderWorkingFolder = $backupFolder . "/backup";
 		$maxSize = self::MAX_ZIP_SIZE;
 		self::ScanAndSplitRecursive($backupFolderWorkingFolder, $maxSize);
 		// guarda el estado
@@ -192,19 +208,18 @@ class Backup
 			closedir($dir_handle);
 	}
 
-
 	public function CreateZipChunk()
 	{
 		self::CheckState("ZIPPEDPARTIALLY", "SPLITDONE");
 
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$filename = $backupFolder . "/backup.zip";
 		IO::Delete($filename);
 		$zip = new Zip($filename);
 		$zip->lock->LockWrite();
 
 		// Zipea todo lo modificado hasta la actualidad
-		$backupFolderWorkingFolder =  $backupFolder . "/backup";
+		$backupFolderWorkingFolder = $backupFolder . "/backup";
 
 		self::Log("Begin zip", true);
 		// Comprime
@@ -229,13 +244,14 @@ class Backup
 
 	public static function SaveState($state)
 	{
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/state.txt";
 		IO::WriteAllText($ret, $state);
 	}
+
 	public static function GetState()
 	{
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/state.txt";
 		if (file_exists($ret) == false)
 			return "";
@@ -253,7 +269,7 @@ class Backup
 
 	public static function Log($text, $append = false)
 	{
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/log.txt";
 		$text .= " at " . date("m-d-Y H:i:s");
 		$ms = round(microtime(true) * 1000);
@@ -271,7 +287,7 @@ class Backup
 
 	private static function BeginCheckPointFile()
 	{
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/checkpointbegin";
 		if (file_exists($ret) == false)
 			IO::WriteAllText($ret, "");
@@ -280,7 +296,7 @@ class Backup
 
 	private static function EndCheckPointFile()
 	{
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/checkpointend";
 		if (file_exists($ret) == false)
 			IO::WriteAllText($ret, "");
@@ -291,7 +307,7 @@ class Backup
 	{
 		self::CheckState("ZIPPED", "ZIPPEDPARTIALLY");
 
-		$backupFolder =  Context::Paths()->GetBackupLocalPath();
+		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$zip = $backupFolder . "/backup.zip";
 		if (file_exists($zip) == false)
 			self::SaveState("CREATED");

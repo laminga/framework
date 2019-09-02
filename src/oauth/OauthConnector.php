@@ -72,7 +72,6 @@ abstract class OauthConnector
 		PhpSession::SetSessionValue(static::Provider . 'OauthRedirect', $url);
 		PhpSession::SetSessionValue(static::Provider . 'OauthReturnUrl', $returnUrl);
 		PhpSession::SetSessionValue('OauthTerms', $terms);
-
 		return $this->service->getAuthorizationUri();
 	}
 
@@ -119,7 +118,10 @@ abstract class OauthConnector
 		//-Que no tenga funciones inválidas (deleteUser, etc.)
 		//-No tenga código javascript (xss).
 		if($target == '')
-			throw new ErrorException('Undefined target.');
+		{
+			Log::HandleSilentException(new ErrorException('Undefined target.'));
+			$target = Context::Settings()->GetMainServerPublicUrl();
+		}
 
 		$js = "window.opener.location='" . $target . "';";
 		$js .= 'window.close();';
