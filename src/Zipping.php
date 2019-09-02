@@ -248,7 +248,7 @@ class Zipping
 		foreach(self::$allLocks as $key => $lock)
 			$lock->Release();
 
-		self::$allLocks= [];
+		self::$allLocks = [];
 		self::$allFiles = [];
 	}
 }
