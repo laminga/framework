@@ -696,6 +696,12 @@ class Str
 			return "-";
 		return substr($str, 8, 2) . "/" . substr($str, 5, 2) . "/" . substr($str, 2, 2);
 	}
+	public static function FormatDateYYMD($str)
+	{
+		if ($str == "")
+			return "-";
+		return substr($str, 0, 4) . "-" . substr($str, 5, 2) . "-" . substr($str, 8, 2);
+	}
 
 	public static function IsNumber($cad)
 	{
