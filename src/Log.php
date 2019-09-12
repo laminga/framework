@@ -116,12 +116,14 @@ class Log
 
 		return $textToShow;
 	}
+
 	public static function AppendExtraInfo($info)
 	{
 		if (self::$extraErrorInfo === null)
-			self::$extraErrorInfo = array();
+			self::$extraErrorInfo = [];
 		self::$extraErrorInfo[] = $info;
 	}
+
 	private static function LogErrorSendMail($text)
 	{
 		if (self::$isLoggingMailError)
