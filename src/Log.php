@@ -132,18 +132,7 @@ class Log
 		try
 		{
 			self::$isLoggingMailError = true;
-
-			if(Str::Contains($text, '[passwordi]'))
-			{
-				$text = preg_replace('/(\[passwordi\] => ).*/',
-					'$1[removido]<br>', $text);
-			}
-			if(Str::Contains($text, '[password]'))
-			{
-				$text = preg_replace('/(\[password\] => ).*/',
-					'$1[removido]<br>', $text);
-			}
-			self::PutToMail($text);
+			self::PutToMail(self::RemovePassword($text));
 		}
 		catch(\Exception $e)
 		{
@@ -153,6 +142,20 @@ class Log
 		{
 			self::$isLoggingMailError = false;
 		}
+	}
+
+	private static function RemovePassword($text)
+	{
+		$words = ['password', 'passwordi', 'reg_password', 'reg_verification'];
+		foreach($words as $word)
+		{
+			if(Str::Contains($text, '[' . $word . ']'))
+			{
+				$text = preg_replace('/(\[' . $word . '\] => ).*/',
+					'$1[removido]<br>', $text);
+			}
+		}
+		return $text;
 	}
 
 	public static function HandleSilentException($e)
