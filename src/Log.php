@@ -146,7 +146,7 @@ class Log
 
 	private static function RemovePassword($text)
 	{
-		$words = ['password', 'passwordi', 'reg_password', 'reg_verification'];
+		$words = ['password', 'passwordi', 'pppassword', 'reg_password', 'reg_verification'];
 		foreach($words as $word)
 		{
 			if(Str::Contains($text, '[' . $word . ']'))
