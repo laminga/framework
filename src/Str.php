@@ -245,7 +245,11 @@ class Str
 	public static function AppendFullTextEndsWithAndRequiredSigns($originalQuery)
 	{
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
-					$subQuery = join("* +", $keywords);
+
+					$keywords_filtered = array_filter($keywords, function($word) {
+																										return strlen($word) > 2; 
+																								});
+					$subQuery = join("* +", $keywords_filtered);
 					if ($subQuery != '') $subQuery = '+' . $subQuery . '*';
 					return $subQuery;
 				});
@@ -255,7 +259,7 @@ class Str
 	{
 		// Agrega + al inicio de todas las palabras para que el query funcione como 'todas las palabras'
 		$query = self::Replace($originalQuery, "'", '"');
-		$quoteParts = explode('"', trim($originalQuery));
+		$quoteParts = explode('"', trim($query));
 		$even = true;
 		$ret = '';
 		foreach($quoteParts as $part)
