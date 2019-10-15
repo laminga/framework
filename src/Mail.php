@@ -23,7 +23,6 @@ class Mail
 		$this->from = Context::Settings()->Mail()->From;
 	}
 
-	//TODO: Si va a logear todos los emails quitar el parámetro, o agregar uno a Context::Settings
 	public function Send($log = true, $isNotification = false, $throwException = true)
 	{
 		if (Context::Settings()->Log()->LogEmailsToDisk)
