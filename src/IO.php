@@ -124,8 +124,11 @@ class IO
 
 	public static function ReadJson($path)
 	{
+		Profiling::BeginTimer();
 		$text = self::ReadAllText($path);
-		return json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
+		$ret = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	public static function AppendLine($path, $line)
