@@ -119,7 +119,7 @@ abstract class OauthConnector
 		//-No tenga código javascript (xss).
 		if($target == '')
 		{
-			Log::HandleSilentException(new ErrorException('Undefined target.'));
+			Log::HandleSilentException(new ErrorException('[3] Undefined target.'));
 			$target = Context::Settings()->GetMainServerPublicUrl();
 		}
 
