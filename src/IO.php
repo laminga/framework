@@ -97,12 +97,12 @@ class IO
 		return file_put_contents($path, $text);
 	}
 
-	public static function WriteJson($path, $text, $pretty = false)
+	public static function WriteJson($path, $data, $pretty = false)
 	{
 		$flags = 0;
 		if($pretty)
 			$flags = JSON_PRETTY_PRINT;
-		return self::WriteAllText($path, json_encode($text, $flags));
+		return self::WriteAllText($path, json_encode($data, $flags));
 	}
 
 	public static function ReadFileChunked($filepath)
