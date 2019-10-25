@@ -98,7 +98,7 @@ class Params
 
 	public static function GetBool($param, $default = false)
 	{
-		$value = self::Get($param, $default);
+		$value = self::Get($param, ($default ? 1 : 0));
 		if ($value === null)
 			return null;
 		return self::processIntValue($value) !== 0;
