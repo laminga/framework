@@ -10,6 +10,23 @@ class Str
 		return mb_convert_encoding($str, $to, $from);
 	}
 
+	public static function DetectEncoding($str)
+	{
+		$encodings = [
+					'UTF-8',
+					'Windows-1252',
+					'SJIS',
+					'ISO-8859-1',
+			];
+
+		$encoding = 'UTF-8';
+		foreach ($encodings as $encoding) {
+			if (mb_check_encoding($str, $encoding)) {
+        return $encoding;
+			}
+		}
+		return null;
+	}
 	public static function PolygonToCoordinates($polygon)
 	{
 		$ret = array();
@@ -247,7 +264,7 @@ class Str
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
 
 					$keywords_filtered = array_filter($keywords, function($word) {
-																										return strlen($word) > 2; 
+																										return strlen($word) > 2;
 																								});
 					$subQuery = join("* +", $keywords_filtered);
 					if ($subQuery != '') $subQuery = '+' . $subQuery . '*';
