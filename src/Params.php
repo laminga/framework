@@ -83,6 +83,13 @@ class Params
 		return $ret;
 	}
 
+	public static function GetIntRangeMandatory($param, $min, $max)
+	{
+		$value = self::GetMandatory($param);
+		$value = self::processIntValue($value);
+		return self::processRange($value, $min, $max);
+	}
+
 	public static function GetIntMandatory($param)
 	{
 		$value = self::GetMandatory($param);
@@ -110,6 +117,16 @@ class Params
 		if ($value === null)
 			return null;
 		return self::processIntValue($value);
+	}
+
+	private static function processRange($value, $min, $max)
+	{
+		if ($value < $min || $value > $max)
+		{
+			throw new ErrorException('Parameter value of ' . $value . ' is out of range.');
+		}
+		else
+			return $value;
 	}
 
 	private static function processIntValue($value)
