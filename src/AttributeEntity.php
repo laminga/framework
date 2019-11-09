@@ -7,8 +7,8 @@ use minga\framework\ErrorException;
 class AttributeEntity
 {
 	public $path = '';
-	public $attributes = array();
-	public $extraAttributes = array();
+	public $attributes = [];
+	public $extraAttributes = [];
 
 	public function LoadAttributesOnly($path)
 	{
@@ -16,7 +16,7 @@ class AttributeEntity
 		if ($path != "" && file_exists($path))
 			$this->attributes = IO::ReadEscapedIniFile($path);
 		else
-			$this->attributes = array();
+			$this->attributes = [];
 	}
 
 	public function SafeGet($key, $default = '')
@@ -35,7 +35,7 @@ class AttributeEntity
 		$current = $this->SafeGetArray($key);
 		// Agrega lo propio
 		if (is_array($valueArray) == false)
-			$valueArray = array($valueArray);
+			$valueArray = [$valueArray];
 		foreach($valueArray as $value)
 		{
 			$processed = trim($value);
@@ -43,7 +43,7 @@ class AttributeEntity
 				$current[] = $processed;
 		}
 		// Guarda
-		for($n = 0; $n < sizeof($current); $n++)
+		for($n = 0; $n < count($current); $n++)
 			$this->attributes[$key . ($n+1)] = $current[$n];
 		// listo
 	}
@@ -52,7 +52,7 @@ class AttributeEntity
 	{
 		// Lee los valores...
 		$n = 1;
-		$current = array();
+		$current = [];
 		while(array_key_exists($key . $n, $this->attributes))
 		{
 			$value = $this->attributes[$key . $n];
@@ -72,7 +72,7 @@ class AttributeEntity
 			$n++;
 		}
 		// Agrega lo propio
-		$current = array();
+		$current = [];
 		foreach($valueArray as $value)
 		{
 			$processed = trim($value);
@@ -80,7 +80,7 @@ class AttributeEntity
 				$current[] = $processed;
 		}
 		// Guarda
-		for($n = 0; $n < sizeof($current); $n++)
+		for($n = 0; $n < count($current); $n++)
 			$this->attributes[$key . ($n+1)] = $current[$n];
 		// listo
 	}
