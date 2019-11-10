@@ -7,25 +7,56 @@ class Str
 
 	public static function Convert($str, $to = 'Windows-1252', $from = 'UTF-8')
 	{
-		return mb_convert_encoding($str, $to, $from);
+		return iconv($from, $to, $str);
 	}
 
 	public static function DetectEncoding($str)
 	{
 		$encodings = [
 					'UTF-8',
+					'macintosh',
 					'Windows-1252',
 					'SJIS',
-					'ISO-8859-1',
+					'ISO-8859-1'
 			];
 
 		$encoding = 'UTF-8';
 		foreach ($encodings as $encoding) {
-			if (mb_check_encoding($str, $encoding)) {
+			if ($encoding === "macintosh" && self::macCheckEncoding($str))
+			{
+      	return $encoding;
+			}
+			else if (mb_check_encoding($str, $encoding)) {
         return $encoding;
 			}
 		}
 		return null;
+	}
+	private static function macCheckEncoding($str) {
+		// Estos caracteres son infrecuentes y representan caracteres extendidos castellanos
+		// en el encoding MACROMAN (macintosh)
+		$tokens = [ chr(0x87) // á -> ‡
+							, chr(0x8e) // é -> Ž
+							, chr(0x92) // í -> ’
+							, chr(0x97) // ó -> —
+							, chr(0x9c) // ú -> œ
+							//, chr(0xe7) // Á -> ç  (en portugués es frecuente ç; en castellano, no tanto Á)
+							, chr(0x83) // É -> ƒ
+							, chr(0xea) // Í -> ê
+							, chr(0xee) // Ó -> î
+							, chr(0xf2) // Ú -> ò
+
+							, chr(0x9f) // ü -> Ÿ
+							, chr(0x86) // Ü -> †
+							, chr(0x96) // ñ -> –
+							, chr(0x84) // Ñ -> „
+							];
+		foreach($tokens as $token)
+		{
+			if (strpos($str, $token) !== FALSE)
+				return true;
+		}
+		return false;
 	}
 	public static function PolygonToCoordinates($polygon)
 	{
