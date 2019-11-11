@@ -22,9 +22,12 @@ class Str
 
 		$encoding = 'UTF-8';
 		foreach ($encodings as $encoding) {
-			if ($encoding === "macintosh" && self::macCheckEncoding($str))
+			if ($encoding === "macintosh")
 			{
-      	return $encoding;
+				if (self::macCheckEncoding($str))
+				{
+      		return $encoding;
+				}
 			}
 			else if (mb_check_encoding($str, $encoding)) {
         return $encoding;
