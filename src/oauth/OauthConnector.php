@@ -6,6 +6,7 @@ use OAuth\Common\Consumer\Credentials;
 use OAuth\Common\Storage\Memory;
 use minga\framework\Context;
 use minga\framework\ErrorException;
+use minga\framework\IO;
 use minga\framework\Log;
 use minga\framework\MessageBox;
 use minga\framework\MessageException;
@@ -64,24 +65,78 @@ abstract class OauthConnector
 		}
 	}
 
-	public function ResolveRedirectProvider($url, $returnUrl, $terms)
+	private function SetSession($url, $returnUrl, $terms) : array
 	{
 		//Setear en sesión los datos que se quieran tener para después de oauth.
 		//porque sale del sitio y no hay forma de mantener estado si no es sesión
 		//o cookie.
-		PhpSession::SetSessionValue(static::Provider . 'OauthRedirect', $url);
-		PhpSession::SetSessionValue(static::Provider . 'OauthReturnUrl', $returnUrl);
-		PhpSession::SetSessionValue('OauthTerms', $terms);
-		return $this->service->getAuthorizationUri();
+		$sess = [
+			static::Provider . 'OauthRedirect' => $url,
+			static::Provider . 'OauthReturnUrl' => $returnUrl,
+			'OauthTerms' => $terms,
+		];
+
+		foreach($sess as $k => $v)
+			PhpSession::SetSessionValue($k, $v);
+
+		return $sess;
 	}
 
-	public function RedirectSuccess($data)
+	public function ResolveRedirectProvider($url, $returnUrl, $terms)
+	{
+		$sess = $this->SetSession($url, $returnUrl, $terms);
+
+		$uri = $this->service->getAuthorizationUri();
+
+		$this->PutSessionToFile($uri, $sess);
+
+		return $uri;
+	}
+
+	private function PutSessionToFile($uri, $sess)
+	{
+		$query = [];
+		parse_str($uri->getQuery(), $query);
+		if(isset($query['state']))
+		{
+			$path = Context::Paths()->GetTempPath() . '/oauth_' . $query['state'] . '.json';
+			IO::WriteJson($path, $sess);
+		}
+	}
+
+	private function CleanOldFiles() : void
+	{
+		$files = glob(Context::Paths()->GetTempPath() . '/oauth_*.json');
+		foreach($files as $file)
+		{
+			//Una hora
+			if(time() - filectime($file) > 3600)
+				IO::Delete($file);
+		}
+	}
+
+	private function GetSessionFromFile(string $state) : string
+	{
+		$this->CleanOldFiles();
+
+		$file = Context::Paths()->GetTempPath() . '/oauth_' . $state . '.json';
+		if(file_exists($file))
+		{
+			$data = IO::ReadJson($file);
+			$this->SetSession($data[static::Provider . 'OauthRedirect'], $data[static::Provider . 'OauthReturnUrl'], $data['OauthTerms']);
+			IO::Delete($file);
+			return $data[static::Provider . 'OauthRedirect'];
+		}
+		return '';
+	}
+
+	public function RedirectSuccess($data, string $state) : void
 	{
 		if($data->email == '' || $data->verified == false)
 			$this->RedirectErrorNoEmail();
 
 		$data->SerializeToSession(static::Provider);
-		$this->RedirectSession();
+		$this->RedirectSession($state);
 	}
 
 	public function RedirectErrorNoEmail()
@@ -99,9 +154,15 @@ abstract class OauthConnector
 		MessageBox::ShowDialogPopup('No se ha podido realizar la interacción con ' . $this->ProviderName() . ' para la identificación.', 'Atención');
 	}
 
-	private function RedirectSession()
+	private function RedirectSession(string $state)
 	{
+		$this->CleanOldFiles();
+
 		$url = PhpSession::GetSessionValue(static::Provider . 'OauthRedirect');
+
+		if($url == '')
+			$url = self::GetSessionFromFile($state);
+
 		$this->CloseAndRedirect($url);
 	}
 
@@ -119,7 +180,7 @@ abstract class OauthConnector
 		//-No tenga código javascript (xss).
 		if($target == '')
 		{
-			Log::HandleSilentException(new ErrorException('[3] Undefined target.'));
+			Log::HandleSilentException(new ErrorException('Undefined target.'));
 			$target = Context::Settings()->GetMainServerPublicUrl();
 		}
 
