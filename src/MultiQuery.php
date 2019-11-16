@@ -6,7 +6,7 @@ class MultiQuery
 {
 	public $params;
 	public $sql;
-
+ 
 	public function __construct($query1, $query2 = null, $query3 = null, $query4 = null, $query5 = null,
 		$query6 = null, $query7 = null, $query8 = null, $query9 = null, $query10 = null)
 	{
@@ -63,6 +63,10 @@ class MultiQuery
 			($orderBy != "" ? " ORDER BY " . $orderBy : "");
 	}
 
+	public function setMaxRows($max)
+	{
+		$this->sql .= " LIMIT 0, " . $max; 
+	}
 	public function dump()
 	{
 		echo 'Template: <br>' . $this->sql;

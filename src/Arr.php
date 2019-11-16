@@ -110,6 +110,21 @@ class Arr
 		}
 		return -1;
 	}
+	public static function SystematicSample($items, $size)
+	{
+		$ret = [];
+		$interval = sizeof($items) / $size;
+		$first = rand(0, intval($interval) - 1);
+		$pos = $first;
+		$count = 0;
+		while($count < $size)
+		{
+			$ret[] = $items[intval($pos)];
+			$pos += $interval;
+			$count++;
+		}
+		return $ret;
+	}
 
 	public static function EatFrom($items, $delimiter)
 	{
