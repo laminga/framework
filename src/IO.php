@@ -36,8 +36,8 @@ class IO
 
 	public static function GetDirectory($file)
 	{
-		$path_parts = pathinfo($file);
-		return $path_parts['dirname'];
+		$pathParts = pathinfo($file);
+		return $pathParts['dirname'];
 	}
 
 	public static function GetDirectoryName($file)
@@ -47,8 +47,8 @@ class IO
 
 	public static function GetFilenameNoExtension($file)
 	{
-		$path_parts = pathinfo($file);
-		return $path_parts['filename'];
+		$pathParts = pathinfo($file);
+		return $pathParts['filename'];
 	}
 
 	public static function GetUrlNoExtension($file)
@@ -124,11 +124,16 @@ class IO
 
 	public static function ReadJson($path)
 	{
-		Profiling::BeginTimer();
-		$text = self::ReadAllText($path);
-		$ret = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
-		Profiling::EndTimer();
-		return $ret;
+		try
+		{
+			Profiling::BeginTimer();
+			$text = self::ReadAllText($path);
+			return json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	public static function AppendLine($path, $line)
@@ -169,18 +174,18 @@ class IO
 		$ret = [];
 		while (($data = fgetcsv($fp)) !== false)
 		{
-			if (sizeof($data) == 2)
+			if (count($data) == 2)
 				$ret[$data[0]] = $data[1];
 		}
 		fclose($fp);
 		return $ret;
 	}
 
-	public static function WriteKeyValueCSVFile($path, $assoc_arr)
+	public static function WriteKeyValueCSVFile($path, $assocArr)
 	{
 		//TODO: Agregar manejo de errores.
 		$fp = fopen($path, 'w');
-		foreach ($assoc_arr as $key => $value)
+		foreach ($assocArr as $key => $value)
 			fputcsv($fp, [$key, $value]);
 		fclose($fp);
 	}
@@ -207,8 +212,8 @@ class IO
 
 			while (($b = fread($fpA, 4096)) !== false)
 			{
-				$b_b = fread($fpB, 4096);
-				if ($b !== $b_b)
+				$bb = fread($fpB, 4096);
+				if ($b !== $bb)
 				{
 					fclose($fpA);
 					fclose($fpB);
@@ -246,10 +251,10 @@ class IO
 		return $attributes;
 	}
 
-	public static function WriteEscapedIniFileWithSections($path, $assoc_arr)
+	public static function WriteEscapedIniFileWithSections($path, $assocArr)
 	{
 		$content = "";
-		foreach($assoc_arr as $section => $values)
+		foreach($assocArr as $section => $values)
 			$content .= self::AssocArraySectionToString($section, $values);
 
 		$directory = dirname($path);
@@ -279,21 +284,21 @@ class IO
 			return null;
 	}
 
-	private static function AssocArraySectionToString($section, $assoc_arr)
+	private static function AssocArraySectionToString($section, $assocArr)
 	{
 		$content = "[" . $section. "]\r\n";
-		foreach($assoc_arr as $key => $value)
+		foreach($assocArr as $key => $value)
 			$content .= $key. "=" . urlencode($value) . "\r\n";
 		return $content;
 	}
 
-	public static function WriteIniFile($path, $assoc_arr)
+	public static function WriteIniFile($path, $assocArr)
 	{
 		$handle = fopen($path, 'w');
 		if ($handle === false)
 			return false;
 		$content = "";
-		foreach ($assoc_arr as $key => $elem)
+		foreach ($assocArr as $key => $elem)
 			$content .= $key . '="' . $elem . "\"\r\n";
 
 		if(fwrite($handle, $content) === false)
@@ -306,7 +311,7 @@ class IO
 		return true;
 	}
 
-	public static function WriteEscapedIniFile($path, $assoc_arr, $keepSections = false)
+	public static function WriteEscapedIniFile($path, $assocArr, $keepSections = false)
 	{
 		$directory = dirname($path);
 
@@ -316,10 +321,10 @@ class IO
 		if ($keepSections && file_exists($path))
 		{
 			$sections = self::ReadEscapedIniFileWithSections($path);
-			$sections['General'] = $assoc_arr;
+			$sections['General'] = $assocArr;
 			return self::WriteEscapedIniFileWithSections($path, $sections);
 		}
-		$content = self::AssocArraySectionToString('General', $assoc_arr);
+		$content = self::AssocArraySectionToString('General', $assocArr);
 		// empieza a grabar
 		$handle = fopen($path, 'w');
 		if ($handle === false)
@@ -693,10 +698,16 @@ class IO
 
 	public static function GetDirectoryINodesCount($dir)
 	{
-		Profiling::BeginTimer();
-		$ret = System::RunCommandRaw('find ' . $dir . '/. | wc -l');
-		Profiling::EndTimer();
-		return $ret['lastLine'];
+		try
+		{
+			Profiling::BeginTimer();
+			$ret = System::RunCommandRaw('find ' . $dir . '/. | wc -l');
+			return $ret['lastLine'];
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	public static function GetDirectorySizeUnix($dir)
@@ -718,25 +729,28 @@ class IO
 
 	public static function GetDirectorySize($dir, $sizeOnly = false)
 	{
-		Profiling::BeginTimer();
-		if(System::IsOnIIS())
-			$ret = self::GetDirectorySizeWin($dir);
-		else
+		try
 		{
+			Profiling::BeginTimer();
+			if(System::IsOnIIS())
+				return self::GetDirectorySizeWin($dir);
+
 			$ret = ['size' => self::GetDirectorySizeUnix($dir)];
 			if ($sizeOnly == false)
 				$ret['inodes'] = self::GetDirectoryINodesCount($dir);
+
+			return $ret;
 		}
-		Profiling::EndTimer();
-		return $ret;
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	private static function GetDirectorySizeWin($dir)
 	{
 		if(($dh = self::OpenDirNoWarning($dir)) == false)
-		{
 			return ['size' => 0, 'inodes' => 0];
-		}
 
 		$size = 0;
 		$n = 0;

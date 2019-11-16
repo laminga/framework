@@ -114,6 +114,7 @@ class OauthData
 		$ret->verified = $data['verified'];
 		return $ret;
 	}
+
 	public static function ClearSession()
 	{
 		PhpSession::SetSessionValue('OauthTerms', '');
@@ -123,4 +124,5 @@ class OauthData
 		PhpSession::SetSessionValue('facebookOauthReturnUrl', '');
 		PhpSession::SetSessionValue('googleOauthReturnUrl', '');
 	}
+
 }
