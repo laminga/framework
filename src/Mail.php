@@ -30,7 +30,6 @@ class Mail
 
 		$mail = new PHPMailerSendGrid($throwException);
 		$this->SetProvider($mail);
-		// $this->SetSSL($mail);
 
 		$mail->CharSet = "UTF-8";
 
@@ -52,17 +51,6 @@ class Mail
 		self::$MailsSent += 1;
 	}
 
-	// function SetSSL($mail)
-	// {
-	// 	if (Context::Settings()->Debug()->debug)
-	// 		$mail->SMTPOptions = array(
-	// 			'ssl' => array(
-	// 				'verify_peer' => false,
-	// 				'verify_peer_name' => false,
-	// 				'allow_self_signed' => true
-	// 			));
-	// }
-
 	public function SetProvider($mail)
 	{
 		switch(Context::Settings()->Mail()->Provider)
@@ -78,6 +66,9 @@ class Mail
 			case MailSettings::File:
 				$mail->isFile();
 				$mail->EmailFilePath = Context::Settings()->Mail()->EmailFilePath;
+				break;
+			case MailSettings::Mail:
+				$mail->isMail();
 				break;
 			default:
 				$mail->isSMTP();
