@@ -15,4 +15,12 @@ class Request
 		}
 		return self::$isGoogle;
 	}
+	
+	public static function GetRequestURI($noParameters = false)
+	{
+		if ($noParameters)
+			return explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+		else
+			return $_SERVER['REQUEST_URI'];
+	}
 }

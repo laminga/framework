@@ -74,33 +74,37 @@ class Params
 		}
 		return $ret;
 	}
-
+	public static function CheckMandatoryValue($value, $key = '')
+	{
+		if ($value === null)
+			throw new ErrorException("Parameter " . $key . "required.");
+		return $value;
+	}
 	public static function GetMandatory($key)
 	{
 		$ret = self::Get($key, null);
-		if ($ret === null)
-			throw new ErrorException("Parameter " . $key . " required.");
+		self::CheckMandatoryValue($ret, $key);
 		return $ret;
 	}
 
 	public static function GetIntRangeMandatory($param, $min, $max)
 	{
 		$value = self::GetMandatory($param);
-		$value = self::processIntValue($value);
+		$value = self::CheckParseIntValue($value);
 		return self::processRange($value, $min, $max);
 	}
 
 	public static function GetIntMandatory($param)
 	{
 		$value = self::GetMandatory($param);
-		return self::processIntValue($value);
+		return self::CheckParseIntValue($value);
 	}
 
 
 	public static function GetBoolMandatory($param)
 	{
 		$value = self::GetIntMandatory($param);
-		return self::processIntValue($value) !== 0;
+		return self::CheckParseIntValue($value) !== 0;
 	}
 
 	public static function GetBool($param, $default = false)
@@ -108,7 +112,7 @@ class Params
 		$value = self::Get($param, ($default ? 1 : 0));
 		if ($value === null)
 			return null;
-		return self::processIntValue($value) !== 0;
+		return self::CheckParseIntValue($value) !== 0;
 	}
 
 	public static function GetInt($param, $default = null)
@@ -116,7 +120,7 @@ class Params
 		$value = self::Get($param, $default);
 		if ($value === null)
 			return null;
-		return self::processIntValue($value);
+		return self::CheckParseIntValue($value);
 	}
 
 	private static function processRange($value, $min, $max)
@@ -129,7 +133,17 @@ class Params
 			return $value;
 	}
 
-	private static function processIntValue($value)
+	public static function FromPath($position, $default = null)
+	{
+		$uri = Request::GetRequestURI(true);
+		$parts = explode('/', $uri);
+		if (sizeof($parts) <= $position)
+			return $default;
+		else
+			return $parts[$position];
+	}
+
+	public static function CheckParseIntValue($value)
 	{
 		$i = (int)$value;
 		if ((string)$i !== (string)$value)

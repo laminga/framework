@@ -82,11 +82,11 @@ class Log
 			$textToShow = $text;
 		else
 		{
-			//Filtro temporal (esperemos) para que no muestre
-			//mensajes de error con código de excepciones no
-			//capturadas. La solución correcta sería usar
-			//tipos de excepciones para errores propios y
-			//filtrar las que son tipo \Exception.
+			// Filtro temporal (esperemos) para que no muestre
+			// mensajes de error con código de excepciones no
+			// capturadas. La solución correcta sería usar
+			// tipos de excepciones para errores propios y
+			// filtrar las que son tipo \Exception.
 			if(Str::Contains($errorMessage, '/')
 				|| Str::Contains($errorMessage, "\\")
 				|| Str::Contains($errorMessage, '(')
@@ -110,7 +110,7 @@ class Log
 			$text .= '[texto filtrado al usuario].';
 
 		if (Context::Settings()->Log()->LogErrorsToDisk)
-			self::PutToLog('errors', $text);
+			self::PutToErrorLog($text);
 
 		self::LogErrorSendMail($text);
 
@@ -136,7 +136,7 @@ class Log
 		}
 		catch(\Exception $e)
 		{
-			self::HandleSilentException($e);
+			self::PutToFatalErrorLog("ERROR: " . $e->getMessage() . "<br>\r\n" . $text);
 		}
 		finally
 		{
@@ -178,11 +178,26 @@ class Log
 			$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString());
 	}
 
-	public static function PutToLog($branch, $text)
+	public static function PutToFatalErrorLog($text)
+	{
+		// Guarda en una carpeta de errores que no pudieron ser notificados
+		self::PutToLog('fatalErrors', $text, true);
+	}
+
+	public static function PutToErrorLog($text, $fatal = false)
+	{
+		self::PutToLog('errors', $text, true);
+	}
+
+	public static function PutToLog($branch, $text, $fatal = false)
 	{
 		// Lo graba en log
 		$logPath = Context::Paths()->GetLogLocalPath() . '/' . $branch;
-		$path = $logPath . '/' . Date::GetLogMonthFolder();
+		$path = $logPath;
+		if (!$fatal) 
+		{
+			$path .= '/' . Date::GetLogMonthFolder();
+		}
 		IO::EnsureExists($logPath);
 		IO::EnsureExists($path);
 		//
