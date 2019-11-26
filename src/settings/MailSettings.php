@@ -9,6 +9,7 @@ class MailSettings
 	const SendGrid = 2;
 	const SparkPost = 3;
 	const File = 4;
+	const Mail = 5;
 
 	public $NotifyAddress = "";
 	public $NotifyAddressErrors = "";
@@ -32,5 +33,5 @@ class MailSettings
 	public $SMTPPassword = "";
 	public $SMTPAuth = false;
 
-	public $ExcludedAddresses = array();
+	public $ExcludedAddresses = [];
 }
