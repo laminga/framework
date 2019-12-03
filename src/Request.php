@@ -16,6 +16,15 @@ class Request
 		return self::$isGoogle;
 	}
 	
+	public static function GetSecondUriPart()
+	{
+		$uri = self::GetRequestURI(true);
+		$parts = explode('/', $uri);
+		array_shift($parts);
+		if (sizeof($parts) < 2) return null;
+		return $parts[1];
+	}
+
 	public static function GetRequestURI($noParameters = false)
 	{
 		if ($noParameters)

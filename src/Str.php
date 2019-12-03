@@ -224,6 +224,23 @@ class Str
 		return urldecode(str_replace('@', '%40', $cad));
 	}
 
+	public static function CrawlerUrlEncode($name)
+	{
+		$name = self::RemoveAccents(self::ToLower($name));
+		$name = self::Replace($name, " ", "_");
+		$name = self::Replace($name, ",", "_");
+		$name = self::Replace($name, "/", "_");
+		$name = self::Replace($name, "\\", "_");
+		$name = self::Replace($name, "(", "_");
+		$name = self::Replace($name, ")", "_");
+		$name = self::Replace($name, ".", "_");
+		$name = self::Replace($name, "__", "_");
+		$name = self::Replace($name, "__", "_");
+		$name = self::Replace($name, "__", "_");
+		if (self::EndsWith($name, "_")) $name = substr($name, 0, strlen($name) - 1);
+		return urlencode($name);
+	}
+
 	public static function SizeToHumanReadable($bytes, $precision = 2)
 	{
 		if ($bytes == "-")
