@@ -15,4 +15,8 @@ abstract class FrameworkCallbacks
 	public function EndRequest()
 	{
 	}
+
+	public function Db()
+	{
+	}
 }

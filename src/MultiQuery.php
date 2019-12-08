@@ -76,6 +76,10 @@ class MultiQuery
 
 		exit();
 	}
+	public function fetchAll()
+	{
+		return Context::Calls()->Db()->fetchAll($this->sql, $this->params);
+	}
 	private function includeParams($str, $params)
 	{
 		$n = strpos($str, '?');
