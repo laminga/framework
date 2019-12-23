@@ -14,6 +14,6 @@ class Headers
 
 		header("Access-Control-Allow-Credentials: true");
 		header("Access-Control-Allow-Origin: $http_origin");
-		header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Full-Url");
+		header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Full-Url, Access-Link");
 	}
 }

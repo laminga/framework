@@ -24,6 +24,14 @@ class Request
 		if (sizeof($parts) < 2) return null;
 		return $parts[1];
 	}
+	public static function GetThirdUriPart()
+	{
+		$uri = self::GetRequestURI(true);
+		$parts = explode('/', $uri);
+		array_shift($parts);
+		if (sizeof($parts) < 3) return null;
+		return $parts[2];
+	}
 
 	public static function GetRequestURI($noParameters = false)
 	{
