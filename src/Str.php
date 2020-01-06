@@ -250,7 +250,7 @@ class Str
 		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
 		$pow = min($pow, count($units) - 1);
 		$bytes /= pow(1024, $pow);
-		return round($bytes, $precision).' '.$units[$pow];
+		return number_format($bytes, $precision, ".", ",").' '.$units[$pow];
 	}
 
 	public static function StartsWith($haystack, $needle)
@@ -969,6 +969,11 @@ class Str
 		}
 		return $str;
 	}
+	
+	public static function FormatLocaleNumber($value, $decimals = 0)
+	{
+		return number_format($value, $decimals, ",", "");
+	}
 
 	public static function FormatNumber($value, $decimals = 0, $leadingZeros = 0)
 	{
@@ -982,7 +987,7 @@ class Str
 	public static function FormatPercentage($value, $total)
 	{
 		if ($total == 0) return "-";
-		return round($value * 100 / $total, 1) . "%";
+		return number_format($value * 100 / $total, 1, ".", "") . "%";
 	}
 
 	public static function ConvertEntity($matches, $destroy = true)

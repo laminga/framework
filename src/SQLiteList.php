@@ -69,6 +69,7 @@ class SQLiteList
 
 	public function Open($path, $readonly = false)
 	{
+		Profiling::BeginTimer();
 		$existed = file_exists($path);
 		$flag = ($readonly && $existed ? SQLITE3_OPEN_READONLY : SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 		$db = new \SQLite3($path, $flag);
@@ -83,6 +84,8 @@ class SQLiteList
 		$this->path = $path;
 		$this->Execute('PRAGMA synchronous=OFF');
 		$this->Execute('PRAGMA journal_mode=WAL');
+		Profiling::EndTimer();
+
 	}
 
 	private function CreateSql()
@@ -107,7 +110,10 @@ class SQLiteList
 	}
 	public function Close()
 	{
+		Profiling::BeginTimer();
 		$this->db->close();
+				Profiling::EndTimer();
+
 	}
 	public function InsertOrUpdate()
 	{
@@ -204,6 +210,7 @@ class SQLiteList
 	}
 	public function ReadValue($key, $column)
 	{
+	Profiling::BeginTimer();
 		$sql = "select pID, ". $column .
 			" from data where " . $this->keyColumn . " = :p1;";
 
@@ -214,6 +221,7 @@ class SQLiteList
 
 		$res = $result->fetchArray(SQLITE3_NUM);
 
+		Profiling::EndTimer();
 		if ($res === false)
 			return null;
 		else

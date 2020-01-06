@@ -4,14 +4,15 @@ namespace minga\framework\caching;
 
 use minga\framework\Context;
 use minga\framework\Serializator;
+use minga\framework\Profiling;
 
 class ObjectCache
 {
 	private $cache;
 
-	public function __construct($path)
+	public function __construct($path, $forceFileSystem = false)
 	{
-		$this->cache = new StringCache($path);
+		$this->cache = new StringCache($path, $forceFileSystem);
 	}
 
 	public function Clear($key = null)
@@ -21,15 +22,18 @@ class ObjectCache
 
 	public function HasData($key, & $out = null)
 	{
+		Profiling::BeginTimer();
 		$stringValue = null;
 		if ($this->cache->HasData($key, $stringValue))
 		{
 			$out = Serializator::Deserialize($stringValue);
+			Profiling::EndTimer();
 			return true;
 		}
 		else
 		{
 			$out = null;
+			Profiling::EndTimer();
 			return false;
 		}
 	}

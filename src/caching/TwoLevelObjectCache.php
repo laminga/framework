@@ -23,10 +23,10 @@ class TwoLevelObjectCache
 	{
 		try
 		{
+			Profiling::BeginTimer();
 			$stringValue = null;
 			if ($this->cache->HasData($key1, $key2, $stringValue))
 			{
-				Profiling::BeginTimer();
 				$out = Serializator::Deserialize($stringValue);
 				Profiling::EndTimer();
 				return true;
@@ -34,6 +34,7 @@ class TwoLevelObjectCache
 			else
 			{
 				$out = null;
+				Profiling::EndTimer();
 				return false;
 			}
 		}

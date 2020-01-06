@@ -45,11 +45,7 @@ class ProfilingItem
 		$t2 = microtime(true);
 		$endPause = Performance::$pauseEllapsedSecs;
 		$m2 = memory_get_usage();
-		/* $mp2 = memory_get_peak_usage(); */
-
 		$this->memory = $m2 - $this->startMemory;
-		/* $this->memoryPeak = $mp2 - $this->startMemoryPeak; */
-
 		$span = $t2 - $this->startTime - ($endPause - $this->startPause);
 		$this->durationMs = $span * 1000;
 		$this->hits = 1;

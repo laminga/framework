@@ -77,7 +77,7 @@ class Params
 	public static function CheckMandatoryValue($value, $key = '')
 	{
 		if ($value === null)
-			throw new ErrorException("Parameter " . $key . "required.");
+			throw new ErrorException("Parameter " . $key . " required.");
 		return $value;
 	}
 	public static function GetMandatory($key)

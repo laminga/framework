@@ -679,7 +679,7 @@ class Performance
 			$share = '<b>n/d</b>';
 		else
 		{
-			$shareValue = (round($duration / $totalDuration * 10000) / 100) . '%';
+			$shareValue = number_format($duration / $totalDuration * 100, 1, ".", "") . '%';
 			$share = $shareValue;
 			if ($shareValue > 50)
 				$share = '<span style="background-color: red">'. $share .'</span>';
