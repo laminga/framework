@@ -12,6 +12,8 @@ class ServersSettings
 	private $currentServerObj = null;
 	private $mainServerObj = null;
 
+	public $Python27 = null;
+
 	public function RegisterServer($name, $url, $isCDN = false)
 	{
 		$type = ($isCDN ? 'cdns' : 'main');
