@@ -46,6 +46,13 @@ class ServersSettings
 
 		return $this->currentServerObj;
 	}
+	public function RegisterServerUrls($appUrl, $homeUrl = null)
+	{
+		if (!$homeUrl) $homeUrl = $appUrl;
+		$this->RegisterServer('home', $homeUrl);
+		$this->RegisterCDNServer('app', $appUrl);
+		$this->SetCurrentServer('app');
+	}
 
 	private function ResolveCurrentServer()
 	{
