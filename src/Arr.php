@@ -447,7 +447,11 @@ class Arr
 		$ret['Otros'] = $total;
 		return $ret;
 	}
-
+	public static function AddAt($arr, $n, $element)
+	{
+		array_splice($arr, $n, 0, array($element));
+		return $arr;
+	}
 	public static function AddShare($arr, $unit = "")
 	{
 		$total = 0;

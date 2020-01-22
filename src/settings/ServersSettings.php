@@ -46,7 +46,7 @@ class ServersSettings
 
 		return $this->currentServerObj;
 	}
-	public function RegisterServerUrls($appUrl, $homeUrl = null)
+	public function RegisterServers($appUrl, $homeUrl = null)
 	{
 		if (!$homeUrl) $homeUrl = $appUrl;
 		$this->RegisterServer('home', $homeUrl);
