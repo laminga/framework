@@ -112,8 +112,7 @@ class SQLiteList
 	{
 		Profiling::BeginTimer();
 		$this->db->close();
-				Profiling::EndTimer();
-
+		Profiling::EndTimer();
 	}
 	public function InsertOrUpdate()
 	{
@@ -207,6 +206,11 @@ class SQLiteList
 		$statement->bindValue(':p1', $key);
 
 		$statement->execute();
+	}
+	public function Truncate()
+	{
+		$this->Close();
+		unlink($this->path);
 	}
 	public function ReadValue($key, $column)
 	{
