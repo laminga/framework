@@ -55,7 +55,9 @@ class TwoLevelObjectCache
 	{
 		try
 		{
+			Profiling::BeginTimer();
 			$this->cache->PutData($key1, $key2, Serializator::Serialize($value));
+			Profiling::EndTimer();
 		}
 		catch(\Exception $e)
 		{

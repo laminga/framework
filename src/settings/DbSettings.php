@@ -12,7 +12,7 @@ class DbSettings
 	public $Password = '';
 	public $Host = '';
 	public $Schema = '';
-
+	
 	public $ForceOnlyFullGroupBy = false;
 
 	public function SetDatabase($host, $dbName, $user, $password)

@@ -11,7 +11,7 @@ class KeysSettings
 	public $HashKeyedKey = '';
 	public $ExportNavigationKey = '';
 	// Utiliza esta key en forma predeterminada. 
-	public $RememberKey = 'ZGVmMDAwMDAzOTVlMTNiMDRjYWE0NGJhOWVlOGJlMWVmNjhjYWVhNGVjZWI0YWZhNjg5OTVjZjU1YTJiZjc5NGRiMjMwMzUzZDNjYzViYjE5OGI5ZmFkMzI0ZjQ3MDlmOTZhYjFiZjZmMTc0MzJmNjkzNDFjMWViZDEwZWM0YTgzNGU4ZGMwZA==';
+	public $RememberKey = '3vAAAGS4lKNFO7PKg1vWAy4SnnalgRatxknIrQJhWDvTqe7QTJV4gZD2w+n3EQdzyfi6gBhq3Xo/eUSp7M92ymMeYuo=';
 
 	// Obtenidas de terceros
 	public $RecaptchaKey = '';

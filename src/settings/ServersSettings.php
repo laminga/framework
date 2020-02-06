@@ -11,6 +11,8 @@ class ServersSettings
 
 	private $currentServerObj = null;
 	private $mainServerObj = null;
+	
+	public $RemoteLoginWhiteList = array();
 
 	public $Python27 = null;
 
