@@ -80,6 +80,11 @@ class MultiQuery
 	{
 		return Context::Calls()->Db()->fetchAll($this->sql, $this->params);
 	}
+	
+	public function fetchAllByPos()
+	{
+		return Context::Calls()->Db()->fetchAllByPos($this->sql, $this->params);
+	}
 	private function includeParams($str, $params)
 	{
 		$n = strpos($str, '?');
