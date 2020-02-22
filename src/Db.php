@@ -9,6 +9,7 @@ class Db
 	public $User;
 	public $NoDb;
 	public $Password;
+	public $Port = 3306;
 	public $Charset = 'utf8';
 	public $TablePrefix;
 
@@ -21,6 +22,7 @@ class Db
 		$this->Host = Context::Settings()->Db()->Host;
 		$this->Name = Context::Settings()->Db()->Name;
 		$this->User = Context::Settings()->Db()->User;
+		$this->Port = Context::Settings()->Db()->Port;
 		$this->Password = Context::Settings()->Db()->Password;
 		$this->Charset = 'utf8';
 		$this->TablePrefix = Context::Settings()->Db()->Schema . "_";
@@ -35,7 +37,7 @@ class Db
 			Performance::BeginDbWait();
 
 			$db = new \PDO('mysql:host=' . $this->Host .
-				';dbname=' . $this->Name . ';charset=' . $this->Charset,
+				';port=' . $this->Port . ';dbname=' . $this->Name . ';charset=' . $this->Charset,
 				$this->User,
 				$this->Password);
 			$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -65,6 +67,15 @@ class Db
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
+	}
+
+	private function doExecuteNamedParams($query, array $data = [])
+	{
+		$stmt = $this->Connection()->prepare($query);
+		foreach($data as $k => $v)
+			$stmt->bindValue($k, $v, $this->getParamType($v));
+		$stmt->execute();
+		return $stmt->rowCount();
 	}
 
 	private function doExecute($query, array $data = [])
@@ -115,7 +126,14 @@ class Db
 	{
 		$query = $this->parseArrayParams($query, $params);
 		$stmt = $this->Connection()->prepare($query);
-		$stmt->execute($params);
+		if(key($params) === 0)
+			$stmt->execute($params);
+		else
+		{
+			foreach($params as $k => $v)
+				$stmt->bindValue($k, $v, $this->getParamType($v));
+			$stmt->execute();
+		}
 		return $stmt->fetch($fetch_style);
 	}
 
@@ -155,6 +173,24 @@ class Db
 	}
 
 	/**
+	 * Inserts or Replaces a table row with specified data.
+	 */
+	private function insertOrReplace($tableName, array $data, $command)
+	{
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+
+		$query = $command . ' INTO ' . $tableName
+			. ' (' . implode(', ', array_keys($data)) . ')'
+			. ' VALUES (' . rtrim(str_repeat('?,', count($data)),',') . ')';
+
+		$ret = $this->doExecute($query, array_values($data));
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
+	}
+
+	/**
 	 * Inserts a table row with specified data.
 	 *
 	 * @param string $tableName The name of the table to insert data into.
@@ -163,26 +199,19 @@ class Db
 	 */
 	public function insert($tableName, array $data)
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
+		return $this->InsertOrReplace($tableName, $data, 'INSERT');
+	}
 
-		// column names are specified as array keys
-		$cols = [];
-		$placeholders = [];
-
-		foreach ($data as $columnName => $_)
-		{
-			$cols[] = $columnName;
-			$placeholders[] = '?';
-		}
-		$query = 'INSERT INTO ' . $tableName
-			. ' (' . implode(', ', $cols) . ')'
-			. ' VALUES (' . implode(', ', $placeholders) . ')';
-
-		$ret = $this->doExecute($query, array_values($data));
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+	/**
+	 * Replaces a table row with specified data.
+	 *
+	 * @param string $tableName The name of the table to replace data into.
+	 * @param array $data An associative array containing column-value pairs.
+	 * @return integer The number of affected rows.
+	 */
+	public function replace($tableName, array $data)
+	{
+		return $this->insertOrReplace($tableName, $data, 'REPLACE');
 	}
 
 	/**
@@ -338,15 +367,19 @@ class Db
 		Performance::BeginDbWait();
 		$set = [];
 		foreach ($data as $columnName => $_)
-			$set[] = $columnName . ' = ?';
+			$set[] = $columnName . ' = :' . $columnName;
 
-		$params = array_merge(array_values($data), array_values($identifier));
+		$params = array_merge($data, $identifier);
+
+		$where = [];
+		foreach ($identifier as $columnName => $_)
+			$where[] = $columnName . ' = :' . $columnName;
+
 
 		$sql  = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $set)
-			. ' WHERE ' . implode(' = ? AND ', array_keys($identifier))
-			. ' = ?';
+			. ' WHERE ' . implode(' AND ', $where);
 
-		$ret = $this->doExecute($sql, $params);
+		$ret = $this->doExecuteNamedParams($sql, $params);
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
