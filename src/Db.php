@@ -36,8 +36,10 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 
-			$db = new \PDO('mysql:host=' . $this->Host .
-				';port=' . $this->Port . ';dbname=' . $this->Name . ';charset=' . $this->Charset,
+			$db = new \PDO('mysql:host=' . $this->Host
+				. ';port=' . $this->Port
+				. ';dbname=' . $this->Name
+				. ';charset=' . $this->Charset,
 				$this->User,
 				$this->Password);
 			$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -99,7 +101,14 @@ class Db
 		Performance::BeginDbWait();
 		$query = $this->parseArrayParams($query, $params);
 		$stmt = $this->Connection()->prepare($query);
-		$stmt->execute($params);
+		if(key($params) === 0)
+			$stmt->execute($params);
+		else
+		{
+			foreach($params as $k => $v)
+				$stmt->bindValue($k, $v, $this->getParamType($v));
+			$stmt->execute();
+		}
 		$ret = $stmt->fetchAll($fetch_style);
 		Performance::EndDbWait();
 		Profiling::EndTimer();
@@ -109,7 +118,7 @@ class Db
 
 	public function fetchScalarInt($sql, array $params = [])
 	{
-		return intval($this->fetchScalar($sql, $params));
+		return (int)$this->fetchScalar($sql, $params);
 	}
 
 	public function fetchScalar($sql, array $params = [])
@@ -142,7 +151,7 @@ class Db
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
 		$data = $this->fetchAll($query, $params);
-		for($i=0;$i<count($data);$i++)
+		for($i = 0; $i < count($data); $i++)
 			$data[$i] = reset($data[$i]);
 
 		Performance::EndDbWait();
@@ -165,6 +174,14 @@ class Db
 		Performance::BeginDbWait();
 		$query = $this->parseArrayParams($query, $params);
 		$stmt = $this->Connection()->prepare($query);
+		if(key($params) === 0)
+			$stmt->execute($params);
+		else
+		{
+			foreach($params as $k => $v)
+				$stmt->bindValue($k, $v, $this->getParamType($v));
+			$stmt->execute();
+		}
 		$stmt->execute($params);
 		$ret = $stmt->fetchColumn($colnum);
 		Performance::EndDbWait();
