@@ -21,17 +21,15 @@ class Str
 		];
 
 		$encoding = 'UTF-8';
-		foreach ($encodings as $encoding) {
+		foreach ($encodings as $encoding)
+		{
 			if ($encoding === "macintosh")
 			{
 				if (self::macCheckEncoding($str))
-				{
-      		return $encoding;
-				}
+					return $encoding;
 			}
-			else if (mb_check_encoding($str, $encoding)) {
-        return $encoding;
-			}
+			else if (mb_check_encoding($str, $encoding))
+				return $encoding;
 		}
 		return null;
 	}
@@ -294,37 +292,34 @@ class Str
 
 	public static function BooleanToText($value)
 	{
-		if ($value == "") return "";
+		if ($value == "")
+			return "";
 		if ($value === "1" || $value === 1 || $value === true)
 			return "Sí";
-		else
-			return "No";
+
+		return "No";
 	}
 
 	public static function SpanishSingle($value)
 	{
 		if (self::EndsWith($value, "les"))
-		{
 			$value = self::RemoveEnding($value, "es");
-		}
 		else if (self::EndsWith($value, "s"))
-		{
 			$value = self::RemoveEnding($value, "s");
-		}
 		return $value;
 	}
 
 	public static function AppendFullTextEndsWithAndRequiredSigns($originalQuery)
 	{
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
-
-					$keywords_filtered = array_filter($keywords, function($word) {
-																										return strlen($word) > 2;
-																								});
-					$subQuery = join("* +", $keywords_filtered);
-					if ($subQuery != '') $subQuery = '+' . $subQuery . '*';
-					return $subQuery;
-				});
+			$keywords_filtered = array_filter($keywords, function($word) {
+				return strlen($word) > 2;
+			});
+			$subQuery = join("* +", $keywords_filtered);
+			if ($subQuery != '')
+				$subQuery = '+' . $subQuery . '*';
+			return $subQuery;
+		});
 	}
 
 	private static function ProcessQuotedBlock($originalQuery, $replacer)
@@ -344,9 +339,7 @@ class Str
 					$ret .= $replacer($keywords) . " ";
 				}
 				else
-				{
 					$ret .= $replacer(['"' . $part . '"']) . ' ';
-				}
 			}
 			$even = !$even;
 		}
@@ -359,16 +352,15 @@ class Str
 		$pos = mb_strpos($haystack, $needle);
 		if ($pos === false)
 			return $haystack;
-		else
-			return substr($haystack, $pos + strlen($needle));
+
+		return substr($haystack, $pos + strlen($needle));
 	}
 
 	public static function CheapSqlEscape($cad)
 	{
 		if ($cad === null)
 			return 'null';
-		else
-			return "'" . Str::Replace($cad, "'", "\'") . "'";
+		return "'" . Str::Replace($cad, "'", "\'") . "'";
 	}
 
 	public static function TwoSplit($text, $separator, &$first, &$last)
@@ -404,13 +396,12 @@ class Str
 	public static function AppendParam($url, $param, $value = "")
 	{
 		$n = strpos($url, "#");
+		$suffix = "";
 		if ($n !== false)
 		{
 			$suffix = substr($url, $n);
 			$url = substr($url, 0, $n);
 		}
-		else
-			$suffix = "";
 
 		$ret = $url;
 		if (Str::Contains($ret, "?") == false)
@@ -428,16 +419,15 @@ class Str
 		$pos = strpos($haystack, $needle);
 		if ($pos === false)
 			return $haystack;
-		else
-			return substr($haystack, 0, $pos);
+
+		return substr($haystack, 0, $pos);
 	}
 
 	public static function EnsureEndsWith($haystack, $needle)
 	{
 		if (self::EndsWith($haystack, $needle))
 			return $haystack;
-		else
-			return $haystack . $needle;
+		return $haystack . $needle;
 	}
 
 	public static function EndsWith($haystack, $needle)
@@ -477,9 +467,8 @@ class Str
 	public static function ReplaceGroup($cad, $str, $s2)
 	{
 		for ($i = 0; $i < strlen($str); $i++)
-		{
 			$cad = str_replace($str[$i], $s2, $cad);
-		}
+
 		return $cad;
 	}
 
@@ -490,20 +479,19 @@ class Str
 
 	public static function ReplaceOnce($cad, $str, $s2)
 	{
-		$pos = strpos($cad,$str);
+		$pos = strpos($cad, $str);
 		if ($pos !== false)
 			return substr_replace($cad,$s2,$pos,strlen($str));
-		else
-			return $cad;
+
+		return $cad;
 	}
 
 	public static function ReplaceLast($subject, $search, $replace)
 	{
 		$pos = strrpos($subject, $search);
 		if($pos !== false)
-		{
 			$subject = substr_replace($subject, $replace, $pos, strlen($search));
-		}
+
 		return $subject;
 	}
 
@@ -524,8 +512,7 @@ class Str
 	{
 		if (self::EndsWith($cad, "."))
 			return substr($cad, 0, strlen($cad) -1);
-		else
-			return $cad;
+		return $cad;
 	}
 
 	public static function RemoveWordHiddenFormat($cad)
@@ -789,8 +776,8 @@ class Str
 	{
 		if (strlen($cad) > 1 && $cad[0] === '0' && $cad[1] !== '.')
 			return false;
-		else
-			return self::IsNumber($cad);
+
+		return self::IsNumber($cad);
 	}
 
 	/**
@@ -904,9 +891,7 @@ class Str
 			else
 			{
 				if (self::IsAllLetters($part))
-				{
 					$ret .= " " . mb_strtoupper(mb_substr($part, 0, 1)) . ".";
-				}
 				else
 				{
 					$ret .= " " . $part;
