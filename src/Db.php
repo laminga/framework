@@ -63,12 +63,23 @@ class Db
 
 	public function execute($query, array $data = [])
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$ret = $this->doExecute($query, $data);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+
+			$query = $this->parseArrayParams($query, $data);
+
+			if(key($data) === 0)
+				return $this->doExecute($query, $data);
+
+			return $this->doExecuteNamedParams($query, $data);
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	private function doExecuteNamedParams($query, array $data = [])
@@ -97,22 +108,27 @@ class Db
 	 */
 	public function fetchAll($query, array $params = [], $fetch_style = \PDO::FETCH_ASSOC)
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$query = $this->parseArrayParams($query, $params);
-		$stmt = $this->Connection()->prepare($query);
-		if(key($params) === 0)
-			$stmt->execute($params);
-		else
+		try
 		{
-			foreach($params as $k => $v)
-				$stmt->bindValue($k, $v, $this->getParamType($v));
-			$stmt->execute();
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$query = $this->parseArrayParams($query, $params);
+			$stmt = $this->Connection()->prepare($query);
+			if(key($params) === 0)
+				$stmt->execute($params);
+			else
+			{
+				foreach($params as $k => $v)
+					$stmt->bindValue($k, $v, $this->getParamType($v));
+				$stmt->execute();
+			}
+			return $stmt->fetchAll($fetch_style);
 		}
-		$ret = $stmt->fetchAll($fetch_style);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 
@@ -123,12 +139,20 @@ class Db
 
 	public function fetchScalar($sql, array $params = [])
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$ret = $this->fetchAssoc($sql, $params);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret[array_keys($ret)[0]];
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$ret = $this->fetchAssoc($sql, $params);
+			if($ret === false)
+				return null;
+			return $ret[array_keys($ret)[0]];
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	private function fetch($query, array $params = [], $fetch_style = \PDO::FETCH_ASSOC)
@@ -148,15 +172,21 @@ class Db
 
 	public function fetchAllColumn($query, array $params = [])
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$data = $this->fetchAll($query, $params);
-		for($i = 0; $i < count($data); $i++)
-			$data[$i] = reset($data[$i]);
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$data = $this->fetchAll($query, $params);
+			for($i = 0; $i < count($data); $i++)
+				$data[$i] = reset($data[$i]);
 
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $data;
+			return $data;
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/**
@@ -170,23 +200,28 @@ class Db
 	 */
 	public function fetchColumn($query, array $params = [], $colnum = 0)
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$query = $this->parseArrayParams($query, $params);
-		$stmt = $this->Connection()->prepare($query);
-		if(key($params) === 0)
-			$stmt->execute($params);
-		else
+		try
 		{
-			foreach($params as $k => $v)
-				$stmt->bindValue($k, $v, $this->getParamType($v));
-			$stmt->execute();
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$query = $this->parseArrayParams($query, $params);
+			$stmt = $this->Connection()->prepare($query);
+			if(key($params) === 0)
+				$stmt->execute($params);
+			else
+			{
+				foreach($params as $k => $v)
+					$stmt->bindValue($k, $v, $this->getParamType($v));
+				$stmt->execute();
+			}
+			$stmt->execute($params);
+			return $stmt->fetchColumn($colnum);
 		}
-		$stmt->execute($params);
-		$ret = $stmt->fetchColumn($colnum);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/**
@@ -194,17 +229,22 @@ class Db
 	 */
 	private function insertOrReplace($tableName, array $data, $command)
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
 
-		$query = $command . ' INTO ' . $tableName
-			. ' (' . implode(', ', array_keys($data)) . ')'
-			. ' VALUES (' . rtrim(str_repeat('?,', count($data)),',') . ')';
+			$query = $command . ' INTO ' . $tableName
+				. ' (' . implode(', ', array_keys($data)) . ')'
+				. ' VALUES (' . rtrim(str_repeat('?,', count($data)),',') . ')';
 
-		$ret = $this->doExecute($query, array_values($data));
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+			return $this->doExecute($query, array_values($data));
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/**
@@ -240,29 +280,39 @@ class Db
 	 */
 	public function delete($tableName, array $identifier)
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$criteria = [];
-		foreach (array_keys($identifier) as $columnName)
-			$criteria[] = $columnName . ' = ?';
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$criteria = [];
+			foreach ($identifier as $columnName => $_)
+				$criteria[] = $columnName . ' = :' . $columnName;
 
-		$query = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' AND ', $criteria);
-		$ret = $this->doExecute($query, array_values($identifier));
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+			$query = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' AND ', $criteria);
+			return $this->doExecuteNamedParams($query, $identifier);
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	public function deleteSet($tableName, $columnName, $values)
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$criteria = array_fill(0, count($values), '?');
-		$query = 'DELETE FROM ' . $tableName . ' WHERE ' . $columnName . ' IN ( ' . implode(',', $criteria) . ')';
-		$ret = $this->doExecute($query, $values);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$criteria = array_fill(0, count($values), '?');
+			$query = 'DELETE FROM ' . $tableName . ' WHERE ' . $columnName . ' IN ( ' . implode(',', $criteria) . ')';
+			return $this->doExecute($query, $values);
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/**
@@ -275,12 +325,17 @@ class Db
 	 */
 	public function fetchAssoc($statement, array $params = [])
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$ret = $this->fetch($statement, $params, \PDO::FETCH_ASSOC);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			return $this->fetch($statement, $params, \PDO::FETCH_ASSOC);
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/**
@@ -313,9 +368,21 @@ class Db
 	{
 		$ret = '';
 		foreach($arr as $v)
-			$ret .= $this->Connection()->quote($v, $this->getParamType($v)) . ', ';
+		{
+			if($this->getParamType($v) == \PDO::PARAM_INT)
+				$ret .= (int)$v . ', ';
+			elseif($this->getParamType($v) == \PDO::PARAM_BOOL)
+			{
+				if($v)
+					$ret .= '1, ';
+				else
+					$ret .= '0, ';
+			}
+			else
+				$ret .= $this->Connection()->quote($v, $this->getParamType($v)) . ', ';
+		}
 
-		return trim($ret, ', ');
+		return rtrim($ret, ', ');
 	}
 
 	/**
@@ -346,12 +413,17 @@ class Db
 	 */
 	public function fetchArray($statement, array $params = [])
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$ret = $this->fetch($statement, $params, \PDO::FETCH_NUM);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			return $this->fetch($statement, $params, \PDO::FETCH_NUM);
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 
@@ -362,12 +434,18 @@ class Db
 	 */
 	public function truncate($tableName)
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$query = 'TRUNCATE TABLE ' . $tableName;
-		$this->doExecute($query);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$query = 'TRUNCATE TABLE ' . $tableName;
+			$this->doExecute($query);
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/**
@@ -380,26 +458,42 @@ class Db
 	 */
 	public function update($tableName, array $data, array $identifier)
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$set = [];
-		foreach ($data as $columnName => $_)
-			$set[] = $columnName . ' = :' . $columnName;
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
 
-		$params = array_merge($data, $identifier);
+			$i = 0;
+			$dataNew = [];
+			$set = [];
+			foreach ($data as $columnName => $value)
+			{
+				$name = $columnName . $i++;
+				$set[] = $columnName . ' = :' . $name;
+				$dataNew[$name] = $value;
+			}
 
-		$where = [];
-		foreach ($identifier as $columnName => $_)
-			$where[] = $columnName . ' = :' . $columnName;
+			$identifierNew = [];
+			$where = [];
+			foreach ($identifier as $columnName => $value)
+			{
+				$name = $columnName . $i++;
+				$where[] = $columnName . ' = :' . $name;
+				$identifierNew[$name] = $value;
+			}
 
+			$params = array_merge($dataNew, $identifierNew);
 
-		$sql  = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $set)
-			. ' WHERE ' . implode(' AND ', $where);
+			$sql  = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $set)
+				. ' WHERE ' . implode(' AND ', $where);
 
-		$ret = $this->doExecuteNamedParams($sql, $params);
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+			return $this->doExecuteNamedParams($sql, $params);
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/*
@@ -407,12 +501,17 @@ class Db
 	 */
 	public function beginTransaction()
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$ret = $this->Connection()->beginTransaction();
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			return $this->Connection()->beginTransaction();
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/*
@@ -420,12 +519,17 @@ class Db
 	 */
 	public function commit()
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$ret = $this->Connection()->commit();
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			return $this->Connection()->commit();
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	/*
@@ -433,11 +537,16 @@ class Db
 	 */
 	public function rollBack()
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		$ret = $this->Connection()->rollBack();
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			return $this->Connection()->rollBack();
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 }
