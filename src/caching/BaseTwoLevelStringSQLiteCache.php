@@ -144,16 +144,32 @@ class BaseTwoLevelStringSQLiteCache
 	public function PutData($key1, $key2, $value)
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
+		{
 			return;
+		}
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
 		if ($this->OpenWrite($levelKey, false) == false)
 		{
 			sleep(1);
 			if ($this->OpenWrite($levelKey, false) == false)
+			{
 				return;
+			}
 		}
-		$this->db->InsertOrUpdate($valueKey, $value);
+		try
+		{
+			$this->db->InsertOrUpdate($valueKey, $value);
+		}
+		catch(\Exception $e)
+		{
+			$err = $e->getMessage();
+			if (Str::Contains($err, "Unable to prepare statement: 1, no such table: data"))
+			{
+				$this->db->Truncate();
+			}
+			throw $e;
+		}
 		$this->Close();
 	}
 

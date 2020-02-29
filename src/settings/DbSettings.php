@@ -11,15 +11,18 @@ class DbSettings
 	public $User = '';
 	public $Password = '';
 	public $Host = '';
+	public $Port = 3306;
 	public $Schema = '';
+	public $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
 
 	public $ForceOnlyFullGroupBy = false;
 
-	public function SetDatabase($host, $dbName, $user, $password)
+	public function SetDatabase($host, $dbName, $user, $password, $port = 3306)
 	{
 		$this->Name = $dbName;
 		$this->User = $user;
 		$this->Password = $password;
 		$this->Host = $host;
+		$this->Port = $port;
 	}
 }
