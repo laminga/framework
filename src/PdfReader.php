@@ -32,7 +32,7 @@ class PdfReader
 	 * Extrae todo el texto del pdf sin usar caches
 	 * ni truncando a 64k.
 	 */
-	public static function GetFullText($file)
+	public static function GetFulltext($file)
 	{
 		return self::GetText($file, '', false, false);
 	}
