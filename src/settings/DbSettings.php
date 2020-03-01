@@ -14,6 +14,7 @@ class DbSettings
 	public $Port = 3306;
 	public $Schema = '';
 	public $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
+	public $RemoteUrl = null;
 
 	public $ForceOnlyFullGroupBy = false;
 
