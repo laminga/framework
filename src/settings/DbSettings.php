@@ -12,7 +12,6 @@ class DbSettings
 	public $Password = '';
 	public $Host = '';
 	public $Port = 3306;
-	public $Schema = '';
 	public $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
 	public $RemoteUrl = null;
 

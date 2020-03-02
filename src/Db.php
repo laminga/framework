@@ -11,7 +11,6 @@ class Db
 	public $Password;
 	public $Port = 3306;
 	public $Charset = 'utf8';
-	public $TablePrefix;
 
 	private static $db = null;
 
@@ -25,7 +24,6 @@ class Db
 		$this->Port = Context::Settings()->Db()->Port;
 		$this->Password = Context::Settings()->Db()->Password;
 		$this->Charset = 'utf8';
-		$this->TablePrefix = Context::Settings()->Db()->Schema . "_";
 		$this->Connection();
 	}
 
@@ -52,14 +50,6 @@ class Db
 		return self::$db;
 	}
 
-	/**
-	 * Devuelve el nombre de la tabla con el
-	 * prefijo agregado
-	 */
-	public function getRealName($tableName)
-	{
-		return $this->TablePrefix . $tableName;
-	}
 
 	public function execute($query, array $data = [])
 	{
@@ -549,4 +539,19 @@ class Db
 			Profiling::EndTimer();
 		}
 	}
+
+	public static function QueryToString($sql, $params)
+	{
+		$ret = $sql;
+		foreach($params as $k => $v)
+		{
+			if(is_int($v))
+				$quote = '';
+			else
+				$quote = "'";
+			$ret = str_replace(':' . $k, $quote . $v . $quote, $ret);
+		}
+		return $ret;
+	}
+
 }

@@ -311,7 +311,13 @@ class WebConnection
 				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, '@'))
 					$hasFile = true;
 				else
+				{
+					if (is_object($subValues) || is_array($subValues))
+					{
+						$subValues = json_encode($subValues);
+					}
 					$cad = $cad . $key . '=' . urlencode($subValues);
+				}
 			}
 		}
 		if ($hasFile == false)

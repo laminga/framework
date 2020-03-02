@@ -118,7 +118,7 @@ class Params
 	public static function GetInt($param, $default = null)
 	{
 		$value = self::Get($param, $default);
-		if ($value === null)
+		if ($value === null || $value === '')
 			return null;
 		return self::CheckParseIntValue($value);
 	}
@@ -154,19 +154,19 @@ class Params
 			return $i;
 	}
 
-	public static function GetJsonMandatory($param)
+	public static function GetJsonMandatory($param, $assoc = false)
 	{
 		$value = self::GetMandatory($param);
-		return json_decode($value);
+		return json_decode($value, $assoc);
 	}
 
-	public static function GetJson($param)
+	public static function GetJson($param, $assoc = false)
 	{
 		$value = Params::Get($param);
 		if ($value === null)
 			return null;
 		else
-			return json_decode($value);
+			return json_decode($value, $assoc);
 	}
 }
 
