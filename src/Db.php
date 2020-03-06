@@ -335,7 +335,7 @@ class Db
 	 * @param array $params The parameters.
 	 * @return array
 	 */
-	public function parseArrayParams($query, array &$params)
+	private function parseArrayParams($query, array &$params)
 	{
 		foreach($params as $k => $v)
 		{
@@ -354,7 +354,7 @@ class Db
 	 * @param array $arr
 	 * @return string
 	 */
-	public function arrayToList(array $arr)
+	private function arrayToList(array $arr)
 	{
 		$ret = '';
 		foreach($arr as $v)
@@ -381,7 +381,7 @@ class Db
 	 * @param mixed $var
 	 * @return integer PDO::PARAM constant.
 	 */
-	public function getParamType($var)
+	private function getParamType($var)
 	{
 		if($var === null)
 			return \PDO::PARAM_NULL;
