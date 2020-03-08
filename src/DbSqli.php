@@ -51,10 +51,41 @@ class DbSqli
 	 *
 	 * @param string $query The SQL query.
 	 * @param array $params The query parameters.
+	 * @paran int $fetchStyle Fetch style PDO Constant
+	 * @return array
+	 */
+	public function fetchAll($query, array $params = [], $fetchStyle = MYSQLI_ASSOC)
+	{
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$query = $this->parseArrayParams($query, $params);
+			if(key($params) !== 0)
+			{
+				$query = $this->QueryToString($query, $params);
+			}
+			$result = self::$db->query($query);
+			$ret = $result->fetch_all($fetchStyle);
+      $result->free();
+      return $ret;
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
+	}
+
+	/**
+	 * Prepares and executes an SQL query and returns the result as an associative array.
+	 *
+	 * @param string $query The SQL query.
+	 * @param array $params The query parameters.
 	 * @paran int $fetch_style Fetch style PDO Constant
 	 * @return array
 	 */
-	public function fetchAllMultipleResults($query, array $params = [], $fetch_style = MYSQLI_ASSOC)
+	public function fetchAllMultipleResults($query, array $params = [], $fetchStyle = MYSQLI_ASSOC)
 	{
 		try
 		{
@@ -71,7 +102,7 @@ class DbSqli
 			{
         if ($result = self::$db->store_result())
 				{
-						$ret[] = $result->fetch_all($fetch_style);
+						$ret[] = $result->fetch_all($fetchStyle);
             $result->free();
         }
 			}
@@ -149,7 +180,7 @@ class DbSqli
 			if(is_int($v))
 				$quote = '';
 			else
-				$v = mysqli_real_escape_string($this->db);
+				$v = mysqli_real_escape_string(self::$db, $v);
 			$ret = str_replace(':' . $k, $quote . $v . $quote, $ret);
 		}
 		return $ret;

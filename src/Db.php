@@ -93,10 +93,10 @@ class Db
 	 *
 	 * @param string $query The SQL query.
 	 * @param array $params The query parameters.
-	 * @paran int $fetch_style Fetch style PDO Constant
+	 * @paran int $fetchStyle Fetch style PDO Constant
 	 * @return array
 	 */
-	public function fetchAll($query, array $params = [], $fetch_style = \PDO::FETCH_ASSOC)
+	public function fetchAll($query, array $params = [], $fetchStyle = \PDO::FETCH_ASSOC)
 	{
 		try
 		{
@@ -112,7 +112,7 @@ class Db
 					$stmt->bindValue($k, $v, $this->getParamType($v));
 				$stmt->execute();
 			}
-			return $stmt->fetchAll($fetch_style);
+			return $stmt->fetchAll($fetchStyle);
 		}
 		finally
 		{
@@ -121,23 +121,26 @@ class Db
 		}
 	}
 
-
 	/**
-	 * Prepares and executes an SQL query and returns the result as an associative array.
+	 * Prepares and executes a multi SQL query and returns the
+	 * results sets as an array of associative arrays.
 	 *
-	 * @param string $query The SQL query.
+	 * @param string $query The multi SQL query (FACET in sphinx).
 	 * @param array $params The query parameters.
-	 * @paran int $fetch_style Fetch style PDO Constant
+	 * @paran int $fetchStyle Fetch style PDO Constant
 	 * @return array
 	 */
-	public function fetchAllMultipleResults($query, array $params = [], $fetch_style = \PDO::FETCH_ASSOC)
+	public function fetchAllMultipleResults($query, array $params = [], $fetchStyle = \PDO::FETCH_ASSOC)
 	{
 		try
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
+
+			$this->Connection()->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
 			$query = $this->parseArrayParams($query, $params);
 			$stmt = $this->Connection()->prepare($query);
+
 			if(key($params) === 0)
 				$stmt->execute($params);
 			else
@@ -146,16 +149,17 @@ class Db
 					$stmt->bindValue($k, $v, $this->getParamType($v));
 				$stmt->execute();
 			}
+
 			$res = [];
-			//$res[] = $stmt->fetchAll($fetch_style);
-			do {
-				$res[] = $stmt->fetchAll($fetch_style);
-			} while ($stmt->nextRowset());
+			do
+				$res[] = $stmt->fetchAll($fetchStyle);
+			while ($stmt->nextRowset());
 
 			return $res;
 		}
 		finally
 		{
+			$this->Connection()->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 			Performance::EndDbWait();
 			Profiling::EndTimer();
 		}
@@ -184,7 +188,7 @@ class Db
 		}
 	}
 
-	private function fetch($query, array $params = [], $fetch_style = \PDO::FETCH_ASSOC)
+	private function fetch($query, array $params = [], $fetchStyle = \PDO::FETCH_ASSOC)
 	{
 		$query = $this->parseArrayParams($query, $params);
 		$stmt = $this->Connection()->prepare($query);
@@ -196,7 +200,7 @@ class Db
 				$stmt->bindValue($k, $v, $this->getParamType($v));
 			$stmt->execute();
 		}
-		return $stmt->fetch($fetch_style);
+		return $stmt->fetch($fetchStyle);
 	}
 
 	public function fetchAllColumn($query, array $params = [])
