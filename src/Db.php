@@ -122,6 +122,45 @@ class Db
 	}
 
 
+	/**
+	 * Prepares and executes an SQL query and returns the result as an associative array.
+	 *
+	 * @param string $query The SQL query.
+	 * @param array $params The query parameters.
+	 * @paran int $fetch_style Fetch style PDO Constant
+	 * @return array
+	 */
+	public function fetchAllMultipleResults($query, array $params = [], $fetch_style = \PDO::FETCH_ASSOC)
+	{
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$query = $this->parseArrayParams($query, $params);
+			$stmt = $this->Connection()->prepare($query);
+			if(key($params) === 0)
+				$stmt->execute($params);
+			else
+			{
+				foreach($params as $k => $v)
+					$stmt->bindValue($k, $v, $this->getParamType($v));
+				$stmt->execute();
+			}
+			$res = [];
+			//$res[] = $stmt->fetchAll($fetch_style);
+			do {
+				$res[] = $stmt->fetchAll($fetch_style);
+			} while ($stmt->nextRowset());
+
+			return $res;
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
+	}
+
 	public function fetchScalarInt($sql, array $params = [])
 	{
 		return (int)$this->fetchScalar($sql, $params);
