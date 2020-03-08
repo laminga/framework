@@ -309,7 +309,7 @@ class Str
 		return $value;
 	}
 
-	public static function AppendFullTextEndsWithAndRequiredSigns($originalQuery)
+	public static function AppendFulltextEndsWithAndRequiredSigns($originalQuery)
 	{
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
 			$keywords_filtered = array_filter($keywords, function($word) {

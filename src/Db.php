@@ -263,8 +263,8 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 
-			$query = $command . ' INTO ' . $tableName
-				. ' (' . implode(', ', array_keys($data)) . ')'
+			$query = $command . ' INTO ' . self::QuoteTable($tableName)
+				. ' (' . implode(', ', self::QuoteColumn(array_keys($data))) . ')'
 				. ' VALUES (' . rtrim(str_repeat('?,', count($data)),',') . ')';
 
 			return $this->doExecute($query, array_values($data));
@@ -315,9 +315,9 @@ class Db
 			Performance::BeginDbWait();
 			$criteria = [];
 			foreach ($identifier as $columnName => $_)
-				$criteria[] = $columnName . ' = :' . $columnName;
+				$criteria[] = self::QuoteColumn($columnName) . ' = :' . $columnName;
 
-			$query = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' AND ', $criteria);
+			$query = 'DELETE FROM ' . self::QuoteTable($tableName) . ' WHERE ' . implode(' AND ', $criteria);
 			return $this->doExecuteNamedParams($query, $identifier);
 		}
 		finally
@@ -334,7 +334,7 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 			$criteria = array_fill(0, count($values), '?');
-			$query = 'DELETE FROM ' . $tableName . ' WHERE ' . $columnName . ' IN ( ' . implode(',', $criteria) . ')';
+			$query = 'DELETE FROM ' . self::QuoteTable($tableName) . ' WHERE ' . self::QuoteColumn($columnName) . ' IN ( ' . implode(',', $criteria) . ')';
 			return $this->doExecute($query, $values);
 		}
 		finally
@@ -374,7 +374,7 @@ class Db
 	 * @param array $params The parameters.
 	 * @return array
 	 */
-	public function parseArrayParams($query, array &$params)
+	private function parseArrayParams($query, array &$params)
 	{
 		foreach($params as $k => $v)
 		{
@@ -393,7 +393,7 @@ class Db
 	 * @param array $arr
 	 * @return string
 	 */
-	public function arrayToList(array $arr)
+	private function arrayToList(array $arr)
 	{
 		$ret = '';
 		foreach($arr as $v)
@@ -420,7 +420,7 @@ class Db
 	 * @param mixed $var
 	 * @return integer PDO::PARAM constant.
 	 */
-	public function getParamType($var)
+	private function getParamType($var)
 	{
 		if($var === null)
 			return \PDO::PARAM_NULL;
@@ -467,7 +467,7 @@ class Db
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
-			$query = 'TRUNCATE TABLE ' . $tableName;
+			$query = 'TRUNCATE TABLE ' . self::QuoteTable($tableName);
 			$this->doExecute($query);
 		}
 		finally
@@ -498,7 +498,7 @@ class Db
 			foreach ($data as $columnName => $value)
 			{
 				$name = $columnName . $i++;
-				$set[] = $columnName . ' = :' . $name;
+				$set[] = self::QuoteColumn($columnName) . ' = :' . $name;
 				$dataNew[$name] = $value;
 			}
 
@@ -507,13 +507,13 @@ class Db
 			foreach ($identifier as $columnName => $value)
 			{
 				$name = $columnName . $i++;
-				$where[] = $columnName . ' = :' . $name;
+				$where[] = self::QuoteColumn($columnName) . ' = :' . $name;
 				$identifierNew[$name] = $value;
 			}
 
 			$params = array_merge($dataNew, $identifierNew);
 
-			$sql  = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $set)
+			$sql  = 'UPDATE ' . self::QuoteTable($tableName) . ' SET ' . implode(', ', $set)
 				. ' WHERE ' . implode(' AND ', $where);
 
 			return $this->doExecuteNamedParams($sql, $params);
@@ -584,13 +584,32 @@ class Db
 		$ret = $sql;
 		foreach($params as $k => $v)
 		{
+			$quote = "'";
 			if(is_int($v))
 				$quote = '';
-			else
-				$quote = "'";
 			$ret = str_replace(':' . $k, $quote . $v . $quote, $ret);
 		}
 		return $ret;
+	}
+
+	public static function QuoteColumn($name)
+	{
+		if(is_array($name))
+		{
+			$ret = [];
+			foreach($name as $item)
+				$ret[] = self::QuoteColumn($item);
+			return $ret;
+		}
+
+		//filtra alfanumérico y guion bajo.
+		$name = preg_replace('/[^A-Za-z0-9_]+/', '', $name);
+		return '`' . $name . '`';
+	}
+
+	public static function QuoteTable($name)
+	{
+		return self::QuoteColumn($name);
 	}
 
 }
