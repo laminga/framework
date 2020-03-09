@@ -39,6 +39,11 @@ class Arr
 		$arr1 = array_merge($arr1, $arr2);
 		return $arr1;
 	}
+	public static function InsertAt(&$arr1, $element, $pos)
+	{
+		array_splice($arr1, $pos, 0, [$element]);
+		return $arr1;
+	}
 	public static function AssocToString($arr, $includeKeys = true, $ommitEmpty = false)
 	{
 		$ret = '';
