@@ -112,7 +112,7 @@ class WebConnection
 		return $response;
 	}
 
-	public function Post($url, $file = '', $args)
+	public function Post($url, $file = '', array $args = null)
 	{
 		Profiling::BeginTimer();
 		$response = $this->doExecute($url, $file, $args);

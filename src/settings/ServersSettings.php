@@ -11,8 +11,8 @@ class ServersSettings
 
 	private $currentServerObj = null;
 	private $mainServerObj = null;
-	
-	public $RemoteLoginWhiteList = array();
+
+	public $RemoteLoginWhiteList = [];
 
 	public $Python27 = null;
 
@@ -60,9 +60,9 @@ class ServersSettings
 	{
 		if ($this->currentServer == null)
 		{
-			if (sizeof($this->servers) > 1)
+			if (count($this->servers) > 1)
 				throw new ErrorException('Many servers are set in configuration but no current server is specificied. Call Context::Settings()->Servers()->SetCurrentServer(name) to set one.');
-			if (sizeof($this->servers) == 0)
+			if (count($this->servers) == 0)
 				throw new ErrorException('No servers are set in configuration file.');
 			$keys = array_keys($this->servers);
 			return $this->servers[$keys[0]];
