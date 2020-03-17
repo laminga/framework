@@ -51,7 +51,7 @@ class Db
 	}
 
 
-	public function execute($query, array $data = [])
+	public function execute(string $query, array $data = []) : int
 	{
 		try
 		{
@@ -72,7 +72,7 @@ class Db
 		}
 	}
 
-	private function doExecuteNamedParams($query, array $data = [])
+	private function doExecuteNamedParams(string $query, array $data = []) : int
 	{
 		$stmt = $this->Connection()->prepare($query);
 		foreach($data as $k => $v)
@@ -81,7 +81,7 @@ class Db
 		return $stmt->rowCount();
 	}
 
-	private function doExecute($query, array $data = [])
+	private function doExecute(string $query, array $data = []) : int
 	{
 		$stmt = $this->Connection()->prepare($query);
 		$stmt->execute($data);
@@ -96,7 +96,7 @@ class Db
 	 * @paran int $fetchStyle Fetch style PDO Constant
 	 * @return array
 	 */
-	public function fetchAll($query, array $params = [], $fetchStyle = \PDO::FETCH_ASSOC)
+	public function fetchAll(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC)
 	{
 		try
 		{
@@ -130,7 +130,7 @@ class Db
 	 * @paran int $fetchStyle Fetch style PDO Constant
 	 * @return array
 	 */
-	public function fetchAllMultipleResults($query, array $params = [], $fetchStyle = \PDO::FETCH_ASSOC)
+	public function fetchAllMultipleResults(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC)
 	{
 		try
 		{
@@ -165,18 +165,18 @@ class Db
 		}
 	}
 
-	public function fetchScalarInt($sql, array $params = [])
+	public function fetchScalarInt(string $query, array $params = [])
 	{
-		return (int)$this->fetchScalar($sql, $params);
+		return (int)$this->fetchScalar($query, $params);
 	}
 
-	public function fetchScalar($sql, array $params = [])
+	public function fetchScalar(string $query, array $params = [])
 	{
 		try
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
-			$ret = $this->fetchAssoc($sql, $params);
+			$ret = $this->fetchAssoc($query, $params);
 			if($ret === false)
 				return null;
 			return $ret[array_keys($ret)[0]];
@@ -188,7 +188,7 @@ class Db
 		}
 	}
 
-	private function fetch($query, array $params = [], $fetchStyle = \PDO::FETCH_ASSOC)
+	private function fetch(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC)
 	{
 		$query = $this->parseArrayParams($query, $params);
 		$stmt = $this->Connection()->prepare($query);
@@ -203,7 +203,7 @@ class Db
 		return $stmt->fetch($fetchStyle);
 	}
 
-	public function fetchAllColumn($query, array $params = [])
+	public function fetchAllColumn(string $query, array $params = [])
 	{
 		try
 		{
@@ -231,7 +231,7 @@ class Db
 	 * @param int $colnum 0-indexed column number to retrieve
 	 * @return mixed
 	 */
-	public function fetchColumn($query, array $params = [], $colnum = 0)
+	public function fetchColumn(string $query, array $params = [], int $colnum = 0)
 	{
 		try
 		{
@@ -260,7 +260,7 @@ class Db
 	/**
 	 * Inserts or Replaces a table row with specified data.
 	 */
-	private function insertOrReplace($tableName, array $data, $command)
+	private function insertOrReplace(string $tableName, array $data, string $command) : int
 	{
 		try
 		{
@@ -287,7 +287,7 @@ class Db
 	 * @param array $data An associative array containing column-value pairs.
 	 * @return integer The number of affected rows.
 	 */
-	public function insert($tableName, array $data)
+	public function insert(string $tableName, array $data) : int
 	{
 		return $this->InsertOrReplace($tableName, $data, 'INSERT');
 	}
@@ -299,7 +299,7 @@ class Db
 	 * @param array $data An associative array containing column-value pairs.
 	 * @return integer The number of affected rows.
 	 */
-	public function replace($tableName, array $data)
+	public function replace(string $tableName, array $data) : int
 	{
 		return $this->insertOrReplace($tableName, $data, 'REPLACE');
 	}
@@ -311,7 +311,7 @@ class Db
 	 * @param array $identifier The deletion criteria. An associative array containing column-value pairs.
 	 * @return integer The number of affected rows.
 	 */
-	public function delete($tableName, array $identifier)
+	public function delete(string $tableName, array $identifier) : int
 	{
 		try
 		{
@@ -331,7 +331,7 @@ class Db
 		}
 	}
 
-	public function deleteSet($tableName, $columnName, $values)
+	public function deleteSet(string $tableName, string $columnName, array $values) : int
 	{
 		try
 		{
@@ -356,7 +356,7 @@ class Db
 	 * @param array $params The query parameters.
 	 * @return array|false
 	 */
-	public function fetchAssoc($statement, array $params = [])
+	public function fetchAssoc(string $statement, array $params = [])
 	{
 		try
 		{
@@ -376,9 +376,9 @@ class Db
 	 * Non array parameters are returned as-is.
 	 *
 	 * @param array $params The parameters.
-	 * @return array
+	 * @return string
 	 */
-	private function parseArrayParams($query, array &$params)
+	private function parseArrayParams(string $query, array &$params) : string
 	{
 		foreach($params as $k => $v)
 		{
@@ -397,7 +397,7 @@ class Db
 	 * @param array $arr
 	 * @return string
 	 */
-	private function arrayToList(array $arr)
+	private function arrayToList(array $arr) : string
 	{
 		$ret = '';
 		foreach($arr as $v)
@@ -424,7 +424,7 @@ class Db
 	 * @param mixed $var
 	 * @return integer PDO::PARAM constant.
 	 */
-	private function getParamType($var)
+	private function getParamType($var) : int
 	{
 		if($var === null)
 			return \PDO::PARAM_NULL;
@@ -444,7 +444,7 @@ class Db
 	 * @param array $params             prepared statement params
 	 * @return array
 	 */
-	public function fetchArray($statement, array $params = [])
+	public function fetchArray(string $statement, array $params = [])
 	{
 		try
 		{
@@ -465,7 +465,7 @@ class Db
 	 *
 	 * @param string $tableName The name of the table to truncate.
 	 */
-	public function truncate($tableName)
+	public function truncate(string $tableName) : int
 	{
 		try
 		{
@@ -489,7 +489,7 @@ class Db
 	 * @param array $identifier The update criteria. An associative array containing column-value pairs.
 	 * @return integer The number of affected rows.
 	 */
-	public function update($tableName, array $data, array $identifier)
+	public function update(string $tableName, array $data, array $identifier) : int
 	{
 		try
 		{
@@ -532,7 +532,7 @@ class Db
 	/*
 	 * Initiates a transaction.
 	 */
-	public function beginTransaction()
+	public function beginTransaction() : bool
 	{
 		try
 		{
@@ -550,7 +550,7 @@ class Db
 	/*
 	 * Commits a transaction.
 	 */
-	public function commit()
+	public function commit() : bool
 	{
 		try
 		{
@@ -568,7 +568,7 @@ class Db
 	/*
 	 * Rolls back a transaction.
 	 */
-	public function rollBack()
+	public function rollBack() : bool
 	{
 		try
 		{
@@ -583,7 +583,7 @@ class Db
 		}
 	}
 
-	public static function QueryToString($sql, $params)
+	public static function QueryToString(string $sql, array $params) : string
 	{
 		$ret = $sql;
 		foreach($params as $k => $v)

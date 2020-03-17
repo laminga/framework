@@ -165,8 +165,7 @@ class Params
 		$value = Params::Get($param);
 		if ($value === null)
 			return null;
-		else
-			return json_decode($value, $assoc);
+		return json_decode($value, $assoc);
 	}
 }
 
