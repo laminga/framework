@@ -2,40 +2,46 @@
 
 namespace minga\framework;
 
+use minga\classes\fulltext\Catalog;
 use minga\framework\locking\SearchLogLock;
 
 class SearchLog
 {
-	private static $time_start = null;
+	private $timeStart = 0;
 
-	public static function BeginSearch()
+	public function BeginSearch()
 	{
-		self::$time_start = microtime(true);
+		$this->timeStart = microtime(true);
 	}
 
-	public static function RegisterSearch($text, $matches)
+	public function RegisterSearch($text, $matches)
 	{
-		Profiling::BeginTimer();
 		try
 		{
-
+			Profiling::BeginTimer();
 			if (is_array($text))
 			{
+				if(isset($text['Page']))
+					$text['Page'] = ($text['Page'] / Catalog::MAX_RESULTS) + 1;
 				$text = Arr::AssocToString($text, true, true);
-			}			self::Save($text, $matches);
+			}
+			$this->Save($text, $matches);
 		}
 		catch(\Exception $e)
 		{
 			Log::HandleSilentException($e);
 		}
-		Profiling::EndTimer();
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
-	private static function Save($text, $matches)
+	private function Save($text, $matches)
 	{
 		$lock = new SearchLogLock();
 
-		$ellapsedMs = round((microtime(true) - self::$time_start) * 1000);
+		$ellapsedMs = round((microtime(true) - $this->timeStart) * 1000);
 
 		$lock->LockWrite();
 		$month = Date::GetLogMonthFolder();
@@ -47,7 +53,7 @@ class SearchLog
 	{
 		$path = Context::Paths()->GetSearchLogLocalPath();
 		IO::EnsureExists($path);
-		$ret = $path . '/' . $item . ".txt";
+		$ret = $path . '/' . $item . '.txt';
 		return $ret;
 	}
 
@@ -67,10 +73,9 @@ class SearchLog
 		$now = Date::FormattedArNow();
 
 		if(is_array($text) || is_array($matches))
-			return "";
+			return '';
 
-		$value = $user . "\t" . $now . "\t" .  $matches . "\t" . Str::Replace($text, '\t', ' ') . "\t" . $ellapsedMs;
-		return $value;
+		return $user . "\t" . $now . "\t" .  $matches . "\t" . Str::Replace($text, "\t", ' ') . "\t" . $ellapsedMs;
 	}
 
 	private static function ParseHit($value, &$user, &$dateTime, &$text, &$matches, &$ellapsed)
@@ -89,8 +94,7 @@ class SearchLog
 	{
 		if (file_exists($file))
 			return IO::ReadAllLines($file);
-		else
-			return array();
+		return [];
 	}
 
 	public static function GetSearchTable($month)
@@ -108,18 +112,18 @@ class SearchLog
 		$rows = self::ReadIfExists($path);
 		$lock->Release();
 
-		$ret = array();
-		$ret['Fecha'] = array('Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión');
+		$ret = [];
+		$ret['Fecha'] = ['Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
 
 		$currentDay = Date::FormattedArDate();
-		for($n = sizeof($rows) - 1; $n >= 0; $n--)
+		for($n = count($rows) - 1; $n >= 0; $n--)
 		{
 			$line = $rows[$n];
 			if (self::ParseHit($line, $user, $dateTime, $text, $matches, $ellapsed))
 			{
 				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay))
 				{
-					$cells = array($text, $matches, $ellapsed, $user);
+					$cells = [$text, $matches, $ellapsed, $user];
 					$ret[$dateTime] = $cells;
 				}
 			}
