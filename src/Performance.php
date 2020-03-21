@@ -613,8 +613,8 @@ class Performance
 		foreach($methodsPlusTotal as $method)
 		{
 			$headers[] = 'Hits';
-			$headers[] = 'Promedio (ms)';
-			$headers[] = 'Db (ms / dbHits)';
+			$headers[] = 'Promedio ms';
+			$headers[] = 'Db promedio ms (Db hits)';
 			$headers[] = 'Share (%)';
 		}
 		$rows[''] = $methodsPlusTotal;

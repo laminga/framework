@@ -13,6 +13,8 @@ class DbSettings
 	public $Host = '';
 	public $Schema = '';
 	
+	
+	public $ForceStrictTables = false;
 	public $ForceOnlyFullGroupBy = false;
 
 	public function SetDatabase($host, $dbName, $user, $password)
