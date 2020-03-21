@@ -32,6 +32,14 @@ class Arr
 		return $arr;
 	}
 
+	public static function TwoElementsToKeyValue(array $array)
+	{
+		$ret = [];
+		foreach($array as $val)
+			$ret[reset($val)] = end($val);
+		return $ret;
+	}
+
 	public static function AddRange(&$arr1, $arr2)
 	{
 		$arr1 = array_merge($arr1, $arr2);
