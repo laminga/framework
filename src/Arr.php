@@ -9,13 +9,12 @@ class Arr
 		$index = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
 		if ($index == -1)
 			return $default;
-		else
-			return $arr[$index];
+		return $arr[$index];
 	}
 
 	public static function CastColumnAsFloat(&$arr, $column)
 	{
-		for($n = 0; $n < sizeof($arr); $n++)
+		for($n = 0; $n < count($arr); $n++)
 		{
 			$value = $arr[$n][$column];
 			if ($value !== null)
@@ -28,30 +27,38 @@ class Arr
 		foreach($arr as &$item)
 		{
 			foreach($fields as $field)
-			{
 				$item[$field] = ($item[$field] == true);
-			}
 		}
 		return $arr;
 	}
+
 	public static function AddRange(&$arr1, $arr2)
 	{
 		$arr1 = array_merge($arr1, $arr2);
 		return $arr1;
 	}
+
+	public static function InsertAt(&$arr1, $element, $pos)
+	{
+		array_splice($arr1, $pos, 0, [$element]);
+		return $arr1;
+	}
+
 	public static function AssocToString($arr, $includeKeys = true, $ommitEmpty = false)
 	{
 		$ret = '';
 		foreach($arr as $key => $value)
 		{
-			if (!$ommitEmpty || $value)
+			if ($ommitEmpty == false || $value)
 			{
-				if ($ret !== '') $ret .= ",";
-				if ($includeKeys) $ret .= $key . "=";
+				if ($ret !== '')
+					$ret .= ",";
+				if ($includeKeys)
+					$ret .= $key . "=";
 				$ret .= $value;
 			}
-			return $ret;
 		}
+		return $ret;
 	}
 
 	public static function ToString($arr, $ommitEmpty = false)
@@ -59,14 +66,16 @@ class Arr
 		$ret = '';
 		foreach($arr as $key => $value)
 		{
-			if (!$ommitEmpty || $value)
+			if ($ommitEmpty == false || $value)
 			{
-				if ($ret !== '') $ret .= ",";
+				if ($ret !== '')
+					$ret .= ",";
 				$ret .= $value;
 			}
-			return $ret;
 		}
+		return $ret;
 	}
+
 	public static function Increment(&$arr, $itemName, $n = 1)
 	{
 		self::CheckSubZero($arr, $itemName);
@@ -102,7 +111,7 @@ class Arr
 
 	public static function IndexOfByNamedValue($arr, $itemName, $itemValue)
 	{
-		for($n = 0; $n < sizeof($arr); $n++)
+		for($n = 0; $n < count($arr); $n++)
 		{
 			$current = $arr[$n];
 			if (array_key_exists($itemName, $current) && $current[$itemName] == $itemValue)
@@ -110,10 +119,11 @@ class Arr
 		}
 		return -1;
 	}
+
 	public static function SystematicSample($items, $size)
 	{
 		$ret = [];
-		$interval = sizeof($items) / $size;
+		$interval = count($items) / $size;
 		$first = rand(0, intval($interval) - 1);
 		$pos = $first;
 		$count = 0;
@@ -160,17 +170,14 @@ class Arr
 	{
 		if (array_key_exists($item, $arr))
 			return $arr[$item];
-		else
-			return $default;
+		return $default;
 	}
 
 	public static function RemoveByField($key, $arrayTotal, $arrayItemsToRemove)
 	{
 		$ret = [];
 		foreach($arrayItemsToRemove as $item)
-		{
 			self::RemoveItemByNamedKey($arrayTotal, $item[$key], $key);
-		}
 		return $ret;
 	}
 
@@ -192,9 +199,7 @@ class Arr
 	public static function RemoveItem(&$array, $item)
 	{
 		foreach (array_keys($array, $item) as $key)
-		{
 			unset($array[$key]);
-		}
 		return $array;
 	}
 
@@ -228,8 +233,8 @@ class Arr
 		$ret = [];
 		foreach($array as $item)
 		{
-			if (array_key_exists($key, $item) == false ||
-				$item[$key] != $value)
+			if (array_key_exists($key, $item) == false
+				|| $item[$key] != $value)
 				$ret [] = $item;
 		}
 		return $ret;
@@ -244,8 +249,9 @@ class Arr
 
 	public static function GrowArray($arr, $size)
 	{
-		if (is_array($arr) == false) $arr = [];
-		for ($i = sizeof($arr); $i < $size; $i++)
+		if (is_array($arr) == false)
+			$arr = [];
+		for ($i = count($arr); $i < $size; $i++)
 			$arr[$i] = '';
 		return $arr;
 	}
@@ -419,7 +425,7 @@ class Arr
 		return $ret;
 	}
 
-	public static  function ConvertToFlatByTopic($items)
+	public static function ConvertToFlatByTopic($items)
 	{
 		$ret = [];
 		foreach($items as $group)
@@ -437,34 +443,37 @@ class Arr
 	public static function CutArrayAndSummarize($arr, $newSize)
 	{
 		$total = 0;
-		if (sizeof($arr) <= $newSize) return $arr;
+		if (count($arr) <= $newSize) return $arr;
 		$keys = array_keys($arr);
 		$ret = [];
 		for($i = 0; $i < $newSize; $i++)
 			$ret[$keys[$i]] = $arr[$keys[$i]];
-		for($i = $newSize; $i < sizeof($arr); $i++)
+		for($i = $newSize; $i < count($arr); $i++)
 			$total = intval($total + $arr[$keys[$i]]);
 		$ret['Otros'] = $total;
 		return $ret;
 	}
+
 	public static function AddAt($arr, $n, $element)
 	{
 		array_splice($arr, $n, 0, array($element));
 		return $arr;
 	}
+
 	public static function AddShare($arr, $unit = "")
 	{
 		$total = 0;
 		$keys = array_keys($arr);
-		for($i = 0; $i < sizeof($arr); $i++)
+		for($i = 0; $i < count($arr); $i++)
 			$total = intval(($total + $arr[$keys[$i]]));
 		$ret = [];
-		for($i = 0; $i < sizeof($arr); $i++)
+		for($i = 0; $i < count($arr); $i++)
 		{
 			if ($total != 0)
 			{
 				$pc = round($arr[$keys[$i]] / $total * 100);
-				if ($pc==0) $pc = "<1";
+				if ($pc==0)
+					$pc = "<1";
 			}
 			else
 				$pc = 0;

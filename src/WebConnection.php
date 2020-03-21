@@ -112,7 +112,7 @@ class WebConnection
 		return $response;
 	}
 
-	public function Post($url, $file = '', $args)
+	public function Post($url, $file = '', $args = null)
 	{
 		Profiling::BeginTimer();
 		$response = $this->doExecute($url, $file, $args);
@@ -298,26 +298,37 @@ class WebConnection
 			return;
 		}
 
-		$cad = '';
-		$hasFile = false;
-		foreach($args as $key => $value)
-		{
-			if (is_array($value) == false)
-				$value = array($value);
-			foreach($value as $subValues)
-			{
-				if ($cad != '')
-					$cad = $cad . '&';
-				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, '@'))
-					$hasFile = true;
-				else
-					$cad = $cad . $key . '=' . urlencode($subValues);
-			}
-		}
+		$cad = self::PreparePostValues($args, $hasFile);
 		if ($hasFile == false)
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $cad);
 		else
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
+	}
+
+	public static function PreparePostValues(array $args, &$hasFile = false)
+	{
+		$ret = '';
+		ksort($args);
+		foreach($args as $key => $value)
+		{
+			if (is_array($value) == false)
+				$value = [$value];
+			foreach($value as $subValues)
+			{
+				if ($ret != '')
+					$ret .= '&';
+				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, '@'))
+					$hasFile = true;
+				else
+				{
+					if (is_object($subValues) || is_array($subValues))
+						$subValues = json_encode($subValues);
+
+					$ret .= $key . '=' . urlencode($subValues);
+				}
+			}
+		}
+		return $ret;
 	}
 
 	private function ParseErrorCodes($ret, $file)

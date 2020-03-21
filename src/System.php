@@ -67,8 +67,6 @@ class System
 	{
 		$settings = [];
 		$settings[] = ['name' => 'Host', 'value' => Context::Settings()->Db()->Host];
-		if (Context::Settings()->Db()->Schema != '')
-			$settings[] = ['name' => 'Schema', 'value' => Context::Settings()->Db()->Schema];
 		$settings[] = ['name' => 'Database', 'value' => Context::Settings()->Db()->Name];
 		$settings[] = ['name' => 'User', 'value' => Context::Settings()->Db()->User];
 		$settings[] = ['name' => 'MySQL Version', 'value' => self::GetMySQLVersion()];

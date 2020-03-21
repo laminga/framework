@@ -9,9 +9,10 @@ use minga\framework\Profiling;
 
 class Lock
 {
-	private $handle;
+	protected $handle;
 	protected $folder;
 	private $file;
+	private $readWrite;
 	public $isLocked = false;
 	public $isWriteLocked = false;
 
@@ -19,11 +20,12 @@ class Lock
 
 	private static $locks = [];
 
-	public function __construct($folder, $file = 'lock')
+	public function __construct($folder, $file = 'lock', $readWrite = false)
 	{
 		$this->file = $file;
 		$this->folder = $folder;
 		$this->statsKey = get_class($this);
+		$this->readWrite = $readWrite;
 	}
 
 	public function LockRead()
@@ -92,7 +94,8 @@ class Lock
 
 	private function doLock($type)
 	{
-		$this->handle = fopen($this->ResolveFilename(), 'w+');
+		$mode = ($this->readWrite ? 'c+' : 'w+');
+		$this->handle = fopen($this->ResolveFilename(), $mode);
 
 		Performance::BeginLockedWait($this->statsKey);
 

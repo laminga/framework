@@ -248,30 +248,23 @@ class WebClient
 		{
 			// json
 			$this->requestHeaders[] = 'Content-Type: application/json';
-
-
 			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'POST');
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 			return;
 		}
-		else
-		{
-			;
-				/*curl_setopt($this->ch, CURLOPT_HTTPHEADER, array(
-				'Content-Type: application/x-www-form-urlencoded'));*/
-		}
+		//curl_setopt($this->ch, CURLOPT_HTTPHEADER, [
+		//'Content-Type: application/x-www-form-urlencoded']);
 
 		$cad = '';
 		$hasFile = false;
 		foreach($args as $key => $value)
 		{
 			if (is_array($value) == false)
-				$value = array($value);
+				$value = [$value];
 			foreach($value as $subValues)
 			{
 				if ($cad != '') $cad = $cad . '&';
 				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, '@'))
-
 					$hasFile = true;
 				else
 					$cad = $cad . $key . '=' . urlencode($subValues);

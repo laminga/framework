@@ -16,8 +16,8 @@ class MonitorLimits
 	public $LogAgentThresholdDaylyHits = 100;
 
 	// Cuando estos límites se exceden, se envía un mail de alerta
-	public $WarningDaylyHitsPerIP = 5000;
-	public $WarningDaylyHits = 20000;
+	public $WarningDaylyHitsPerIP = 7500;
+	public $WarningDaylyHits = 30000;
 	public $WarningDaylyExecuteMinutes = 150;
 	public $WarningDaylyLockMinutes = 10;
 }

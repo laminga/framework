@@ -13,57 +13,57 @@ class Str
 	public static function DetectEncoding($str)
 	{
 		$encodings = [
-					'UTF-8',
-					'macintosh',
-					'Windows-1252',
-					'SJIS',
-					'ISO-8859-1'
-			];
+			'UTF-8',
+			'macintosh',
+			'Windows-1252',
+			'SJIS',
+			'ISO-8859-1'
+		];
 
 		$encoding = 'UTF-8';
-		foreach ($encodings as $encoding) {
+		foreach ($encodings as $encoding)
+		{
 			if ($encoding === "macintosh")
 			{
 				if (self::macCheckEncoding($str))
-				{
-      		return $encoding;
-				}
+					return $encoding;
 			}
-			else if (mb_check_encoding($str, $encoding)) {
-        return $encoding;
-			}
+			else if (mb_check_encoding($str, $encoding))
+				return $encoding;
 		}
 		return null;
 	}
+
 	private static function macCheckEncoding($str) {
 		// Estos caracteres son infrecuentes y representan caracteres extendidos castellanos
 		// en el encoding MACROMAN (macintosh)
 		$tokens = [ chr(0x87) // á -> ‡
-							, chr(0x8e) // é -> Ž
-							, chr(0x92) // í -> ’
-							, chr(0x97) // ó -> —
-							, chr(0x9c) // ú -> œ
-							//, chr(0xe7) // Á -> ç  (en portugués es frecuente ç; en castellano, no tanto Á)
-							, chr(0x83) // É -> ƒ
-							, chr(0xea) // Í -> ê
-							, chr(0xee) // Ó -> î
-							, chr(0xf2) // Ú -> ò
+			, chr(0x8e) // é -> Ž
+			, chr(0x92) // í -> ’
+			, chr(0x97) // ó -> —
+			, chr(0x9c) // ú -> œ
+			//, chr(0xe7) // Á -> ç  (en portugués es frecuente ç; en castellano, no tanto Á)
+			, chr(0x83) // É -> ƒ
+			, chr(0xea) // Í -> ê
+			, chr(0xee) // Ó -> î
+			, chr(0xf2) // Ú -> ò
 
-							, chr(0x9f) // ü -> Ÿ
-							, chr(0x86) // Ü -> †
-							, chr(0x96) // ñ -> –
-							, chr(0x84) // Ñ -> „
-							];
+			, chr(0x9f) // ü -> Ÿ
+			, chr(0x86) // Ü -> †
+			, chr(0x96) // ñ -> –
+			, chr(0x84) // Ñ -> „
+		];
 		foreach($tokens as $token)
 		{
-			if (strpos($str, $token) !== FALSE)
+			if (strpos($str, $token) !== false)
 				return true;
 		}
 		return false;
 	}
+
 	public static function PolygonToCoordinates($polygon)
 	{
-		$ret = array();
+		$ret = [];
 		$cad = self::EatUntil($polygon, "((");
 		$cad = self::Replace($cad, "))", "");
 		$parts = explode(',', $cad);
@@ -86,7 +86,7 @@ class Str
 	//TODO: mover a una clase mejor.
 	public static function BuildTotalsRow($list, $label, $columns)
 	{
-		$results = array();
+		$results = [];
 		if ($label != "")
 		{
 			$results[$label] = 'Total';
@@ -107,12 +107,14 @@ class Str
 		// listo
 		return $results;
 	}
+
 	public static function CultureCmp($a, $b)
 	{
 		$a2 = self::RemoveAccents($a);
 		$b2 = self::RemoveAccents($b);
 		return strcasecmp($a2, $b2);
 	}
+
 	public static function IntCmp($a, $b)
 	{
 		if ($a === null && $b === null)
@@ -124,10 +126,12 @@ class Str
 		else
 			return $a - $b;
 	}
+
 	public static function UrlencodeFriendly($cad)
 	{
 		return str_replace('%40', '@', urlencode($cad));
 	}
+
 	public static function FixEncoding($cad)
 	{
 		$cad = self::Replace($cad, 'Â¡', 'á');
@@ -245,7 +249,7 @@ class Str
 	{
 		if ($bytes == "-")
 			return;
-		$units = array('b', 'KB', 'MB', 'GB', 'TB');
+		$units = ['b', 'KB', 'MB', 'GB', 'TB'];
 		$bytes = max($bytes, 0);
 		$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
 		$pow = min($pow, count($units) - 1);
@@ -257,7 +261,6 @@ class Str
 	{
 		return !strncmp($haystack, $needle, strlen($needle));
 	}
-
 
 	public static function StartsWithI($haystack, $needle)
 	{
@@ -289,38 +292,34 @@ class Str
 
 	public static function BooleanToText($value)
 	{
-		if ($value == "") return "";
+		if ($value == "")
+			return "";
 		if ($value === "1" || $value === 1 || $value === true)
 			return "Sí";
-		else
-			return "No";
-	}
 
+		return "No";
+	}
 
 	public static function SpanishSingle($value)
 	{
 		if (self::EndsWith($value, "les"))
-		{
 			$value = self::RemoveEnding($value, "es");
-		}
 		else if (self::EndsWith($value, "s"))
-		{
 			$value = self::RemoveEnding($value, "s");
-		}
 		return $value;
 	}
 
-	public static function AppendFullTextEndsWithAndRequiredSigns($originalQuery)
+	public static function AppendFulltextEndsWithAndRequiredSigns($originalQuery)
 	{
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
-
-					$keywords_filtered = array_filter($keywords, function($word) {
-																										return strlen($word) > 2;
-																								});
-					$subQuery = join("* +", $keywords_filtered);
-					if ($subQuery != '') $subQuery = '+' . $subQuery . '*';
-					return $subQuery;
-				});
+			$keywords_filtered = array_filter($keywords, function($word) {
+				return strlen($word) > 2;
+			});
+			$subQuery = join("* +", $keywords_filtered);
+			if ($subQuery != '')
+				$subQuery = '+' . $subQuery . '*';
+			return $subQuery;
+		});
 	}
 
 	private static function ProcessQuotedBlock($originalQuery, $replacer)
@@ -332,7 +331,7 @@ class Str
 		$ret = '';
 		foreach($quoteParts as $part)
 		{
-			if ($part !== '' && in_array($part, array('+', '-', '*'), true) === false)
+			if ($part !== '' && in_array($part, ['+', '-', '*'], true) === false)
 			{
 				if ($even)
 				{
@@ -340,9 +339,7 @@ class Str
 					$ret .= $replacer($keywords) . " ";
 				}
 				else
-				{
-					$ret .= $replacer(array('"' . $part . '"')) . ' ';
-				}
+					$ret .= $replacer(['"' . $part . '"']) . ' ';
 			}
 			$even = !$even;
 		}
@@ -355,16 +352,15 @@ class Str
 		$pos = mb_strpos($haystack, $needle);
 		if ($pos === false)
 			return $haystack;
-		else
-			return substr($haystack, $pos + strlen($needle));
+
+		return substr($haystack, $pos + strlen($needle));
 	}
 
 	public static function CheapSqlEscape($cad)
 	{
-		if ($cad == null)
+		if ($cad === null)
 			return 'null';
-		else
-			return "'" . Str::Replace($cad, "'", "\'") . "'";
+		return "'" . Str::Replace($cad, "'", "\'") . "'";
 	}
 
 	public static function TwoSplit($text, $separator, &$first, &$last)
@@ -372,7 +368,7 @@ class Str
 		$pos = strpos($text, $separator);
 		if ($pos === false)
 		{
-			$first =$text;
+			$first = $text;
 			$last = '';
 		}
 		else
@@ -387,7 +383,7 @@ class Str
 		$pos = strrpos($text, $separator);
 		if ($pos === false)
 		{
-			$first =$text;
+			$first = $text;
 			$last = '';
 		}
 		else
@@ -400,13 +396,12 @@ class Str
 	public static function AppendParam($url, $param, $value = "")
 	{
 		$n = strpos($url, "#");
-		if ($n !== FALSE)
+		$suffix = "";
+		if ($n !== false)
 		{
 			$suffix = substr($url, $n);
 			$url = substr($url, 0, $n);
 		}
-		else
-			$suffix = "";
 
 		$ret = $url;
 		if (Str::Contains($ret, "?") == false)
@@ -424,16 +419,15 @@ class Str
 		$pos = strpos($haystack, $needle);
 		if ($pos === false)
 			return $haystack;
-		else
-			return substr($haystack, 0, $pos);
+
+		return substr($haystack, 0, $pos);
 	}
 
 	public static function EnsureEndsWith($haystack, $needle)
 	{
 		if (self::EndsWith($haystack, $needle))
 			return $haystack;
-		else
-			return $haystack . $needle;
+		return $haystack . $needle;
 	}
 
 	public static function EndsWith($haystack, $needle)
@@ -473,9 +467,8 @@ class Str
 	public static function ReplaceGroup($cad, $str, $s2)
 	{
 		for ($i = 0; $i < strlen($str); $i++)
-		{
 			$cad = str_replace($str[$i], $s2, $cad);
-		}
+
 		return $cad;
 	}
 
@@ -486,20 +479,19 @@ class Str
 
 	public static function ReplaceOnce($cad, $str, $s2)
 	{
-		$pos = strpos($cad,$str);
+		$pos = strpos($cad, $str);
 		if ($pos !== false)
 			return substr_replace($cad,$s2,$pos,strlen($str));
-		else
-			return $cad;
+
+		return $cad;
 	}
 
 	public static function ReplaceLast($subject, $search, $replace)
 	{
 		$pos = strrpos($subject, $search);
 		if($pos !== false)
-		{
 			$subject = substr_replace($subject, $replace, $pos, strlen($search));
-		}
+
 		return $subject;
 	}
 
@@ -520,8 +512,7 @@ class Str
 	{
 		if (self::EndsWith($cad, "."))
 			return substr($cad, 0, strlen($cad) -1);
-		else
-			return $cad;
+		return $cad;
 	}
 
 	public static function RemoveWordHiddenFormat($cad)
@@ -584,7 +575,7 @@ class Str
 	public static function GetEndingPart($name, $separator)
 	{
 		$parts = explode($separator, $name);
-		return $parts[sizeof($parts) - 1];
+		return $parts[count($parts) - 1];
 	}
 
 	public static function Ellipsis($cad, $maxSize = 50)
@@ -768,6 +759,7 @@ class Str
 			return "-";
 		return substr($str, 8, 2) . "/" . substr($str, 5, 2) . "/" . substr($str, 2, 2);
 	}
+
 	public static function FormatDateYYMD($str)
 	{
 		if ($str == "")
@@ -784,8 +776,8 @@ class Str
 	{
 		if (strlen($cad) > 1 && $cad[0] === '0' && $cad[1] !== '.')
 			return false;
-		else
-			return self::IsNumber($cad);
+
+		return self::IsNumber($cad);
 	}
 
 	/**
@@ -818,7 +810,7 @@ class Str
 		$text = "";
 		if (is_array($partsRaw))
 		{
-			$parts = array();
+			$parts = [];
 			foreach($partsRaw as $part)
 			{
 				if (is_array($part))
@@ -829,7 +821,7 @@ class Str
 					$parts[] = $part;
 			}
 
-			for($n = 0; $n < sizeof($parts); $n++)
+			for($n = 0; $n < count($parts); $n++)
 			{
 				$part = $parts[$n];
 				$cleaned = trim($part);
@@ -840,7 +832,7 @@ class Str
 
 				if ($n > 0)
 				{
-					if ($n < sizeof($parts)-1)
+					if ($n < count($parts) - 1)
 						$text .= ", ";
 					else
 						$text .= " y ";
@@ -899,9 +891,7 @@ class Str
 			else
 			{
 				if (self::IsAllLetters($part))
-				{
 					$ret .= " " . mb_strtoupper(mb_substr($part, 0, 1)) . ".";
-				}
 				else
 				{
 					$ret .= " " . $part;
@@ -969,7 +959,7 @@ class Str
 		}
 		return $str;
 	}
-	
+
 	public static function FormatLocaleNumber($value, $decimals = 0)
 	{
 		return number_format($value, $decimals, ",", "");
@@ -992,7 +982,7 @@ class Str
 
 	public static function ConvertEntity($matches, $destroy = true)
 	{
-		static $table = array(
+		static $table = [
 			'quot' => '&#34;', 'amp' => '&#38;', 'lt' => '&#60;', 'gt' => '&#62;',
 			'OElig' => '&#338;', 'oelig' => '&#339;', 'Scaron' => '&#352;', 'scaron' => '&#353;',
 			'Yuml' => '&#376;', 'circ' => '&#710;', 'tilde' => '&#732;', 'ensp' => '&#8194;',
@@ -1056,7 +1046,7 @@ class Str
 			'ocirc' => '&#244;', 'otilde' => '&#245;', 'ouml' => '&#246;', 'divide' => '&#247;',
 			'oslash' => '&#248;', 'ugrave' => '&#249;', 'uacute' => '&#250;', 'ucirc' => '&#251;',
 			'uuml' => '&#252;', 'yacute' => '&#253;', 'thorn' => '&#254;', 'yuml' => '&#255;'
-		);
+		];
 		if (isset($table[$matches[1]]))
 			return $table[$matches[1]];
 
