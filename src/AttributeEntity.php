@@ -92,7 +92,7 @@ class AttributeEntity
 
 	public function SaveAttributesOnly()
 	{
-		if (strlen($this->path) == 0)
+		if ($this->path == '')
 			throw new ErrorException("Tried to save to an uninitialized entity.");
 		IO::WriteEscapedIniFile($this->path, $this->attributes);
 	}
