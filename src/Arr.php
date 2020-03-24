@@ -320,6 +320,16 @@ class Arr
 	{
 		usort($arr, function($a, $b) use ($field) { return Sorter::ByField($a, $b, $field); });
 	}
+	
+	public static function SortByGetter(&$arr, $getter)
+	{
+		usort($arr, function($a, $b) use ($getter) { return Sorter::ByGetter($a, $b, $getter); });
+	}
+
+	public static function SortByGetterDesc(&$arr, $getter)
+	{
+		usort($arr, function($a, $b) use ($getter) { return Sorter::ByGetterDesc($a, $b, $getter); });
+	}
 
 	public static function SortAssocByKey(&$arr, $key)
 	{

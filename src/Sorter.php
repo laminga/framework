@@ -14,6 +14,21 @@ class Sorter
 		return -1 * self::ByAttribute($a, $b, $key);
 	}
 
+	public static function ByGetter($a, $b, $getter)
+	{
+		if ($a->$getter() > $b->$getter())
+			return 1;
+		elseif ($a->$getter() < $b->$getter())
+			return -1;
+		else
+			return 0;
+	}
+
+	public static function ByGetterDesc($a, $b, $getter)
+	{
+		return -1 * self::ByGetter($a, $b, $getter);
+	}
+
 	public static function ByKey($a, $b, $key)
 	{
 		if ($a[$key] > $b[$key])
