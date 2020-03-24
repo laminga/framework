@@ -14,6 +14,7 @@ class Settings
 	private $oauth = null;
 	private $limits = null;
 	private $db = null;
+	private $queue = null;
 	private $debug = null;
 	private $cache = null;
 	private $servers = null;
@@ -111,6 +112,14 @@ class Settings
 			$this->mail = new MailSettings();
 
 		return $this->mail;
+	}
+
+	public function Queue()
+	{
+		if ($this->queue == null)
+			$this->queue = new QueueSettings();
+
+		return $this->queue;
 	}
 
 	public function Db()

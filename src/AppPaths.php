@@ -24,6 +24,14 @@ class AppPaths
 		return $this->GetStorageRoot() . "/data";
 	}
 
+	public function GetQueuePath()
+	{
+		$path = $this->GetStorageRoot() . "/queue";
+		IO::EnsureExists($path . '/ran');
+		IO::EnsureExists($path . '/failed');
+		return $path;
+	}
+
 	public function GetStorageCaches()
 	{
 		return $this->GetStorageRoot() . "/caches";

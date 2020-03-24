@@ -5,7 +5,7 @@ namespace minga\framework;
 class TwoLevelAttributeEntity
 {
 	public $path = '';
-	public $sections = Array();
+	public $sections = [];
 	protected $keepSectionCreationDate = false;
 
 	public function SetLocation($path)
@@ -19,7 +19,7 @@ class TwoLevelAttributeEntity
 		if ($path != "" && file_exists($path))
 			$this->sections = IO::ReadEscapedIniFileWithSections($path);
 		else
-			$this->sections = Array();
+			$this->sections = [];
 	}
 
 	public function GetCreateDate($section)
@@ -27,12 +27,10 @@ class TwoLevelAttributeEntity
 		return $this->SafeGet($section, 'created');
 	}
 
-	public function SafeGetSection($section, $default = array())
+	public function SafeGetSection($section, $default = [])
 	{
 		if (array_key_exists($section, $this->sections))
-		{
 			return $this->sections[$section];
-		}
 		return $default;
 	}
 
@@ -49,7 +47,7 @@ class TwoLevelAttributeEntity
 
 	public function SaveAttributesOnly()
 	{
-		if (strlen($this->path) == 0)
+		if ($this->path == '')
 			throw new ErrorException("Tried to save to an uninitialized entity.");
 		IO::WriteEscapedIniFileWithSections($this->path, $this->sections);
 	}
@@ -77,7 +75,7 @@ class TwoLevelAttributeEntity
 	{
 		if (array_key_exists($section, $this->sections) == false)
 		{
-			$this->sections[$section] = array();
+			$this->sections[$section] = [];
 			if ($this->keepSectionCreationDate)
 				$this->sections[$section]['created'] = Date::FormattedArNow();
 		}
@@ -96,7 +94,7 @@ class TwoLevelAttributeEntity
 
 	public function Clear()
 	{
-		$this->sections = array();
+		$this->sections = [];
 	}
 
 	public function RemoveKey($section, $key = null)
@@ -112,7 +110,7 @@ class TwoLevelAttributeEntity
 
 	public function Count()
 	{
-		return sizeof($this->sections);
+		return count($this->sections);
 	}
 
 	public function SafeGetArray($section, $key)
@@ -120,7 +118,7 @@ class TwoLevelAttributeEntity
 		$sectionArray = $this->SafeGetSection($section);
 		// Lee los valores...
 		$n = 1;
-		$current = array();
+		$current = [];
 		while(array_key_exists($key . $n, $sectionArray))
 		{
 			$value = $sectionArray[$key . $n];
@@ -133,7 +131,7 @@ class TwoLevelAttributeEntity
 	public function SafeSetArray($section, $key, $valueArray)
 	{
 		if ($this->KeyExists($section) == false)
-			$this->sections[$section] = array();
+			$this->sections[$section] = [];
 		// Lee los valores...
 		$n = 1;
 		while(array_key_exists($key . $n, $this->sections[$section]))
@@ -142,7 +140,7 @@ class TwoLevelAttributeEntity
 			$n++;
 		}
 		// Guarda
-		for($n = 0; $n < sizeof($valueArray); $n++)
+		for($n = 0; $n < count($valueArray); $n++)
 			$this->sections[$section][$key . ($n+1)] = $valueArray[$n];
 		// listo
 	}
