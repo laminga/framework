@@ -10,7 +10,7 @@ class KeysSettings
 	// Internas para firmado y hashing
 	public $HashKeyedKey = '';
 	public $ExportNavigationKey = '';
-	// Utiliza esta key en forma predeterminada. 
+	// Utiliza esta key en forma predeterminada.
 	public $RememberKey = '3vAAAGS4lKNFO7PKg1vWAy4SnnalgRatxknIrQJhWDvTqe7QTJV4gZD2w+n3EQdzyfi6gBhq3Xo/eUSp7M92ymMeYuo=';
 
 	// Obtenidas de terceros
@@ -19,6 +19,9 @@ class KeysSettings
 	public $GoogleMapsKey = '';
 	public $AddThisKey = '';
 	public $SendGridApiKey = '';
+
+	// Interna simple para ingresar a test
+	public $TestEnvironmentKey = '';
 
 	public function GetHashKeyedKey()
 	{

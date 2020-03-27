@@ -206,7 +206,7 @@ class Zip
 		$zip = new \ZipArchive();
 
 		if ($zip->open($this->targetFile) !== true)
-			throw new \Exception('Failed to extract files: ');
+			throw new \Exception('Failed to extract files');
 
 		$ret = $zip->numFiles;
 		$zip->extractTo($path, $files);

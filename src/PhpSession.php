@@ -15,12 +15,14 @@ class PhpSession
 		session_start();
 		session_regenerate_id();
 		session_write_close();
-		self::$sessionValues = array();
+		self::$sessionValues = [];
 	}
+
 	public static function SessionId()
 	{
 		return session_id();
 	}
+
 	public static function SetSessionValue($key, $value)
 	{
 		if (session_status() == PHP_SESSION_NONE)
@@ -48,8 +50,7 @@ class PhpSession
 		self::CheckPhpSessionStarted();
 		if (array_key_exists($key, self::$sessionValues))
 			return self::$sessionValues[$key];
-		else
-			return $default;
+		return $default;
 	}
 
 }
