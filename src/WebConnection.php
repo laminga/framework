@@ -237,7 +237,7 @@ class WebConnection
 		$this->ParseErrorCodes($ret, $file);
 
 		if ($this->maxFileSize != -1
-			&& array_key_exists('Content-Length', $headers))
+			&& isset($headers['Content-Length']))
 		{
 			$length = $headers['Content-Length'];
 			if ($length > $this->maxFileSize)
