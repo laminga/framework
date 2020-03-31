@@ -472,7 +472,7 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 			$query = 'TRUNCATE TABLE ' . self::QuoteTable($tableName);
-			$this->doExecute($query);
+			return $this->doExecute($query);
 		}
 		finally
 		{
