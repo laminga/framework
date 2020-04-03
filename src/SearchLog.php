@@ -102,7 +102,8 @@ class SearchLog
 		$lock = new SearchLogLock();
 		$lock->LockRead();
 
-		if ($month == '') $month = 'dayly';
+		if ($month == '')
+			$month = 'dayly';
 		$currentMonth = Date::GetLogMonthFolder();
 		if ($month !== 'dayly')
 			$path = self::ResolveFile($month);
@@ -113,7 +114,7 @@ class SearchLog
 		$lock->Release();
 
 		$ret = [];
-		$ret['Fecha'] = ['Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
+		// $ret['Fecha'] = ['Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
 
 		$currentDay = Date::FormattedArDate();
 		for($n = count($rows) - 1; $n >= 0; $n--)
@@ -122,10 +123,7 @@ class SearchLog
 			if (self::ParseHit($line, $user, $dateTime, $text, $matches, $ellapsed))
 			{
 				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay))
-				{
-					$cells = [$text, $matches, $ellapsed, $user];
-					$ret[$dateTime] = $cells;
-				}
+					$ret[] = [$dateTime, $text, $matches, trim($ellapsed), $user];
 			}
 		}
 		return $ret;
