@@ -78,15 +78,17 @@ class IO
 		return $contents;
 	}
 
-	public static function ReadAllLines($path)
+	public static function ReadAllLines($path, $maxLines = null)
 	{
 		//TODO: Agregar manejo de errores.
 		$handle = fopen($path, 'r');
 		$ret = [];
+		$i = 0;
 		while (feof($handle) == false)
 		{
-			$currentLine = fgets($handle) ;
-			$ret[] = $currentLine;
+			$ret[]  = fgets($handle);
+			if($maxLines !== null && ++$i >= $maxLines)
+				break;
 		}
 		fclose($handle);
 		return $ret;
