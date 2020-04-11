@@ -185,24 +185,21 @@ class Zipping
 		$filename = $folder . '/' . $file;
 		if (array_key_exists($filename, self::$allFiles))
 			return self::$allFiles[$filename];
-		else
-		{
-			if (file_exists($filename) == false)
-				return null;
-			else
-			{
-				Profiling::BeginTimer('Zipping::GetContainer');
-				$ret = new \ZipArchive();
-				if ($ret->open($filename) !== true)
-					throw new ErrorException('Could not open archive');
-				$lock = new ZipLock($filename);
-				$lock->LockRead();
-				self::$allFiles[$filename] = $ret;
-				self::$allLocks[$filename] = $lock;
-				Profiling::EndTimer();
-				return $ret;
-			}
-		}
+
+		if (file_exists($filename) == false)
+			return null;
+
+		Profiling::BeginTimer('Zipping::GetContainer');
+		$ret = new \ZipArchive();
+		if ($ret->open($filename) !== true)
+			throw new ErrorException('Could not open archive');
+		$lock = new ZipLock($filename);
+		$lock->LockRead();
+		self::$allFiles[$filename] = $ret;
+		self::$allLocks[$filename] = $lock;
+		Profiling::EndTimer();
+		return $ret;
+
 	}
 
 	public static function AddOrUpdate($zipFile, $filename, $filesrc)

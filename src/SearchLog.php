@@ -93,40 +93,25 @@ class SearchLog
 	private static function ReadIfExists($file)
 	{
 		if (file_exists($file))
-			return IO::ReadAllLines($file);
+			return IO::ReadAllLines($file, 100);
 		return [];
 	}
 
-	public static function GetSearchTable($month)
+	public static function GetSearchTable($_ = '')
 	{
 		$lock = new SearchLogLock();
 		$lock->LockRead();
 
-		if ($month == '') $month = 'dayly';
 		$currentMonth = Date::GetLogMonthFolder();
-		if ($month !== 'dayly')
-			$path = self::ResolveFile($month);
-		else
-			$path = self::ResolveFile($currentMonth);
-
+		$path = self::ResolveFile($currentMonth);
 		$rows = self::ReadIfExists($path);
 		$lock->Release();
 
 		$ret = [];
-		$ret['Fecha'] = ['Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
-
-		$currentDay = Date::FormattedArDate();
 		for($n = count($rows) - 1; $n >= 0; $n--)
 		{
-			$line = $rows[$n];
-			if (self::ParseHit($line, $user, $dateTime, $text, $matches, $ellapsed))
-			{
-				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay))
-				{
-					$cells = [$text, $matches, $ellapsed, $user];
-					$ret[$dateTime] = $cells;
-				}
-			}
+			if (self::ParseHit($rows[$n], $user, $dateTime, $text, $matches, $ellapsed))
+					$ret[] = [$dateTime, $text, $matches, trim($ellapsed), $user];
 		}
 		return $ret;
 	}

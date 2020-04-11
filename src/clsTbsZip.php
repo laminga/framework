@@ -878,7 +878,7 @@ class clsTbsZip {
 		$nbr = 1;
 		$p = false;
 		$pos = ftell($this->ArchHnd) - 4 - 256;
-		while ( ($p===false) && ($nbr<256) ) {
+		while ( $nbr<256 ) {
 			if ($pos<=0) {
 				$pos = 0;
 				$nbr = 256; // in order to make this a last check

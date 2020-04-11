@@ -15,21 +15,24 @@ class Request
 		}
 		return self::$isGoogle;
 	}
-	
+
 	public static function GetSecondUriPart()
 	{
 		$uri = self::GetRequestURI(true);
 		$parts = explode('/', $uri);
 		array_shift($parts);
-		if (sizeof($parts) < 2) return null;
+		if (count($parts) < 2)
+			return null;
 		return $parts[1];
 	}
+
 	public static function GetThirdUriPart()
 	{
 		$uri = self::GetRequestURI(true);
 		$parts = explode('/', $uri);
 		array_shift($parts);
-		if (sizeof($parts) < 3) return null;
+		if (count($parts) < 3)
+			return null;
 		return $parts[2];
 	}
 
@@ -37,7 +40,6 @@ class Request
 	{
 		if ($noParameters)
 			return explode('?', $_SERVER['REQUEST_URI'], 2)[0];
-		else
-			return $_SERVER['REQUEST_URI'];
+		return $_SERVER['REQUEST_URI'];
 	}
 }

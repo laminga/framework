@@ -181,7 +181,7 @@ class System
 	public static function RunCommandRaw($command)
 	{
 		$output = [];
-		$return = '';
+		$return = 0;
 		$lastLine = exec($command, $output, $return);
 
 		if ($return == 126)

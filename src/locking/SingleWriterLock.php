@@ -22,6 +22,7 @@ abstract class SingleWriterLock extends Lock
 		self::$readLock = new static();
 		self::$readLock->LockRead();
 	}
+
 	public static function EndRead()
 	{
 		$lock = self::$readLock;
@@ -33,12 +34,11 @@ abstract class SingleWriterLock extends Lock
 		}
 		$lock->Release();
 	}
+
 	public static function BeginWrite()
 	{
 		if (self::$writeLock != null)
-		{
 			self::$refCount++;
-		}
 		else
 		{
 			self::$refCount = 1;
@@ -46,6 +46,7 @@ abstract class SingleWriterLock extends Lock
 			self::$writeLock->LockWrite();
 		}
 	}
+
 	public static function EndWrite()
 	{
 		if (self::$writeLock == null)
@@ -60,10 +61,12 @@ abstract class SingleWriterLock extends Lock
 		{
 			$lock = self::$writeLock;
 			self::$writeLock = null;
-			try {
+			try
+			{
 				$lock->Release();
 			}
-			catch (\Exception $e) {
+			catch (\Exception $e)
+			{
 				;
 			}
 		}

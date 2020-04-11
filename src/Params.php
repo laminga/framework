@@ -43,9 +43,9 @@ class Params
 	public static function SafeGet($param, $default = '')
 	{
 		$ret = $default;
-		if (array_key_exists($param, $_GET))
+		if (isset($_GET[$param]))
 			$ret = $_GET[$param];
-		else if (array_key_exists($param, $_POST))
+		else if (isset($_POST[$param]))
 			$ret = $_POST[$param];
 		if (is_array($ret) == false)
 			$ret = trim($ret);
@@ -55,7 +55,7 @@ class Params
 	//Método usado en mapas.
 	public static function Get($key, $default = null)
 	{
-		if (array_key_exists($key, $_GET))
+		if (isset($_GET[$key]))
 		{
 			$ret = $_GET[$key];
 			if($ret === 'null')
@@ -63,7 +63,7 @@ class Params
 		}
 		else
 		{
-			if (array_key_exists($key, $_POST))
+			if (isset($_POST[$key]))
 			{
 				$ret = $_POST[$key];
 				if($ret === 'null')
@@ -74,12 +74,14 @@ class Params
 		}
 		return $ret;
 	}
+
 	public static function CheckMandatoryValue($value, $key = '')
 	{
 		if ($value === null)
-			throw new ErrorException("Parameter " . $key . " required.");
+			throw new ErrorException('Parameter "' . $key . '" required.');
 		return $value;
 	}
+
 	public static function GetMandatory($key)
 	{
 		$ret = self::Get($key, null);
@@ -100,19 +102,15 @@ class Params
 		return self::CheckParseIntValue($value);
 	}
 
-
 	public static function GetBoolMandatory($param)
 	{
 		$value = self::GetIntMandatory($param);
 		return self::CheckParseIntValue($value) !== 0;
 	}
 
-	public static function GetBool($param, $default = false)
+	public static function GetBool(string $param, bool $default = false) : bool
 	{
-		$value = self::Get($param, ($default ? 1 : 0));
-		if ($value === null)
-			return null;
-		return self::CheckParseIntValue($value) !== 0;
+		return (bool)self::SafeGet($param, $default);
 	}
 
 	public static function GetInt($param, $default = null)
@@ -126,11 +124,8 @@ class Params
 	private static function processRange($value, $min, $max)
 	{
 		if ($value < $min || $value > $max)
-		{
-			throw new ErrorException('Parameter value of ' . $value . ' is out of range.');
-		}
-		else
-			return $value;
+			throw new ErrorException('Parameter value of "' . $value . '" is out of range.');
+		return $value;
 	}
 
 	public static function FromPath($position, $default = null)
@@ -147,11 +142,8 @@ class Params
 	{
 		$i = (int)$value;
 		if ((string)$i !== (string)$value)
-		{
-			throw new ErrorException('Parameter value of ' . $value . ' is invalid.');
-		}
-		else
-			return $i;
+			throw new ErrorException('Parameter value of "' . $value . '" is invalid.');
+		return $i;
 	}
 
 	public static function GetJsonMandatory($param, $assoc = false)
