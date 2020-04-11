@@ -28,15 +28,6 @@ class PdfReader
 			return $cad;
 	}
 
-	/**
-	 * Extrae todo el texto del pdf sin usar caches
-	 * ni truncando a 64k.
-	 */
-	public static function GetFulltext($file)
-	{
-		return self::GetText($file, '', false, false);
-	}
-
 	public static function GetText($file, $truncate = true)
 	{
 		Profiling::BeginTimer();
