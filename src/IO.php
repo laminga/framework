@@ -77,6 +77,11 @@ class IO
 		fclose($handle);
 		return $contents;
 	}
+	
+	public static function ReadAllBytes($path)
+	{
+		return file_get_contents($path);
+	}
 
 	public static function ReadAllLines($path)
 	{

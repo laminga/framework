@@ -175,6 +175,11 @@ class Date
 		return date("Y-m-d");
 	}
 
+	public static function CurrentYear()
+	{
+		return self::GetYearFromDay(date("Y-m-d"));
+	}
+
 	public static function GetYearMonthFromDay($day)
 	{
 		// formato: 2015-02-29

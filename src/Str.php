@@ -355,7 +355,7 @@ class Str
 
 		return substr($haystack, $pos + strlen($needle));
 	}
-
+	
 	public static function CheapSqlEscape($cad)
 	{
 		if ($cad === null)
