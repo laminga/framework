@@ -21,8 +21,6 @@ class SearchLog
 			Profiling::BeginTimer();
 			if (is_array($text))
 			{
-				if(isset($text['Page']))
-					$text['Page'] = ($text['Page'] / Catalog::MAX_RESULTS) + 1;
 				$text = Arr::AssocToString($text, true, true);
 			}
 			$this->Save($text, $matches);
@@ -93,25 +91,40 @@ class SearchLog
 	private static function ReadIfExists($file)
 	{
 		if (file_exists($file))
-			return IO::ReadAllLines($file, 100);
+			return IO::ReadAllLines($file);
 		return [];
 	}
 
-	public static function GetSearchTable($_ = '')
+	public static function GetSearchTable($month)
 	{
 		$lock = new SearchLogLock();
 		$lock->LockRead();
 
+		if ($month == '') $month = 'dayly';
 		$currentMonth = Date::GetLogMonthFolder();
-		$path = self::ResolveFile($currentMonth);
+		if ($month !== 'dayly')
+			$path = self::ResolveFile($month);
+		else
+			$path = self::ResolveFile($currentMonth);
+
 		$rows = self::ReadIfExists($path);
 		$lock->Release();
 
 		$ret = [];
+		$ret['Fecha'] = ['Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
+
+		$currentDay = Date::FormattedArDate();
 		for($n = count($rows) - 1; $n >= 0; $n--)
 		{
-			if (self::ParseHit($rows[$n], $user, $dateTime, $text, $matches, $ellapsed))
-					$ret[] = [$dateTime, $text, $matches, trim($ellapsed), $user];
+			$line = $rows[$n];
+			if (self::ParseHit($line, $user, $dateTime, $text, $matches, $ellapsed))
+			{
+				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay))
+				{
+					$cells = [$text, $matches, $ellapsed, $user];
+					$ret[$dateTime] = $cells;
+				}
+			}
 		}
 		return $ret;
 	}
