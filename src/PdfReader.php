@@ -37,56 +37,29 @@ class PdfReader
 		return self::GetText($file, '', false, false);
 	}
 
-	public static function GetText($file, $filePlace = '', $truncate = true, $useCache = true)
-	{
-		try
-		{
-			Profiling::BeginTimer();
-			if ($filePlace == '')
-				$filePlace = $file;
-			$text = '';
-			if($useCache && PdfTextCache::Get()->HasFile($filePlace))
-				$text = PdfTextCache::Get()->ReadTextFile($filePlace, 65534);
-			else
-			{
-				$text = implode(' ', self::RunPdfToText($file));
-				$text = trim(preg_replace('/\s+/', ' ', $text));
-
-				if($truncate)
-					$text = self::Truncate64k($text);
-
-				if($useCache)
-					PdfTextCache::Get()->WriteTextFile($filePlace, $text);
-			}
-			return $text;
-		}
-		catch(\Exception $e)
-		{
-			Log::HandleSilentException($e);
-			// throw new \Exception('No se puede leer el texto del pdf.');
-		}
-		finally
-		{
-			Profiling::EndTimer();
-		}
-	}
-
-	public static function GetHtml($file, $firstPageOnly = false, $useCache = true)
+	public static function GetText($file, $truncate = true)
 	{
 		Profiling::BeginTimer();
-		$html = '';
-		if($useCache && PdfHtmlCache::Get($firstPageOnly)->HasFile($file))
-			$html = PdfHtmlCache::Get($firstPageOnly)->ReadTextFile($file);
-		else
-		{
-			$html = implode("\n", self::RunPdfToHtml($file, $firstPageOnly));
-			//Sobre el resultado ejecutar esto si se quiere
-			//el texto en una sola línea, sin espacios extra.
-			//trim(preg_replace('/\s+/', ' ', $text));
 
-			if($useCache)
-				PdfHtmlCache::Get($firstPageOnly)->WriteTextFile($file, $html);
-		}
+		$text = implode(' ', self::RunPdfToText($file));
+		$text = trim(preg_replace('/\s+/', ' ', $text));
+
+		if($truncate)
+			$text = self::Truncate64k($text);
+
+		Profiling::EndTimer();
+		return $text;
+	}
+
+	public static function GetHtml($file, $firstPageOnly = false)
+	{
+		Profiling::BeginTimer();
+
+		$html = implode("\n", self::RunPdfToHtml($file, $firstPageOnly));
+		//Sobre el resultado ejecutar esto si se quiere
+		//el texto en una sola línea, sin espacios extra.
+		//trim(preg_replace('/\s+/', ' ', $text));
+
 		Profiling::EndTimer();
 		return $html;
 	}

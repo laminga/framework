@@ -63,7 +63,7 @@ class Reflection
 	public static function CallPrivateMethodRef($instance, $function, $param, &$refParam)
 	{
 		$makePublic = function($param) use ($function, &$refParam) {
-			return $this->$function($param, $refParam);
+			return self::$function($param, $refParam);
 		};
 		return $makePublic->call($instance, $param);
 	}
