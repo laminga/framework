@@ -95,7 +95,7 @@ class SearchLog
 		return [];
 	}
 
-	public static function GetSearchTable($month)
+	public static function GetSearchTable($month = '')
 	{
 		$lock = new SearchLogLock();
 		$lock->LockRead();
@@ -111,7 +111,6 @@ class SearchLog
 		$lock->Release();
 
 		$ret = [];
-		$ret['Fecha'] = ['Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
 
 		$currentDay = Date::FormattedArDate();
 		for($n = count($rows) - 1; $n >= 0; $n--)
@@ -121,8 +120,8 @@ class SearchLog
 			{
 				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay))
 				{
-					$cells = [$text, $matches, $ellapsed, $user];
-					$ret[$dateTime] = $cells;
+					$cells = [$dateTime, $text, $matches, $ellapsed, $user];
+					$ret[] = $cells;
 				}
 			}
 		}
