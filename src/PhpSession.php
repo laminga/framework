@@ -35,7 +35,8 @@ class PhpSession
 
 	private static function CheckPhpSessionStarted()
 	{
-		if (session_status() === PHP_SESSION_NONE)
+		if (isset($_SESSION) == false
+			&& session_status() === PHP_SESSION_NONE)
 		{
 			session_start();
 			if (self::$sessionValues == null)
