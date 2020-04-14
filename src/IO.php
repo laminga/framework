@@ -77,7 +77,7 @@ class IO
 		fclose($handle);
 		return $contents;
 	}
-	
+
 	public static function ReadAllBytes($path)
 	{
 		return file_get_contents($path);
@@ -739,7 +739,7 @@ class IO
 		try
 		{
 			Profiling::BeginTimer();
-			if(System::IsOnIIS())
+			if(System::IsOnIIS() || System::IsWindows())
 				return self::GetDirectorySizeWin($dir);
 
 			$ret = ['size' => self::GetDirectorySizeUnix($dir)];
