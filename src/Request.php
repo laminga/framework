@@ -39,7 +39,10 @@ class Request
 	public static function GetRequestURI($noParameters = false)
 	{
 		if ($noParameters)
-			return explode('?', $_SERVER['REQUEST_URI'], 2)[0];
-		return $_SERVER['REQUEST_URI'];
+		{
+			$parts = explode('?', Params::SafeServer('REQUEST_URI'), 2);
+			return $parts[0];
+		}
+		return Params::SafeServer('REQUEST_URI');
 	}
 }

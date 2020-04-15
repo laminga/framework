@@ -3,7 +3,6 @@
 namespace minga\framework;
 
 use minga\framework\locking\BackupLock;
-use minga\classes\globals\Multipart;
 use minga\website\common\controllers\cDownload;
 
 class Backup

@@ -92,6 +92,17 @@ class System
 		}
 	}
 
+	public static function IsWindows()
+	{
+		return Str::StartsWithI(PHP_OS, 'win');
+	}
+
+	public static function IsTestingInWindows()
+	{
+		return Context::Settings()->isTesting
+			&& self::IsWindows();
+	}
+
 	public static function IsOnIIS()
 	{
 		if(isset($_SERVER['SERVER_SOFTWARE']) == false)
@@ -121,7 +132,7 @@ class System
 		$prevDir = getcwd();
 		chdir($path);
 
-		if(System::IsOnIIS())
+		if(System::IsOnIIS() || System::IsTestingInWindows())
 			$command = Str::RemoveBegining($command, './');
 
 		$lastLine = exec($command, $output, $return);
