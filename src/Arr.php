@@ -383,6 +383,11 @@ class Arr
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::ByAttribute($a, $b, $key); });
 	}
+	
+	public static function SortByKey(&$arr, $key)
+	{
+		usort($arr, function($a, $b) use ($key) { return Sorter::ByKey($a, $b, $key); });
+	}
 
 	public static function SortByKeyDesc(&$arr, $key)
 	{
