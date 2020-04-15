@@ -739,7 +739,7 @@ class IO
 		try
 		{
 			Profiling::BeginTimer();
-			if(System::IsOnIIS() || System::IsWindows())
+			if(System::IsWindows())
 				return self::GetDirectorySizeWin($dir);
 
 			$ret = ['size' => self::GetDirectorySizeUnix($dir)];

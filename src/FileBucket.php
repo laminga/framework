@@ -43,6 +43,7 @@ class FileBucket
 	{
 		return uniqid();
 	}
+
 	public static function Exists($id)
 	{
 		$ret = new FileBucket();
