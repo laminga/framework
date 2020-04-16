@@ -1,8 +1,8 @@
 parameters:
-	excludes_analyse:
-	autoload_files:
-		- vendor/autoload.php
 	ignoreErrors:
-		# Ignores de tfpdf.php
-		- '#Constant FPDF_FONTPATH not found.#'
-		- '#Constant _SYSTEM_TTFONTS not found.#'
+		-
+			message: '#Variable \$_SESSION in isset\(\) always exists.#'
+			path: src/PhpSession.php
+		-
+			message: '#.*ForTestingParams has an unused parameter #'
+			path: src/tests/ReflectionTest.php
