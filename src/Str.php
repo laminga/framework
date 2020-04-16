@@ -39,24 +39,26 @@ class Str
 		// en el encoding MACROMAN (macintosh)
 		$tokens = [ chr(0x87) // á -> ‡
 			, chr(0x8e) // é -> Ž
-			, chr(0x92) // í -> ’
-			, chr(0x97) // ó -> —
-			, chr(0x9c) // ú -> œ
+			//, chr(0x92) // í -> ’
+			//, chr(0x97) // ó -> —
+			//, chr(0x9c) // ú -> œ
 			//, chr(0xe7) // Á -> ç  (en portugués es frecuente ç; en castellano, no tanto Á)
 			, chr(0x83) // É -> ƒ
-			, chr(0xea) // Í -> ê
+			//, chr(0xea) // Í -> ê
 			, chr(0xee) // Ó -> î
-			, chr(0xf2) // Ú -> ò
+			//, chr(0xf2) // Ú -> ò
 
 			, chr(0x9f) // ü -> Ÿ
 			, chr(0x86) // Ü -> †
-			, chr(0x96) // ñ -> –
+			//, chr(0x96) // ñ -> –
 			, chr(0x84) // Ñ -> „
 		];
 		foreach($tokens as $token)
 		{
 			if (strpos($str, $token) !== false)
+			{
 				return true;
+			}
 		}
 		return false;
 	}
