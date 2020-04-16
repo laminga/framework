@@ -98,6 +98,11 @@ class AppPaths
 		return realpath($this->GetFrameworkPath() . '/../data');
 	}
 
+	public function GetFrameworkTestsPath()
+	{
+		return $this->GetFrameworkPath() . '/tests';
+	}
+
 	public function GetMpdfTempPath()
 	{
 		$ret = $this->GetTempPath() . '/mpdftemp';
