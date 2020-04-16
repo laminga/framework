@@ -132,7 +132,7 @@ class System
 		$prevDir = getcwd();
 		chdir($path);
 
-		if(System::IsOnIIS() || System::IsTestingInWindows())
+		if(System::IsWindows())
 			$command = Str::RemoveBegining($command, './');
 
 		$lastLine = exec($command, $output, $return);
