@@ -6,3 +6,6 @@ parameters:
 		-
 			message: '#.*ForTestingParams has an unused parameter #'
 			path: src/tests/ReflectionTest.php
+		-
+			message: '#Unsafe usage of new static\(\)#'
+			path: src/locking/SingleWriterLock.php
