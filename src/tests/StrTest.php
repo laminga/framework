@@ -17,9 +17,9 @@ class StrTest extends TestCaseBase
 		//TODO: Esta función tiene bugs, no tiene en
 		// cuenta los siguientes casos, corregir y
 		// descomentar los tests:
-		// $this->assertTrue(Str::StartsWithAlfabetic('A'));
-		// $this->assertTrue(Str::StartsWithAlfabetic('á'));
-		// $this->assertTrue(Str::StartsWithAlfabetic('Á'));
+		$this->assertTrue(Str::StartsWithAlfabetic('A'));
+		$this->assertTrue(Str::StartsWithAlfabetic('á'));
+		$this->assertTrue(Str::StartsWithAlfabetic('Á'));
 	}
 
 }

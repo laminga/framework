@@ -3,7 +3,6 @@
 namespace minga\framework;
 
 use minga\framework\locking\BackupLock;
-use minga\website\common\controllers\cDownload;
 
 class Backup
 {
@@ -311,7 +310,29 @@ class Backup
 		if (file_exists($zip) == false)
 			self::SaveState("CREATED");
 
-		cDownload::ShowRaw($zip, "application/zip");
+		self::SendFile($zip, "application/zip");
+	}
+
+	private static function SendFile($filename, $contentType)
+	{
+		$size = Zipping::Filesize($filename);
+
+		// send the right headers
+		header('Content-Type: ' . $contentType);
+		header('Content-Length: ' . $size);
+		header('Content-Disposition: filename="' . stripslashes(basename($filename)) . '"');
+
+		if(ob_get_length())
+			ob_clean();
+		flush();
+
+		if ($size < 15 * 1024 * 1024)
+			ob_start();
+		else if (ob_get_length())
+			ob_end_flush();
+
+		readfile($filename);
+		die;
 	}
 
 	public function NotifyGetFilesCompleted()
