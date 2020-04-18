@@ -80,7 +80,9 @@ class AppPaths
 
 	public function GetTempPath()
 	{
-		return $this->GetStorageRoot() . '/temp';
+		$ret = $this->GetStorageRoot() . '/temp';
+		IO::EnsureExists($ret);
+		return $ret;
 	}
 
 	public function GetBucketsPath()
