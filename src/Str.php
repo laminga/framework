@@ -357,7 +357,7 @@ class Str
 
 		return substr($haystack, $pos + strlen($needle));
 	}
-	
+
 	public static function CheapSqlEscape($cad)
 	{
 		if ($cad === null)
@@ -506,8 +506,8 @@ class Str
 	{
 		return strtr(utf8_decode($cad),
 			utf8_decode(
-				'ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑŎÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöŏōøùúûüýÿ'),
-			'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooooouuuuyy');
+				'µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŎŒÙÚÛÜŠÝŸŽàáâãäåæçèéêëìíîïñòóôõöøōŏœùúûüšýÿž'),
+			'uAAAAAAACEEEEIIIIDNOOOOOOOOUUUUSYYZaaaaaaaceeeeiiiinooooooooouuuusyyz');
 	}
 
 	public static function RemoveDot($cad)
@@ -611,9 +611,7 @@ class Str
 
 	public static function StartsWithAlfabetic($cad)
 	{
-		//TODO: no tiene en cuenta si empieza con á .. ñ, etc.
-		//TODO: no tiene en cuenta mayúsculas.
-		return (mb_substr($cad, 0, 1) >= 'a' && mb_substr($cad, 0, 1) <= 'z');
+		return ctype_alpha(self::RemoveAccents(mb_substr($cad, 0, 1)));
 	}
 
 	public static function TextAreaTextToHtml($cad)
