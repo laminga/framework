@@ -13,7 +13,7 @@ class GeoIp
 	{
 		$path = '';
 		try {
-			$addr = $_SERVER['REMOTE_ADDR'];
+			$addr = Params::SafeServer('REMOTE_ADDR');
 			if ($addr === '127.0.0.1' || self::ip_is_private($addr))
 			{ // Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
 				$myIp = json_decode(file_get_contents('https://api.ipify.org?format=json'), true);
