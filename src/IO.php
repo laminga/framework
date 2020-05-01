@@ -394,6 +394,11 @@ class IO
 		return new DirectoriesCursor($path, $ext);
 	}
 
+	public static function GetFilesRecursive($path, $ext = '', $returnFullPath = false)
+	{
+		return self::GetFilesStartsWithAndExt($path, '', $ext, $returnFullPath, true);
+	}
+
 	public static function GetFilesFullPath($path, $ext = '')
 	{
 		return self::GetFiles($path, $ext, true);
@@ -409,7 +414,7 @@ class IO
 		return self::GetFilesStartsWithAndExt($path, $start, '', $returnFullPath);
 	}
 
-	public static function GetFilesStartsWithAndExt($path, $start = '', $ext = '', $returnFullPath = false)
+	public static function GetFilesStartsWithAndExt($path, $start = '', $ext = '', $returnFullPath = false, $recursive = false)
 	{
 		if($ext != '' && Str::StartsWith($ext, '.') == false)
 			$ext = '.' . $ext;
@@ -423,7 +428,10 @@ class IO
 			$notAlpha = true;
 		}
 
-		$ret = glob($path . '/' . $start . '*'. $ext);
+		if($recursive)
+			$ret = self::rglob($path . '/' . $start . '*'. $ext);
+		else
+			$ret = glob($path . '/' . $start . '*'. $ext);
 
 		if($notAlpha)
 			$ret = preg_grep('/^' . preg_quote($path . '/', '/') . '[^a-zA-Z].*/', $ret);
@@ -435,6 +443,18 @@ class IO
 
 		//remueve directorio base
 		return preg_replace('/^' . preg_quote($path . '/', '/') . '/', '', $ret);
+	}
+
+	/**
+	 * como la función glob de php pero recursiva.
+	 */
+	private static function rglob($pattern, $flags = 0)
+	{
+		$files = glob($pattern, $flags);
+		foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir)
+			$files = array_merge($files, self::rglob($dir . '/' . basename($pattern), $flags));
+
+		return $files;
 	}
 
 	public static function HasFiles($path, $ext = '')
