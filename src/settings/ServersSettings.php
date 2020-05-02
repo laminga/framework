@@ -87,7 +87,7 @@ class ServersSettings
 		if(isset($this->servers[$name]))
 			return $this->servers[$name];
 		else
-			return $this->servers['core'];
+			return $this->Current();
 	}
 
 	public function Main()
