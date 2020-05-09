@@ -19,6 +19,7 @@ class ServersSettings
 	public function RegisterServer($name, $url, $isCDN = false)
 	{
 		$type = ($isCDN ? 'cdns' : 'main');
+
 		$server = new ServerItem($name, $type, $url);
 		if ($type == 'main')
 			$this->mainServerObj = $server;
@@ -52,7 +53,7 @@ class ServersSettings
 	{
 		if (!$homeUrl) $homeUrl = $appUrl;
 		$this->RegisterServer('home', $homeUrl);
-		$this->RegisterCDNServer('app', $appUrl);
+		$this->RegisterServer('app', $appUrl);
 		$this->SetCurrentServer('app');
 	}
 
@@ -77,9 +78,32 @@ class ServersSettings
 		return $this->servers[$this->currentServer];
 	}
 
+	public function GetCDNServers()
+	{
+		$ret = [];
+		foreach($this->servers as $key => $value)
+		{
+			if ($value->type == 'cdns')
+				$ret[$key] = $value;
+		}
+		return $ret;
+	}
+
 	public function GetServers()
 	{
 		return $this->servers;
+	}
+
+	public function GetContentServerUris()
+	{
+		// Trae el
+		$cdns = $this->GetCDNServers();
+		$svrs = [];
+		foreach($cdns as $key => $value)
+			$svrs[] = $value->publicUrl;
+		if (sizeof($svrs) == 0)
+			$svrs = $this->Current()->publicUrl;
+		return $svrs;
 	}
 
 	public function GetServer($name)
