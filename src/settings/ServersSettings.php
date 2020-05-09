@@ -15,6 +15,7 @@ class ServersSettings
 	public $RemoteLoginWhiteList = [];
 
 	public $Python27 = null;
+	public $PhpCli = 'php';
 
 	public function RegisterServer($name, $url, $isCDN = false)
 	{
