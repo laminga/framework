@@ -124,7 +124,7 @@ class System
 	 * inicial, cambia al del ejecutable y
 	 * vuelve al directorio inicial.
 	 */
-	public static function RunCommandOnPath($command, $path = null)
+	public static function RunCommandOnPath($command, $path = null, $throwOnError = true)
 	{
 		if($path === null)
 			$path = Context::Paths()->GetBinPath();
@@ -137,7 +137,7 @@ class System
 
 		$lastLine = exec($command, $output, $return);
 
-		if($return !== 0)
+		if($return !== 0 && $throwOnError)
 		{
 			if ($return == 126)
 				throw new ErrorException('Error de permisos: "' . $command . '".');
