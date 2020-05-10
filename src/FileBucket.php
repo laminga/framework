@@ -75,7 +75,7 @@ class FileBucket
 	private function ResolvePath($id)
 	{
 		if ($id === null || trim($id) === '' || ctype_alnum($id) === false || Str::Length($id) > 40)
-		{	// verifica este parámetro para evitar saltos en el filesystem fuera de tmp
+		{	// verifica este parÃ¡metro para evitar saltos en el filesystem fuera de tmp
 			throw new ErrorException('Invalid bucket Id');
 		}
 		$this->id = $id;
