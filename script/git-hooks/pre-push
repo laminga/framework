@@ -1,10 +1,38 @@
 #!/bin/bash
 
-# Script de pre-push: llama al compilador y ejecuta los tests antes de hacer push,
-# si alguno de los dos comandos da error cancela el push.
+# Script de pre-push:
+# Se fija dentro de los archivos que están en el push si hay
+# archivos .php, si hay llama al compilador y ejecuta los tests
+# antes de hacer push, si alguno de los dos comandos da error
+# cancela el push.
+# Si no hay pasa directo.
+#
+# Posibles problemas: siempre chequea con branch master.
+
+
+# change IFS to ignore filename's space in |for|
+IFS="
+"
+
+remote=$1
+run=false
+# Si entre todos los commits que se van a "pushear" hay algún archivo .php
+# compila y ejecuta los tests.
+for line in `git log --pretty=format: --name-only ${remote}/master..HEAD`; do
+	if [[ $line == *.php ]]; then
+		run=true
+		break
+	fi
+done
+
+if [ "$run" = false ] ; then
+	echo "No hay archivos .php, no hace falta compilar..."
+	exit 0
+fi
+
 
 echo "Compilando..."
-if [[ `./vendor/bin/phpstan analyse -c phpstan.neon -l 5 src --memory-limit 1024M -q || echo Err` ]]; then
+if [[ `./vendor/bin/phpstan analyse -c phpstan.neon -l 5 --memory-limit 1024M -q src || echo Err` ]]; then
 	echo "Error en complilación, cancelando push."
 	echo
 	exit 1
