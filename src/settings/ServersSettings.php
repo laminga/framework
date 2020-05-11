@@ -79,6 +79,17 @@ class ServersSettings
 		return $this->servers[$this->currentServer];
 	}
 
+	
+	public function OnlyCDNs()
+	{
+		foreach($this->servers as $key => $value)
+		{
+			if ($value->type != 'cdns')
+				return false;
+		}
+		return true;
+	}
+
 	public function GetCDNServers()
 	{
 		$ret = [];

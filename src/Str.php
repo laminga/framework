@@ -261,11 +261,13 @@ class Str
 
 	public static function StartsWith($haystack, $needle)
 	{
+		if ($needle === null) return false;
 		return !strncmp($haystack, $needle, strlen($needle));
 	}
 
 	public static function StartsWithI($haystack, $needle)
 	{
+		if ($needle === null) return false;
 		return !strncasecmp($haystack, $needle, strlen($needle));
 	}
 
@@ -324,7 +326,7 @@ class Str
 		});
 	}
 
-	private static function ProcessQuotedBlock($originalQuery, $replacer)
+	public static function ProcessQuotedBlock($originalQuery, $replacer)
 	{
 		// Agrega + al inicio de todas las palabras para que el query funcione como 'todas las palabras'
 		$query = self::Replace($originalQuery, "'", '"');
@@ -465,6 +467,18 @@ class Str
 		$needRehash = false;
 		return false;
 	}
+
+	
+	public static function TextContainsWordList($list, $cad)
+	{
+		$ret = [];
+		$cadSpaced = ' ' . $cad . ' ';
+		foreach($list as $word)
+			if (self::ContainsI($cadSpaced, ' ' . $word . ' '))
+				$ret[] = $word;
+		return $ret;
+	}
+
 
 	public static function ReplaceGroup($cad, $str, $s2)
 	{

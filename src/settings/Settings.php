@@ -77,6 +77,8 @@ class Settings
 	public $isFramed = false;
 	public $timerStart = '';
 
+	public $allowPHPsession = true;
+
 	public $storagePath = '';
 
 	// Mirrors
