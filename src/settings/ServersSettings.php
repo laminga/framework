@@ -15,6 +15,7 @@ class ServersSettings
 	public $RemoteLoginWhiteList = [];
 
 	public $Python27 = null;
+	public $Python3 = null;
 	public $PhpCli = 'php';
 
 	public function RegisterServer($name, $url, $isCDN = false)
@@ -79,7 +80,7 @@ class ServersSettings
 		return $this->servers[$this->currentServer];
 	}
 
-	
+
 	public function OnlyCDNs()
 	{
 		foreach($this->servers as $key => $value)
