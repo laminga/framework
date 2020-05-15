@@ -126,10 +126,23 @@ class ServersSettings
 			return $this->Current();
 	}
 
+	
+	public function Home()
+	{
+		foreach($this->servers as $key => $value)
+		{
+			if ($value->name == 'home')
+				return $value;
+		}
+		return $this->Main();
+	}
+
+
 	public function Main()
 	{
 		if ($this->mainServerObj == null)
-			throw new ErrorException('No main server is set in configuration settings.');
+			return $this->Current();
+			//throw new ErrorException('No main server is set in configuration settings.');
 		else
 			return $this->mainServerObj;
 	}

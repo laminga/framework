@@ -199,4 +199,10 @@ class Settings
 		$server = $this->Servers()->Main();
 		return $server->publicUrl;
 	}
+
+	public function GetHomePublicUrl()
+	{
+		$server = $this->Servers()->Home();
+		return $server->publicUrl;
+	}
 }
