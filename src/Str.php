@@ -317,7 +317,7 @@ class Str
 	{
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
 			$keywords_filtered = array_filter($keywords, function($word) {
-				return strlen($word) > 2;
+				return strlen($word) >= Context::Settings()->Db()->FullTextMinWordLength;
 			});
 			$subQuery = join("* +", $keywords_filtered);
 			if ($subQuery != '')
