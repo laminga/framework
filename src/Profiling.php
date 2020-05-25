@@ -7,15 +7,19 @@ class Profiling
 	public static $IsJson = false;
 
 	private static $showQueries = false;
+	private static $trimQueries = false;
+	private static $progressOnly = false;
 
 	private static $stack = null;
 	private static $lockStack = "";
 	private static $profileData = null;
 	private static $localIsProfiling = null;
 
-	public static function BeginShowQueries()
+	public static function BeginShowQueries($trimQueries = false, $progressOnly = false)
 	{
 		self::$showQueries = true;
+		self::$trimQueries = $trimQueries;
+		self::$progressOnly = $progressOnly;
 	}
 
 	public static function EndShowQueries()
@@ -27,20 +31,28 @@ class Profiling
 	{
 		if (self::$showQueries === false)
 			return;
+		if (self::$progressOnly)
+		{
+			echo '.';
+			return;
+		}
 		//	$e = new ErrorException();
 		//	echo $e->getTraceAsString();
-		echo 'SQL: ' . $sql;
+		if (self::$trimQueries && strlen($sql) > 50)
+			echo 'SQL: ' . substr($sql, 0, 50) . " (..)";
+		else
+			echo 'SQL: ' . $sql;
 		if ($params !== null && count($params) > 0)
 		{
-			echo '<br>';
+			echo " <br>\n";
 			print_r($params);
 		}
-		if ($types !== null && count($types) > 0)
+		if ($types !== null && count($types) > 0 && !self::$trimQueries)
 		{
-			echo '<br>';
+			echo " <br>\n";
 			print_r($types);
 		}
-		echo '<br>';
+		echo " <br>\n";
 	}
 
 	public static function IsProfiling()
@@ -314,7 +326,7 @@ class Profiling
 	{
 		if (self::IsProfiling() == false)
 			return;
-		self::$lockStack .= $info . "<br>";
+		self::$lockStack .= $info . " <br>";
 	}
 
 	public static function FinishTimers()
