@@ -35,7 +35,14 @@ class FileBucket
 	{
 		self::CleanUp();
 		if ($defaultBucketId === null)
+		{
 			$defaultBucketId = self::CreateId();
+			while(self::Exists($defaultBucketId))
+			{
+				usleep(1000);
+				$defaultBucketId = self::CreateId();
+			}
+		}
 		return self::Load($defaultBucketId);
 	}
 
