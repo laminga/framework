@@ -16,7 +16,11 @@ class GeoIp
 			$addr = Params::SafeServer('REMOTE_ADDR');
 			if ($addr === '127.0.0.1' || self::ip_is_private($addr))
 			{ // Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
-				$myIp = json_decode(file_get_contents('https://api.ipify.org?format=json'), true);
+				$conn = new WebConnection();
+				$conn->Initialize();
+				$response = $conn->Get('https://api.ipify.org?format=json');
+				$myIp = json_decode($response->GetString(), true);
+				$conn->Finalize();
 				$addr = $myIp['ip'];
 			}
 			$path = 'http://www.geoplugin.net/php.gp?ip=' . $addr;

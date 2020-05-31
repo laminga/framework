@@ -22,7 +22,14 @@ class WebResponse
 		echo ('headers:');
 		print_r($this->headers);
 	}
-
+	public function GetString()
+	{
+		if (!$this->file) 
+		{
+			throw new MessageException("No file has been received.");
+		}
+		return IO::ReadAllText($this->file);
+	}
 	private function echoLine($key, $value)
 	{
 		echo($key . ': ' . $value . '<br>');
