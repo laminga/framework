@@ -78,6 +78,13 @@ class AppPaths
 		return $ret;
 	}
 
+	public function GetMemoryPeakPath()
+	{
+		$ret = $this->GetLogLocalPath() . '/memory';
+		IO::EnsureExists($ret);
+		return $ret;
+	}
+
 	public function GetTempPath()
 	{
 		$ret = $this->GetStorageRoot() . '/temp';

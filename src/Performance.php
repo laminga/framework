@@ -69,6 +69,31 @@ class Performance
 			Log::HandleSilentException($e);
 		}
 		self::$hitCount = 0;
+
+		self::CheckMemoryPeaks();
+	}
+	private static function CheckMemoryPeaks()
+	{
+		if (!Context::Settings()->Log()->LogMemoryPeaks) 
+			return;
+		$usedMB = round(memory_get_peak_usage() / 1024 / 1024, 1);
+		if ($usedMB < Context::Settings()->Log()->MemoryPeakMB) 
+			return;
+
+		$file = Context::Paths()->GetMemoryPeakPath() . '/' . Date::GetLogMonthFolder() . '.txt';
+		$line = Date::FormattedArNow() . "\t" . $usedMB . "\t" . Str::UrlencodeFriendly(Context::LoggedUser()) 
+							. "\t" . Request::GetRequestURI();
+		try 
+		{
+			if (!file_exists($file)) 
+			{
+				$header = "Date\tMemory_MB\tUser\tUri";
+				IO::AppendLine($file, $header);
+			}
+			IO::AppendLine($file, $line);
+		}
+		catch (\Exception $e) {
+		}
 	}
 
 	public static function BeginLockedWait($class)
