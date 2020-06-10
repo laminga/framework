@@ -125,10 +125,6 @@ class Traffic
 	{
 		$parts = explode("\t", $value);
 
-		//Borrar este if a partir del 5/10/2015.
-		if(count($parts) == 1)
-			$parts = explode('\t', $value);
-
 		$hits = $parts[0] ;
 		if(count($parts) > 3)
 		{
