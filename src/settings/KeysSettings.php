@@ -15,6 +15,9 @@ class KeysSettings
 
 	// Obtenidas de terceros
 	public $RecaptchaKey = '';
+	public $RecaptchaSiteKey = '';
+	public $RecaptchaSecretKey = '';
+
 	public $GoogleAnalyticsKey = '';
 	public $GoogleMapsKey = '';
 	public $AddThisKey = '';
