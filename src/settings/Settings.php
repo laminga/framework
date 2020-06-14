@@ -28,7 +28,6 @@ class Settings
 
 	public $applicationName = 'AppName';
 
-	public $useCaptcha = false;
 	public $useVendor = false;
 	public $allowExport = true;
 	public $allowExportDoc = false;

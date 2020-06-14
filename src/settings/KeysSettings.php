@@ -14,7 +14,6 @@ class KeysSettings
 	public $RememberKey = '3vAAAGS4lKNFO7PKg1vWAy4SnnalgRatxknIrQJhWDvTqe7QTJV4gZD2w+n3EQdzyfi6gBhq3Xo/eUSp7M92ymMeYuo=';
 
 	// Obtenidas de terceros
-	public $RecaptchaKey = '';
 	public $RecaptchaSiteKey = '';
 	public $RecaptchaSecretKey = '';
 
