@@ -38,7 +38,7 @@ class Log
 		$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
 		$referer = Params::SafeServer('HTTP_REFERER', 'null');
 		$remoteAddr = Params::SafeServer('REMOTE_ADDR', 'null');
-		$requestUri = Params::SafeServer('REQUEST_URI', 'null');
+		$requestUri = Params::SafeServer('REQUEST_URI', '');
 		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
 
 		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
@@ -194,7 +194,7 @@ class Log
 		// Lo graba en log
 		$logPath = Context::Paths()->GetLogLocalPath() . '/' . $branch;
 		$path = $logPath;
-		if (!$fatal) 
+		if ($fatal == false)
 		{
 			$path .= '/' . Date::GetLogMonthFolder();
 		}
