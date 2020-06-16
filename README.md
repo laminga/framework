@@ -17,7 +17,7 @@ El minga-framework es un nanoframework que reúne una serie de clases desarrolla
 - Traffic. Control en vivo de requerimientos por IP para controlar y alertar sobre volúmenes inusuales de pedidos desde usuarios únicos.
 
 ## Madurez
-El minga/framework se encuentra en uso en producción en [Acta Académica] (https://www.aacademica.org). No posee a la fecha documentación de ayuda para el uso en otros proyectos.
+El minga/framework se encuentra en uso en producción en [Acta Académica] (https://www.aacademica.org) y en [Poblaciones] (https://www.poblaciones.org). No posee a la fecha documentación de ayuda para el uso en otros proyectos.
 
 ## Instalación
 EN PROCESO: npm install minga/framework
