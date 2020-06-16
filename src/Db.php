@@ -289,7 +289,7 @@ class Db
 	 */
 	public function insert(string $tableName, array $data) : int
 	{
-		return $this->InsertOrReplace($tableName, $data, 'INSERT');
+		return $this->insertOrReplace($tableName, $data, 'INSERT');
 	}
 
 	/**
