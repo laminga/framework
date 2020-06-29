@@ -282,20 +282,19 @@ class Date
 	 * return bool
 	 *
 	 */
-	public static function DateNotPast($date, $days)
+	public static function DateNotPast($date, int $days) : bool
 	{
 		if($date == '')
 			return false;
 
-		$days = (int)$days;
-		if($days < 0)
+		if($days <= 0)
 			throw new ErrorException('Days must be a positive integer');
 
 		$dt = self::FormattedDateToDateTime($date);
 		if($dt === false)
 			throw new ErrorException('Invalid Date');
 
-		$dt->add(new \DateInterval('P'.$days.'D'));
+		$dt->add(new \DateInterval('P' . $days . 'D'));
 		$now = new \DateTime('now');
 
 		return $dt > $now;

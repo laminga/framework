@@ -16,9 +16,9 @@ class DateTest extends TestCaseBase
 
 	public function testDateNotPast()
 	{
-		$this->assertEquals(Date::DateNotPast('', ''), false);
-		$this->assertEquals(Date::DateNotPast(null, null), false);
-		$this->assertEquals(Date::DateNotPast('2010-01-01@00.00.01', 0), false);
+		$this->assertEquals(Date::DateNotPast('', 1), false);
+		$this->assertEquals(Date::DateNotPast(null, 1), false);
+		$this->assertEquals(Date::DateNotPast('2010-01-01@00.00.01', 1), false);
 		$this->assertEquals(Date::DateNotPast('2010-01-01@00.00.01', 100000), true);
 		$this->assertEquals(Date::DateNotPast('2222-01-01@00.00.01', 1), true);
 	}
@@ -33,6 +33,12 @@ class DateTest extends TestCaseBase
 	{
 		$this->expectException(ErrorException::class);
 		Date::DateNotPast('2222-01-01@00.00.01', -1);
+	}
+
+	public function testDateNotPastException2()
+	{
+		$this->expectException(ErrorException::class);
+		Date::DateNotPast('2222-01-01@00.00.01', 0);
 	}
 
 }
