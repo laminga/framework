@@ -15,6 +15,9 @@ class DbSettings
 	public $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
 	public $RemoteUrl = null;
 
+	public $FullTextMinWordLength = 4;
+
+	public $SpecialWords = [];
 	
 	public $ForceStrictTables = false;
 	public $ForceOnlyFullGroupBy = false;

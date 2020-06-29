@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Script de pre-push:
+# Si hay que hacer pull avisa y cancela el push con error.
+# Si no, se fija dentro de los archivos que están en el push si
+# hay archivos .php, si hay llama al compilador y ejecuta los
+# tests antes de hacer push, si alguno de los dos comandos da
+# error cancela el push.
+# Si no hay archivos php, pasa directo.
+
+
+# change IFS to ignore filename's space in |for|
+IFS="
+"
+remote=$1
+branch=$(git rev-parse --abbrev-ref HEAD)
+run=false
+
+# Este comando vuelve vacío si no hay diferencia en los commits
+# con respecto al remote, si trae datos hay que hacer pull
+if [[ $(git log HEAD..${remote}/${branch} --oneline) ]]; then
+	 echo "Hay que hacer *pull* antes de poder hacer push..."
+	 echo "Cancelando el push."
+	 exit 1
+fi
+
+# Si entre todos los commits que se van a "pushear" hay algún archivo .php
+# compila y ejecuta los tests.
+for line in `git log --pretty=format: --name-only ${remote}/${branch}..HEAD`; do
+	if [[ $line == *.php ]]; then
+		run=true
+		break
+	fi
+done
+
+if [ "$run" = false ] ; then
+	echo "No hay archivos .php, no hace falta compilar..."
+	exit 0
+fi
+
+
+echo "Compilando..."
+if [[ `./vendor/bin/phpstan analyse -c phpstan.neon -l 5 --memory-limit 1024M -q src || echo Err` ]]; then
+	echo "Error en complilación, cancelando push."
+	echo
+	exit 1
+fi
+echo "Compilado OK"
+echo
+
+echo "Corriendo tests..."
+if [[ `./vendor/bin/phpunit --stop-on-failure > /dev/null || echo Err` ]]; then
+	echo "Error en tests, cancelando push."
+	echo
+	exit 1
+fi
+echo "Tests OK"
+echo
+
+exit 0
+

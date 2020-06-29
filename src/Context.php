@@ -62,4 +62,14 @@ class Context
 	{
 		self::Calls()->EndRequest();
 	}
+
+	public static function ExtraHitsLabels()
+	{
+		return self::Calls()->ExtraHitsLabels();
+	}
+
+	public static function ExtraHits()
+	{
+		return self::Calls()->ExtraHits();
+	}
 }

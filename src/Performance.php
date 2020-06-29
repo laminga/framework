@@ -69,6 +69,31 @@ class Performance
 			Log::HandleSilentException($e);
 		}
 		self::$hitCount = 0;
+
+		self::CheckMemoryPeaks();
+	}
+	private static function CheckMemoryPeaks()
+	{
+		if (!Context::Settings()->Log()->LogMemoryPeaks)
+			return;
+		$usedMB = round(memory_get_peak_usage() / 1024 / 1024, 1);
+		if ($usedMB < Context::Settings()->Log()->MemoryPeakMB)
+			return;
+
+		$file = Context::Paths()->GetMemoryPeakPath() . '/' . Date::GetLogMonthFolder() . '.txt';
+		$line = Date::FormattedArNow() . "\t" . $usedMB . "\t" . Str::UrlencodeFriendly(Context::LoggedUser())
+							. "\t" . Request::GetRequestURI();
+		try
+		{
+			if (!file_exists($file))
+			{
+				$header = "Date\tMemory_MB\tUser\tUri";
+				IO::AppendLine($file, $header);
+			}
+			IO::AppendLine($file, $line);
+		}
+		catch (\Exception $e) {
+		}
 	}
 
 	public static function BeginLockedWait($class)
@@ -268,19 +293,42 @@ class Performance
 		IO::WriteAllText($path, $newDay);
 	}
 
-	public static function SaveDaylyUsage($ellapsedMilliseconds)
+	private static function ReadDaysValues()
 	{
 		$daylyProcessor = self::ResolveFilenameDayly();
-		$day = Date::GetLogDayFolder();
-		$key = $day;
-		$days = self::ReadIfExists($daylyProcessor);
+		return self::ReadIfExists($daylyProcessor);
+	}
+
+	public static function ReadTodayExtraValues($key)
+	{
+		$extras = Context::ExtraHitsLabels();
+		$index = Arr::indexOf($extras, $key);
+		if ($index === -1)
+			return null;
+		$days = self::ReadDaysValues();
+		$key = Date::GetLogDayFolder();
+		self::ReadCurrentKeyValues($days, $key, $prevHits, $prevDuration, $prevLock);
+		if (!array_key_exists($key, $days))
+			return null;
+		self::ParseHit($days[$key], $_, $_, $_, $_, $_, $_, $_, $extraHits);
+		return $extraHits[$index];
+	}
+
+	public static function SaveDaylyUsage($ellapsedMilliseconds)
+	{
+		$days = self::ReadDaysValues();
+		$key = Date::GetLogDayFolder();
 
 		self::ReadCurrentKeyValues($days, $key, $prevHits, $prevDuration, $prevLock);
 
-		self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, Request::IsGoogle(), Mail::$MailsSent, self::$dbMs, self::$dbHitCount);
+		$extraHits = Context::ExtraHits();
+
+		self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs,
+											Request::IsGoogle(), Mail::$MailsSent, self::$dbMs, self::$dbHitCount, $extraHits);
 
 		self::CheckLimits($days, $key, $prevHits, $prevDuration, $prevLock);
 
+		$daylyProcessor = self::ResolveFilenameDayly();
 		IO::WriteIniFile($daylyProcessor, $days);
 	}
 
@@ -417,7 +465,7 @@ class Performance
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked;
 	}
 
-	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits)	{
+	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = [])	{
 		if (array_key_exists($key, $arr) == false)
 		{
 			$hits = $newHits;
@@ -430,7 +478,7 @@ class Performance
 		}
 		else
 		{
-			self::ParseHit($arr[$key], $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits);
+			self::ParseHit($arr[$key], $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $extraHits);
 			$hits += $newHits;
 			$duration += $value;
 			$locked += $newLocked;
@@ -438,11 +486,18 @@ class Performance
 			$mails += $mailCount;
 			$dbMs += $newDbMs;
 			$dbHits += $newDbHits;
+			for($n = 0; $n < sizeof($newExtraHits); $n++)
+			{
+				if($n < sizeof($extraHits) && $extraHits[$n])
+					$newExtraHits[$n] += $extraHits[$n];
+			}
 		}
-		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails. ';' . $dbMs . ';' . $dbHits;
+		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails.
+										';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
 	}
 
-	private static function ParseHit($value, &$hits, &$duration, &$locked, &$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null)
+	private static function ParseHit($value, &$hits, &$duration, &$locked,
+																				 &$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null, &$extra = null)
 	{
 		$parts = explode(';', $value);
 		$hits = $parts[0];
@@ -470,6 +525,14 @@ class Performance
 		{
 			$p6 = 0;
 			$p7 = 0;
+		}
+		if (sizeof($parts) > 7)
+		{
+			$extra = explode(',', $parts[7]);
+		}
+		else
+		{
+			$extra = [];
 		}
 	}
 
@@ -524,34 +587,54 @@ class Performance
 		$dataLockedRow = [];
 		$dataDbMsRow = [];
 		$dataAvgRow = [];
+
 		$googleRow = [];
 		$mailRow = [];
+
+		$extras = Context::ExtraHitsLabels();
+		$extraValues = array_fill(0, sizeof($extras), []);
 
 		foreach($days as $key => $value)
 		{
 			$headerRow[] = $key;
-			self::ParseHit($value, $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits);
+			self::ParseHit($value, $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $extraHits);
 			$dataHitRow[] = $hits;
+
 			$googleRow[] = $google;
 			$mailRow[] = $mails;
+
 			$dataMsRow[] = round($duration / 1000 / 60, 1);
 			$dataAvgRow[] = round($duration / $hits);
 			$dataLockedRow[] = round($locked / 1000, 1);
 			$dataDbMsRow[] = round($dbMs / 1000 / 60, 1);
 			$dataDbHitRow[] = $dbHits;
+
+			for($n = 0; $n < sizeof($extraValues); $n++)
+			{
+				if ($n < sizeof($extraHits))
+					$extraValues[$n][] = $extraHits[$n];
+				else
+					$extraValues[$n][] = '-';
+			}
 		}
 
-		return [
+		$ret = [
 			'Día' => $headerRow,
 			'Hits' => $dataHitRow,
-			'GoogleBot' => $googleRow,
-			'Mails' => $mailRow,
 			'Promedio (ms.)' => $dataAvgRow,
 			'Duración (min.)' => $dataMsRow,
 			'Base de datos (min.)' => $dataDbMsRow,
 			'Accesos Db' => $dataDbHitRow,
 			'Bloqueos (seg.)' => $dataLockedRow,
+			'GoogleBot' => $googleRow,
+			'Mails' => $mailRow,
 		];
+
+		for($n = 0; $n < sizeof($extras); $n++)
+		{
+			$ret[$extras[$n]] = $extraValues[$n];
+		}
+		return $ret;
 	}
 
 	private static function IsAdmin($controller)
@@ -560,7 +643,7 @@ class Performance
 		$path = Context::Paths()->GetRoot() . '/website/admin/controllers';
 
 		$path2 = Context::Paths()->GetRoot() . '/src/controllers/logs';
-		
+
 		if ($controller === 'logs') $controller = 'logs/activity';
 		if ($controller === 'admin') $controller = 'admin/activity';
 

@@ -39,24 +39,26 @@ class Str
 		// en el encoding MACROMAN (macintosh)
 		$tokens = [ chr(0x87) // á -> ‡
 			, chr(0x8e) // é -> Ž
-			, chr(0x92) // í -> ’
-			, chr(0x97) // ó -> —
-			, chr(0x9c) // ú -> œ
+			//, chr(0x92) // í -> ’
+			//, chr(0x97) // ó -> —
+			//, chr(0x9c) // ú -> œ
 			//, chr(0xe7) // Á -> ç  (en portugués es frecuente ç; en castellano, no tanto Á)
 			, chr(0x83) // É -> ƒ
-			, chr(0xea) // Í -> ê
+			//, chr(0xea) // Í -> ê
 			, chr(0xee) // Ó -> î
-			, chr(0xf2) // Ú -> ò
+			//, chr(0xf2) // Ú -> ò
 
 			, chr(0x9f) // ü -> Ÿ
 			, chr(0x86) // Ü -> †
-			, chr(0x96) // ñ -> –
+			//, chr(0x96) // ñ -> –
 			, chr(0x84) // Ñ -> „
 		];
 		foreach($tokens as $token)
 		{
 			if (strpos($str, $token) !== false)
+			{
 				return true;
+			}
 		}
 		return false;
 	}
@@ -259,11 +261,13 @@ class Str
 
 	public static function StartsWith($haystack, $needle)
 	{
+		if ($needle === null) return false;
 		return !strncmp($haystack, $needle, strlen($needle));
 	}
 
 	public static function StartsWithI($haystack, $needle)
 	{
+		if ($needle === null) return false;
 		return !strncasecmp($haystack, $needle, strlen($needle));
 	}
 
@@ -313,7 +317,7 @@ class Str
 	{
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
 			$keywords_filtered = array_filter($keywords, function($word) {
-				return strlen($word) > 2;
+				return strlen($word) >= Context::Settings()->Db()->FullTextMinWordLength;
 			});
 			$subQuery = join("* +", $keywords_filtered);
 			if ($subQuery != '')
@@ -322,7 +326,7 @@ class Str
 		});
 	}
 
-	private static function ProcessQuotedBlock($originalQuery, $replacer)
+	public static function ProcessQuotedBlock($originalQuery, $replacer)
 	{
 		// Agrega + al inicio de todas las palabras para que el query funcione como 'todas las palabras'
 		$query = self::Replace($originalQuery, "'", '"');
@@ -355,7 +359,7 @@ class Str
 
 		return substr($haystack, $pos + strlen($needle));
 	}
-	
+
 	public static function CheapSqlEscape($cad)
 	{
 		if ($cad === null)
@@ -464,6 +468,18 @@ class Str
 		return false;
 	}
 
+
+	public static function TextContainsWordList($list, $cad)
+	{
+		$ret = [];
+		$cadSpaced = ' ' . $cad . ' ';
+		foreach($list as $word)
+			if (self::ContainsI($cadSpaced, ' ' . $word . ' '))
+				$ret[] = $word;
+		return $ret;
+	}
+
+
 	public static function ReplaceGroup($cad, $str, $s2)
 	{
 		for ($i = 0; $i < strlen($str); $i++)
@@ -504,8 +520,8 @@ class Str
 	{
 		return strtr(utf8_decode($cad),
 			utf8_decode(
-				'ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑŎÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöŏōøùúûüýÿ'),
-			'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooooouuuuyy');
+				'µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŎŒÙÚÛÜŠÝŸŽàáâãäåæçèéêëìíîïñòóôõöøōŏœùúûüšýÿž'),
+			'uAAAAAAACEEEEIIIIDNOOOOOOOOUUUUSYYZaaaaaaaceeeeiiiinooooooooouuuusyyz');
 	}
 
 	public static function RemoveDot($cad)
@@ -609,9 +625,7 @@ class Str
 
 	public static function StartsWithAlfabetic($cad)
 	{
-		//TODO: no tiene en cuenta si empieza con á .. ñ, etc.
-		//TODO: no tiene en cuenta mayúsculas.
-		return (mb_substr($cad, 0, 1) >= 'a' && mb_substr($cad, 0, 1) <= 'z');
+		return ctype_alpha(self::RemoveAccents(mb_substr($cad, 0, 1)));
 	}
 
 	public static function TextAreaTextToHtml($cad)

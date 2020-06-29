@@ -78,9 +78,18 @@ class AppPaths
 		return $ret;
 	}
 
+	public function GetMemoryPeakPath()
+	{
+		$ret = $this->GetLogLocalPath() . '/memory';
+		IO::EnsureExists($ret);
+		return $ret;
+	}
+
 	public function GetTempPath()
 	{
-		return $this->GetStorageRoot() . '/temp';
+		$ret = $this->GetStorageRoot() . '/temp';
+		IO::EnsureExists($ret);
+		return $ret;
 	}
 
 	public function GetBucketsPath()
@@ -96,6 +105,11 @@ class AppPaths
 	public function GetFrameworkDataPath()
 	{
 		return realpath($this->GetFrameworkPath() . '/../data');
+	}
+
+	public function GetFrameworkTestsPath()
+	{
+		return $this->GetFrameworkPath() . '/tests';
 	}
 
 	public function GetMpdfTempPath()

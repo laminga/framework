@@ -35,7 +35,14 @@ class FileBucket
 	{
 		self::CleanUp();
 		if ($defaultBucketId === null)
+		{
 			$defaultBucketId = self::CreateId();
+			while(self::Exists($defaultBucketId))
+			{
+				usleep(1000);
+				$defaultBucketId = self::CreateId();
+			}
+		}
 		return self::Load($defaultBucketId);
 	}
 
@@ -43,6 +50,7 @@ class FileBucket
 	{
 		return uniqid();
 	}
+
 	public static function Exists($id)
 	{
 		$ret = new FileBucket();
@@ -74,7 +82,7 @@ class FileBucket
 	private function ResolvePath($id)
 	{
 		if ($id === null || trim($id) === '' || ctype_alnum($id) === false || Str::Length($id) > 40)
-		{	// verifica este parámetro para evitar saltos en el filesystem fuera de tmp
+		{	// verifica este parÃ¡metro para evitar saltos en el filesystem fuera de tmp
 			throw new ErrorException('Invalid bucket Id');
 		}
 		$this->id = $id;

@@ -28,7 +28,6 @@ class Settings
 
 	public $applicationName = 'AppName';
 
-	public $useCaptcha = false;
 	public $useVendor = false;
 	public $allowExport = true;
 	public $allowExportDoc = false;
@@ -76,6 +75,8 @@ class Settings
 	public $boxingContent;
 	public $isFramed = false;
 	public $timerStart = '';
+
+	public $allowPHPsession = true;
 
 	public $storagePath = '';
 
@@ -195,6 +196,12 @@ class Settings
 	public function GetMainServerPublicUrl()
 	{
 		$server = $this->Servers()->Main();
+		return $server->publicUrl;
+	}
+
+	public function GetHomePublicUrl()
+	{
+		$server = $this->Servers()->Home();
 		return $server->publicUrl;
 	}
 }

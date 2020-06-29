@@ -31,7 +31,13 @@ class Arr
 		}
 		return $arr;
 	}
-
+	public static function IndexOf(array $array, $element)
+	{
+		$ret = array_search($element, $array);
+		if ($ret === false)
+			$ret = -1;
+		return $ret;
+	}
 	public static function TwoElementsToKeyValue(array $array)
 	{
 		$ret = [];
@@ -328,7 +334,7 @@ class Arr
 	{
 		usort($arr, function($a, $b) use ($field) { return Sorter::ByField($a, $b, $field); });
 	}
-	
+
 	public static function SortByGetter(&$arr, $getter)
 	{
 		usort($arr, function($a, $b) use ($getter) { return Sorter::ByGetter($a, $b, $getter); });
@@ -382,6 +388,11 @@ class Arr
 	public static function SortAttributeEntityArray(&$arr, $key)
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::ByAttribute($a, $b, $key); });
+	}
+
+	public static function SortByKey(&$arr, $key)
+	{
+		usort($arr, function($a, $b) use ($key) { return Sorter::ByKey($a, $b, $key); });
 	}
 
 	public static function SortByKeyDesc(&$arr, $key)

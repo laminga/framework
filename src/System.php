@@ -92,6 +92,17 @@ class System
 		}
 	}
 
+	public static function IsWindows()
+	{
+		return Str::StartsWithI(PHP_OS, 'win');
+	}
+
+	public static function IsTestingInWindows()
+	{
+		return Context::Settings()->isTesting
+			&& self::IsWindows();
+	}
+
 	public static function IsOnIIS()
 	{
 		if(isset($_SERVER['SERVER_SOFTWARE']) == false)
@@ -113,7 +124,7 @@ class System
 	 * inicial, cambia al del ejecutable y
 	 * vuelve al directorio inicial.
 	 */
-	public static function RunCommandOnPath($command, $path = null)
+	public static function RunCommandOnPath($command, $path = null, $throwOnError = true)
 	{
 		if($path === null)
 			$path = Context::Paths()->GetBinPath();
@@ -121,12 +132,12 @@ class System
 		$prevDir = getcwd();
 		chdir($path);
 
-		if(System::IsOnIIS())
+		if(System::IsWindows())
 			$command = Str::RemoveBegining($command, './');
 
 		$lastLine = exec($command, $output, $return);
 
-		if($return !== 0)
+		if($return !== 0 && $throwOnError)
 		{
 			if ($return == 126)
 				throw new ErrorException('Error de permisos: "' . $command . '".');

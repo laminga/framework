@@ -123,7 +123,7 @@ class PdfReader
 		try
 		{
 			$bits = System::GetArchitecture();
-			if(System::IsOnIIS())
+			if(System::IsWindows())
 				$bits .= '.exe';
 
 			$args = self::PDF_TO_HTML_ARGS;
