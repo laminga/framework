@@ -31,7 +31,13 @@ class Arr
 		}
 		return $arr;
 	}
-
+	public static function IndexOf(array $array, $element)
+	{
+		$ret = array_search($element, $array);
+		if ($ret === false) 
+			$ret = -1;
+		return $ret;
+	}
 	public static function TwoElementsToKeyValue(array $array)
 	{
 		$ret = [];

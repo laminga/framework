@@ -19,6 +19,7 @@ class KeysSettings
 
 	public $GoogleAnalyticsKey = '';
 	public $GoogleMapsKey = '';
+	public $GoogleGeocodingKey = '';
 	public $AddThisKey = '';
 	public $SendGridApiKey = '';
 
