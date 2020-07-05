@@ -11,7 +11,6 @@ class GeoIp
 
 	public static function GetCurrentLatLong()
 	{
-		$path = '';
 		try {
 			$addr = Params::SafeServer('REMOTE_ADDR');
 			if ($addr === '127.0.0.1' || self::ip_is_private($addr))
@@ -23,18 +22,12 @@ class GeoIp
 				$conn->Finalize();
 				$addr = $myIp['ip'];
 			}
-			$path = 'http://www.geoplugin.net/php.gp?ip=' . $addr;
-			$geoplugin = unserialize(file_get_contents($path) );
-			if ( is_numeric($geoplugin['geoplugin_latitude']) && is_numeric($geoplugin['geoplugin_longitude']) )
-			{
-				$lat = $geoplugin['geoplugin_latitude'];
-				$long = $geoplugin['geoplugin_longitude'];
-				return array('lat' => $lat, 'lon' => $long);
-			}
-			else
-			{
-				return null;
-			}
+			$location = self::GetCityLocation($addr);
+			
+			if ($location === null) 
+				$location = self::GetIpFromGeoPluginWebService($addr);
+
+			return $location;
 		}
 		catch(\Exception $e)
 		{
@@ -43,6 +36,21 @@ class GeoIp
 		}
 	}
 
+	private static function GetIpFromGeoPluginWebService($addr)
+	{
+		$path = 'http://www.geoplugin.net/php.gp?ip=' . $addr;
+		$geoplugin = unserialize(file_get_contents($path));
+		if ( is_numeric($geoplugin['geoplugin_latitude']) && is_numeric($geoplugin['geoplugin_longitude']) )
+		{
+			$lat = $geoplugin['geoplugin_latitude'];
+			$long = $geoplugin['geoplugin_longitude'];
+			return array('lat' => $lat, 'lon' => $long);
+		}
+		else 
+		{
+			return null;
+		}
+	}
 	private static function ip_is_private ($ip) {
     $pri_addrs = array (
                       '10.0.0.0|10.255.255.255', // single class A network
@@ -68,9 +76,7 @@ class GeoIp
     return false;
 	}
 
-	// This creates the Reader object, which
-	// should be reused across lookups.
-	private static function GetGeoDb()
+	private static function GetGeoDbCountry()
 	{
 		if(self::$geoDb === null)
 		{
@@ -80,12 +86,57 @@ class GeoIp
 
 		return self::$geoDb;
 	}
+	
+	private static function GetGeoDbCity()
+	{
+		if(self::$geoDb === null)
+		{
+			self::$geoDb = new Reader(Context::Paths()->GetFrameworkDataPath()
+				. '/GeoLite2-City/GeoLite2-City.mmdb');
+		}
+
+		return self::$geoDb;
+	}
+	private static function GetCityLocation($ip)
+	{
+		try
+		{
+			$record = self::GetGeoDbCity()->city($ip);
+
+			return array('lat' => $record->location->latitude, 'lon' => $record->location->longitude);
+		}
+		catch(AddressNotFoundException $e)
+		{
+			return null;
+		}
+		catch(\InvalidArgumentException $e)
+		{
+			return null;
+		}
+	}
+
+	private static function GetCity($ip)
+	{
+		try
+		{
+			$record = self::GetGeoDbCity()->city($ip);
+			return $record->city;
+		}
+		catch(AddressNotFoundException $e)
+		{
+			return null;
+		}
+		catch(\InvalidArgumentException $e)
+		{
+			return null;
+		}
+	}
 
 	private static function GetCountry($ip)
 	{
 		try
 		{
-			$record = self::GetGeoDb()->country($ip);
+			$record = self::GetGeoDbCountry()->country($ip);
 			return $record->country;
 		}
 		catch(AddressNotFoundException $e)
