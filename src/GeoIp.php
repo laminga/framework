@@ -91,8 +91,12 @@ class GeoIp
 	{
 		if(self::$geoDb === null)
 		{
-			self::$geoDb = new Reader(Context::Paths()->GetFrameworkDataPath()
-				. '/GeoLite2-City/GeoLite2-City.mmdb');
+			$file = Context::Paths()->GetFrameworkDataPath()
+				. '/GeoLite2-City/GeoLite2-City.mmdb';
+			if (file_exists($file))
+			{
+				self::$geoDb = new Reader($file);
+			}
 		}
 
 		return self::$geoDb;
@@ -101,7 +105,11 @@ class GeoIp
 	{
 		try
 		{
-			$record = self::GetGeoDbCity()->city($ip);
+			$db = self::GetGeoDbCity();
+			if (!$db) {
+				return null;
+			}
+			$record = $db->city($ip);
 
 			return array('lat' => $record->location->latitude, 'lon' => $record->location->longitude);
 		}
