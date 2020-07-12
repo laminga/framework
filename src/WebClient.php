@@ -76,30 +76,52 @@ class WebClient
 	public function Execute($url, $file = '', $args = [], $saveHeaders = false, $maxFileSize = -1)
 	{
 		Profiling::BeginTimer();
-		if ($saveHeaders && $file != '')
+		try
 		{
-			$this->doExecute($url, $file . '.headers.res', $args, true);
-			$contents = IO::ReadAllText($file . '.headers.res');
-			$headers = $this->get_headers_from_curl_response2($contents);
-			IO::WriteEscapedIniFile($file . '.headers.txt', $headers);
-			IO::Delete($file . '.headers.res');
-			if ($maxFileSize != -1)
+			if ($saveHeaders && $file != '')
 			{
-				if (array_key_exists('Content-Length', $headers))
+				$this->doExecute($url, $file . '.headers.res', $args, true);
+				$contents = IO::ReadAllText($file . '.headers.res');
+				$headers = $this->get_headers_from_curl_response2($contents);
+				IO::WriteEscapedIniFile($file . '.headers.txt', $headers);
+				IO::Delete($file . '.headers.res');
+				if ($maxFileSize != -1)
 				{
-					$length = $headers['Content-Length'];
-					if ($length > $maxFileSize)
+					if ($this->HasContentLength($headers))
 					{
-						IO::Delete($file . '.headers.txt');
-						Profiling::EndTimer();
-						return false;
+						$length = $this->GetContentLength($headers);
+						if ($length > $maxFileSize)
+						{
+							IO::Delete($file . '.headers.txt');
+							return false;
+						}
 					}
 				}
 			}
+			$ret = $this->doExecute($url, $file, $args, false);
+			return $ret;
 		}
-		$ret = $this->doExecute($url, $file, $args, false);
-		Profiling::EndTimer();
-		return $ret;
+		finally
+		{
+			Profiling::EndTimer();
+		}
+	}
+
+	private function HasContentLength($headers)
+	{
+		return isset($headers['Content-Length'])
+			|| isset($headers['content-length']);
+	}
+
+	private function GetContentLength($headers)
+	{
+		if(isset($headers['Content-Length']))
+			return $headers['Content-Length'];
+
+		if(isset($headers['content-length']))
+			return $headers['content-length'];
+
+		return null;
 	}
 
 	public function ExecuteForRedirect($url, $file = '', $args = [])

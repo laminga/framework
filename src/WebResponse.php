@@ -22,17 +22,35 @@ class WebResponse
 		echo ('headers:');
 		print_r($this->headers);
 	}
+
 	public function GetString()
 	{
-		if (!$this->file)
-		{
+		if ($this->file == false)
 			throw new MessageException("No file has been received.");
-		}
+
 		return IO::ReadAllText($this->file);
 	}
+
 	private function echoLine($key, $value)
 	{
 		echo($key . ': ' . $value . '<br>');
+	}
+
+	public function HasLocationHeader()
+	{
+		return isset($this->headers['Location'])
+			|| isset($this->headers['location']);
+	}
+
+	public function GetLocationHeader()
+	{
+		if(isset($this->headers['Location']))
+			return $this->headers['Location'];
+
+		if(isset($this->headers['location']))
+			return $this->headers['location'];
+
+		return null;
 	}
 }
 
