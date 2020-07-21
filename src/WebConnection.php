@@ -92,13 +92,13 @@ class WebConnection
 		{
 			$red++;
 
-			if(isset($response->headers['Location']) == false)
+			if($response->HasLocationHeader() == false)
 			{
 				$this->AppendLog('Header Location not found.');
 				break;
 			}
 
-			$location = $response->headers['Location'];
+			$location = $response->GetLocationHeader();
 			$this->AppendLog('Redirecting to ' . $location);
 			$response = $this->Get($location, $file);
 			if ($red > 10)
@@ -119,12 +119,11 @@ class WebConnection
 		Profiling::EndTimer();
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
-			$location = $response->headers['Location'];
+			$location = $response->GetLocationHeader();
 			$this->AppendLog('Redirecting to ' . $location);
 			return $this->Get($location, $file);
 		}
-		else
-			return $response;
+		return $response;
 	}
 
 	private function StayHttps($url)
@@ -237,9 +236,9 @@ class WebConnection
 		$this->ParseErrorCodes($ret, $file);
 
 		if ($this->maxFileSize != -1
-			&& isset($headers['Content-Length']))
+			&& $this->HasContentLength($headers))
 		{
-			$length = $headers['Content-Length'];
+			$length = $this->GetContentLength($headers);
 			if ($length > $this->maxFileSize)
 			{
 				IO::Delete($file);
@@ -265,6 +264,23 @@ class WebConnection
 			MessageBox::ThrowMessage('Error: ' . $this->error);
 		}
 		return $response;
+	}
+
+	private function HasContentLength($headers)
+	{
+		return isset($headers['Content-Length'])
+			|| isset($headers['content-length']);
+	}
+
+	private function GetContentLength($headers)
+	{
+		if(isset($headers['Content-Length']))
+			return $headers['Content-Length'];
+
+		if(isset($headers['content-length']))
+			return $headers['content-length'];
+
+		return null;
 	}
 
 	private function HeadersToArray($headerFile)

@@ -2,13 +2,15 @@
 
 namespace minga\framework;
 
+use minga\framework\enums\MailFooter;
+
 class TemplateMessage extends AttributeEntity
 {
 	public $title;
 	public $to;
-	public $toCaption = "";
-	public $formattedTo = "";
-	public $footer = 3;
+	public $toCaption = '';
+	public $formattedTo = '';
+	public $footer = MailFooter::General;
 	public $template;
 	public $content = null;
 	public $skipNotify = false;
@@ -26,7 +28,7 @@ class TemplateMessage extends AttributeEntity
 
 	public function AddViewAction($url, $name, $description)
 	{
-		$viewAction = array();
+		$viewAction = [];
 		$viewAction['description'] = $description;
 		$viewAction['url'] = $url;
 		$viewAction['name'] = $name;
@@ -37,18 +39,20 @@ class TemplateMessage extends AttributeEntity
 		$this->SetValue('viewAction', $viewAction );
 	}
 
-	public function Send($template = "")
+	public function Send($template = '')
 	{
-		if ($template != "")
+		if ($template != '')
 			$this->template = $template;
 		$this->SetValue('title', $this->title);
 		$this->SetValue('footer', $this->footer);
 		if ($this->content != null)
 		{
-			$contentAttributes = array('fullName' => $this->content->GetFullName(),
+			$contentAttributes = [
+				'fullName' => $this->content->GetFullName(),
 				'contentTypeLabel' => $this->content->GetTypeLabel(),
 				'contentTypeArticle' => $this->content->GetTypeArticle(),
-				'url' => Context::Settings()->GetMainServerPublicUrl() . $this->content->publicPath);
+				'url' => Context::Settings()->GetMainServerPublicUrl() . $this->content->publicPath,
+			];
 
 			$contentAttributes = Arr::AppendKeyArray($contentAttributes,
 				$this->content->GetAllAttributes()
