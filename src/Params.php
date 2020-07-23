@@ -121,6 +121,18 @@ class Params
 		return self::CheckParseIntValue($value);
 	}
 
+	public static function GetIntArray($param, $default = array())
+	{
+		$value = self::Get($param, $default);
+		if ($value === null || $value === '')
+			return null;
+		$arr = explode(',', $value);
+		for($n = 0; $n < sizeof($arr); $n++)
+			$arr[$n] = self::CheckParseIntValue($arr[$n]);
+	
+		return $arr;
+	}
+
 	private static function processRange($value, $min, $max)
 	{
 		if ($value < $min || $value > $max)
