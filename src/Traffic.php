@@ -49,7 +49,7 @@ class Traffic
 			header('HTTP/1.1 503 Service Temporarily Unavailable');
 			header('Status: 503 Service Temporarily Unavailable');
 			/* header('Retry-After: 9000'); */
-			echo 'Service unavailable.';
+			echo 'Service unavailable / traffic';
 			Context::EndRequest();
 		}
 	}
