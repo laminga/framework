@@ -16,6 +16,15 @@ class Request
 		return self::$isGoogle;
 	}
 
+	public static function Referer()
+	{
+		if (!empty($_SERVER['HTTP_REFERER'])) {
+		  return $_SERVER['HTTP_REFERER'];
+		} else {
+			return '';
+		}
+	}
+	
 	public static function GetSecondUriPart()
 	{
 		$uri = self::GetRequestURI(true);

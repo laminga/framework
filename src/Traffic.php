@@ -34,7 +34,7 @@ class Traffic
 
 		$chars = str_split($addr);
 
-		$set = self::NumberToFile(ord($chars[sizeof($chars) - 1]) / self::C_FACTOR + 1);
+		$set = self::NumberToFile(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1);
 
 		$device = 'n/d'; // comentado por performance self::GetDevice();
 		$lock = new TrafficLock($set);
@@ -49,7 +49,7 @@ class Traffic
 			header('HTTP/1.1 503 Service Temporarily Unavailable');
 			header('Status: 503 Service Temporarily Unavailable');
 			/* header('Retry-After: 9000'); */
-			echo 'Service unavailable.';
+			echo 'Service unavailable / traffic';
 			Context::EndRequest();
 		}
 	}
@@ -116,9 +116,16 @@ class Traffic
 				$url = Params::SafeServer('REQUEST_URI', 'null');
 			}
 		}
-		$value = $hits . "\t" . $url . "\t" . $agent . "\t" . $deviceSet;
+		$value = $hits . "\t" . self::Clean($url) . "\t" . self::Clean($agent) . "\t" . $deviceSet;
 		$arr[$key] = $value;
 		return $hits;
+	}
+
+	private static function Clean(string $str) : string
+	{
+		$str = str_replace('"', "'", $str);
+		$str = str_replace("\t", ";", $str);
+		return $str;
 	}
 
 	private static function ParseHit($value, &$hits, &$agent, &$url, &$device)
@@ -127,17 +134,14 @@ class Traffic
 
 		$hits = $parts[0] ;
 		if(count($parts) > 3)
-		{
 			$device = $parts[3];
-		}
 
-		if (sizeof($parts) > 1)
+		$agent = '';
+		if (count($parts) > 1)
 		{
 			$agent = $parts[2];
 			$url = $parts[1];
 		}
-		else
-			$agent = '';
 	}
 
 	private static function GetDevicePlural($device)
@@ -155,8 +159,8 @@ class Traffic
 			return 'Tablet';
 		else if($detect->isMobile())
 			return 'Celular';
-		else
-			return 'Computadora';
+
+		return 'Computadora';
 	}
 
 	private static function IsMobileOrTablet()
@@ -203,9 +207,9 @@ class Traffic
 
 			$device = '';
 			if (self::IsMobileOrTablet())
-				$device = ' (' .  self::GetDevice() .')';
+				$device = ' (' . self::GetDevice() . ')';
 
-			Log::HandleSilentException(new MessageException('La IP (' . $ip . ')' . $device. ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
+			Log::HandleSilentException(new MessageException('La IP (' . $ip . ')' . $device . ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
 		}
 		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
 			Performance::SendPerformanceWarning('tráfico por IP sospechoso (' . $ip . ')', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');
@@ -240,9 +244,7 @@ class Traffic
 
 	public static function GetTraffic($getYesterday, &$totalIps, &$totalHits)
 	{
-		$ret = [];
 		$path = Context::Paths()->GetTrafficLocalPath();
-
 		if ($getYesterday)
 		{
 			$dir = new CompressedDirectory($path, 'yesterday.zip');
@@ -258,6 +260,7 @@ class Traffic
 		$totalIps = [];
 		$totalHits = 0;
 
+		$ret = [];
 		for($n = 1; $n <= 256 / self::C_FACTOR; $n++)
 		{
 			$set = self::NumberToFile($n);
@@ -275,15 +278,15 @@ class Traffic
 					self::ParseHit($value, $hits, $agent, $url, $device);
 					if ($hits >= $threshold)
 					{
-						$item = [];
-						$item['ip'] = $key;
-						$item['hits'] = $hits;
-						$item['country'] = GeoIp::GetCountryName($key);
-						$item['agent'] = $agent;
-						$item['isTotal'] = false;
-						$item['url'] = $url;
-						$item['device'] = $device;
-						$ret[] = $item;
+						$ret[] = [
+							'ip' => $key,
+							'hits' => $hits,
+							'country' => GeoIp::GetCountryName($key),
+							'agent' => $agent,
+							'isTotal' => false,
+							'url' => $url,
+							'device' => $device,
+						];
 					}
 					$totalHits += $hits;
 					$devicePlural = self::GetDevicePlural($device);
@@ -301,7 +304,7 @@ class Traffic
 		Arr::SortByKeyDesc($ret, 'hits');
 
 		$ret[] = Str::BuildTotalsRow($ret, 'ip', ['hits']);
-		$ret[count($ret)-1]['ip'] = 'Total (' . (sizeof($ret) - 1) .')';
+		$ret[count($ret)-1]['ip'] = 'Total (' . (count($ret) - 1) . ')';
 
 		return $ret;
 	}
