@@ -661,6 +661,16 @@ class Str
 		return mb_convert_case($str, MB_CASE_UPPER);
 	}
 
+	public static function Join($arr, $separator = ",")
+	{
+		return implode($separator, $arr);
+	}
+
+	public static function JoinInts($arr, $separator = ",")
+	{
+		return implode($separator, array_map('intval', $arr));
+	}
+
 	public static function CountWords($str)
 	{
 		$unicode = '';

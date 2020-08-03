@@ -237,7 +237,7 @@ class Arr
 	public static function RemoveItemByNamedKey($array, $name, $key)
 	{
 		$pos = self::IndexOfByNamedValue($array, $name, $key);
-		if ($pos == -1) return;
+		if ($pos == -1) return false;
 
 		return self::RemoveAt($array, $pos);
 	}

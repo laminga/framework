@@ -123,9 +123,9 @@ class Params
 
 	public static function GetIntArray($param, $default = array())
 	{
-		$value = self::Get($param, $default);
+		$value = self::Get($param, null);
 		if ($value === null || $value === '')
-			return null;
+			return $default;
 		$arr = explode(',', $value);
 		for($n = 0; $n < sizeof($arr); $n++)
 			$arr[$n] = self::CheckParseIntValue($arr[$n]);

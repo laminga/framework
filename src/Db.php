@@ -338,7 +338,7 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 			$criteria = array_fill(0, count($values), '?');
-			$query = 'DELETE FROM ' . self::QuoteTable($tableName) . ' WHERE ' . self::QuoteColumn($columnName) . ' IN ( ' . implode(',', $criteria) . ')';
+			$query = 'DELETE FROM ' . self::QuoteTable($tableName) . ' WHERE ' . self::QuoteColumn($columnName) . ' IN ( ' . Str::JoinInts($criteria) . ')';
 			return $this->doExecute($query, $values);
 		}
 		finally
