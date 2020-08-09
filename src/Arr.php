@@ -11,7 +11,10 @@ class Arr
 			return $default;
 		return $arr[$index];
 	}
-
+	public static function InArrayCount($arr, $element)
+	{
+		return count(array_keys($arr, $element));
+	}
 	public static function CastColumnAsFloat(&$arr, $column)
 	{
 		for($n = 0; $n < count($arr); $n++)

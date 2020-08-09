@@ -10,57 +10,25 @@ class Log
 	public static $extraErrorTarget = null;
 	public static $extraErrorInfo = null;
 
-	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine, $context = [], $trace = null)
+	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine, 
+																			$context = [], $trace = null,
+																			$innerErrorNumber = null, $innerErrorMessage = null,
+																			$innerErrorFile = null, $innerErrorLine = null, 
+																			$innerTrace = null)
 	{
 		Lock::ReleaseAllStaticLocks();
 
-		if ($trace == null)
-		{
-			$e = new ErrorException();
-			$st = explode("\n", $e->getTraceAsString());
-			if (count($st) > 2)
-			{
-				unset($st[0]);
-				unset($st[1]);
-				unset($st[count($st) - 1]);
-			}
-			$stack = implode("\r\n", $st);
-		}
+		$error = self::FormatError($errorMessage, $errorNumber, $errorFile, 
+												$errorLine, $trace);
+		if ($innerErrorMessage) 
+			$innerError = self::FormatError($innerErrorMessage, $innerErrorNumber, $innerErrorFile, 
+												$innerErrorLine, $innerTrace, "INNER EXCEPTION");
 		else
-			$stack = $trace;
+			$innerError = '';
 
-		$stack = str_replace('#', '                #', $stack);
-		$stack = str_replace('          #1', '#1', $stack);
-
-		//Convierte en links los paths del stack.
-		$stack = preg_replace('/(#\d+ )(.*)\((\d+)\)/', "$1<a href='repath://$2@$3'>$2($3)</a>", $stack);
-
-		$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
-		$referer = Params::SafeServer('HTTP_REFERER', 'null');
-		$remoteAddr = Params::SafeServer('REMOTE_ADDR', 'null');
-		$requestUri = Params::SafeServer('REQUEST_URI', '');
-		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
-
-		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
-		if ($fullUrlData !== null)
-			$fullUrl = '=> Client:      '. $fullUrlData . "\r\n";
-		else
-			$fullUrl = '';
-
-		$text = "REQUEST\r\n" .
-			'=> User:        '. Context::LoggedUser(). "\r\n" .
-			"=> Url:         <a href='". Context::Settings()->GetPublicUrl() . $requestUri . "'>" . Context::Settings()->GetPublicUrl() . $requestUri . "</a>\r\n" .
-			$fullUrl .
-			'=> Agent:       '.  $agent . "\r\n" .
-			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
-			'=> Method:      '.  $requestMethod . "\r\n" .
-			'=> IP:          '.  $remoteAddr . "\r\n" .
-			"===========================================\r\n" .
-			"ERROR\r\n" .
-			'=> Description: '. $errorMessage . "\r\n" .
-			"=> File:        <a href='repath://" . $errorFile . '@' .  $errorLine . "'>" . $errorFile. ':' .  $errorLine. "</a>\r\n" .
-			'=> Level: ' . self::GetLevel($errorNumber) . "\r\n" .
-			'=> Stack: ' . $stack . "\r\n";
+		$text = self::FormatRequest().
+							$error .
+							$innerError;
 		if (count($_POST) > 0)
 		{
 			$text .= "===========================================\r\n" .
@@ -82,11 +50,6 @@ class Log
 			$textToShow = $text;
 		else
 		{
-			// Filtro temporal (esperemos) para que no muestre
-			// mensajes de error con código de excepciones no
-			// capturadas. La solución correcta sería usar
-			// tipos de excepciones para errores propios y
-			// filtrar las que son tipo \Exception.
 			if(Str::Contains($errorMessage, '/')
 				|| Str::Contains($errorMessage, "\\")
 				|| Str::Contains($errorMessage, '(')
@@ -108,13 +71,67 @@ class Log
 
 		if($filtered)
 			$text .= '[texto filtrado al usuario].';
-
+	
 		if (Context::Settings()->Log()->LogErrorsToDisk)
 			self::PutToErrorLog($text);
 
 		self::LogErrorSendMail($text);
 
 		return $textToShow;
+	}
+
+	private static function FormatRequest()
+	{
+		$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
+		$referer = Params::SafeServer('HTTP_REFERER', 'null');
+		$remoteAddr = Params::SafeServer('REMOTE_ADDR', 'null');
+		$requestUri = Params::SafeServer('REQUEST_URI', '');
+		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
+
+		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
+		if ($fullUrlData !== null)
+			$fullUrl = '=> Client:      '. $fullUrlData . "\r\n";
+		else
+			$fullUrl = '';
+
+		 return "REQUEST\r\n" .
+			'=> User:        '. Context::LoggedUser(). "\r\n" .
+			"=> Url:         <a href='". Context::Settings()->GetPublicUrl() . $requestUri . "'>" . Context::Settings()->GetPublicUrl() . $requestUri . "</a>\r\n" .
+			$fullUrl .
+			'=> Agent:       '.  $agent . "\r\n" .
+			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
+			'=> Method:      '.  $requestMethod . "\r\n" .
+			'=> IP:          '.  $remoteAddr . "\r\n"; 
+	}
+	private static function FormatError($errorNumber, $errorMessage, $errorFile, 
+												$errorLine, $trace = null, $errorType = "ERROR")
+	{
+		if ($trace == null)
+		{
+			$e = new ErrorException();
+			$st = explode("\n", $e->getTraceAsString());
+			if (count($st) > 2)
+			{
+				unset($st[0]);
+				unset($st[1]);
+				unset($st[count($st) - 1]);
+			}
+			$stack = implode("\r\n", $st);
+		}
+		else
+			$stack = $trace;
+
+		$stack = str_replace('#', '                #', $stack);
+		$stack = str_replace('          #1', '#1', $stack);
+
+		//Convierte en links los paths del stack.
+		$stack = preg_replace('/(#\d+ )(.*)\((\d+)\)/', "$1<a href='repath://$2@$3'>$2($3)</a>", $stack);
+		return "===========================================\r\n" 
+			. $errorType . "\r\n" .
+			'=> Description: '. $errorMessage . "\r\n" .
+			"=> File:        <a href='repath://" . $errorFile . '@' .  $errorLine . "'>" . $errorFile. ':' .  $errorLine. "</a>\r\n" .
+			'=> Level: ' . self::GetLevel($errorNumber) . "\r\n" .
+			'=> Stack: ' . $stack . "\r\n";
 	}
 
 	public static function AppendExtraInfo($info)
@@ -174,8 +191,13 @@ class Log
 		$message = $exception->getMessage();
 		if ($silent)
 			$message .= ' (silently processed)';
-		return self::LogError($exception->getCode(), $message,
-			$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString());
+		if (is_a($exception, MingaException::class) && $inner = $exception->getInnerException())
+			return self::LogError($exception->getCode(), $message,
+				$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString(),
+				$inner->getCode(), $inner->getMessage(), $inner->getFile(), $inner->getLine(), $inner->getTraceAsString());
+		else
+			return self::LogError($exception->getCode(), $message,
+				$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString());
 	}
 
 	public static function PutToFatalErrorLog($text)
