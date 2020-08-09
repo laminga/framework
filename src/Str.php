@@ -417,7 +417,7 @@ class Str
 			$ret .= "=" . urlencode($value);
 		return $ret . $suffix;
 	}
-
+	
 	public static function EatFrom($haystack, $needle)
 	{
 		$pos = strpos($haystack, $needle);

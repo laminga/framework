@@ -53,6 +53,10 @@ class Request
 		if (Str::StartsWith($uri, $arg4)) return true;
 		return false;
 	}
+	public static function GetQueryString()
+	{
+		return Params::SafeServer('QUERY_STRING');
+	}
 	public static function GetRequestURI($noParameters = false)
 	{
 		if ($noParameters)
