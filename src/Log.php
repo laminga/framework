@@ -18,6 +18,11 @@ class Log
 	{
 		Lock::ReleaseAllStaticLocks();
 
+		if ($errorMessage && strlen($errorMessage) > 15000)
+			$errorMessage = substr($errorMessage, 0, 10240) . " (trimmed at 10240 bytes) " . substr($errorMessage, strlen($errorMessage) - 1024);
+		if ($innerErrorMessage && strlen($innerErrorMessage) > 15000)
+			$innerErrorMessage = substr($innerErrorMessage, 0, 10240) . " (trimmed at 10240 bytes) " . substr($innerErrorMessage, strlen($innerErrorMessage) - 1024);
+
 		$error = self::FormatError($errorMessage, $errorNumber, $errorFile, 
 												$errorLine, $trace);
 		if ($innerErrorMessage) 
@@ -191,13 +196,18 @@ class Log
 		$message = $exception->getMessage();
 		if ($silent)
 			$message .= ' (silently processed)';
-		if (is_a($exception, MingaException::class) && $inner = $exception->getInnerException())
+		if (is_a($exception, MingaException::class) && $exception->getInnerException())
+		{
+			$inner = $exception->getInnerException();
 			return self::LogError($exception->getCode(), $message,
 				$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString(),
 				$inner->getCode(), $inner->getMessage(), $inner->getFile(), $inner->getLine(), $inner->getTraceAsString());
+		}
 		else
+		{
 			return self::LogError($exception->getCode(), $message,
 				$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString());
+		}
 	}
 
 	public static function PutToFatalErrorLog($text)
