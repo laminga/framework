@@ -11,7 +11,10 @@ class Arr
 			return $default;
 		return $arr[$index];
 	}
-
+	public static function InArrayCount($arr, $element)
+	{
+		return count(array_keys($arr, $element));
+	}
 	public static function CastColumnAsFloat(&$arr, $column)
 	{
 		for($n = 0; $n < count($arr); $n++)
@@ -237,7 +240,7 @@ class Arr
 	public static function RemoveItemByNamedKey($array, $name, $key)
 	{
 		$pos = self::IndexOfByNamedValue($array, $name, $key);
-		if ($pos == -1) return;
+		if ($pos == -1) return false;
 
 		return self::RemoveAt($array, $pos);
 	}
