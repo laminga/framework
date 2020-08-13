@@ -73,14 +73,17 @@ class Ghostscript
 			return null;
 	}
 
-	public static function CreateThumbnail($file)
+	public static function CreateThumbnail($file, $targetFile = null)
 	{
 		Profiling::BeginTimer();
 
-		$targetFile = IO::GetTempFilename() . ".jpg";
-
-		$args = "-dNOPAUSE -dBATCH -sDEVICE=jpeg -dFirstPage=1 -dAlignToPixels=0 -dGridFitTT=2 -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -r30 -sOutputFile=" . $targetFile . " -c .setpdfwrite -f " . $file;
-
+		if (!$targetFile)
+			$targetFile = IO::GetTempFilename() . ".jpg";
+		// -dGridFitTT=2
+		// ignora el tamaño... debería ser 120 de ancho por el alto que de
+		$args = "-dNOPAUSE -dBATCH -r400 -g120x120 -sDEVICE=jpeg
+								-dFirstPage=1 -dPDFFitPage=true -dLastPage=1
+								-dJPEGQ=100 -sOutputFile=" . $targetFile . " " . $file;
 		if (self::RunGhostscript($args) == false)
 			IO::Delete($targetFile);
 

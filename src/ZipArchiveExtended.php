@@ -4,6 +4,11 @@ namespace minga\framework;
 
 class ZipArchiveExtended extends \ZipArchive
 {
+	public function count()
+	{
+		return $this->numFiles;
+	}
+
 	public function hasSubdir($subdir)
 	{
 		$subdir = str_replace(array("/", "\\"), "/", $subdir);
