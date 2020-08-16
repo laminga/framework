@@ -73,11 +73,12 @@ class Ghostscript
 			return null;
 	}
 
-	public static function CreateThumbnail($file)
+	public static function CreateThumbnail($file, $targetFile = null)
 	{
 		Profiling::BeginTimer();
 
-		$targetFile = IO::GetTempFilename() . ".jpg";
+		if (!$targetFile)
+			$targetFile = IO::GetTempFilename() . ".jpg";
 
 		$args = "-dNOPAUSE -dBATCH -sDEVICE=jpeg -dFirstPage=1 -dAlignToPixels=0 -dGridFitTT=2 -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -r30 -sOutputFile=" . $targetFile . " -c .setpdfwrite -f " . $file;
 
