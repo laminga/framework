@@ -110,6 +110,24 @@ class Str
 		return $results;
 	}
 
+	public static function GenerateLink() 
+	{
+		return 'l-' . self::GetRandomString(16);
+	}
+
+	public static function GetRandomString($length) 
+	{
+    $text = "";
+    $possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+    for ($i = 0; $i < $length; $i++)
+		{
+			$pos = floor(rand(0, strlen($possible) - 1));
+			$text .= $possible[(int)$pos];
+		}
+    return $text;
+	}
+
 	public static function CultureCmp($a, $b)
 	{
 		$a2 = self::RemoveAccents($a);
