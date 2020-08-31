@@ -258,11 +258,13 @@ class WebConnection
 		if ($this->error != '')
 			$this->AppendLogData('Returning error: ', $this->error);
 
+		IO::Delete($headerFile);
 		if ($ret === false && $this->throwErrors)
 		{
 			$this->Finalize();
 			MessageBox::ThrowMessage('Error: ' . $this->error);
 		}
+
 		return $response;
 	}
 

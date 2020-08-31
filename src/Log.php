@@ -10,11 +10,11 @@ class Log
 	public static $extraErrorTarget = null;
 	public static $extraErrorInfo = null;
 
-	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine, 
-																			$context = [], $trace = null,
-																			$innerErrorNumber = null, $innerErrorMessage = null,
-																			$innerErrorFile = null, $innerErrorLine = null, 
-																			$innerTrace = null)
+	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine,
+		$context = [], $trace = null,
+		$innerErrorNumber = null, $innerErrorMessage = null,
+		$innerErrorFile = null, $innerErrorLine = null,
+		$innerTrace = null)
 	{
 		Lock::ReleaseAllStaticLocks();
 
@@ -23,13 +23,15 @@ class Log
 		if ($innerErrorMessage && strlen($innerErrorMessage) > 15000)
 			$innerErrorMessage = substr($innerErrorMessage, 0, 10240) . " (trimmed at 10240 bytes) " . substr($innerErrorMessage, strlen($innerErrorMessage) - 1024);
 
-		$error = self::FormatError($errorMessage, $errorNumber, $errorFile, 
-												$errorLine, $trace);
-		if ($innerErrorMessage) 
-			$innerError = self::FormatError($innerErrorMessage, $innerErrorNumber, $innerErrorFile, 
-												$innerErrorLine, $innerTrace, "INNER EXCEPTION");
-		else
-			$innerError = '';
+		$error = self::FormatError($errorMessage, $errorNumber, $errorFile,
+			$errorLine, $trace);
+
+		$innerError = '';
+		if ($innerErrorMessage)
+		{
+			$innerError = self::FormatError($innerErrorMessage, $innerErrorNumber, $innerErrorFile,
+				$innerErrorLine, $innerTrace, "INNER EXCEPTION");
+		}
 
 		$text = self::FormatRequest().
 							$error .
@@ -76,7 +78,7 @@ class Log
 
 		if($filtered)
 			$text .= '[texto filtrado al usuario].';
-	
+
 		if (Context::Settings()->Log()->LogErrorsToDisk)
 			self::PutToErrorLog($text);
 
@@ -106,10 +108,11 @@ class Log
 			'=> Agent:       '.  $agent . "\r\n" .
 			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
 			'=> Method:      '.  $requestMethod . "\r\n" .
-			'=> IP:          '.  $remoteAddr . "\r\n"; 
+			'=> IP:          '.  $remoteAddr . "\r\n";
 	}
-	private static function FormatError($errorNumber, $errorMessage, $errorFile, 
-												$errorLine, $trace = null, $errorType = "ERROR")
+
+	private static function FormatError($errorMessage, $errorNumber, $errorFile,
+		$errorLine, $trace = null, $errorType = "ERROR")
 	{
 		if ($trace == null)
 		{
@@ -131,7 +134,7 @@ class Log
 
 		//Convierte en links los paths del stack.
 		$stack = preg_replace('/(#\d+ )(.*)\((\d+)\)/', "$1<a href='repath://$2@$3'>$2($3)</a>", $stack);
-		return "===========================================\r\n" 
+		return "===========================================\r\n"
 			. $errorType . "\r\n" .
 			'=> Description: '. $errorMessage . "\r\n" .
 			"=> File:        <a href='repath://" . $errorFile . '@' .  $errorLine . "'>" . $errorFile. ':' .  $errorLine. "</a>\r\n" .
