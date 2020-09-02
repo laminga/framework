@@ -119,6 +119,6 @@ class Mail
 			"To: " . $to . "\r\n" .
 			"Subject: " . $this->subject . "\r\n".
 			$this->message;
-		Log::PutToLog('mails', $text);
+		Log::PutToLog(Log::MailsPath, $text);
 	}
 }

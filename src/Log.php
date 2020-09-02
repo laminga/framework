@@ -10,6 +10,10 @@ class Log
 	public static $extraErrorTarget = null;
 	public static $extraErrorInfo = null;
 
+	const FatalErrorsPath = 'fatalErrors';
+	const ErrorsPath = 'errors';
+	const MailsPath = 'mails';
+
 	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine,
 		$context = [], $trace = null,
 		$innerErrorNumber = null, $innerErrorMessage = null,
@@ -221,12 +225,12 @@ class Log
 	public static function PutToFatalErrorLog($text)
 	{
 		// Guarda en una carpeta de errores que no pudieron ser notificados
-		self::PutToLog('fatalErrors', $text, true);
+		self::PutToLog(self::FatalErrorsPath, $text, true);
 	}
 
 	public static function PutToErrorLog($text, $fatal = false)
 	{
-		self::PutToLog('errors', $text, true);
+		self::PutToLog(self::ErrorsPath, $text, true);
 	}
 
 	public static function PutToLog($branch, $text, $fatal = false)
@@ -250,14 +254,17 @@ class Log
 			IO::WriteAllText(self::$extraErrorTarget, $text);
 	}
 
-	public static function PutToMail($text)
+	public static function PutToMail($text, $isFatal = false)
 	{
 		if (empty(Context::Settings()->Mail()->NotifyAddressErrors))
 			return true;
 		// Manda email...
 		$mail = new Mail();
 		$mail->to = Context::Settings()->Mail()->NotifyAddressErrors;
-		$mail->subject = 'Error ' . Context::Settings()->applicationName . ' - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
+		$fatal = '';
+		if($isFatal)
+			$fatal = 'Fatal ';
+		$mail->subject = $fatal . 'Error ' . Context::Settings()->applicationName . ' - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
 		$mail->message = $text;
 		if (Context::Settings()->isTesting)
 			return true;
