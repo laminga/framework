@@ -33,20 +33,18 @@ class Log
 				$innerErrorLine, $innerTrace, "INNER EXCEPTION");
 		}
 
-		$text = self::FormatRequest().
-							$error .
-							$innerError;
+		$text = self::FormatRequest() . $error . $innerError;
 		if (count($_POST) > 0)
 		{
-			$text .= "===========================================\r\n" .
-				'=> Post:        ' . print_r($_POST, true);
+			$text .= "===========================================\r\n"
+				. '=> Post:        ' . print_r($_POST, true);
 		}
-		$text .= "===========================================\r\n" .
-			"=> Context:\r\n" . print_r($context, true);
+		$text .= "===========================================\r\n"
+			. "=> Context:\r\n" . print_r($context, true);
 		if (self::$extraErrorInfo !== null)
 		{
-			$text .= "===========================================\r\n" .
-				'=> Info:        ' . print_r(self::$extraErrorInfo, true);
+			$text .= "===========================================\r\n"
+				. '=> Info:        ' . print_r(self::$extraErrorInfo, true);
 		}
 		// Corrige problemas de new line de las diferentes fuentes.
 		$text = str_replace("\r\n", "\n", $text);
@@ -96,19 +94,17 @@ class Log
 		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
 
 		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
+		$fullUrl = '';
 		if ($fullUrlData !== null)
-			$fullUrl = '=> Client:      '. $fullUrlData . "\r\n";
-		else
-			$fullUrl = '';
+			$fullUrl = '=> Client:      ' . $fullUrlData . "\r\n";
 
-		 return "REQUEST\r\n" .
-			'=> User:        '. Context::LoggedUser(). "\r\n" .
-			"=> Url:         <a href='". Context::Settings()->GetPublicUrl() . $requestUri . "'>" . Context::Settings()->GetPublicUrl() . $requestUri . "</a>\r\n" .
-			$fullUrl .
-			'=> Agent:       '.  $agent . "\r\n" .
-			"=> Referer:     <a href='".  $referer . "'>".$referer."</a>\r\n" .
-			'=> Method:      '.  $requestMethod . "\r\n" .
-			'=> IP:          '.  $remoteAddr . "\r\n";
+		return "REQUEST\r\n"
+			. '=> User:        ' . Context::LoggedUser() . "\r\n"
+			. "=> Url:         <a href='" . Context::Settings()->GetPublicUrl() . $requestUri . "'>" . Context::Settings()->GetPublicUrl() . $requestUri . "</a>\r\n" . $fullUrl
+			. '=> Agent:       ' . $agent . "\r\n"
+			. "=> Referer:     <a href='" . $referer . "'>" . $referer . "</a>\r\n"
+			. '=> Method:      ' . $requestMethod . "\r\n"
+			. '=> IP:          ' . $remoteAddr . "\r\n";
 	}
 
 	private static function FormatError($errorMessage, $errorNumber, $errorFile,
@@ -135,11 +131,11 @@ class Log
 		//Convierte en links los paths del stack.
 		$stack = preg_replace('/(#\d+ )(.*)\((\d+)\)/', "$1<a href='repath://$2@$3'>$2($3)</a>", $stack);
 		return "===========================================\r\n"
-			. $errorType . "\r\n" .
-			'=> Description: '. $errorMessage . "\r\n" .
-			"=> File:        <a href='repath://" . $errorFile . '@' .  $errorLine . "'>" . $errorFile. ':' .  $errorLine. "</a>\r\n" .
-			'=> Level: ' . self::GetLevel($errorNumber) . "\r\n" .
-			'=> Stack: ' . $stack . "\r\n";
+			. $errorType . "\r\n"
+			. '=> Description: ' . $errorMessage . "\r\n"
+			. "=> File:        <a href='repath://" . $errorFile . '@' . $errorLine . "'>" . $errorFile . ':' . $errorLine . "</a>\r\n"
+			. '=> Level: ' . self::GetLevel($errorNumber) . "\r\n"
+			. '=> Stack: ' . $stack . "\r\n";
 	}
 
 	public static function AppendExtraInfo($info)
@@ -202,14 +198,23 @@ class Log
 		if (is_a($exception, MingaException::class) && $exception->getInnerException())
 		{
 			$inner = $exception->getInnerException();
-			return self::LogError($exception->getCode(), $message,
-				$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString(),
-				$inner->getCode(), $inner->getMessage(), $inner->getFile(), $inner->getLine(), $inner->getTraceAsString());
+			if (is_a($inner, \Exception::class))
+			{
+				return self::LogError($exception->getCode(), $message, $exception->getFile(),
+					$exception->getLine(), [], $exception->getTraceAsString(),
+					$inner->getCode(), $inner->getMessage(), $inner->getFile(),
+					$inner->getLine(), $inner->getTraceAsString());
+			}
+			else
+			{
+				return self::LogError($exception->getCode(), $message, $exception->getFile(),
+					$exception->getLine(), [], $exception->getTraceAsString(), $inner);
+			}
 		}
 		else
 		{
-			return self::LogError($exception->getCode(), $message,
-				$exception->getFile(), $exception->getLine(), [], $exception->getTraceAsString());
+			return self::LogError($exception->getCode(), $message, $exception->getFile(),
+				$exception->getLine(), [], $exception->getTraceAsString());
 		}
 	}
 
@@ -230,12 +235,11 @@ class Log
 		$logPath = Context::Paths()->GetLogLocalPath() . '/' . $branch;
 		$path = $logPath;
 		if ($fatal == false)
-		{
 			$path .= '/' . Date::GetLogMonthFolder();
-		}
+
 		IO::EnsureExists($logPath);
 		IO::EnsureExists($path);
-		//
+
 		$file = Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser()) . '.txt';
 		$file = str_replace(':', '.', $file);
 		$file = str_replace('+', '-', $file);
@@ -250,7 +254,7 @@ class Log
 	{
 		if (empty(Context::Settings()->Mail()->NotifyAddressErrors))
 			return true;
-		// Manda email....
+		// Manda email...
 		$mail = new Mail();
 		$mail->to = Context::Settings()->Mail()->NotifyAddressErrors;
 		$mail->subject = 'Error ' . Context::Settings()->applicationName . ' - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
