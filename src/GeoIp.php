@@ -11,10 +11,12 @@ class GeoIp
 
 	public static function GetCurrentLatLong()
 	{
-		try {
+		try
+		{
 			$addr = Params::SafeServer('REMOTE_ADDR');
-			if ($addr === '127.0.0.1' || self::ip_is_private($addr))
-			{ // Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
+			if ($addr === '127.0.0.1' || self::IpIsPrivate($addr))
+			{
+				// Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
 				$conn = new WebConnection();
 				$conn->Initialize();
 				$response = $conn->Get('https://api.ipify.org?format=json');
@@ -23,8 +25,8 @@ class GeoIp
 				$addr = $myIp['ip'];
 			}
 			$location = self::GetCityLocation($addr);
-			
-			if ($location === null) 
+
+			if ($location === null)
 				$location = self::GetIpFromGeoPluginWebService($addr);
 
 			return $location;
@@ -44,36 +46,34 @@ class GeoIp
 		{
 			$lat = $geoplugin['geoplugin_latitude'];
 			$long = $geoplugin['geoplugin_longitude'];
-			return array('lat' => $lat, 'lon' => $long);
+			return ['lat' => $lat, 'lon' => $long];
 		}
-		else 
-		{
-			return null;
-		}
+		return null;
 	}
-	private static function ip_is_private ($ip) {
-    $pri_addrs = array (
-                      '10.0.0.0|10.255.255.255', // single class A network
-                      '172.16.0.0|172.31.255.255', // 16 contiguous class B network
-                      '192.168.0.0|192.168.255.255', // 256 contiguous class C network
-                      '169.254.0.0|169.254.255.255', // Link-local address also refered to as Automatic Private IP Addressing
-                      '127.0.0.0|127.255.255.255' // localhost
-                     );
 
-    $long_ip = ip2long ($ip);
-    if ($long_ip != -1) {
+	private static function IpIsPrivate ($ip)
+	{
+		$pri_addrs = [
+			'10.0.0.0|10.255.255.255', // single class A network
+			'172.16.0.0|172.31.255.255', // 16 contiguous class B network
+			'192.168.0.0|192.168.255.255', // 256 contiguous class C network
+			'169.254.0.0|169.254.255.255', // Link-local address also refered to as Automatic Private IP Addressing
+			'127.0.0.0|127.255.255.255' // localhost
+		];
 
-        foreach ($pri_addrs AS $pri_addr) {
-            list ($start, $end) = explode('|', $pri_addr);
+		$long_ip = ip2long($ip);
+		if ($long_ip != -1)
+		{
+			foreach ($pri_addrs AS $pri_addr)
+			{
+				list($start, $end) = explode('|', $pri_addr);
 
-             // IF IS PRIVATE
-             if ($long_ip >= ip2long ($start) && $long_ip <= ip2long ($end)) {
-                 return true;
-             }
-        }
-    }
-
-    return false;
+				// IF IS PRIVATE
+				if ($long_ip >= ip2long($start) && $long_ip <= ip2long($end))
+					return true;
+			}
+		}
+		return false;
 	}
 
 	private static function GetGeoDbCountry()
@@ -83,10 +83,9 @@ class GeoIp
 			self::$geoDb = new Reader(Context::Paths()->GetFrameworkDataPath()
 				. '/GeoLite2-Country/GeoLite2-Country.mmdb');
 		}
-
 		return self::$geoDb;
 	}
-	
+
 	private static function GetGeoDbCity()
 	{
 		if(self::$geoDb === null)
@@ -94,24 +93,21 @@ class GeoIp
 			$file = Context::Paths()->GetFrameworkDataPath()
 				. '/GeoLite2-City/GeoLite2-City.mmdb';
 			if (file_exists($file))
-			{
 				self::$geoDb = new Reader($file);
-			}
 		}
-
 		return self::$geoDb;
 	}
+
 	private static function GetCityLocation($ip)
 	{
 		try
 		{
 			$db = self::GetGeoDbCity();
-			if (!$db) {
+			if ($db == false)
 				return null;
-			}
 			$record = $db->city($ip);
 
-			return array('lat' => $record->location->latitude, 'lon' => $record->location->longitude);
+			return ['lat' => $record->location->latitude, 'lon' => $record->location->longitude];
 		}
 		catch(AddressNotFoundException $e)
 		{
@@ -166,8 +162,7 @@ class GeoIp
 
 		if($country !== null)
 			return $country->names['es'];
-		else
-			return '';
+		return '';
 	}
 
 	public static function GetClientCountryCode()
@@ -177,13 +172,12 @@ class GeoIp
 		$country = self::GetCountry($ip);
 		if($country !== null)
 			return $country->isoCode;
-		else
-			return '--';
+		return '--';
 	}
 
 	public static function GetNameFromCode($cc)
 	{
-		$countryNames = array(
+		$countryNames = [
 			'AP' => 'Asia/Región Pacífica',
 			'EU' => 'Europa',
 			'AD' => 'Andorra',
@@ -430,11 +424,10 @@ class GeoIp
 			'A1' => 'Proxy Anónimo',
 			'A2' => 'Proveedor de Satélite',
 			'O1' => 'Otro',
-		);
+		];
 
 		if (array_key_exists(Str::ToUpper($cc), $countryNames))
 			return $countryNames[Str::ToUpper($cc)];
-		else
-			return $cc;
+		return $cc;
 	}
 }
