@@ -1,2 +1,2 @@
-20180501
+20200901
 https://dev.maxmind.com/geoip/geoip2/geolite2/
