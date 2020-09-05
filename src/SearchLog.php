@@ -95,7 +95,7 @@ class SearchLog
 		return [];
 	}
 
-	public static function GetSearchTable($month = '')
+	public static function GetSearchTable($month = '', $includeHeaders = false)
 	{
 		$lock = new SearchLogLock();
 		$lock->LockRead();
@@ -111,6 +111,7 @@ class SearchLog
 		$lock->Release();
 
 		$ret = [];
+		if ($includeHeaders) $ret[] = ['Fecha','Búsqueda','Resultados','Duración (ms)', 'Usuario o sesión'];
 
 		$currentDay = Date::FormattedArDate();
 		for($n = count($rows) - 1; $n >= 0; $n--)

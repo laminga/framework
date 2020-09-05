@@ -167,7 +167,9 @@ class Date
 
 	public static function DateTimeArNow()
 	{
-		return new \DateTime(self::ArNow());
+		$date = new \DateTime;
+		$date->setTimestamp(self::ArNow());
+		return $date;
 	}
 
 	public static function Today()

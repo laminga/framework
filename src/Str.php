@@ -110,6 +110,24 @@ class Str
 		return $results;
 	}
 
+	public static function GenerateLink() 
+	{
+		return 'l-' . self::GetRandomString(16);
+	}
+
+	public static function GetRandomString($length) 
+	{
+    $text = "";
+    $possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+    for ($i = 0; $i < $length; $i++)
+		{
+			$pos = floor(rand(0, strlen($possible) - 1));
+			$text .= $possible[(int)$pos];
+		}
+    return $text;
+	}
+
 	public static function CultureCmp($a, $b)
 	{
 		$a2 = self::RemoveAccents($a);
@@ -312,13 +330,21 @@ class Str
 			$value = self::RemoveEnding($value, "s");
 		return $value;
 	}
-
+	private static function HasShortWord($arr)
+	{
+		$min = Context::Settings()->Db()->FullTextMinWordLength;
+		foreach($arr as $str)
+			if (strlen($str) < $min)
+				return true;
+		return false;
+	}
 	public static function AppendFulltextEndsWithAndRequiredSigns($originalQuery)
 	{
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
 			$keywords_filtered = array_filter($keywords, function($word) {
 				return strlen($word) >= Context::Settings()->Db()->FullTextMinWordLength;
 			});
+
 			$subQuery = join("* +", $keywords_filtered);
 			if ($subQuery != '')
 				$subQuery = '+' . $subQuery . '*';
@@ -339,8 +365,15 @@ class Str
 			{
 				if ($even)
 				{
-					$keywords = explode(" ", trim($part));
-					$ret .= $replacer($keywords) . " ";
+					$keyBlocks = explode(",", $part);
+					foreach($keyBlocks as $block)
+					{
+						$keywords = explode(" ", trim($block));
+						if (self::HasShortWord($keywords))
+							$ret .= $replacer(['"' . trim($block) . '"']) . ' ';
+						else
+							$ret .= $replacer($keywords) . " ";
+					}
 				}
 				else
 					$ret .= $replacer(['"' . $part . '"']) . ' ';

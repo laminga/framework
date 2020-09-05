@@ -9,7 +9,7 @@ use minga\framework\ErrorException;
 use minga\framework\IO;
 use minga\framework\Log;
 use minga\framework\MessageBox;
-use minga\framework\MessageException;
+use minga\framework\PublicException;
 use minga\framework\PhpSession;
 use minga\framework\Profiling;
 use minga\framework\Str;
@@ -141,7 +141,7 @@ abstract class OauthConnector
 
 	public function RedirectErrorNoEmail()
 	{
-		Log::HandleSilentException(new MessageException('No email from ' . $this->ProviderName()));
+		Log::HandleSilentException(new PublicException('No email from ' . $this->ProviderName()));
 
 		MessageBox::ShowDialogPopup('No se ha podido obtener una dirección de correo electrónico a través de ' . $this->ProviderName() . '. Intente otro método de registro para la identificación.', 'Atención');
 	}

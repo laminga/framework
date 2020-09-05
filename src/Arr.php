@@ -125,6 +125,18 @@ class Arr
 		}
 		return $ret;
 	}
+	public static function RemoveDuplicatesByNamedKey($arr, $itemName)
+	{
+		$ret = [];
+
+		for($n = 0; $n < count($arr); $n++)
+		{
+			$current = $arr[$n];
+			if(self::IndexOfByNamedValue($arr, $itemName, $current[$itemName]) === $n)
+				$ret[] = $current;
+		}
+		return $ret;
+	}
 
 	public static function IndexOfByNamedValue($arr, $itemName, $itemValue)
 	{
