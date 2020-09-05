@@ -4,38 +4,46 @@ namespace minga\framework;
 
 class FatalErrorSender
 {
-	public static function SendErrorLog()
+	private static function GetFatalLogPath()
 	{
-		$path = Context::Paths()->GetRoot();
-		$sentPath = Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath . '/sent';
-		IO::EnsureExists($sentPath);
-
-		$files = IO::GetFilesStartsWithAndExt($path, 'error_log', '', true, true);
-		foreach($files as $file)
+		return Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
+	}
+	private static function ResolveFataLogSentPath()
+	{
+		$ret = self::GetFatalLogPath() . '/sent';
+		IO::EnsureExists($ret);
+		return $ret;
+	}
+	
+	public static function SendErrorLog($silent = false)
+	{
+		$path = self::GetFatalLogPath();
+		$file = $path  . '/error_log';
+		$found = false;
+		if (file_exists($file))
 		{
-			if(basename($file) != 'error_log')
-				continue;
-
 			Log::PutToMail('Error file: ' . $file . '<br><br>' . nl2br(file_get_contents($file)), true);
+			$sentPath = self::ResolveFataLogSentPath();
 			IO::Move($file, $sentPath . '/' . Date::FormattedArNow() . '-error_log.txt');
-			sleep(1);
+			$found = true;
 		}
-		echo 'Procesados (error_log): ' . count($files) . "\n";
+		if (!$silent && $found)
+			echo "Procesado (error_log)\n";
 	}
 
-	public static function SendFatalErrors()
+	public static function SendFatalErrors($silent = false)
 	{
 		$path = Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
-		$sentPath = $path . '/sent';
-		IO::EnsureExists($sentPath);
+		$sentPath = self::ResolveFataLogSentPath();
 
 		$files = IO::GetFilesFullPath($path, '.txt');
 		foreach($files as $file)
 		{
 			Log::PutToMail('Error file: ' . $file . '<br><br>' . file_get_contents($file), true);
 			IO::Move($file, $sentPath . '/' . basename($file));
-			sleep(1);
 		}
-		echo 'Procesados (' . Log::FatalErrorsPath . '): ' . count($files) . "\n";
+
+		if (!$silent)
+			echo 'Procesados (' . Log::FatalErrorsPath . '): ' . count($files) . "\n";
 	}
 }

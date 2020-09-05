@@ -14,6 +14,7 @@ class Log
 	const ErrorsPath = 'errors';
 	const MailsPath = 'mails';
 
+
 	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine,
 		$context = [], $trace = null,
 		$innerErrorNumber = null, $innerErrorMessage = null,
@@ -157,7 +158,12 @@ class Log
 		try
 		{
 			self::$isLoggingMailError = true;
+			// Manda el error por mail
 			self::PutToMail(self::RemovePassword($text));
+
+			// Si lo envió sin errores, procesa fatales pendientes
+			FatalErrorSender::SendFatalErrors(true);
+			FatalErrorSender::SendErrorLog(true);
 		}
 		catch(\Exception $e)
 		{
