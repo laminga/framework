@@ -234,17 +234,18 @@ class Log
 		self::PutToLog(self::FatalErrorsPath, $text, true);
 	}
 
-	public static function PutToErrorLog($text, $fatal = false)
+	public static function PutToErrorLog($text)
 	{
-		self::PutToLog(self::ErrorsPath, $text, true);
+		// Guarda en la carpeta estandar de errores
+		self::PutToLog(self::ErrorsPath, $text);
 	}
 
-	public static function PutToLog($branch, $text, $fatal = false)
+	public static function PutToLog($branch, $text, $doNotSaveMonthly = false)
 	{
 		// Lo graba en log
 		$logPath = Context::Paths()->GetLogLocalPath() . '/' . $branch;
 		$path = $logPath;
-		if ($fatal == false)
+		if ($doNotSaveMonthly == false)
 			$path .= '/' . Date::GetLogMonthFolder();
 
 		IO::EnsureExists($logPath);
