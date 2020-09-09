@@ -23,7 +23,7 @@ class Mail
 		$this->from = Context::Settings()->Mail()->From;
 	}
 
-	public function Send($log = true, $isNotification = false, $throwException = true)
+	public function Send($log = true, $skipNotification = false, $throwException = true)
 	{
 		if (Context::Settings()->Log()->LogEmailsToDisk)
 			$this->PutToLog();
@@ -35,7 +35,7 @@ class Mail
 
 		$this->SetAddress($mail, $this->to, $this->toCaption);
 
-		if (! empty(Context::Settings()->Mail()->NotifyAddress) && ! $isNotification && ! $this->skipNotify)
+		if (! empty(Context::Settings()->Mail()->NotifyAddress) && ! $skipNotification && ! $this->skipNotify)
 			$this->SetBCC($mail, Context::Settings()->Mail()->NotifyAddress);
 
 		if(empty($this->bcc) == false)

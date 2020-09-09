@@ -20,7 +20,7 @@ class WebConnection
 	public $logFile2 = null;
 	public $contentType = '';
 	public $requestHeaders = [];
-
+	public $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8'; 
 	private $cookieFile = '';
 
 	public function __construct($throwErrors = false)
@@ -174,7 +174,7 @@ class WebConnection
 
 		$this->requestHeaders = [
 			'Accept-Language: es-es,en',
-			'Accept: text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8',
+			'Accept: ' . $this->accept,
 			'Pragma: no-cache',
 			'Cache-Control: no-cache',
 			'Connection: keep-alive',

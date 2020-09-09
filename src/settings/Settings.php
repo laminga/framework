@@ -19,6 +19,7 @@ class Settings
 	private $cache = null;
 	private $servers = null;
 	private $keys = null;
+	private $notifications = null;
 
 	// UI Settings
 	public $entorno = '';
@@ -162,6 +163,16 @@ class Settings
 
 		return $this->log;
 	}
+
+	
+	public function Notifications()
+	{
+		if ($this->notifications == null)
+			$this->notifications = new NotificationSettings();
+
+		return $this->notifications;
+	}
+
 
 	public function Debug()
 	{
