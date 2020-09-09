@@ -11,6 +11,7 @@ class Log
 	public static $extraErrorInfo = null;
 
 	const FatalErrorsPath = 'fatalErrors';
+	const JsErrorsPath = 'jsErrors';
 	const ErrorsPath = 'errors';
 	const MailsPath = 'mails';
 
@@ -23,10 +24,8 @@ class Log
 	{
 		Lock::ReleaseAllStaticLocks();
 
-		if ($errorMessage && strlen($errorMessage) > 15000)
-			$errorMessage = substr($errorMessage, 0, 10240) . " (trimmed at 10240 bytes) " . substr($errorMessage, strlen($errorMessage) - 1024);
-		if ($innerErrorMessage && strlen($innerErrorMessage) > 15000)
-			$innerErrorMessage = substr($innerErrorMessage, 0, 10240) . " (trimmed at 10240 bytes) " . substr($innerErrorMessage, strlen($innerErrorMessage) - 1024);
+		$errorMessage = self::TrimMessage($errorMessage);
+		$innerErrorMessage = self::TrimMessage($innerErrorMessage);
 
 		$error = self::FormatError($errorMessage, $errorNumber, $errorFile,
 			$errorLine, $trace);
@@ -38,7 +37,7 @@ class Log
 				$innerErrorLine, $innerTrace, "INNER EXCEPTION");
 		}
 
-		$text = self::FormatRequest() . $error . $innerError;
+		$text = self::FormatHttpRequest() . $error . $innerError;
 		if (count($_POST) > 0)
 		{
 			$text .= "===========================================\r\n"
@@ -51,9 +50,8 @@ class Log
 			$text .= "===========================================\r\n"
 				. '=> Info:        ' . print_r(self::$extraErrorInfo, true);
 		}
-		// Corrige problemas de new line de las diferentes fuentes.
-		$text = str_replace("\r\n", "\n", $text);
-		$text = str_replace("\n", "<br>\r\n", $text);
+
+		$text = self::FixLineEndings($text);
 
 		$filtered = false;
 		if (Context::Settings()->Debug()->showErrors)
@@ -90,7 +88,52 @@ class Log
 		return $textToShow;
 	}
 
-	private static function FormatRequest()
+	public static function LogJsError(string $agent, string $referer, string $errorMessage,
+		string $errorUrl, $errorLine, $errorColumn, $trace) : void
+	{
+		$errorMessage = self::TrimMessage($errorMessage);
+
+
+		$remoteAddr = Params::SafeServer('REMOTE_ADDR', 'null');
+		$text = self::FormatRequest($agent, $referer, $remoteAddr,
+			$errorUrl, 'JS');
+
+		$text .= "===========================================\r\n"
+			. "JAVASCRIPT ERROR\r\n"
+			. '=> Description: ' . $errorMessage . "\r\n"
+			. '=> Url: ' . $errorUrl . "\r\n"
+			. '=> Error line: ' . $errorLine . "\r\n"
+			. '=> Error column: ' . $errorColumn . "\r\n"
+			. '=> Stack: ' . $trace . "\r\n";
+
+		$text = self::FixLineEndings($text);
+
+		//TODO: en el js
+		// if (Context::Settings()->Debug()->showErrors)
+
+		if (Context::Settings()->Log()->LogErrorsToDisk)
+			self::PutToJsErrorLog($text);
+
+		self::PutToMailJs($text);
+	}
+
+	private static function FixLineEndings(string $text) : string
+	{
+		// Corrige problemas de new line de las diferentes fuentes.
+		$text = str_replace(["<br>", "<br/>", "<br />"], "", $text);
+		$text = str_replace("\r\n", "\n", $text);
+		$text = str_replace("\n", "<br>\r\n", $text);
+		return $text;
+	}
+
+	private static function TrimMessage(?string $text) : ?string
+	{
+		if ($text != null && strlen($text) > 15000)
+			$text = substr($text, 0, 10240) . " (trimmed at 10240 bytes) " . substr($text, strlen($text) - 1024);
+		return $text;
+	}
+
+	private static function FormatHttpRequest()
 	{
 		$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
 		$referer = Params::SafeServer('HTTP_REFERER', 'null');
@@ -103,9 +146,17 @@ class Log
 		if ($fullUrlData !== null)
 			$fullUrl = '=> Client:      ' . $fullUrlData . "\r\n";
 
+		return self::FormatRequest($agent, $referer, $remoteAddr,
+			Context::Settings()->GetPublicUrl() . $requestUri,
+			$requestMethod, $fullUrl);
+	}
+
+	private static function FormatRequest(string $agent, string $referer, string $remoteAddr,
+		string $requestUri, string $requestMethod, string $fullUrl = '') : string
+	{
 		return "REQUEST\r\n"
 			. '=> User:        ' . Context::LoggedUser() . "\r\n"
-			. "=> Url:         <a href='" . Context::Settings()->GetPublicUrl() . $requestUri . "'>" . Context::Settings()->GetPublicUrl() . $requestUri . "</a>\r\n" . $fullUrl
+			. "=> Url:         <a href='" . $requestUri . "'>" . $requestUri . "</a>\r\n" . $fullUrl
 			. '=> Agent:       ' . $agent . "\r\n"
 			. "=> Referer:     <a href='" . $referer . "'>" . $referer . "</a>\r\n"
 			. '=> Method:      ' . $requestMethod . "\r\n"
@@ -228,19 +279,25 @@ class Log
 		}
 	}
 
-	public static function PutToFatalErrorLog($text)
+	public static function PutToFatalErrorLog(string $text) : void
 	{
-		// Guarda en una carpeta de errores que no pudieron ser notificados
+		// Guarda en una carpeta de errores que no pudieron ser notificados.
 		self::PutToLog(self::FatalErrorsPath, $text, true);
 	}
 
-	public static function PutToErrorLog($text)
+	public static function PutToJsErrorLog(string $text)  : void
 	{
-		// Guarda en la carpeta estandar de errores
+		// Guarda en una carpeta de errores de javascript.
+		self::PutToLog(self::JsErrorsPath, $text);
+	}
+
+	public static function PutToErrorLog(string $text)  : void
+	{
+		// Guarda en la carpeta estandar de errores.
 		self::PutToLog(self::ErrorsPath, $text);
 	}
 
-	public static function PutToLog($branch, $text, $doNotSaveMonthly = false)
+	public static function PutToLog(string $branch, string $text, bool $doNotSaveMonthly = false)
 	{
 		// Lo graba en log
 		$logPath = Context::Paths()->GetLogLocalPath() . '/' . $branch;
@@ -261,26 +318,32 @@ class Log
 			IO::WriteAllText(self::$extraErrorTarget, $text);
 	}
 
-	public static function PutToMail($text, $isFatal = false)
+	public static function PutToMailJs(string $text) : bool
+	{
+		return self::PutToMail($text, 'Javascript ');
+	}
+
+	public static function PutToMailFatal(string $text) : bool
+	{
+		return self::PutToMail($text, 'Fatal ');
+	}
+
+	public static function PutToMail(string $text, string $prefix = '') : bool
 	{
 		if (empty(Context::Settings()->Mail()->NotifyAddressErrors))
 			return true;
 		// Manda email...
 		$mail = new Mail();
 		$mail->to = Context::Settings()->Mail()->NotifyAddressErrors;
-		$fatal = '';
-		if($isFatal)
-			$fatal = 'Fatal ';
-		$mail->subject = $fatal . 'Error ' . Context::Settings()->applicationName . ' - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
+		$mail->subject = $prefix . 'Error ' . Context::Settings()->applicationName . ' - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
 		$mail->message = $text;
 		if (Context::Settings()->isTesting)
 			return true;
 		$mail->Send(false, true);
 		return true;
-
 	}
 
-	private static function GetLevel($errorNumber)
+	private static function GetLevel(int $errorNumber) : string
 	{
 		switch($errorNumber)
 		{
@@ -296,9 +359,9 @@ class Log
 				return 'E_CORE_ERROR'; // 16
 			case E_CORE_WARNING:
 				return 'E_CORE_WARNING'; // 32
-			case E_CORE_ERROR:
+			case E_COMPILE_ERROR:
 				return 'E_COMPILE_ERROR'; // 64
-			case E_CORE_WARNING:
+			case E_COMPILE_WARNING:
 				return 'E_COMPILE_WARNING'; // 128
 			case E_USER_ERROR:
 				return 'E_USER_ERROR'; // 256
@@ -315,7 +378,7 @@ class Log
 			case E_USER_DEPRECATED:
 				return 'E_USER_DEPRECATED'; // 16384
 			default:
-				return $errorNumber;
+				return (string)$errorNumber;
 		}
 	}
 }

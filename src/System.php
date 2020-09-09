@@ -106,8 +106,7 @@ class System
 	public static function IsOnIIS()
 	{
 		if(isset($_SERVER['SERVER_SOFTWARE']) == false)
-			return false;
-
+			return (PHP_OS === "WINNT");
 		$software = Str::ToLower($_SERVER['SERVER_SOFTWARE']);
 		return (strpos($software, 'microsoft-iis') !== false);
 	}
@@ -145,7 +144,6 @@ class System
 				throw new ErrorException('Error RunCommandOnPath: "' . $command
 				.  '", retval: ' . $return .  ', last line: "' . $lastLine . '"');
 		}
-
 		chdir($prevDir);
 		return $output;
 	}

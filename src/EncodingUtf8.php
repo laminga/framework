@@ -208,7 +208,7 @@ class EncodingUtf8
 					}
 					else
 					{ //not valid UTF8.  Convert it.
-						$cc1 = (chr(ord($c1) / 64) | "\xc0");
+						$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
 						$cc2 = ($c1 & "\x3f") | "\x80";
 						$buf .= $cc1 . $cc2;
 					}
@@ -222,7 +222,7 @@ class EncodingUtf8
 					}
 					else
 					{ //not valid UTF8.  Convert it.
-						$cc1 = (chr(ord($c1) / 64) | "\xc0");
+						$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
 						$cc2 = ($c1 & "\x3f") | "\x80";
 						$buf .= $cc1 . $cc2;
 					}
@@ -236,14 +236,14 @@ class EncodingUtf8
 					}
 					else
 					{ //not valid UTF8.  Convert it.
-						$cc1 = (chr(ord($c1) / 64) | "\xc0");
+						$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
 						$cc2 = ($c1 & "\x3f") | "\x80";
 						$buf .= $cc1 . $cc2;
 					}
 				}
 				else
 				{ //doesn't look like UTF8, but should be converted
-					$cc1 = (chr(ord($c1) / 64) | "\xc0");
+					$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
 					$cc2 = (($c1 & "\x3f") | "\x80");
 					$buf .= $cc1 . $cc2;
 				}
@@ -256,7 +256,7 @@ class EncodingUtf8
 				}
 				else
 				{
-					$cc1 = (chr(ord($c1) / 64) | "\xc0");
+					$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
 					$cc2 = (($c1 & "\x3f") | "\x80");
 					$buf .= $cc1 . $cc2;
 				}

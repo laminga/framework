@@ -14,7 +14,7 @@ class FatalErrorSender
 		IO::EnsureExists($ret);
 		return $ret;
 	}
-	
+
 	public static function SendErrorLog($silent = false)
 	{
 		$path = self::GetFatalLogPath();
@@ -22,7 +22,7 @@ class FatalErrorSender
 		$found = false;
 		if (file_exists($file))
 		{
-			Log::PutToMail('Error file: ' . $file . '<br><br>' . nl2br(file_get_contents($file)), true);
+			Log::PutToMailFatal('Error file: ' . $file . '<br><br>' . nl2br(file_get_contents($file)));
 			$sentPath = self::ResolveFataLogSentPath();
 			IO::Move($file, $sentPath . '/' . Date::FormattedArNow() . '-error_log.txt');
 			$found = true;
@@ -39,7 +39,7 @@ class FatalErrorSender
 		$files = IO::GetFilesFullPath($path, '.txt');
 		foreach($files as $file)
 		{
-			Log::PutToMail('Error file: ' . $file . '<br><br>' . file_get_contents($file), true);
+			Log::PutToMailFatal('Error file: ' . $file . '<br><br>' . file_get_contents($file));
 			IO::Move($file, $sentPath . '/' . basename($file));
 		}
 

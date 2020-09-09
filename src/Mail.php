@@ -59,10 +59,6 @@ class Mail
 				$mail->isSendGrid();
 				$mail->SendGridApiKey = Context::Settings()->Keys()->SendGridApiKey;
 				break;
-			case MailSettings::SparkPost:
-				$mail->isSparkPost();
-				$mail->SparkPostApiKey = Context::Settings()->Mail()->SparkPostApiKey;
-				break;
 			case MailSettings::File:
 				$mail->isFile();
 				$mail->EmailFilePath = Context::Settings()->Mail()->EmailFilePath;

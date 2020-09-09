@@ -102,7 +102,7 @@ class Date
 		$span = str_replace("hs", "", $span);
 		$parts = explode(':', $span);
 		$minutes = 60 * (int)$parts[0];
-		if (sizeof($parts) > 1)
+		if (count($parts) > 1)
 			$minutes += (int)$parts[1];
 		return $minutes;
 	}
@@ -123,7 +123,7 @@ class Date
 		$span = str_replace("hs", "", $span);
 		$parts = explode(':', $span);
 		$minutes = 60 * (int)$parts[0];
-		if (sizeof($parts) > 1)
+		if (count($parts) > 1)
 			$minutes += (int)$parts[1];
 		return $minutes;
 	}
@@ -144,7 +144,7 @@ class Date
 		$date = str_replace("-", "/", $date);
 		$date = str_replace(" ", "", $date);
 		$parts = explode('/', $date);
-		if (sizeof($parts) != 3)
+		if (count($parts) != 3)
 			return $date;
 		if (strlen($parts[0]) == 1)
 			$parts[0] = '0' . $parts[0];
@@ -307,7 +307,7 @@ class Date
 		$date = str_replace("-", "/", $date);
 		$date = str_replace(" ", "", $date);
 		$parts = explode('/', $date);
-		if (sizeof($parts) != 3)
+		if (count($parts) != 3)
 		  	return false;
 		for($i = 0; $i < count($parts); $i++)
 		{
@@ -316,7 +316,7 @@ class Date
 			if ((string)$parts[$i] != $prev)
 				return false;
 		}
-		if (checkdate($parts[1] , $parts[0] , $parts[2]) == false)
+		if (checkdate((int)$parts[1] , (int)$parts[0] , (int)$parts[2]) == false)
 			return false;
 		$day = $parts[0];
 		$month = $parts[1];
