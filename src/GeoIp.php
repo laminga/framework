@@ -7,8 +7,9 @@ use GeoIp2\Exception\AddressNotFoundException;
 
 class GeoIp
 {
-	private static $geoDb = null;
-
+	private static $geoDbCity = null;
+	private static $geoDbCountry = null;
+	
 	public static function GetCurrentLatLong()
 	{
 		try
@@ -78,24 +79,24 @@ class GeoIp
 
 	private static function GetGeoDbCountry()
 	{
-		if(self::$geoDb === null)
+		if(self::$geoDbCountry === null)
 		{
-			self::$geoDb = new Reader(Context::Paths()->GetFrameworkDataPath()
+			self::$geoDbCountry = new Reader(Context::Paths()->GetFrameworkDataPath()
 				. '/GeoLite2-Country/GeoLite2-Country.mmdb');
 		}
-		return self::$geoDb;
+		return self::$geoDbCountry;
 	}
 
 	private static function GetGeoDbCity()
 	{
-		if(self::$geoDb === null)
+		if(self::$geoDbCity === null)
 		{
 			$file = Context::Paths()->GetFrameworkDataPath()
 				. '/GeoLite2-City/GeoLite2-City.mmdb';
 			if (file_exists($file))
-				self::$geoDb = new Reader($file);
+				self::$geoDbCity = new Reader($file);
 		}
-		return self::$geoDb;
+		return self::$geoDbCity;
 	}
 
 	private static function GetCityLocation($ip)
