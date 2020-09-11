@@ -5,6 +5,7 @@ namespace minga\framework;
 class Request
 {
 	private static $isGoogle = null;
+	private static $isJson = false;
 
 	public static function IsGoogle()
 	{
@@ -16,15 +17,22 @@ class Request
 		return self::$isGoogle;
 	}
 
+	public static function SetJson() : void
+	{
+		Profiling::$IsJson = true;
+		self::$isJson = true;
+	}
+
+	public static function IsJson() : bool
+	{
+		return self::$isJson;
+	}
+
 	public static function Referer()
 	{
-		if (!empty($_SERVER['HTTP_REFERER'])) {
-		  return $_SERVER['HTTP_REFERER'];
-		} else {
-			return '';
-		}
+		return Params::SafeServer('HTTP_REFERER');
 	}
-	
+
 	public static function GetSecondUriPart()
 	{
 		$uri = self::GetRequestURI(true);
@@ -44,6 +52,7 @@ class Request
 			return null;
 		return $parts[2];
 	}
+
 	public static function RequestURIStartsWith($arg1, $arg2 = null, $arg3 = null, $arg4 = null)
 	{
 		$uri = self::GetRequestURI();
@@ -53,10 +62,12 @@ class Request
 		if (Str::StartsWith($uri, $arg4)) return true;
 		return false;
 	}
+
 	public static function GetQueryString()
 	{
 		return Params::SafeServer('QUERY_STRING');
 	}
+
 	public static function GetRequestURI($noParameters = false)
 	{
 		if ($noParameters)
