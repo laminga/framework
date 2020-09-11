@@ -32,7 +32,7 @@ class Context
 		if(Params::SafeServer('HTTPS') == 'on')
 			$ret = 'https://';
 
-		return $ret . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		return $ret . Params::SafeServer('HTTP_HOST') . Params::SafeServer('REQUEST_URI');
 	}
 
 	public static function InjectSettings($settings)
