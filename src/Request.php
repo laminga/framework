@@ -5,7 +5,6 @@ namespace minga\framework;
 class Request
 {
 	private static $isGoogle = null;
-	private static $isJson = false;
 
 	public static function IsGoogle()
 	{
@@ -15,17 +14,6 @@ class Request
 			self::$isGoogle = Str::Contains($agent, "Googlebot");
 		}
 		return self::$isGoogle;
-	}
-
-	public static function SetJson() : void
-	{
-		Profiling::$IsJson = true;
-		self::$isJson = true;
-	}
-
-	public static function IsJson() : bool
-	{
-		return self::$isJson;
 	}
 
 	public static function Referer()
