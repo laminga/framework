@@ -15,6 +15,15 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals($method->name, $call[1]);
 	}
 
+	public function testCallArray()
+	{
+		$this->expectException(\Exception::class);
+		$method = [
+			[new ForTesting(), 'Method1'],
+		];
+		Reflection::CallArray($method, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+	}
+
 	public function testGetParams()
 	{
 		$params = Reflection::GetParams([__CLASS__, 'ForTesting']);
