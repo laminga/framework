@@ -129,6 +129,7 @@ class GeoIp
 
 	public static function GetCity($ip)
 	{
+		if ($ip == '') return null;
 		try
 		{
 			$record = self::GetGeoDbCity()->city($ip);
@@ -165,6 +166,7 @@ class GeoIp
 	{
 		try
 		{
+			if ($ip == '') return null;
 			$record = self::GetGeoDbCountry()->country($ip);
 			return $record->country;
 		}
@@ -175,8 +177,9 @@ class GeoIp
 	}
 
 	
-public static function GetCountryName($ip)
+	public static function GetCountryName($ip)
 	{
+		if ($ip == '') return null;
 		if ($ip == '127.0.0.1')
 			$ip ='190.55.175.193';
 
