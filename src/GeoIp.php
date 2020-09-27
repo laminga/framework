@@ -190,7 +190,8 @@ public static function GetCountryName($ip)
 	public static function GetClientCountryCode()
 	{
 		$ip = Params::SafeServer('REMOTE_ADDR');
-
+		if (!$ip)
+			return '--';
 		$country = self::GetCountry($ip);
 		if($country !== null)
 			return $country->isoCode;
