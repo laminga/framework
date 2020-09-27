@@ -174,6 +174,10 @@ class GeoIp
 		{
 			return null;
 		}
+		catch(\InvalidArgumentException $e)
+		{
+			return null;
+		}
 	}
 
 	
