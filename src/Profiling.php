@@ -198,27 +198,28 @@ class Profiling
 		if (self::$IsJson == false)
 		{
 			return "<tr><td " . $tdStyle . "><div style='padding-left: " .($depth * 12) . "px'>" . $cellFormat . $v1 . $cellFormatClose . "</div></td>"
-				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v2 . $cellFormatClose . "</td>"
-				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v3 . $cellFormatClose . "</td>"
-				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v4 . $cellFormatClose . "</td>"
-				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v5 . $cellFormatClose . "</td>"
-				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v6 . $cellFormatClose . "</td>"
-				."<td " . $tdStyle . " align='center'>" . $cellFormat . $v7 . $cellFormatClose . "</td>"
-				."<td " . $tdStyle . " align='right'>" . $cellFormat . $v8 . $cellFormatClose . "</td>"
-				."<td " . $tdStyle . " align='right'>" . $cellFormat . $v9 . $cellFormatClose . "</td>"
-				."</tr>";
+				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v2 . $cellFormatClose . "</td>"
+				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v3 . $cellFormatClose . "</td>"
+				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v4 . $cellFormatClose . "</td>"
+				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v5 . $cellFormatClose . "</td>"
+				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v6 . $cellFormatClose . "</td>"
+				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v7 . $cellFormatClose . "</td>"
+				. "<td " . $tdStyle . " align='right'>" . $cellFormat . $v8 . $cellFormatClose . "</td>"
+				. "<td " . $tdStyle . " align='right'>" . $cellFormat . $v9 . $cellFormatClose . "</td>"
+				. "</tr>";
 		}
 		else
 		{
-			return self::FixColWidth(str_repeat("_", $depth * 2). $v1, 71, true) .
-				self::FixColWidth($v2, 7) .
-				self::FixColWidth($v3, 7) .
-				self::FixColWidth($v4, 7) .
-				self::FixColWidth($v5, 8) .
-				self::FixColWidth($v6, 8) .
-				self::FixColWidth($v7, 11) .
-				self::FixColWidth($v8, 11) .
-				self::FixColWidth($v9, 11) . " \n";
+			return self::FixColWidth(str_repeat("_", $depth * 2) . $v1, 71, true)
+				. self::FixColWidth($v2, 7)
+				. self::FixColWidth($v3, 7)
+				. self::FixColWidth($v4, 7)
+				. self::FixColWidth($v5, 8)
+				. self::FixColWidth($v6, 8)
+				. self::FixColWidth($v7, 11)
+				. self::FixColWidth($v8, 11)
+				. self::FixColWidth($v9, 11)
+			  	. " \n";
 		}
 	}
 

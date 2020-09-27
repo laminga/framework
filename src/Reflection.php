@@ -67,4 +67,24 @@ class Reflection
 		};
 		return $makePublic->call($instance, $param);
 	}
+
+	public static function CallArray(array $methodsInfo, ...$args) : void
+	{
+		if(count($args) > 9)
+			throw new \Exception('Max params 9');
+
+		foreach($methodsInfo as $methodInfo)
+		{
+			Profiling::BeginTimer(get_class($methodInfo[0]) . "->" . $methodInfo[1]);
+
+			$class = $methodInfo[0];
+			$method = $methodInfo[1];
+
+			$class->$method(...$args);
+
+			Profiling::EndTimer();
+		}
+	}
+
+
 }

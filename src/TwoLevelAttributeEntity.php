@@ -57,6 +57,13 @@ class TwoLevelAttributeEntity
 		return $this->sections[$section];
 	}
 
+	public function SafeGetItem($section, $default = null)
+	{
+		if(isset($this->sections[$section]))
+			return $this->sections[$section];
+		return $default;
+	}
+
 	public function GetSectionArray()
 	{
 		return array_keys($this->sections);
