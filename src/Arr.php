@@ -243,6 +243,16 @@ class Arr
 		return $ret;
 	}
 
+	public static function ToArrFromKeyArr($arr)
+	{
+		$ret = [];
+		foreach($arr as $key => $values)
+		{
+			$ret[] = array_merge(['Id' => $key], $values);
+		}
+		return $ret;
+	}
+
 	public static function RemoveAt(&$itemParam, $pos)
 	{
 		array_splice($itemParam, $pos, 1);
@@ -256,7 +266,12 @@ class Arr
 
 		return self::RemoveAt($array, $pos);
 	}
-
+	public static function RemoveByValue($array, $value)
+	{
+		if (in_array($value, $array))
+			unset($array[$value]);
+		return $array;
+	}		
 	public static function RemoveItemByKeyValue($array, $key, $value)
 	{
 		$ret = [];
@@ -284,7 +299,29 @@ class Arr
 			$arr[$i] = '';
 		return $arr;
 	}
+	public static function AddArrayKeys($arr1, $arr2)
+	{
+		$ret = [];
+		foreach([$arr1, $arr2] as $arr)
+			foreach($arr as $key => $value)
+				if (array_key_exists($key, $ret))
+					$ret[$key] += $value;
+				else
+					$ret[$key] = $value;
 
+		return $ret;
+	}
+
+	public static function ReplaceKeys($arr, $dictionary)
+	{
+		$ret = [];
+		foreach($arr as $key => $item)
+		{
+			$newKey = $dictionary[$key];
+			$ret[$newKey] = $item;
+		}
+		return $ret;
+	}		
 	public static function FromSortedToKeyed($arr, $field)
 	{
 		$ret = [];

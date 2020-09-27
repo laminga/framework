@@ -28,6 +28,7 @@ class Settings
 	public $readonlyForMaintenance = false;
 
 	public $applicationName = 'AppName';
+	public $currentCountry = 'Argentina';
 
 	public $useVendor = false;
 	public $allowExport = true;

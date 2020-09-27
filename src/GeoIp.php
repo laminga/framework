@@ -81,20 +81,27 @@ class GeoIp
 	{
 		if(self::$geoDbCountry === null)
 		{
-			self::$geoDbCountry = new Reader(Context::Paths()->GetFrameworkDataPath()
-				. '/GeoLite2-Country/GeoLite2-Country.mmdb');
+			$file = self::SolvePath('GeoLite2-Country/GeoLite2-Country.mmdb');
+			self::$geoDbCountry = new Reader($file);
 		}
 		return self::$geoDbCountry;
 	}
-
+	private static function SolvePath($path)
+	{
+		$dir1 = Context::Paths()->GetFrameworkDataPath();
+		if (file_exists($dir1 . '/' . $path))
+			return $dir1 . '/' . $path;
+		$dir2 = Context::Paths()->GetStorageRoot() . '/geoip';
+		if (file_exists($dir2 . '/' . $path))
+			return $dir2 . '/' . $path;
+		throw new \Exception('Path not found for ' . $path);
+	}
 	private static function GetGeoDbCity()
 	{
 		if(self::$geoDbCity === null)
 		{
-			$file = Context::Paths()->GetFrameworkDataPath()
-				. '/GeoLite2-City/GeoLite2-City.mmdb';
-			if (file_exists($file))
-				self::$geoDbCity = new Reader($file);
+			$file = self::SolvePath('GeoLite2-City/GeoLite2-City.mmdb');
+			self::$geoDbCity = new Reader($file);
 		}
 		return self::$geoDbCity;
 	}
@@ -120,7 +127,7 @@ class GeoIp
 		}
 	}
 
-	private static function GetCity($ip)
+	public static function GetCity($ip)
 	{
 		try
 		{
@@ -137,12 +144,12 @@ class GeoIp
 		}
 	}
 
-	private static function GetCountry($ip)
+	public static function GetSubdivisions($ip)
 	{
 		try
 		{
-			$record = self::GetGeoDbCountry()->country($ip);
-			return $record->country;
+			$record = self::GetGeoDbCity()->city($ip);
+			return $record->subdivisions;
 		}
 		catch(AddressNotFoundException $e)
 		{
@@ -154,7 +161,21 @@ class GeoIp
 		}
 	}
 
-	public static function GetCountryName($ip)
+	public static function GetCountry($ip)
+	{
+		try
+		{
+			$record = self::GetGeoDbCountry()->country($ip);
+			return $record->country;
+		}
+		catch(AddressNotFoundException $e)
+		{
+			return null;
+		}
+	}
+
+	
+public static function GetCountryName($ip)
 	{
 		if ($ip == '127.0.0.1')
 			$ip ='190.55.175.193';

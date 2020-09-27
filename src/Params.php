@@ -102,6 +102,12 @@ class Params
 		return self::CheckParseIntValue($value);
 	}
 
+	public static function GetMonthMandatory($param)
+	{
+		$value = self::GetMandatory($param);
+		return self::CheckParseMonthValue($value);
+	}
+
 	public static function GetBoolMandatory($param)
 	{
 		$value = self::GetIntMandatory($param);
@@ -119,6 +125,14 @@ class Params
 		if ($value === null || $value === '')
 			return null;
 		return self::CheckParseIntValue($value);
+	}
+
+	public static function GetMonth($param, $default = null)
+	{
+		$value = self::Get($param, $default);
+		if ($value === null || $value === '')
+			return null;
+		return self::CheckParseMonthValue($value);
 	}
 
 	public static function GetIntArray($param, $default = array())
@@ -156,6 +170,17 @@ class Params
 		if ((string)$i !== (string)$value)
 			throw new ErrorException('Parameter value of "' . $value . '" is invalid.');
 		return $i;
+	}
+
+	public static function CheckParseMonthValue($value)
+	{
+		if (strlen($value) !== 7 || substr($value, 4, 1) !== '-')
+			throw new ErrorException('Parameter value of "' . $value . '" is invalid.');
+		$y = self::CheckParseIntValue(substr($value, 0, 4));
+		$m = self::CheckParseIntValue(ltrim(substr($value, 5, 2), '0'));
+		if ($y < 2000 || $y > 3000 || $m < 1 || $m > 12)
+			throw new ErrorException('Parameter value of "' . $value . '" is invalid.');
+		return $value;
 	}
 
 	public static function GetJsonMandatory($param, $assoc = false)

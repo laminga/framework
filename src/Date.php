@@ -94,6 +94,20 @@ class Date
 		return substr($date, 6, 4) . '-' . substr($date, 3, 2).'-' . substr($date, 0, 2);
 	}
 
+	public static function AbsoluteMonth($date)
+	{
+		return self::DateTimeGetYear($date) * 12 + self::DateTimeGetMonth($date) - 1;
+	}
+	
+	public static function DateTimeGetMonth($date)
+	{
+		return intval($date->format('m'));
+	}
+	public static function DateTimeGetYear($date)
+	{
+		return intval($date->format('Y'));
+	}
+
 	public static function ParseTime($span)
 	{
 		if ($span == "")
@@ -169,6 +183,19 @@ class Date
 	{
 		$date = new \DateTime;
 		$date->setTimestamp(self::ArNow());
+		return $date;
+	}
+
+	public static function DateTimeNow()
+	{
+		$date = new \DateTime;
+		$date->setTimestamp(time());
+		return $date;
+	}
+
+	public static function DateTimeToday()
+	{
+		$date = date_create(self::Today());
 		return $date;
 	}
 
