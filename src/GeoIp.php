@@ -9,8 +9,8 @@ class GeoIp
 {
 	private static $geoDbCity = null;
 	private static $geoDbCountry = null;
-	
-	public static function GetCurrentLatLong()
+
+	public static function GetCurrentLatLong() : ?array
 	{
 		try
 		{
@@ -39,11 +39,11 @@ class GeoIp
 		}
 	}
 
-	private static function GetIpFromGeoPluginWebService($addr)
+	private static function GetIpFromGeoPluginWebService(string $addr) : ?array
 	{
 		$path = 'http://www.geoplugin.net/php.gp?ip=' . $addr;
 		$geoplugin = unserialize(file_get_contents($path));
-		if ( is_numeric($geoplugin['geoplugin_latitude']) && is_numeric($geoplugin['geoplugin_longitude']) )
+		if (is_numeric($geoplugin['geoplugin_latitude']) && is_numeric($geoplugin['geoplugin_longitude']))
 		{
 			$lat = $geoplugin['geoplugin_latitude'];
 			$long = $geoplugin['geoplugin_longitude'];
@@ -52,7 +52,7 @@ class GeoIp
 		return null;
 	}
 
-	private static function IpIsPrivate ($ip)
+	private static function IpIsPrivate($ip)
 	{
 		$pri_addrs = [
 			'10.0.0.0|10.255.255.255', // single class A network
@@ -77,7 +77,7 @@ class GeoIp
 		return false;
 	}
 
-	private static function GetGeoDbCountry()
+	private static function GetGeoDbCountry() : Reader
 	{
 		if(self::$geoDbCountry === null)
 		{
@@ -86,6 +86,7 @@ class GeoIp
 		}
 		return self::$geoDbCountry;
 	}
+
 	private static function SolvePath($path)
 	{
 		$dir1 = Context::Paths()->GetFrameworkDataPath();
@@ -96,7 +97,8 @@ class GeoIp
 			return $dir2 . '/' . $path;
 		throw new \Exception('Path not found for ' . $path);
 	}
-	private static function GetGeoDbCity()
+
+	private static function GetGeoDbCity() : Reader
 	{
 		if(self::$geoDbCity === null)
 		{
@@ -106,7 +108,7 @@ class GeoIp
 		return self::$geoDbCity;
 	}
 
-	private static function GetCityLocation($ip)
+	private static function GetCityLocation($ip) : ?array
 	{
 		try
 		{
@@ -127,9 +129,10 @@ class GeoIp
 		}
 	}
 
-	public static function GetCity($ip)
+	public static function GetCity(string $ip)
 	{
-		if ($ip == '') return null;
+		if ($ip == '')
+			return null;
 		try
 		{
 			$record = self::GetGeoDbCity()->city($ip);
@@ -166,7 +169,8 @@ class GeoIp
 	{
 		try
 		{
-			if ($ip == '') return null;
+			if ($ip == '')
+				return null;
 			$record = self::GetGeoDbCountry()->country($ip);
 			return $record->country;
 		}
@@ -180,10 +184,11 @@ class GeoIp
 		}
 	}
 
-	
-	public static function GetCountryName($ip)
+
+	public static function GetCountryName($ip) : ?string
 	{
-		if ($ip == '') return null;
+		if ($ip == '')
+			return null;
 		if ($ip == '127.0.0.1')
 			$ip ='190.55.175.193';
 
@@ -194,7 +199,7 @@ class GeoIp
 		return '';
 	}
 
-	public static function GetClientCountryCode()
+	public static function GetClientCountryCode() : string
 	{
 		$ip = Params::SafeServer('REMOTE_ADDR');
 		if (!$ip)
@@ -205,7 +210,7 @@ class GeoIp
 		return '--';
 	}
 
-	public static function GetNameFromCode($cc)
+	public static function GetNameFromCode(string $cc) : string
 	{
 		$countryNames = [
 			'AP' => 'Asia/Región Pacífica',
