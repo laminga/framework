@@ -61,7 +61,8 @@ class Mail
 
 	private function ResolveProvider($recipient)
 	{
-		$provider = Context::Settings()->Mail()->Provider;
+		if(Context::Settings()->entorno == 'desa')
+			return Context::Settings()->Mail()->Provider;
 
 		if (is_array($recipient) == false)
 			$recipient = [$recipient];
@@ -69,10 +70,10 @@ class Mail
 		foreach($recipient as $to)
 		{
 			if ($this->IsForcedMailProviderDomain($to))
-				$provider = MailSettings::Mail;
+				return MailSettings::Mail;
 		}
 
-		return $provider;
+		return Context::Settings()->Mail()->Provider;
 	}
 
 	public function SetProvider($mail, $recipient)
