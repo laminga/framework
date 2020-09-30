@@ -210,6 +210,66 @@ class Arr
 		return $ret;
 	}
 
+	public static function SummarizeField($array, $field)
+	{
+		$ret = 0;
+		foreach($array as $item)
+		{
+			if (array_key_exists($field, $item))
+			{
+				$value = $item[$field];
+				if ($value)
+					$ret += $value;
+			}
+		}
+		return $ret;
+	}
+
+	
+	public static function SummarizeValues($array)
+	{
+		$ret = 0;
+		foreach($array as $value)
+		{
+			if ($value && $value !== '-')
+				$ret += $value;
+		}
+		return $ret;
+	}
+
+	
+	public static function MeanValues($array, $weights = null)
+	{
+		$sum = 0;
+		$count = 0;
+		if (!$weights)
+			foreach($array as $value)
+			{
+				if ($value && $value !== '-')
+				{
+					$sum += $value;
+					$count++;
+				}
+			}
+		else
+			for($n = 0; $n < sizeof($array); $n++)
+			{
+				$value = $array[$n];
+				$weight = $weights[$n];
+				if ($value && $value !== '-' && $weight)
+				{
+					$sum += $value * $weight;
+					$count += $weight;
+				}
+			}
+		if ($count > 0)
+			$ret = $sum / $count;
+		else 
+			$ret = 0;
+		return $ret;
+	}
+
+
 	public static function UniqueByField($key, $arrayTotal)
 	{
 		$ret = [];

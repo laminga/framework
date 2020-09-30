@@ -186,6 +186,12 @@ class Date
 		return $date;
 	}
 
+	public static function DaysDiff($date1, $date2)
+	{
+		$interval = date_diff($date1, $date2);
+		return intval($interval->format('%a'));
+	}
+
 	public static function DateTimeNow()
 	{
 		$date = new \DateTime;

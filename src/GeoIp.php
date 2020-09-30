@@ -39,6 +39,22 @@ class GeoIp
 		}
 	}
 
+	public static function GetCityDatabaseDatetime()
+	{
+		$c = self::GetGeoDbCity();
+		$ret = new \DateTime;
+		$ret->setTimestamp($c->metadata()->buildEpoch);
+		return $ret;
+	}
+
+	public static function GetCountryDatabaseDatetime()
+	{
+		$c = self::GetGeoDbCountry();
+		$ret = new \DateTime;
+		$ret->setTimestamp($c->metadata()->buildEpoch);
+		return $ret;
+	}
+
 	private static function GetIpFromGeoPluginWebService(string $addr) : ?array
 	{
 		$path = 'http://www.geoplugin.net/php.gp?ip=' . $addr;
