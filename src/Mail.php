@@ -56,7 +56,11 @@ class Mail
 	{
 		$recipient = Str::ToLower($recipient);
 		return Str::EndsWith($recipient, '@hotmail.com') ||
-								Str::EndsWith($recipient, '@outlook.com') || Str::EndsWith($recipient, '@outlook.es');
+								Str::EndsWith($recipient, '@live.com.ar') ||
+								Str::EndsWith($recipient, '@live.com') ||
+								Str::EndsWith($recipient, '@outlook.com.ar') ||
+								Str::EndsWith($recipient, '@outlook.com') ||
+								Str::EndsWith($recipient, '@outlook.es');
 	}
 	private function ResolveProvider($recipient)
 	{
