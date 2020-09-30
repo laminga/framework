@@ -55,13 +55,19 @@ class Mail
 	private function IsForcedMailProviderDomain($recipient)
 	{
 		$recipient = Str::ToLower($recipient);
-		return Str::EndsWith($recipient, '@hotmail.com') || Str::EndsWith($recipient, '@outlook.com');
+		return Str::EndsWith($recipient, '@hotmail.com') ||
+								Str::EndsWith($recipient, '@outlook.com') || Str::EndsWith($recipient, '@outlook.es');
 	}
 	private function ResolveProvider($recipient)
 	{
 		$provider = Context::Settings()->Mail()->Provider;
-		if ($this->IsForcedMailProviderDomain($recipient))
-			$provider = MailSettings::Mail;
+
+		if (!is_array($recipient)) $recipient = [$recipient];
+
+		foreach($recipient as $to)
+			if ($this->IsForcedMailProviderDomain($to))
+				$provider = MailSettings::Mail;
+
 		return $provider;
 	}
 
