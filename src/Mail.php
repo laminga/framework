@@ -29,7 +29,8 @@ class Mail
 			$this->PutToLog();
 
 		$mail = new PHPMailerSendGrid($throwException);
-		$this->SetProvider($mail);
+
+		$this->SetProvider($mail, $this->to);
 
 		$mail->CharSet = "UTF-8";
 
@@ -51,9 +52,24 @@ class Mail
 		self::$MailsSent += 1;
 	}
 
-	public function SetProvider($mail)
+	private function IsForcedMailProviderDomain($recipient)
 	{
-		switch(Context::Settings()->Mail()->Provider)
+		$recipient = Str::ToLower($recipient);
+		return Str::EndsWith($recipient, '@hotmail.com') || Str::EndsWith($recipient, '@outlook.com');
+	}
+	private function ResolveProvider($recipient)
+	{
+		$provider = Context::Settings()->Mail()->Provider;
+		if ($this->IsForcedMailProviderDomain($recipient))
+			$provider = MailSettings::Mail;
+		return $provider;
+	}
+
+	public function SetProvider($mail, $recipient)
+	{
+		$provider = $this->ResolveProvider($recipient);
+
+		switch($provider)
 		{
 			case MailSettings::SendGrid:
 				$mail->isSendGrid();
