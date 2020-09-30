@@ -311,7 +311,16 @@ class Arr
 
 		return $ret;
 	}
-
+	public static function RemoveMissingKeys($arr, $dictionary)
+	{
+		$ret = [];
+		foreach($arr as $key => $item)
+		{
+			if (array_key_exists($key, $dictionary))
+				$ret[$key] = $item;
+		}
+		return $ret;
+	}		
 	public static function ReplaceKeys($arr, $dictionary)
 	{
 		$ret = [];

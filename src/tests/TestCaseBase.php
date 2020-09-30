@@ -18,9 +18,9 @@ class TestCaseBase extends TestCase
 	public function __construct($name = null, array $data = [], $dataName = '')
 	{
 		Context::Settings()->isTesting = true;
+		Context::Settings()->Debug()->debug = false;
+		Context::Settings()->Debug()->showErrors = false;
 
-		// Context::Settings()->Debug()->debug = false;
-		// Context::Settings()->Debug()->showErrors = false;
 		parent::__construct($name, $data, $dataName);
 	}
 
