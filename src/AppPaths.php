@@ -42,6 +42,13 @@ class AppPaths
 		return $this->GetStorageRoot() . "/tokens";
 	}
 
+	public function GetFeedbackPath()
+	{
+		$path = $this->GetStorageRoot() . "/feedback";
+		IO::EnsureExists($path);
+		return $path;
+	}
+
 	public function GetLogLocalPath()
 	{
 		return $this->GetStorageRoot() . '/log';
