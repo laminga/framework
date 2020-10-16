@@ -89,7 +89,7 @@ class Log
 	}
 
 	public static function LogJsError(string $agent, string $referer, string $errorMessage,
-		string $errorUrl, $errorLine, $errorColumn, $trace) : void
+		string $errorUrl, string $errorSource, $errorLine, $errorColumn, $trace) : void
 	{
 		$errorMessage = self::TrimMessage($errorMessage);
 
@@ -102,6 +102,7 @@ class Log
 			. "JAVASCRIPT ERROR\r\n"
 			. '=> Description: ' . $errorMessage . "\r\n"
 			. '=> Url: ' . $errorUrl . "\r\n"
+			. '=> Source: ' . $errorSource . "\r\n"
 			. '=> Error line: ' . $errorLine . "\r\n"
 			. '=> Error column: ' . $errorColumn . "\r\n"
 			. '=> Stack: ' . $trace . "\r\n";
