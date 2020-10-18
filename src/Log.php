@@ -91,6 +91,9 @@ class Log
 	public static function LogJsError(string $agent, string $referer, string $errorMessage,
 		string $errorUrl, string $errorSource, $errorLine, $errorColumn, $trace) : void
 	{
+		if(Str::StartsWith($errorSource, 'safari-extension://'))
+			return;
+
 		$errorMessage = self::TrimMessage($errorMessage);
 
 
