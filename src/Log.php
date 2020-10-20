@@ -89,14 +89,13 @@ class Log
 	}
 
 	public static function LogJsError(string $agent, string $referer, string $errorMessage,
-		string $errorUrl, string $errorSource, $errorLine, $errorColumn, $trace) : void
+		string $errorUrl, string $errorSource, int $errorLine, int $errorColumn, string $trace) : void
 	{
-		if(Str::StartsWith($errorSource, 'safari-extension://')
-			|| Str::Contains($errorMessage, 'https://s7.addthis.com'))
+		if(self::ShouldIgnoreJsError($errorMessage, $errorSource,
+			$errorLine, $errorColumn, $trace))
 		{
 			return;
 		}
-
 
 		$errorMessage = self::TrimMessage($errorMessage);
 
@@ -123,6 +122,22 @@ class Log
 			self::PutToJsErrorLog($text);
 
 		self::PutToMailJs($text);
+	}
+
+	private static function ShouldIgnoreJsError(string $errorMessage, string $errorSource,
+		int $errorLine, int $errorColumn, string $trace) : bool
+	{
+		if(Str::StartsWith($errorSource, 'safari-extension://'))
+			return true;
+		if(Str::Contains($errorMessage, 'https://s7.addthis.com'))
+			return true;
+
+		if($errorMessage == 'Script error.' && $errorSource == ''
+			&& $errorLine == 0 && $errorColumn == 0 && $trace == '')
+		{
+			return true;
+		}
+		return false;
 	}
 
 	private static function FixLineEndings(string $text) : string
