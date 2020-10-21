@@ -131,6 +131,8 @@ class Log
 			return true;
 		if(Str::Contains($errorMessage, 'https://s7.addthis.com'))
 			return true;
+		if(Str::Contains($errorSource, 'https://s7.addthis.com'))
+			return true;
 
 		if($errorMessage == 'Script error.' && $errorSource == ''
 			&& $errorLine == 0 && $errorColumn == 0 && $trace == '')
