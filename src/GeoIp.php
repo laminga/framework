@@ -218,10 +218,10 @@ class GeoIp
 	public static function GetClientCountryCode() : string
 	{
 		$ip = Params::SafeServer('REMOTE_ADDR');
-		if (!$ip)
+		if ($ip == '')
 			return '--';
 		$country = self::GetCountry($ip);
-		if($country !== null)
+		if($country !== null && $country->isoCode !== null)
 			return $country->isoCode;
 		return '--';
 	}

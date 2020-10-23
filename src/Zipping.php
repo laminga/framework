@@ -59,20 +59,20 @@ class Zipping
 		return (int)$stat['mtime'];
 	}
 
-	public static function Filesize($filename)
+	public static function Filesize(string $filename) : int
 	{
 		if (self::IsZipped($filename) == false)
 		{
 			if(file_exists($filename))
 				return filesize($filename);
-			return false;
+			return 0;
 		}
 
 		$stat = self::GetStat($filename);
 		if ($stat == null)
-			return false;
+			return 0;
 
-		return $stat['size'];
+		return (int)$stat['size'];
 	}
 
 	public static function GetStat($filename)

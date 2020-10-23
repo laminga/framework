@@ -53,44 +53,66 @@ class Ghostscript
 		return '<FEFF' . strtoupper(bin2hex(iconv('UTF-8', 'UCS-2BE', $cad))) . '>';
 	}
 
-	public static function CreateRaw($file)
+	public static function CreateRaw($file) : ?string
 	{
 		Profiling::BeginTimer();
+		try
+		{
+			$targetFile = IO::GetTempFilename() . ".pdf";
 
-		$targetFile = IO::GetTempFilename() . ".pdf";
+			$args = "-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="
+				. $targetFile . " -c .setpdfwrite -f " . $file;
 
-		$args = "-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="
-			. $targetFile . " -c .setpdfwrite -f " . $file;
+			if (self::RunGhostscript($args) == false)
+				IO::Delete($targetFile);
 
-		if (self::RunGhostscript($args) == false)
-			IO::Delete($targetFile);
+			Profiling::EndTimer();
 
-		Profiling::EndTimer();
+			if (file_exists($targetFile))
+				return $targetFile;
 
-		if (file_exists($targetFile))
-			return $targetFile;
-		else
 			return null;
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
-	public static function CreateThumbnail($file, $targetFile = null)
+	public static function CreateThumbnail(string $file, ?string $targetFile = null) : ?string
 	{
 		Profiling::BeginTimer();
+		try
+		{
+			if ($targetFile == null)
+				$targetFile = IO::GetTempFilename() . ".jpg";
 
-		if (!$targetFile)
-			$targetFile = IO::GetTempFilename() . ".jpg";
+			$args = "-dNOPAUSE -dBATCH -sDEVICE=jpeg -dFirstPage=1 -dAlignToPixels=0 -dGridFitTT=2 -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=75 -r30 -sOutputFile=" . $targetFile . " -c .setpdfwrite -f " . $file;
 
-		$args = "-dNOPAUSE -dBATCH -sDEVICE=jpeg -dFirstPage=1 -dAlignToPixels=0 -dGridFitTT=2 -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=100 -r30 -sOutputFile=" . $targetFile . " -c .setpdfwrite -f " . $file;
+			//TODO: implementar esto pasando proporciones para evitar llamar dos procesos
+			//1) gs para crear la imagen y 2) Functions::ReisizeImage para hacerla del tamaño esperado.
+			//Se puede unificar en un solo llamado
+			// Agregar estos parámetros: , ?int $width = null, ?int $height = null) : ?string
 
-		if (self::RunGhostscript($args) == false)
-			IO::Delete($targetFile);
+			// $args = '-dBATCH -dNOPAUSE -sDEVICE=jpeg -dFirstPage=1 -dLastPage=1 -dPDFFitPage=true';
+			// // if($width != null)
+			// // 	$args .= ' -dDEVICEWIDTHPOINTS=' . $width;
+			// // if($height != null)
+			// // 	$args .= ' -dDEVICEHEIGHTPOINTS=' . $height;
+			// $args .= ' -sOutputFile="' . $targetFile . '" "' . $file . '"';
 
-		Profiling::EndTimer();
+			if (self::RunGhostscript($args) == false)
+				IO::Delete($targetFile);
 
-		if (file_exists($targetFile))
-			return $targetFile;
-		else
+			if (file_exists($targetFile))
+				return $targetFile;
+
 			return null;
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	private static function RunGhostscript($args)

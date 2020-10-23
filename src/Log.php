@@ -89,8 +89,14 @@ class Log
 	}
 
 	public static function LogJsError(string $agent, string $referer, string $errorMessage,
-		string $errorUrl, $errorLine, $errorColumn, $trace) : void
+		string $errorUrl, string $errorSource, int $errorLine, int $errorColumn, string $trace) : void
 	{
+		if(self::ShouldIgnoreJsError($errorMessage, $errorSource,
+			$errorLine, $errorColumn, $trace))
+		{
+			return;
+		}
+
 		$errorMessage = self::TrimMessage($errorMessage);
 
 
@@ -102,6 +108,7 @@ class Log
 			. "JAVASCRIPT ERROR\r\n"
 			. '=> Description: ' . $errorMessage . "\r\n"
 			. '=> Url: ' . $errorUrl . "\r\n"
+			. '=> Source: ' . $errorSource . "\r\n"
 			. '=> Error line: ' . $errorLine . "\r\n"
 			. '=> Error column: ' . $errorColumn . "\r\n"
 			. '=> Stack: ' . $trace . "\r\n";
@@ -115,6 +122,24 @@ class Log
 			self::PutToJsErrorLog($text);
 
 		self::PutToMailJs($text);
+	}
+
+	private static function ShouldIgnoreJsError(string $errorMessage, string $errorSource,
+		int $errorLine, int $errorColumn, string $trace) : bool
+	{
+		if(Str::StartsWith($errorSource, 'safari-extension://'))
+			return true;
+		if(Str::Contains($errorMessage, 'https://s7.addthis.com'))
+			return true;
+		if(Str::Contains($errorSource, 'https://s7.addthis.com'))
+			return true;
+
+		if($errorMessage == 'Script error.' && $errorSource == ''
+			&& $errorLine == 0 && $errorColumn == 0 && $trace == '')
+		{
+			return true;
+		}
+		return false;
 	}
 
 	private static function FixLineEndings(string $text) : string
