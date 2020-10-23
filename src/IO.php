@@ -531,6 +531,36 @@ class IO
 		return $n;
 	}
 
+	public static function ClearFilesOlderThan($dir, $days, $ext = '')
+	{
+		$time = time();
+
+		$files = IO::GetFilesCursor($dir, $ext);
+		while($files->GetNext())
+		{
+			$fileOnly = $files->Current;
+			$file = $dir . "/" . $fileOnly;
+			if($time - IO::FileMTime($file) >= $days * 60 * 60 * 24)
+				IO::Delete($file);
+		}
+		$files->Close();
+	}
+
+	public static function ClearDirectoriesOlderThan($dir, $days, $ext = '')
+	{
+		$time = time();
+
+		$directories = IO::GetDirectoriesCursor($dir, $ext);
+		while($directories->GetNext())
+		{
+			$directoryOnly = $directories->Current;
+			$directory = $dir . "/" . $directoryOnly;
+			if($time - IO::FileMTime($directory . "/.") >= $days * 60 * 60 * 24)
+				IO::RemoveDirectory($directory);
+		}
+		$directories->Close();
+	}
+
 	public static function ClearFiles($dir, $extension, $recursive = false, $showOnly = false)
 	{
 		if (file_exists($dir) == false)
