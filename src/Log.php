@@ -127,6 +127,8 @@ class Log
 	private static function ShouldIgnoreJsError(string $errorMessage, string $errorSource,
 		int $errorLine, int $errorColumn, string $trace) : bool
 	{
+		if(Str::StartsWith($errorSource, 'moz-extension://'))
+			return true;
 		if(Str::StartsWith($errorSource, 'safari-extension://'))
 			return true;
 		if(Str::Contains($errorMessage, 'https://s7.addthis.com'))
