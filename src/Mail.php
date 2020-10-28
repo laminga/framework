@@ -2,8 +2,8 @@
 
 namespace minga\framework;
 
-use minga\framework\settings\MailSettings;
 use PHPMailer\PHPMailer\PHPMailerSendGrid;
+use minga\framework\settings\MailSettings;
 
 class Mail
 {
@@ -54,15 +54,26 @@ class Mail
 
 	private function IsForcedMailProviderDomain($recipient)
 	{
-		$recipient = Str::ToLower($recipient);
-		return Str::EndsWith($recipient, '@hotmail.com') || Str::EndsWith($recipient, '@outlook.com');
+		return Str::ContainsI($recipient, '@hotmail.')
+			|| Str::ContainsI($recipient, '@live.')
+			|| Str::ContainsI($recipient, '@outlook.');
 	}
+
 	private function ResolveProvider($recipient)
 	{
-		$provider = Context::Settings()->Mail()->Provider;
-		if ($this->IsForcedMailProviderDomain($recipient))
-			$provider = MailSettings::Mail;
-		return $provider;
+		if(Context::Settings()->entorno == 'desa')
+			return Context::Settings()->Mail()->Provider;
+
+		if (is_array($recipient) == false)
+			$recipient = [$recipient];
+
+		foreach($recipient as $to)
+		{
+			if ($this->IsForcedMailProviderDomain($to))
+				return MailSettings::Mail;
+		}
+
+		return Context::Settings()->Mail()->Provider;
 	}
 
 	public function SetProvider($mail, $recipient)

@@ -1,9 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#Variable \$_SESSION in isset\(\) always exists.#'
-			path: src/PhpSession.php
-		-
 			message: '#.*ForTestingParams has an unused parameter #'
 			path: src/tests/ReflectionTest.php
 		-

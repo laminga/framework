@@ -6,39 +6,34 @@ class PhpSession
 {
 	private static $sessionValues = null;
 
-	public static function Destroy()
+	public static function Destroy() : void
 	{
 		if (Context::Settings()->allowPHPsession)
 		{
-			session_start();
+			self::SessionStart();
 			session_unset();
 			session_destroy();
 			// Crea una nueva
-			session_start();
+			self::SessionStart();
 			session_regenerate_id();
 			session_write_close();
 		}
 		self::$sessionValues = [];
 	}
 
-	public static function SessionId()
+	public static function SessionId() : string
 	{
 		if (Context::Settings()->allowPHPsession)
-		{
 			return session_id();
-		}
-		else
-		{
-			return null;
-		}
+		return '';
 	}
 
-	public static function SetSessionValue($key, $value)
+	public static function SetSessionValue($key, $value) : void
 	{
 		if (Context::Settings()->allowPHPsession)
 		{
 			if (session_status() == PHP_SESSION_NONE)
-				session_start();
+				self::SessionStart();
 
 			$_SESSION[$key] = $value;
 			session_write_close();
@@ -49,7 +44,7 @@ class PhpSession
 			if (is_array(self::$sessionValues))
 				self::$sessionValues[$key] = $value;
 			else
-				self::$sessionValues = [ $key => $value ];
+				self::$sessionValues = [$key => $value];
 		}
 	}
 
@@ -60,7 +55,7 @@ class PhpSession
 			if (isset($_SESSION) == false
 				&& session_status() === PHP_SESSION_NONE)
 			{
-				session_start();
+				self::SessionStart();
 				if (self::$sessionValues == null)
 					self::$sessionValues = $_SESSION;
 				session_write_close();
@@ -79,6 +74,18 @@ class PhpSession
 		if (array_key_exists($key, self::$sessionValues))
 			return self::$sessionValues[$key];
 		return $default;
+	}
+
+	private static function SessionStart() : bool
+	{
+		if (ini_get('session.use_cookies') && isset($_COOKIE['PHPSESSID'])
+			&& preg_match('/^[a-zA-Z0-9,\-]{22,40}$/', $_COOKIE['PHPSESSID']) == false)
+		{
+			//Sale con página vacía. Este error es sólo por manipulación
+			//intencional y ningún redirect o unset lo resuelve.
+			exit();
+		}
+		return session_start();
 	}
 
 }

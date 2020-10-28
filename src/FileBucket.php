@@ -13,17 +13,7 @@ class FileBucket
 	{
 		$folder = Context::Paths()->GetBucketsPath();
 		IO::EnsureExists($folder);
-		$time = time();
-
-		$directories = IO::GetDirectoriesCursor($folder);
-		while($directories->GetNext())
-		{
-			$directoryOnly = $directories->Current;
-			$directory = $folder . "/" . $directoryOnly;
-			if($time - IO::FileMTime($directory . "/.") >= 7 * 60 * 60 * 24) // 24 horas
-				IO::RemoveDirectory($directory);
-		}
-		$directories->Close();
+		IO::ClearDirectoriesOlderThan($folder, 7);
 	}
 
 	public function GetBucketFolder()

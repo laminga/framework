@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class ModifiedSince
 {
-	public static function AddCacheHeadersByFile($filename)
+	public static function AddCacheHeadersByFile($filename) : bool
 	{
 		/*if (Request::IsGoogle())
 		{
@@ -24,7 +24,8 @@ class ModifiedSince
 		}*/
 		return self::AddCacheHeaders(Zipping::FileMTime($filename));
 	}
-	public static function AddCacheHeaders($timeStamp)
+
+	public static function AddCacheHeaders($timeStamp) : bool
 	{
 		if($timeStamp === false)
 			$timeStamp = time();
@@ -34,9 +35,9 @@ class ModifiedSince
 		header("Last-Modified: " . $tsHeader);
 		header("Cache-Control: private");
 
-		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
-			&& ($timeStamp <= strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])
-				|| $tsHeader == $_SERVER['HTTP_IF_MODIFIED_SINCE']))
+		$modSince = Params::SafeServer('HTTP_IF_MODIFIED_SINCE');
+
+		if ($modSince != '' && ($timeStamp <= strtotime($modSince) || $tsHeader == $modSince))
 		{
 			header('HTTP/1.0 304 Not Modified');
 			return false;
@@ -44,7 +45,7 @@ class ModifiedSince
 		return true;
 	}
 
-	public static function ProcessIfModified($file, $articleFile = null)
+	public static function ProcessIfModified($file, $articleFile = null) : void
 	{
 		$date = self::CalculateIfModifiedDate($file, $articleFile);
 		if ($date != null)
@@ -59,8 +60,8 @@ class ModifiedSince
 
 	private static function CalculateIfModifiedDate($file1, $file2 = null)
 	{
-		$timeStamp2 = null;
 		$timeStamp1 = null;
+		$timeStamp2 = null;
 
 		if (file_exists($file1))
 		{
