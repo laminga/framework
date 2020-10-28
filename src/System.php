@@ -166,9 +166,9 @@ class System
 		return $val;
 	}
 
-	public static function RunCommandGS($command, $args, &$returnCode = null, $returnFirstLineOnly = false)
+	public static function RunCommandGS($command, $args, &$returnCode = null, $returnFirstLineOnly = false, $checkFile = true)
 	{
-		if (file_exists($command) == false)
+		if ($checkFile && file_exists($command) == false)
 			throw new ErrorException('No se encontró el binario: "' . $command. '".');
 
 		if (Str::StartsWith($args, ' ') == false)
