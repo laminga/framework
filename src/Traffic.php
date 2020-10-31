@@ -44,7 +44,7 @@ class Traffic
 		$lock->Release();
 
 		$limit = self::CheckLimits($hits, $ip);
-		if ($hits >= $limit)
+		if ($hits >= $limit && $ip !== '127.0.0.1')
 		{
 			header('HTTP/1.1 503 Service Temporarily Unavailable');
 			header('Status: 503 Service Temporarily Unavailable');
