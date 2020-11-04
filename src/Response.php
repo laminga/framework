@@ -17,4 +17,9 @@ class Response
 		return self::$isJson;
 	}
 
+	public static function Redirect(string $url) : void
+	{
+		header('Location: ' . $url);
+		exit();
+	}
 }
