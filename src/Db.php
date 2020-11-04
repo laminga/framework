@@ -258,6 +258,16 @@ class Db
 	}
 
 	/**
+	 * Returns the ID of the last inserted row or sequence value.
+	 *
+	 * @return integer The last inserted id.
+	 */
+	public function lastInsertId() : int
+	{
+		return (int)$this->Connection()->lastInsertId();
+	}
+
+	/**
 	 * Inserts or Replaces a table row with specified data.
 	 */
 	private function insertOrReplace(string $tableName, array $data, string $command) : int
