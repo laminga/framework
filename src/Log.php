@@ -135,6 +135,8 @@ class Log
 			return true;
 		if(Str::Contains($errorSource, 'https://s7.addthis.com'))
 			return true;
+		if(Str::Contains($errorMessage, 'function_bar'))
+			return true;
 
 		if(Str::Contains($errorMessage, 'w.source._source is undefined')
 			&& Str::Contains($errorSource, '/jqwidgets/'))
@@ -159,6 +161,13 @@ class Log
 		{
 			return true;
 		}
+
+		if(Str::Contains($errorMessage, "Uncaught SyntaxError: Unexpected identifier")
+			&& Str::Contains($trace, "at XMLHttpRequest.r.onload (<anonymous>:30:38)"))
+		{
+			return true;
+		}
+
 		return false;
 	}
 
