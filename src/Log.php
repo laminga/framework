@@ -131,6 +131,8 @@ class Log
 			return true;
 		if(Str::StartsWith($errorSource, 'safari-extension://'))
 			return true;
+		if(Str::StartsWith($errorSource, 'chrome-extension://'))
+			return true;
 		if(Str::Contains($errorMessage, 'https://s7.addthis.com'))
 			return true;
 		if(Str::Contains($errorSource, 'https://s7.addthis.com'))
