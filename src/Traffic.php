@@ -51,7 +51,7 @@ class Traffic
 		{
 			header('HTTP/1.1 503 Service Temporarily Unavailable');
 			header('Status: 503 Service Temporarily Unavailable');
-			/* header('Retry-After: 9000'); */
+			// header('Retry-After: 9000');
 			echo 'Service unavailable / traffic';
 			Context::EndRequest();
 		}
@@ -174,11 +174,11 @@ class Traffic
 
 	private static function GetLimit() : int
 	{
-		/* PDG: comentado por performance..
-		/*$detect = new \Mobile_Detect();
-		if(self::IsMobileOrTablet())
-			return self::GetMobileLimit();
-		else*/
+		// PDG: comentado por performance..
+		// $detect = new \Mobile_Detect();
+		// if(self::IsMobileOrTablet())
+		// 	return self::GetMobileLimit();
+		// else
 		return self::GetComputerLimit();
 	}
 
@@ -203,20 +203,15 @@ class Traffic
 		$limit = self::GetLimit();
 		if ($hits == $limit)
 		{
-			Performance::SendPerformanceWarning('tráfico por IP (' . $ip . ')', $limit . ' hits', $hits . ' hits', $ip, $userAgent);
-			$defensiveNote= '';
+			$defensiveMode= '';
 			if (self::IsInDefensiveMode())
-				$defensiveNote = ' en modo defensivo';
+				$defensiveMode = ' en modo defensivo';
 
-			$device = '';
-			if (self::IsMobileOrTablet())
-				$device = ' (' . self::GetDevice() . ')';
-
-			// Log::HandleSilentException(new MessageException('La IP (' . $ip . ')' . $device . ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
+			Performance::SendPerformanceWarning('BLOQUEO por IP (' . $ip . ')' . $defensiveMode, $limit . ' hits', $hits . ' hits', $ip, $userAgent);
 		}
 		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
 		{
-			Performance::SendPerformanceWarning('tráfico por IP sospechoso (' . $ip . ')',
+			Performance::SendPerformanceWarning('tráfico por IP (' . $ip . ')',
 				Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits', $ip, $userAgent);
 		}
 		return $limit;
