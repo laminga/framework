@@ -9,12 +9,12 @@ class Traffic
 {
 	const C_FACTOR = 4;
 
-	public static function RegisterIP($ip)
+	public static function RegisterIP(string $ip, string $userAgent = '') : void
 	{
+		Profiling::BeginTimer();
 		try
 		{
-			Profiling::BeginTimer();
-			self::Save($ip);
+			self::Save($ip, $userAgent);
 		}
 		catch(\Exception $e)
 		{
@@ -26,7 +26,7 @@ class Traffic
 		}
 	}
 
-	private static function Save($ip)
+	private static function Save(string $ip, string $userAgent) : void
 	{
 		$addr = inet_pton($ip);
 		if($addr === false)
@@ -43,9 +43,10 @@ class Traffic
 		$hits = self::SaveIpHit($set, $ip, $device);
 		$lock->Release();
 
-		$limit = self::CheckLimits($hits, $ip);
+		$limit = self::CheckLimits($hits, $ip, $userAgent);
 		if ($hits >= $limit && $ip !== '127.0.0.1')
 		{
+			//TODO: cambiar por un captcha.
 			header('HTTP/1.1 503 Service Temporarily Unavailable');
 			header('Status: 503 Service Temporarily Unavailable');
 			/* header('Retry-After: 9000'); */
@@ -54,7 +55,7 @@ class Traffic
 		}
 	}
 
-	public static function DayCompleted()
+	public static function DayCompleted() : void
 	{
 		$locks = [];
 		try
@@ -87,19 +88,19 @@ class Traffic
 		self::ClearDefensiveMode();
 	}
 
-	private static function SaveIpHit($set, $ipaddr, $device)
+	private static function SaveIpHit(string $set, string $ip, string $device) : int
 	{
 		$file = self::ResolveFilename($set);
 		$arr = self::ReadIfExists($file);
-		$hits = self::IncrementKey($arr, $ipaddr, $device);
+		$hits = self::IncrementKey($arr, $ip, $device);
 		// graba
 		IO::WriteIniFile($file, $arr);
 		return $hits;
 	}
 
-	private static function IncrementKey(&$arr, $key, $deviceSet)
+	private static function IncrementKey(array &$arr, string $key, string $deviceSet) : int
 	{
-		if (array_key_exists($key, $arr) == false)
+		if (isset($arr[$key]) == false)
 		{
 			$hits = 1;
 			$url = '';
@@ -128,7 +129,7 @@ class Traffic
 		return $str;
 	}
 
-	private static function ParseHit($value, &$hits, &$agent, &$url, &$device)
+	private static function ParseHit($value, &$hits, &$agent, &$url, &$device) : void
 	{
 		$parts = explode("\t", $value);
 
@@ -144,7 +145,7 @@ class Traffic
 		}
 	}
 
-	private static function GetDevicePlural($device)
+	private static function GetDevicePlural(string $device) : string
 	{
 		if (Str::EndsWith($device, 'r'))
 			return $device . 'es';
@@ -152,7 +153,7 @@ class Traffic
 		return $device . 's';
 	}
 
-	private static function GetDevice()
+	private static function GetDevice() : string
 	{
 		$detect = new \Mobile_Detect();
 		if($detect->isTablet())
@@ -163,13 +164,13 @@ class Traffic
 		return 'Computadora';
 	}
 
-	private static function IsMobileOrTablet()
+	private static function IsMobileOrTablet() : bool
 	{
 		$detect = new \Mobile_Detect();
 		return ($detect->isMobile() || $detect->isTablet());
 	}
 
-	private static function GetLimit()
+	private static function GetLimit() : int
 	{
 		/* PDG: comentado por performance..
 		/*$detect = new \Mobile_Detect();
@@ -179,7 +180,7 @@ class Traffic
 		return self::GetComputerLimit();
 	}
 
-	private static function GetComputerLimit()
+	private static function GetComputerLimit() : int
 	{
 		if (self::IsInDefensiveMode())
 			return Context::Settings()->Limits()->DefensiveModeMaximumDaylyHitsPerIP;
@@ -187,7 +188,7 @@ class Traffic
 		return Context::Settings()->Limits()->MaximumDaylyHitsPerIP;
 	}
 
-	private static function GetMobileLimit()
+	private static function GetMobileLimit() : int
 	{
 		if (self::IsInDefensiveMode())
 			return Context::Settings()->Limits()->DefensiveModeMaximumMobileDaylyHitsPerIP;
@@ -195,12 +196,12 @@ class Traffic
 		return Context::Settings()->Limits()->MaximumMobileDaylyHitsPerIP;
 	}
 
-	private static function CheckLimits($hits, $ip)
+	private static function CheckLimits($hits, string $ip, string $userAgent) : int
 	{
 		$limit = self::GetLimit();
 		if ($hits == $limit)
 		{
-			Performance::SendPerformanceWarning('tráfico por IP (' . $ip . ')', $limit . ' hits', $hits . ' hits');
+			Performance::SendPerformanceWarning('tráfico por IP (' . $ip . ')', $limit . ' hits', $hits . ' hits', $ip, $userAgent);
 			$defensiveNote= '';
 			if (self::IsInDefensiveMode())
 				$defensiveNote = ' en modo defensivo';
@@ -212,11 +213,14 @@ class Traffic
 			Log::HandleSilentException(new MessageException('La IP (' . $ip . ')' . $device . ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
 		}
 		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
-			Performance::SendPerformanceWarning('tráfico por IP sospechoso (' . $ip . ')', Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits');
+		{
+			Performance::SendPerformanceWarning('tráfico por IP sospechoso (' . $ip . ')',
+				Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits', $ip, $userAgent);
+		}
 		return $limit;
 	}
 
-	private static function ReadIfExists($file)
+	private static function ReadIfExists(string $file) : array
 	{
 		if (file_exists($file))
 			return IO::ReadIniFile($file);
@@ -224,25 +228,25 @@ class Traffic
 		return [];
 	}
 
-	private static function ResolveFolder()
+	private static function ResolveFolder() : string
 	{
 		$ret = Context::Paths()->GetTrafficLocalPath();
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public static function NumberToFile($number)
+	public static function NumberToFile(int $number) : string
 	{
 		return 'hits-' . str_pad(strtoupper(dechex($number)), 2, '0', STR_PAD_LEFT);
 	}
 
-	public static function ResolveFilename($set)
+	public static function ResolveFilename($set) : string
 	{
 		$path = self::ResolveFolder();
 		return $path . '/' . $set . '.txt';
 	}
 
-	public static function GetTraffic($getYesterday, &$totalIps, &$totalHits)
+	public static function GetTraffic($getYesterday, &$totalIps, &$totalHits) : array
 	{
 		$path = Context::Paths()->GetTrafficLocalPath();
 		if ($getYesterday)
@@ -309,24 +313,24 @@ class Traffic
 		return $ret;
 	}
 
-	public static function GoDefensiveMode()
+	public static function GoDefensiveMode() : void
 	{
 		$file = self::ResolveDefensiveFile();
 		IO::WriteAllText($file, '1');
 	}
 
-	public static function ClearDefensiveMode()
+	public static function ClearDefensiveMode() : void
 	{
 		$file = self::ResolveDefensiveFile();
 		IO::Delete($file);
 	}
 
-	public static function IsInDefensiveMode()
+	public static function IsInDefensiveMode() : bool
 	{
 		return file_exists(self::ResolveDefensiveFile());
 	}
 
-	private static function ResolveDefensiveFile()
+	private static function ResolveDefensiveFile() : string
 	{
 		return Context::Paths()->GetTrafficLocalPath() . '/defensive.txt';
 	}
