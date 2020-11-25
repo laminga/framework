@@ -33,6 +33,9 @@ class MonitorLimits
 	public $WarningDaylyExecuteMinutes = 150;
 	/** @var int */
 	public $WarningDaylyLockMinutes = 10;
+
+	/** @var array */
+	public $ExcludeIps = ['127.0.0.1'];
 }
 
 

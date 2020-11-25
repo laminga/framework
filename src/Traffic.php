@@ -9,12 +9,12 @@ class Traffic
 {
 	const C_FACTOR = 4;
 
-	public static function RegisterIP(string $ip, string $userAgent = '') : void
+	public static function RegisterIP(string $ip, string $userAgent = '', bool $isMegaUser = false) : void
 	{
 		Profiling::BeginTimer();
 		try
 		{
-			self::Save($ip, $userAgent);
+			self::Save($ip, $userAgent, $isMegaUser);
 		}
 		catch(\Exception $e)
 		{
@@ -26,7 +26,7 @@ class Traffic
 		}
 	}
 
-	private static function Save(string $ip, string $userAgent) : void
+	private static function Save(string $ip, string $userAgent, bool $isMegaUser) : void
 	{
 		$addr = inet_pton($ip);
 		if($addr === false)
@@ -43,10 +43,12 @@ class Traffic
 		$hits = self::SaveIpHit($set, $ip, $device);
 		$lock->Release();
 
+		if($isMegaUser)
+			return;
+
 		$limit = self::CheckLimits($hits, $ip, $userAgent);
-		if ($hits >= $limit && $ip !== '127.0.0.1')
+		if ($hits >= $limit && in_array($ip, Context::Settings()->Limits()->ExcludeIps) == false)
 		{
-			//TODO: cambiar por un captcha.
 			header('HTTP/1.1 503 Service Temporarily Unavailable');
 			header('Status: 503 Service Temporarily Unavailable');
 			/* header('Retry-After: 9000'); */
@@ -210,7 +212,7 @@ class Traffic
 			if (self::IsMobileOrTablet())
 				$device = ' (' . self::GetDevice() . ')';
 
-			Log::HandleSilentException(new MessageException('La IP (' . $ip . ')' . $device . ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
+			// Log::HandleSilentException(new MessageException('La IP (' . $ip . ')' . $device . ' ha llegado al máximo permitido de ' . $limit . ' hits' . $defensiveNote . '.'));
 		}
 		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
 		{
