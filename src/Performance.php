@@ -326,7 +326,7 @@ class Performance
 		self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs,
 											Request::IsGoogle(), Mail::$MailsSent, self::$dbMs, self::$dbHitCount, $extraHits);
 
-		self::CheckLimits($days, $key, $prevHits, $prevDuration, $prevLock);
+		self::CheckLimits($days, $key, $prevHits, $prevDuration, $prevLock, $ellapsedMilliseconds);
 
 		$daylyProcessor = self::ResolveFilenameDayly();
 		IO::WriteIniFile($daylyProcessor, $days);
@@ -353,13 +353,14 @@ class Performance
 		}
 	}
 
-	private static function CheckLimits($days, $key, $prevHits, $prevDuration, $prevLocked)
+	private static function CheckLimits($days, $key, $prevHits, $prevDuration, $prevLocked, $ellapsedMilliseconds)
 	{
 		self::ReadCurrentKeyValues($days, $key, $hits, $duration, $locked);
 
 		$maxMs = Context::Settings()->Limits()->WarningDaylyExecuteMinutes * 60 * 1000;
 		$maxHits = Context::Settings()->Limits()->WarningDaylyHits;
 		$maxLockMs = Context::Settings()->Limits()->WarningDaylyLockMinutes * 60 * 1000;
+		$maxRequestSeconds = Context::Settings()->Limits()->WarningRequestSeconds;
 
 		if ($prevHits < $maxHits && $hits >= $maxHits )
 			self::SendPerformanceWarning('hits', $maxHits . ' hits', $hits . ' hits');
@@ -367,6 +368,9 @@ class Performance
 			self::SendPerformanceWarning('minutos de CPU', self::Format($maxMs, 1000 * 60, 'minutos'), self::Format($duration, 1000 * 60, 'minutos'));
 		if ($prevLocked < $maxLockMs && $locked >= $maxLockMs)
 			self::SendPerformanceWarning('tiempo de locking', self::Format($maxLockMs, 1000 * 60, 'minutos'), self::Format($locked, 1000 * 60, 'minutos'));
+
+		if ($ellapsedMilliseconds >= $maxRequestSeconds * 1000)
+			Log::HandleSilentException(new PublicException('El pedido ha excedido los ' . $maxRequestSeconds . ' segundos de ejecución. Tiempo transcurrido: ' . $ellapsedMilliseconds . ' ms.'));
 
 		// Se fija si tiene que pasar a 'defensive Mode'
 		$defensiveThreshold = Context::Settings()->Limits()->DefensiveModeThresholdDaylyHits;

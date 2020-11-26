@@ -20,6 +20,7 @@ class MonitorLimits
 	public $WarningDaylyHits = 30000;
 	public $WarningDaylyExecuteMinutes = 150;
 	public $WarningDaylyLockMinutes = 10;
+	public $WarningRequestSeconds = 30;
 }
 
 

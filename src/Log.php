@@ -187,10 +187,11 @@ class Log
 		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
 
 		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
-		$fullUrl = '';
 		if ($fullUrlData !== null)
 			$fullUrl = '=> Client:      ' . $fullUrlData . "\r\n";
-
+		else
+			$fullUrl = '';
+		
 		return self::FormatRequest($agent, $referer, $remoteAddr,
 			Context::Settings()->GetPublicUrl() . $requestUri,
 			$requestMethod, $fullUrl);
