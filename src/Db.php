@@ -258,6 +258,16 @@ class Db
 	}
 
 	/**
+	 * Returns the ID of the last inserted row or sequence value.
+	 *
+	 * @return integer The last inserted id.
+	 */
+	public function lastInsertId() : int
+	{
+		return (int)$this->Connection()->lastInsertId();
+	}
+
+	/**
 	 * Inserts or Replaces a table row with specified data.
 	 */
 	private function insertOrReplace(string $tableName, array $data, string $command) : int
@@ -503,7 +513,7 @@ class Db
 			{
 				$name = $columnName . $i++;
 				$set[] = self::QuoteColumn($columnName) . ' = :' . $name;
-				$dataNew[$name] = $value;
+				$dataNew[$name] = self::ConvertType($value);
 			}
 
 			$identifierNew = [];
@@ -512,12 +522,12 @@ class Db
 			{
 				$name = $columnName . $i++;
 				$where[] = self::QuoteColumn($columnName) . ' = :' . $name;
-				$identifierNew[$name] = $value;
+				$identifierNew[$name] = self::ConvertType($value);
 			}
 
 			$params = array_merge($dataNew, $identifierNew);
 
-			$sql  = 'UPDATE ' . self::QuoteTable($tableName) . ' SET ' . implode(', ', $set)
+			$sql = 'UPDATE ' . self::QuoteTable($tableName) . ' SET ' . implode(', ', $set)
 				. ' WHERE ' . implode(' AND ', $where);
 
 			return $this->doExecuteNamedParams($sql, $params);
@@ -527,6 +537,20 @@ class Db
 			Performance::EndDbWait();
 			Profiling::EndTimer();
 		}
+	}
+
+	/**
+	 * MySql no toma bien los bools, es mejor cambiarlos por 1 o 0.
+	 *
+	 * @param mixed $value El valor a convertir (si es bool).
+	 * @return mixed El valor convertido.
+	 *
+	 */
+	private static function ConvertType($value)
+	{
+		if(is_bool($value))
+			return (int)$value;
+		return $value;
 	}
 
 	/*

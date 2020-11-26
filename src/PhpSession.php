@@ -71,7 +71,7 @@ class PhpSession
 	public static function GetSessionValue($key, $default = '')
 	{
 		self::CheckPhpSessionStarted();
-		if (array_key_exists($key, self::$sessionValues))
+		if (isset(self::$sessionValues[$key]))
 			return self::$sessionValues[$key];
 		return $default;
 	}

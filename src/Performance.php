@@ -74,7 +74,7 @@ class Performance
 	}
 	private static function CheckMemoryPeaks()
 	{
-		if (!Context::Settings()->Log()->LogMemoryPeaks)
+		if (Context::Settings()->Log()->LogMemoryPeaks == false)
 			return;
 		$usedMB = round(memory_get_peak_usage() / 1024 / 1024, 1);
 		if ($usedMB < Context::Settings()->Log()->MemoryPeakMB)
@@ -82,10 +82,10 @@ class Performance
 
 		$file = Context::Paths()->GetMemoryPeakPath() . '/' . Date::GetLogMonthFolder() . '.txt';
 		$line = Date::FormattedArNow() . "\t" . $usedMB . "\t" . Str::UrlencodeFriendly(Context::LoggedUser())
-							. "\t" . Request::GetRequestURI();
+			. "\t" . Request::GetRequestURI();
 		try
 		{
-			if (!file_exists($file))
+			if (file_exists($file) == false)
 			{
 				$header = "Date\tMemory_MB\tUser\tUri";
 				IO::AppendLine($file, $header);
@@ -225,7 +225,8 @@ class Performance
 
 	private static function SaveUserUsage($ellapsedMilliseconds, $month = '')
 	{
-		if (!Context::Settings()->Performance()->PerformancePerUser) return;
+		if (Context::Settings()->Performance()->PerformancePerUser == false)
+			return;
 
 		$file = self::ResolveUserFilename($month);
 
@@ -308,7 +309,7 @@ class Performance
 		$days = self::ReadDaysValues();
 		$key = Date::GetLogDayFolder();
 		self::ReadCurrentKeyValues($days, $key, $prevHits, $prevDuration, $prevLock);
-		if (!array_key_exists($key, $days))
+		if (isset($days[$key]) == false)
 			return null;
 		self::ParseHit($days[$key], $_, $_, $_, $_, $_, $_, $_, $extraHits);
 		return $extraHits[$index];
@@ -324,7 +325,7 @@ class Performance
 		$extraHits = Context::ExtraHits();
 
 		self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs,
-											Request::IsGoogle(), Mail::$MailsSent, self::$dbMs, self::$dbHitCount, $extraHits);
+			Request::IsGoogle(), Mail::$MailsSent, self::$dbMs, self::$dbHitCount, $extraHits);
 
 		self::CheckLimits($days, $key, $prevHits, $prevDuration, $prevLock, $ellapsedMilliseconds);
 
@@ -381,7 +382,7 @@ class Performance
 		}
 	}
 
-	public static function SendPerformanceWarning($metric, $limit, $value)
+	public static function SendPerformanceWarning(string $metric, string $limit, string $value, string $ip = '', string $userAgent = '')
 	{
 		if (empty(Context::Settings()->Mail()->NotifyAddress))
 			return;
@@ -395,12 +396,14 @@ class Performance
 			'metric' => $metric,
 			'limit' => $limit,
 			'value' => $value,
+			'ip' => $ip,
+			'userAgent' => $userAgent,
 		];
 		$mail->message = Context::Calls()->RenderMessage('performanceWarning.html.twig', $vals);
 		$mail->Send(false, true);
 	}
 
-	private static function Format($n, $divider, $unit)
+	private static function Format($n, $divider, $unit) : string
 	{
 		return intval($n / $divider) . ' ' . $unit;
 	}
@@ -497,11 +500,11 @@ class Performance
 			}
 		}
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails.
-										';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
+';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
 	}
 
 	private static function ParseHit($value, &$hits, &$duration, &$locked,
-																				 &$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null, &$extra = null)
+		&$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null, &$extra = null)
 	{
 		$parts = explode(';', $value);
 		$hits = $parts[0];

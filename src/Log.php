@@ -131,9 +131,13 @@ class Log
 			return true;
 		if(Str::StartsWith($errorSource, 'safari-extension://'))
 			return true;
+		if(Str::StartsWith($errorSource, 'chrome-extension://'))
+			return true;
 		if(Str::Contains($errorMessage, 'https://s7.addthis.com'))
 			return true;
 		if(Str::Contains($errorSource, 'https://s7.addthis.com'))
+			return true;
+		if(Str::Contains($errorMessage, 'function_bar'))
 			return true;
 
 		if(Str::Contains($errorMessage, 'w.source._source is undefined')
@@ -159,6 +163,13 @@ class Log
 		{
 			return true;
 		}
+
+		if(Str::Contains($errorMessage, "Uncaught SyntaxError: Unexpected identifier")
+			&& Str::Contains($trace, "at XMLHttpRequest.r.onload (<anonymous>:30:38)"))
+		{
+			return true;
+		}
+
 		return false;
 	}
 
@@ -212,6 +223,9 @@ class Log
 	private static function FormatError($errorMessage, $errorNumber, $errorFile,
 		$errorLine, $trace = null, $errorType = "ERROR")
 	{
+		$level = $errorNumber;
+		if(is_numeric($errorNumber))
+			$level = self::GetLevel($errorNumber);
 		if ($trace == null)
 		{
 			$e = new ErrorException();
@@ -229,14 +243,13 @@ class Log
 
 		$stack = str_replace('#', '                #', $stack);
 		$stack = str_replace('          #1', '#1', $stack);
-
 		//Convierte en links los paths del stack.
 		$stack = preg_replace('/(#\d+ )(.*)\((\d+)\)/', "$1<a href='repath://$2@$3'>$2($3)</a>", $stack);
 		return "===========================================\r\n"
 			. $errorType . "\r\n"
 			. '=> Description: ' . $errorMessage . "\r\n"
 			. "=> File:        <a href='repath://" . $errorFile . '@' . $errorLine . "'>" . $errorFile . ':' . $errorLine . "</a>\r\n"
-			. '=> Level: ' . self::GetLevel($errorNumber) . "\r\n"
+			. '=> Level: ' . $level. "\r\n"
 			. '=> Stack: ' . $stack . "\r\n";
 	}
 
@@ -331,13 +344,13 @@ class Log
 		self::PutToLog(self::FatalErrorsPath, $text, true);
 	}
 
-	public static function PutToJsErrorLog(string $text)  : void
+	public static function PutToJsErrorLog(string $text) : void
 	{
 		// Guarda en una carpeta de errores de javascript.
 		self::PutToLog(self::JsErrorsPath, $text);
 	}
 
-	public static function PutToErrorLog(string $text)  : void
+	public static function PutToErrorLog(string $text) : void
 	{
 		// Guarda en la carpeta estandar de errores.
 		self::PutToLog(self::ErrorsPath, $text);

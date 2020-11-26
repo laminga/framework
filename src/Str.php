@@ -42,7 +42,7 @@ class Str
 			//, chr(0x92) // í -> ’
 			//, chr(0x97) // ó -> —
 			//, chr(0x9c) // ú -> œ
-			//, chr(0xe7) // Á -> ç  (en portugués es frecuente ç; en castellano, no tanto Á)
+			//, chr(0xe7) // Á -> ç (en portugués es frecuente ç; en castellano, no tanto Á)
 			, chr(0x83) // É -> ƒ
 			//, chr(0xea) // Í -> ê
 			, chr(0xee) // Ó -> î
@@ -110,22 +110,22 @@ class Str
 		return $results;
 	}
 
-	public static function GenerateLink() 
+	public static function GenerateLink() : string
 	{
 		return 'l-' . self::GetRandomString(16);
 	}
 
-	public static function GetRandomString($length) 
+	public static function GetRandomString(int $length) : string
 	{
-    $text = "";
-    $possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+		$text = "";
+		$possible = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    for ($i = 0; $i < $length; $i++)
+		for ($i = 0; $i < $length; $i++)
 		{
 			$pos = floor(rand(0, strlen($possible) - 1));
 			$text .= $possible[(int)$pos];
 		}
-    return $text;
+		return $text;
 	}
 
 	public static function CultureCmp($a, $b)
@@ -279,13 +279,15 @@ class Str
 
 	public static function StartsWith($haystack, $needle)
 	{
-		if ($needle === null) return false;
+		if ($needle === null)
+			return false;
 		return !strncmp($haystack, $needle, strlen($needle));
 	}
 
 	public static function StartsWithI($haystack, $needle)
 	{
-		if ($needle === null) return false;
+		if ($needle === null)
+			return false;
 		return !strncasecmp($haystack, $needle, strlen($needle));
 	}
 
@@ -312,13 +314,10 @@ class Str
 		return str_replace("'", '\'', str_replace("\n", '\n', str_replace('"', '\"', addcslashes(str_replace("\r", '', (string)$string), "\0..\37'\\"))));
 	}
 
-	public static function BooleanToText($value)
+	public static function BooleanToText(bool $value) : string
 	{
-		if ($value == "")
-			return "";
-		if ($value === "1" || $value === 1 || $value === true)
+		if ($value)
 			return "Sí";
-
 		return "No";
 	}
 
@@ -450,7 +449,7 @@ class Str
 			$ret .= "=" . urlencode($value);
 		return $ret . $suffix;
 	}
-	
+
 	public static function EatFrom($haystack, $needle)
 	{
 		$pos = strpos($haystack, $needle);
@@ -1033,7 +1032,8 @@ class Str
 
 	public static function FormatPercentage($value, $total)
 	{
-		if ($total == 0) return "-";
+		if ($total == 0)
+			return "-";
 		return number_format($value * 100 / $total, 1, ".", "") . "%";
 	}
 
