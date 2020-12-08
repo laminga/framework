@@ -211,10 +211,15 @@ class Performance
 		self::CheckDaylyReset();
 		self::SaveControllerUsage($ellapsedMilliseconds, 'dayly');
 		self::SaveUserUsage($ellapsedMilliseconds, 'dayly');
-		self::SaveDaylyUsage($ellapsedMilliseconds);
+		$limitArgs = self::SaveDaylyUsage($ellapsedMilliseconds);
 		self::SaveDaylyLocks();
 		// listo
 		PerformanceLock::EndWrite();
+
+		// Chequea límites
+		self::CheckLimits($limitArgs['days'], $limitArgs['key'], $limitArgs['prevHits'], 
+												$limitArgs['prevDuration'], $limitArgs['prevLock'], 
+												$ellapsedMilliseconds);
 	}
 
 	public static function IsNewDay()
@@ -315,7 +320,7 @@ class Performance
 		return $extraHits[$index];
 	}
 
-	public static function SaveDaylyUsage($ellapsedMilliseconds)
+	private static function SaveDaylyUsage($ellapsedMilliseconds)
 	{
 		$days = self::ReadDaysValues();
 		$key = Date::GetLogDayFolder();
@@ -327,10 +332,11 @@ class Performance
 		self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs,
 			Request::IsGoogle(), Mail::$MailsSent, self::$dbMs, self::$dbHitCount, $extraHits);
 
-		self::CheckLimits($days, $key, $prevHits, $prevDuration, $prevLock, $ellapsedMilliseconds);
-
 		$daylyProcessor = self::ResolveFilenameDayly();
 		IO::WriteIniFile($daylyProcessor, $days);
+
+		return ['days' => $days, 'key' => $key, 'prevHits' => $prevHits, 'prevDuration' => $prevDuration,
+																 'prevLock' => $prevLock ];
 	}
 
 	public static function SaveDaylyLocks()
