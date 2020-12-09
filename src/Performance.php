@@ -28,6 +28,8 @@ class Performance
 	public static $warnYesterday = null;
 	public static $pauseEllapsedSecs = 0;
 
+	public static $allowLongRunningRequest = false;
+
 	public static function CacheMissed()
 	{
 		self::$gotFromCache = false;
@@ -217,8 +219,8 @@ class Performance
 		PerformanceLock::EndWrite();
 
 		// Chequea límites
-		self::CheckLimits($limitArgs['days'], $limitArgs['key'], $limitArgs['prevHits'], 
-												$limitArgs['prevDuration'], $limitArgs['prevLock'], 
+		self::CheckLimits($limitArgs['days'], $limitArgs['key'], $limitArgs['prevHits'],
+												$limitArgs['prevDuration'], $limitArgs['prevLock'],
 												$ellapsedMilliseconds);
 	}
 
@@ -376,7 +378,7 @@ class Performance
 		if ($prevLocked < $maxLockMs && $locked >= $maxLockMs)
 			self::SendPerformanceWarning('tiempo de locking', self::Format($maxLockMs, 1000 * 60, 'minutos'), self::Format($locked, 1000 * 60, 'minutos'));
 
-		if ($ellapsedMilliseconds >= $maxRequestSeconds * 1000)
+		if ($ellapsedMilliseconds >= $maxRequestSeconds * 1000 && !self::$allowLongRunningRequest)
 			Log::HandleSilentException(new PublicException('El pedido ha excedido los ' . $maxRequestSeconds . ' segundos de ejecución. Tiempo transcurrido: ' . $ellapsedMilliseconds . ' ms.'));
 
 		// Se fija si tiene que pasar a 'defensive Mode'
