@@ -166,7 +166,7 @@ class System
 		return $val;
 	}
 
-	public static function RunCommandGS($command, $args, &$returnCode = null, $returnFirstLineOnly = false, $checkFile = true)
+	public static function RunCommandGS(string $command, string $args, &$returnCode = null, $returnFirstLineOnly = false, $checkFile = true)
 	{
 		if ($checkFile && file_exists($command) == false)
 			throw new ErrorException('No se encontró el binario: "' . $command. '".');
@@ -187,7 +187,7 @@ class System
 			return implode("\n", $out);
 	}
 
-	public static function RunCommandRaw($command)
+	public static function RunCommandRaw(string $command) : array
 	{
 		$output = [];
 		$return = 0;
