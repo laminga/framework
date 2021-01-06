@@ -27,7 +27,7 @@ class ExifTool
 	{
 		if (Str::Contains($text, '"'))
 			$text = str_replace('"', '\"', $text);
-		return Str::Convert($text, 'ISO-8859-1');
+		return Str::Convert($text, 'ISO-8859-1', 'UTF-8', true, true);
 	}
 
 	private static function Run(string $args) : bool
