@@ -25,9 +25,10 @@ class ExifTool
 
 	private static function PrepareText(string $text) : string
 	{
+		$text = Str::Convert($text, 'ISO-8859-1', 'UTF-8', true, true);
 		if (Str::Contains($text, '"'))
 			$text = str_replace('"', '\"', $text);
-		return Str::Convert($text, 'ISO-8859-1', 'UTF-8', true, true);
+		return $text;
 	}
 
 	private static function Run(string $args) : bool
