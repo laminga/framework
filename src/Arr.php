@@ -11,6 +11,13 @@ class Arr
 			return $default;
 		return $arr[$index];
 	}
+	public static function GetItemByProperty($arr, $itemProperty, $itemValue, $default = null)
+	{
+		$index = self::IndexOfByProperty($arr, $itemProperty, $itemValue);
+		if ($index == -1)
+			return $default;
+		return $arr[$index];
+	}
 	public static function InArrayCount($arr, $element)
 	{
 		return count(array_keys($arr, $element));
@@ -148,7 +155,16 @@ class Arr
 		}
 		return -1;
 	}
-
+	public static function IndexOfByProperty($arr, $itemProperty, $itemValue)
+	{
+		for($n = 0; $n < count($arr); $n++)
+		{
+			$current = $arr[$n];
+			if ($current->$itemProperty == $itemValue)
+				return $n;
+		}
+		return -1;
+	}
 	public static function SystematicSample($items, $size)
 	{
 		$ret = [];
