@@ -74,8 +74,20 @@ final class ReflectionTest extends TestCaseBase
 		$ret = Reflection::CallMethod([$instance, 'Method1']);
 		$this->assertEquals($ret, 'Method1');
 
-		$ret = Reflection::CallMethod([$instance, 'Method2'], 0, '');
-		$this->assertEquals($ret, 'Method2');
+		$ret = Reflection::CallMethod([$instance, 'Method2'], 0, 'a');
+		$this->assertEquals($ret, 'Method20a');
+	}
+
+	public function testCallPrivateStaticMethod()
+	{
+		$function = 'Method6';
+		$class = ForTesting::class;
+		$ret = Reflection::CallPrivateStaticMethod($class, $function);
+		$this->assertEquals($ret, $function);
+
+		$function = 'Method7';
+		$ret = Reflection::CallPrivateStaticMethod($class, $function, 0, 'a');
+		$this->assertEquals($ret, $function . '0a');
 	}
 
 	public function testCallPrivateMethod()
@@ -86,8 +98,8 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals($ret, $function);
 
 		$function = 'Method4';
-		$ret = Reflection::CallPrivateMethod($instance, $function, 0, '');
-		$this->assertEquals($ret, $function);
+		$ret = Reflection::CallPrivateMethod($instance, $function, 0, 'a');
+		$this->assertEquals($ret, $function . '0a');
 	}
 
 	public function testCallPrivateMethodRef()
@@ -97,7 +109,7 @@ final class ReflectionTest extends TestCaseBase
 		$ref = '';
 		$ret = Reflection::CallPrivateMethodRef($instance, $function, 0, $ref);
 		$this->assertEquals($ref, 'ref');
-		$this->assertEquals($ret, $function);
+		$this->assertEquals($ret, $function . '0');
 	}
 
 	const CANT_PARAMS = 6;
@@ -115,7 +127,7 @@ class ForTesting
 
 	public function Method2(int $a0, string $a1)
 	{
-		return __FUNCTION__;
+		return __FUNCTION__ . $a0 . $a1;
 	}
 
 	private function Method3()
@@ -125,13 +137,23 @@ class ForTesting
 
 	private function Method4(int $a0, string $a1)
 	{
-		return __FUNCTION__;
+		return __FUNCTION__ . $a0 . $a1;
 	}
 
 	private function Method5(int $a0, string &$a1)
 	{
 		$a1 = 'ref';
+		return __FUNCTION__ . $a0;
+	}
+
+	private static function Method6()
+	{
 		return __FUNCTION__;
+	}
+
+	private static function Method7(int $a0, string $a1)
+	{
+		return __FUNCTION__ . $a0 . $a1;
 	}
 }
 

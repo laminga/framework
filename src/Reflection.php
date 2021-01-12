@@ -53,6 +53,14 @@ class Reflection
 		return call_user_func($method, ...$params);
 	}
 
+	public static function CallPrivateStaticMethod($class, $function, ...$params)
+	{
+		$class = new \ReflectionClass($class);
+		$method = $class->getMethod($function);
+		$method->setAccessible(true);
+		return $method->invoke(null, ...$params);
+	}
+
 	public static function CallPrivateMethod($instance, $function, ...$params)
 	{
 		$method = self::GetMethod([$instance, $function]);

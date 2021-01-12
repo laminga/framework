@@ -170,6 +170,9 @@ class Log
 			return true;
 		}
 
+		if(Str::Contains($errorMessage,'redefine non-configurable property "userAgent"'))
+			return true;
+
 		return false;
 	}
 
@@ -202,7 +205,7 @@ class Log
 			$fullUrl = '=> Client:      ' . $fullUrlData . "\r\n";
 		else
 			$fullUrl = '';
-		
+
 		return self::FormatRequest($agent, $referer, $remoteAddr,
 			Context::Settings()->GetPublicUrl() . $requestUri,
 			$requestMethod, $fullUrl);

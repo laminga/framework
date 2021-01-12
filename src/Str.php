@@ -5,12 +5,19 @@ namespace minga\framework;
 class Str
 {
 
-	public static function Convert($str, $to = 'Windows-1252', $from = 'UTF-8')
+	public static function Convert(string $str, string $to = 'Windows-1252', string $from = 'UTF-8', bool $translit = false, bool $ignore = false) : string
 	{
-		return iconv($from, $to, $str);
+		if($translit)
+			$to .= '//TRANSLIT';
+		if($ignore)
+			$to .= '//IGNORE';
+		$ret = iconv($from, $to, $str);
+		if($ret === false)
+			throw new ErrorException('Error converting string.');
+		return $ret;
 	}
 
-	public static function DetectEncoding($str)
+	public static function DetectEncoding(string $str)
 	{
 		$encodings = [
 			'UTF-8',
@@ -25,7 +32,7 @@ class Str
 		{
 			if ($encoding === "macintosh")
 			{
-				if (self::macCheckEncoding($str))
+				if (self::MacCheckEncoding($str))
 					return $encoding;
 			}
 			else if (mb_check_encoding($str, $encoding))
@@ -34,10 +41,12 @@ class Str
 		return null;
 	}
 
-	private static function macCheckEncoding($str) {
+	private static function MacCheckEncoding(string $str) : bool
+	{
 		// Estos caracteres son infrecuentes y representan caracteres extendidos castellanos
 		// en el encoding MACROMAN (macintosh)
-		$tokens = [ chr(0x87) // á -> ‡
+		$tokens = [
+			chr(0x87) // á -> ‡
 			, chr(0x8e) // é -> Ž
 			//, chr(0x92) // í -> ’
 			//, chr(0x97) // ó -> —
@@ -56,14 +65,12 @@ class Str
 		foreach($tokens as $token)
 		{
 			if (strpos($str, $token) !== false)
-			{
 				return true;
-			}
 		}
 		return false;
 	}
 
-	public static function PolygonToCoordinates($polygon)
+	public static function PolygonToCoordinates(string $polygon) : array
 	{
 		$ret = [];
 		$cad = self::EatUntil($polygon, "((");
@@ -80,7 +87,7 @@ class Str
 	/**
 	 * Igual que explode de php pero no devuelve elementos vacíos.
 	 */
-	public static function ExplodeNoEmpty($delimiter, $str)
+	public static function ExplodeNoEmpty(string $delimiter, string $str) : array
 	{
 		return array_values(array_filter(explode($delimiter, $str)));
 	}
