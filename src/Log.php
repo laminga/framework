@@ -170,7 +170,7 @@ class Log
 			return true;
 		}
 
-		if(Str::Contains($errorMessage,'redefine non-configurable property "userAgent"'))
+		if(Str::ContainsI($errorMessage, 'redefine non-configurable property "userAgent"'))
 			return true;
 
 		return false;
