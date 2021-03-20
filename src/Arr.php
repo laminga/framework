@@ -241,7 +241,7 @@ class Arr
 		return $ret;
 	}
 
-	
+
 	public static function SummarizeValues($array)
 	{
 		$ret = 0;
@@ -253,7 +253,7 @@ class Arr
 		return $ret;
 	}
 
-	
+
 	public static function MeanValues($array, $weights = null)
 	{
 		$sum = 0;
@@ -280,7 +280,7 @@ class Arr
 			}
 		if ($count > 0)
 			$ret = $sum / $count;
-		else 
+		else
 			$ret = 0;
 		return $ret;
 	}
@@ -329,10 +329,10 @@ class Arr
 		return $ret;
 	}
 
-	public static function RemoveAt(&$itemParam, $pos)
+	public static function RemoveAt(&$arr, $pos)
 	{
-		array_splice($itemParam, $pos, 1);
-		return $itemParam;
+		array_splice($arr, $pos, 1);
+		return $arr;
 	}
 
 	public static function RemoveItemByNamedKey($array, $name, $key)
@@ -342,12 +342,17 @@ class Arr
 
 		return self::RemoveAt($array, $pos);
 	}
+	public static function Remove(&$array, $value)
+	{
+		$n = self::IndexOf($array, $value);
+		return self::RemoveAt($array, $n);
+	}
 	public static function RemoveByValue($array, $value)
 	{
-		if (in_array($value, $array))
+		if (array_key_exists($value, $array))
 			unset($array[$value]);
 		return $array;
-	}		
+	}
 	public static function RemoveItemByKeyValue($array, $key, $value)
 	{
 		$ret = [];
@@ -396,7 +401,7 @@ class Arr
 				$ret[$key] = $item;
 		}
 		return $ret;
-	}		
+	}
 	public static function ReplaceKeys($arr, $dictionary)
 	{
 		$ret = [];
@@ -406,7 +411,7 @@ class Arr
 			$ret[$newKey] = $item;
 		}
 		return $ret;
-	}		
+	}
 	public static function FromSortedToKeyed($arr, $field)
 	{
 		$ret = [];
