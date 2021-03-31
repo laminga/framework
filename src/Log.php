@@ -158,8 +158,7 @@ class Log
 			return true;
 		}
 
-		if($errorMessage == 'Script error.' && $errorSource == ''
-			&& $errorLine == 0 && $errorColumn == 0 && $trace == '')
+		if($errorSource == '' && $errorLine == 0 && $errorColumn == 0 && $trace == '')
 		{
 			return true;
 		}
@@ -169,6 +168,7 @@ class Log
 		{
 			return true;
 		}
+
 
 		if(Str::ContainsI($errorMessage, 'redefine non-configurable property "userAgent"'))
 			return true;
