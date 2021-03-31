@@ -6,7 +6,7 @@ class MultiQuery
 {
 	public $params;
 	public $sql;
- 
+
 	public function __construct($query1, $query2 = null, $query3 = null, $query4 = null, $query5 = null,
 		$query6 = null, $query7 = null, $query8 = null, $query9 = null, $query10 = null)
 	{
@@ -51,7 +51,9 @@ class MultiQuery
 				$groupBy .= ($groupBy != "" ? ", " : "") . $query->GroupBy;
 			if ($query->OrderBy != null)
 				$orderBy .= ($orderBy != "" ? ", " : "") . $query->OrderBy;
-
+			if ($query->MaxRows !== null) {
+				$this->setMaxRows($query->MaxRows);
+			}
 			if ($query->Params != null)
 				$params = array_merge($params, $query->Params);
 		}
@@ -67,7 +69,7 @@ class MultiQuery
 
 	public function setMaxRows($max)
 	{
-		$this->sql .= " LIMIT 0, " . $max; 
+		$this->sql .= " LIMIT 0, " . $max;
 	}
 	public function dump()
 	{
@@ -82,7 +84,7 @@ class MultiQuery
 	{
 		return Context::Calls()->Db()->fetchAll($this->sql, $this->params);
 	}
-	
+
 	public function fetchAllByPos()
 	{
 		return Context::Calls()->Db()->fetchAllByPos($this->sql, $this->params);

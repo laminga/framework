@@ -10,8 +10,9 @@ class QueryPart
 	public $Select;
 	public $GroupBy;
 	public $OrderBy;
+	public $MaxRows;
 
-	public function __construct($from, $where, $params = array(), $select = null, $groupBy = null, $orderBy = null)
+	public function __construct($from, $where, $params = array(), $select = null, $groupBy = null, $orderBy = null, $maxRows = null)
 	{
 		$this->From = $from;
 		$this->Where = $where;
@@ -19,6 +20,7 @@ class QueryPart
 		$this->GroupBy = $groupBy;
 		$this->OrderBy = $orderBy;
 		$this->Select = $select;
+		$this->MaxRows = $maxRows;
 	}
 
 }
