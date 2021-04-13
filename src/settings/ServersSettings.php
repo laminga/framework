@@ -18,6 +18,8 @@ class ServersSettings
 	public $Python3 = null;
 	public $PhpCli = 'php';
 
+	public $LoopLocalPort = null;
+
 	public function RegisterServer($name, $url, $isCDN = false)
 	{
 		$type = ($isCDN ? 'cdns' : 'main');

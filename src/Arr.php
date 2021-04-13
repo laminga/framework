@@ -318,6 +318,15 @@ class Arr
 		}
 		return $ret;
 	}
+	public static function ToKeyByNamedValue($arr, $namedKey, $namedValue)
+	{
+		$ret = [];
+		foreach($arr as $arrItem)
+		{
+			$ret[$arrItem[$namedKey]] = $arrItem[$namedValue];
+		}
+		return $ret;
+	}
 
 	public static function ToArrFromKeyArr($arr)
 	{
