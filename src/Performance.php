@@ -220,8 +220,8 @@ class Performance
 
 		// Chequea límites
 		self::CheckLimits($limitArgs['days'], $limitArgs['key'], $limitArgs['prevHits'],
-												$limitArgs['prevDuration'], $limitArgs['prevLock'],
-												$ellapsedMilliseconds);
+			$limitArgs['prevDuration'], $limitArgs['prevLock'],
+			$ellapsedMilliseconds);
 	}
 
 	public static function IsNewDay()
@@ -338,7 +338,7 @@ class Performance
 		IO::WriteIniFile($daylyProcessor, $days);
 
 		return ['days' => $days, 'key' => $key, 'prevHits' => $prevHits, 'prevDuration' => $prevDuration,
-																 'prevLock' => $prevLock ];
+			'prevLock' => $prevLock ];
 	}
 
 	public static function SaveDaylyLocks()
@@ -801,7 +801,7 @@ class Performance
 
 		ksort($rows);
 
-		$ret = ['Clase' => 'Locks','Promedio (ms)', 'Total (seg.)'];
+		$ret = ['Clase' => ['Locks','Promedio (ms)', 'Total (seg.)']];
 
 		foreach($rows as $key => $value)
 		{
