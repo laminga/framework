@@ -4,15 +4,16 @@ namespace minga\framework;
 
 abstract class FrameworkCallbacks
 {
-	public function RenderTemplate($template, $vals = null)
+	public function RenderTemplate(string $template, array $vals = []) : void
 	{
 	}
 
-	public function RenderMessage($template, $vals = null)
+	public function RenderMessage(string $template, array $vals = []) : string
 	{
+		return '';
 	}
 
-	public function EndRequest()
+	public function EndRequest() : void
 	{
 	}
 
