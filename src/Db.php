@@ -347,8 +347,9 @@ class Db
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
-			$criteria = array_fill(0, count($values), '?');
-			$query = 'DELETE FROM ' . self::QuoteTable($tableName) . ' WHERE ' . self::QuoteColumn($columnName) . ' IN ( ' . Str::JoinInts($criteria) . ')';
+			$query = 'DELETE FROM ' . self::QuoteTable($tableName)
+				. ' WHERE ' . self::QuoteColumn($columnName)
+				. ' IN (' . self::JoinPlaceholders($values) . ')';
 			return $this->doExecute($query, $values);
 		}
 		finally
@@ -356,6 +357,11 @@ class Db
 			Performance::EndDbWait();
 			Profiling::EndTimer();
 		}
+	}
+
+	private function JoinPlaceholders(array $values) : string
+	{
+		return implode(',', array_fill(0, count($values), '?'));
 	}
 
 	/**
