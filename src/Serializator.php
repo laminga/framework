@@ -22,7 +22,7 @@ class Serializator
 
 	public static function CloneArray($arr, $resetId = false)
 	{
-		$ret = array();
+		$ret = [];
 		foreach($arr as $item)
 			$ret[] = self::Clone($item, $resetId);
 		return $ret;

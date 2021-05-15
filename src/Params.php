@@ -135,7 +135,7 @@ class Params
 		return self::CheckParseMonthValue($value);
 	}
 
-	public static function GetIntArray($param, $default = array())
+	public static function GetIntArray($param, $default = [])
 	{
 		$value = self::Get($param, null);
 		if ($value === null || $value === '')

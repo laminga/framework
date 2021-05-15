@@ -636,7 +636,7 @@ class Arr
 
 	public static function AddAt($arr, $n, $element)
 	{
-		array_splice($arr, $n, 0, array($element));
+		array_splice($arr, $n, 0, [$element]);
 		return $arr;
 	}
 

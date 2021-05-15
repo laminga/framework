@@ -11,7 +11,7 @@ class ZipArchiveExtended extends \ZipArchive
 
 	public function hasSubdir($subdir)
 	{
-		$subdir = str_replace(array("/", "\\"), "/", $subdir);
+		$subdir = str_replace(["/", "\\"], "/", $subdir);
 		if (substr($subdir, -1) != "/")
 			$subdir .= "/";
 		for ($i = 0; $i < $this->numFiles; $i++)
@@ -25,11 +25,11 @@ class ZipArchiveExtended extends \ZipArchive
 
 	 public function extractSubdirTo($destination, $subdir)
 	 {
-		 $errors = array();
+		 $errors = [];
 
 		 // Prepare dirs
-		 $destination = str_replace(array("/", "\\"), DIRECTORY_SEPARATOR, $destination);
-		 $subdir = str_replace(array("/", "\\"), "/", $subdir);
+		 $destination = str_replace(["/", "\\"], DIRECTORY_SEPARATOR, $destination);
+		 $subdir = str_replace(["/", "\\"], "/", $subdir);
 
 		 if (substr($destination, mb_strlen(DIRECTORY_SEPARATOR, "UTF-8") * -1) != DIRECTORY_SEPARATOR)
 			 $destination .= DIRECTORY_SEPARATOR;
@@ -45,7 +45,7 @@ class ZipArchiveExtended extends \ZipArchive
 			 if (substr($filename, 0, mb_strlen($subdir, "UTF-8")) == $subdir)
 			 {
 				 $relativePath = substr($filename, mb_strlen($subdir, "UTF-8"));
-				 $relativePath = str_replace(array("/", "\\"), DIRECTORY_SEPARATOR, $relativePath);
+				 $relativePath = str_replace(["/", "\\"], DIRECTORY_SEPARATOR, $relativePath);
 
 				 if (mb_strlen($relativePath, "UTF-8") > 0)
 				 {

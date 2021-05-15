@@ -39,7 +39,7 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 	{
 		$values = $this->SafeGetArray($section, 'items');
 
-		$ret = array();
+		$ret = [];
 		foreach($values as $item)
 			$ret[] = json_decode($item, true);
 		return $ret;

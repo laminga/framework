@@ -11,7 +11,7 @@ class OauthFacebook extends OauthConnector
 
 	protected function GetFields()
 	{
-		return array('email', 'public_profile');
+		return ['email', 'public_profile'];
 	}
 
 	//No se está usando

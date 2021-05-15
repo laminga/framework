@@ -86,7 +86,7 @@ class clsTbsZip {
 		$this->ArchIsNew = true;
 		$bin = 'PK'.chr(05).chr(06).str_repeat(chr(0), 18);
 		$this->CdEndPos = strlen($bin) - 4;
-		$this->CdInfo = array('disk_num_curr'=>0, 'disk_num_cd'=>0, 'file_nbr_curr'=>0, 'file_nbr_tot'=>0, 'l_cd'=>0, 'p_cd'=>0, 'l_comm'=>0, 'v_comm'=>'', 'bin'=>$bin);
+		$this->CdInfo = ['disk_num_curr'=>0, 'disk_num_cd'=>0, 'file_nbr_curr'=>0, 'file_nbr_tot'=>0, 'l_cd'=>0, 'p_cd'=>0, 'l_comm'=>0, 'v_comm'=>'', 'bin'=>$bin];
 		$this->CdPos = $this->CdInfo['p_cd'];
 	}
 
@@ -114,20 +114,20 @@ class clsTbsZip {
 		if (isset($this->ArchHnd) and ($this->ArchHnd!==false)) fclose($this->ArchHnd);
 		$this->ArchFile = '';
 		$this->ArchHnd = false;
-		$this->CdInfo = array();
-		$this->CdFileLst = array();
+		$this->CdInfo = [];
+		$this->CdFileLst = [];
 		$this->CdFileNbr = 0;
-		$this->CdFileByName = array();
-		$this->VisFileLst = array();
+		$this->CdFileByName = [];
+		$this->VisFileLst = [];
 		$this->ArchCancelModif();
 	}
 
 	function ArchCancelModif() {
 		$this->LastReadComp = false; // compression of the last read file (1=compressed, 0=stored not compressed, -1= stored compressed but read uncompressed)
 		$this->LastReadIdx = false; // index of the last file read
-		$this->ReplInfo = array();
-		$this->ReplByPos = array();
-		$this->AddInfo = array();
+		$this->ReplInfo = [];
+		$this->ReplByPos = [];
+		$this->AddInfo = [];
 	}
 
 	function FileAdd($Name, $Data, $DataType=TBSZIP_STRING, $Compress=true) {
@@ -162,7 +162,7 @@ class clsTbsZip {
 			}
 		}
 		$this->CdInfo = $this->CentralDirRead_End($cd_info);
-		$this->CdFileLst = array();
+		$this->CdFileLst = [];
 		$this->CdFileNbr = $this->CdInfo['file_nbr_curr'];
 		$this->CdPos = $this->CdInfo['p_cd'];
 
@@ -182,7 +182,7 @@ class clsTbsZip {
 
 	function CentralDirRead_End($cd_info) {
 		$b = $cd_info.$this->_ReadData(18);
-		$x = array();
+		$x = [];
 		$x['disk_num_curr'] = $this->_GetDec($b,4,2); // number of this disk
 		$x['disk_num_cd'] = $this->_GetDec($b,6,2); // number of the disk with the start of the central directory
 		$x['file_nbr_curr'] = $this->_GetDec($b,8,2); // total number of entries in the central directory on this disk
@@ -202,7 +202,7 @@ class clsTbsZip {
 		$x = $this->_GetHex($b,0,4);
 		if ($x!=='h:02014b50') return $this->RaiseError("Signature of Central Directory Header #".$idx." (file information) expected but not found at position ".$this->_TxtPos(ftell($this->ArchHnd) - 46).".");
 
-		$x = array();
+		$x = [];
 		$x['vers_used'] = $this->_GetDec($b,4,2);
 		$x['vers_necess'] = $this->_GetDec($b,6,2);
 		$x['purp'] = $this->_GetBin($b,8,2);
@@ -371,7 +371,7 @@ class clsTbsZip {
 		$x = $this->_GetHex($b,0,4);
 		if ($x!=='h:04034b50') return $this->RaiseError("Signature of Local File Header #".$idx." (data section) expected but not found at position ".$this->_TxtPos(ftell($this->ArchHnd)-30).".");
 
-		$x = array();
+		$x = [];
 		$x['vers'] = $this->_GetDec($b,4,2);
 		$x['purp'] = $this->_GetBin($b,6,2);
 		$x['meth'] = $this->_GetDec($b,8,2);
@@ -541,8 +541,8 @@ class clsTbsZip {
 			$now -= self::getTimeOffset();
 		$ArchPos = 0;
 		$Delta = 0;
-		$FicNewPos = array();
-		$DelLst = array(); // idx of deleted files
+		$FicNewPos = [];
+		$DelLst = []; // idx of deleted files
 		$DeltaCdLen = 0; // delta of the CD's size
 
 		$date = $this->_MsDos_Date($now);
@@ -609,7 +609,7 @@ class clsTbsZip {
 		// Output file to add
 		$AddNbr = count($this->AddInfo);
 		$AddDataLen = 0; // total len of added data (inlcuding file headers)
-		$AddLst = array();
+		$AddLst = [];
 		if ($AddNbr>0) {
 			$AddPos = $ArchPos + $Delta; // position of the start
 			$AddLst = array_keys($this->AddInfo);
@@ -1011,7 +1011,7 @@ class clsTbsZip {
 		}
 
 		// at this step $Data and $crc32 can be false only in case of external file, and $len_c is false only in case of external file to compress
-		return array('data'=>$Data, 'path'=>$path, 'meth'=>$meth, 'len_u'=>$len_u, 'len_c'=>$len_c, 'crc32'=>$crc32, 'diff'=>$Diff, 'res'=>$result);
+		return ['data'=>$Data, 'path'=>$path, 'meth'=>$meth, 'len_u'=>$len_u, 'len_c'=>$len_c, 'crc32'=>$crc32, 'diff'=>$Diff, 'res'=>$result];
 
 	}
 
