@@ -141,9 +141,9 @@ class Params
 		if ($value === null || $value === '')
 			return $default;
 		$arr = explode(',', $value);
-		for($n = 0; $n < sizeof($arr); $n++)
+		for($n = 0; $n < count($arr); $n++)
 			$arr[$n] = self::CheckParseIntValue($arr[$n]);
-	
+
 		return $arr;
 	}
 
@@ -158,7 +158,7 @@ class Params
 	{
 		$uri = Request::GetRequestURI(true);
 		$parts = explode('/', $uri);
-		if (sizeof($parts) <= $position)
+		if (count($parts) <= $position)
 			return $default;
 		else
 			return $parts[$position];

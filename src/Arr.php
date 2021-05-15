@@ -268,7 +268,7 @@ class Arr
 				}
 			}
 		else
-			for($n = 0; $n < sizeof($array); $n++)
+			for($n = 0; $n < count($array); $n++)
 			{
 				$value = $array[$n];
 				$weight = $weights[$n];

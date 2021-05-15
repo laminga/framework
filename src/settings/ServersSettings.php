@@ -116,7 +116,7 @@ class ServersSettings
 		$svrs = [];
 		foreach($cdns as $key => $value)
 			$svrs[] = $value->publicUrl;
-		if (sizeof($svrs) == 0)
+		if (count($svrs) == 0)
 			$svrs = $this->Current()->publicUrl;
 		return $svrs;
 	}

@@ -348,7 +348,7 @@ class Performance
 
 	public static function SaveLocks($month = '')
 	{
-		if (sizeof(self::$locksByClass) > 0)
+		if (count(self::$locksByClass) > 0)
 		{
 			if ($month == '')
 				$month = Date::GetLogMonthFolder();
@@ -501,9 +501,9 @@ class Performance
 			$mails += $mailCount;
 			$dbMs += $newDbMs;
 			$dbHits += $newDbHits;
-			for($n = 0; $n < sizeof($newExtraHits); $n++)
+			for($n = 0; $n < count($newExtraHits); $n++)
 			{
-				if($n < sizeof($extraHits) && $extraHits[$n])
+				if($n < count($extraHits) && $extraHits[$n])
 					$newExtraHits[$n] += $extraHits[$n];
 			}
 		}
@@ -517,11 +517,11 @@ class Performance
 		$parts = explode(';', $value);
 		$hits = $parts[0];
 		$duration = $parts[1];
-		if (sizeof($parts) > 2)
+		if (count($parts) > 2)
 			$locked = $parts[2];
 		else
 			$locked = 0;
-		if (sizeof($parts) > 3)
+		if (count($parts) > 3)
 		{
 			$p4 = (int)$parts[3];
 			$p5 = (int)$parts[4];
@@ -531,7 +531,7 @@ class Performance
 			$p4 = 0;
 			$p5 = 0;
 		}
-		if (sizeof($parts) > 5)
+		if (count($parts) > 5)
 		{
 			$p6 = (int)$parts[5];
 			$p7 = (int)$parts[6];
@@ -541,7 +541,7 @@ class Performance
 			$p6 = 0;
 			$p7 = 0;
 		}
-		if (sizeof($parts) > 7)
+		if (count($parts) > 7)
 		{
 			$extra = explode(',', $parts[7]);
 		}
@@ -607,7 +607,7 @@ class Performance
 		$mailRow = [];
 
 		$extras = Context::ExtraHitsLabels();
-		$extraValues = array_fill(0, sizeof($extras), []);
+		$extraValues = array_fill(0, count($extras), []);
 
 		foreach($days as $key => $value)
 		{
@@ -624,9 +624,9 @@ class Performance
 			$dataDbMsRow[] = round($dbMs / 1000 / 60, 1);
 			$dataDbHitRow[] = $dbHits;
 
-			for($n = 0; $n < sizeof($extraValues); $n++)
+			for($n = 0; $n < count($extraValues); $n++)
 			{
-				if ($n < sizeof($extraHits))
+				if ($n < count($extraHits))
 					$extraValues[$n][] = $extraHits[$n];
 				else
 					$extraValues[$n][] = '-';
@@ -645,7 +645,7 @@ class Performance
 			'Mails' => $mailRow,
 		];
 
-		for($n = 0; $n < sizeof($extras); $n++)
+		for($n = 0; $n < count($extras); $n++)
 		{
 			$ret[$extras[$n]] = $extraValues[$n];
 		}
