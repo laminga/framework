@@ -11,6 +11,7 @@ class Arr
 			return $default;
 		return $arr[$index];
 	}
+
 	public static function GetItemByProperty($arr, $itemProperty, $itemValue, $default = null)
 	{
 		$index = self::IndexOfByProperty($arr, $itemProperty, $itemValue);
@@ -18,10 +19,12 @@ class Arr
 			return $default;
 		return $arr[$index];
 	}
+
 	public static function InArrayCount($arr, $element)
 	{
 		return count(array_keys($arr, $element));
 	}
+
 	public static function CastColumnAsFloat(&$arr, $column)
 	{
 		for($n = 0; $n < count($arr); $n++)
@@ -41,6 +44,7 @@ class Arr
 		}
 		return $arr;
 	}
+
 	public static function IndexOf(array $array, $element)
 	{
 		$ret = array_search($element, $array);
@@ -48,6 +52,7 @@ class Arr
 			$ret = -1;
 		return $ret;
 	}
+
 	public static function TwoElementsToKeyValue(array $array)
 	{
 		$ret = [];
@@ -132,6 +137,7 @@ class Arr
 		}
 		return $ret;
 	}
+
 	public static function RemoveDuplicatesByNamedKey($arr, $itemName)
 	{
 		$ret = [];
@@ -155,6 +161,7 @@ class Arr
 		}
 		return -1;
 	}
+
 	public static function IndexOfByProperty($arr, $itemProperty, $itemValue)
 	{
 		for($n = 0; $n < count($arr); $n++)
@@ -165,6 +172,7 @@ class Arr
 		}
 		return -1;
 	}
+
 	public static function SystematicSample($items, $size)
 	{
 		$ret = [];
@@ -241,7 +249,6 @@ class Arr
 		return $ret;
 	}
 
-
 	public static function SummarizeValues($array)
 	{
 		$ret = 0;
@@ -252,7 +259,6 @@ class Arr
 		}
 		return $ret;
 	}
-
 
 	public static function MeanValues($array, $weights = null)
 	{
@@ -284,7 +290,6 @@ class Arr
 			$ret = 0;
 		return $ret;
 	}
-
 
 	public static function UniqueByField($key, $arrayTotal)
 	{
@@ -318,6 +323,7 @@ class Arr
 		}
 		return $ret;
 	}
+
 	public static function ToKeyByNamedValue($arr, $namedKey, $namedValue)
 	{
 		$ret = [];
@@ -351,17 +357,20 @@ class Arr
 
 		return self::RemoveAt($array, $pos);
 	}
+
 	public static function Remove(&$array, $value)
 	{
 		$n = self::IndexOf($array, $value);
 		return self::RemoveAt($array, $n);
 	}
+
 	public static function RemoveByValue($array, $value)
 	{
 		if (array_key_exists($value, $array))
 			unset($array[$value]);
 		return $array;
 	}
+
 	public static function RemoveItemByKeyValue($array, $key, $value)
 	{
 		$ret = [];
@@ -389,6 +398,7 @@ class Arr
 			$arr[$i] = '';
 		return $arr;
 	}
+
 	public static function AddArrayKeys($arr1, $arr2)
 	{
 		$ret = [];
@@ -401,6 +411,7 @@ class Arr
 
 		return $ret;
 	}
+
 	public static function RemoveMissingKeys($arr, $dictionary)
 	{
 		$ret = [];
@@ -411,6 +422,7 @@ class Arr
 		}
 		return $ret;
 	}
+
 	public static function ReplaceKeys($arr, $dictionary)
 	{
 		$ret = [];
@@ -421,6 +433,7 @@ class Arr
 		}
 		return $ret;
 	}
+
 	public static function FromSortedToKeyed($arr, $field)
 	{
 		$ret = [];
