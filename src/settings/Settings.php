@@ -79,6 +79,7 @@ class Settings
 	public $timerStart = '';
 
 	public $allowPHPsession = true;
+	public $allowCrossSiteSessionCookie = false;
 
 	public $storagePath = '';
 

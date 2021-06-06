@@ -138,8 +138,10 @@ class Params
 	public static function GetIntArray($param, $default = [])
 	{
 		$value = self::Get($param, null);
-		if ($value === null || $value === '')
+		if ($value === null || $value === '' || $value === '[]')
 			return $default;
+		if (Str::StartsWith($value, "[") && Str::EndsWith($value, "]"))
+			$value = substr($value, 1, strlen($value) - 2);
 		$arr = explode(',', $value);
 		for($n = 0; $n < count($arr); $n++)
 			$arr[$n] = self::CheckParseIntValue($arr[$n]);
