@@ -48,6 +48,31 @@ class HtmlFilter
 	}
 
 	/**
+	 * Filtra el html que genera el HtmlWriter de PHPWord.
+	 *
+	 */
+	public static function FromWordExport(string $html) : string
+	{
+		Profiling::BeginTimer();
+		try
+		{
+			$config = HtmlFilter::DefaultConfig();
+			$config->set("AutoFormat.AutoParagraph", true);
+			$config->set('HTML.Allowed', 'p[style],ul,ol,li,b,i,s,em,strong,span[style],sup');
+			$config->set('CSS.AllowedProperties', 'font-weight,font-style,text-align');
+
+			$purifier = new \HTMLPurifier($config);
+
+			$html = $purifier->purify($html);
+
+			return trim($html);
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
+	}
+	/**
 	 * Filtro muy permisivo deja casi todo
 	 * salvo scripts, formularios e
 	 * iframes que no sean de youtube
