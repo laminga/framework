@@ -32,6 +32,13 @@ class AppPaths
 		return $path;
 	}
 
+	public static function GetHtmlPurifierCachePath()
+	{
+		$path = Context::Paths()->GetStorageCaches() . '/htmlpurifier';
+		IO::EnsureExists($path);
+		return $path;
+	}
+
 	public function GetStorageCaches()
 	{
 		return $this->GetStorageRoot() . "/caches";
