@@ -85,8 +85,9 @@ class PhpSession
 			//intencional y ningún redirect o unset lo resuelve.
 			exit();
 		}
+
+		session_set_cookie_params(["Secure" => Cookies::IsSecure()]);
 		session_set_cookie_params(["SameSite" => "none"]);
-		session_set_cookie_params(["Secure" => "true"]); //false, true
 		// if (Context::Settings()->allowCrossSiteSessionCookie)
 		// 	session_set_cookie_params(["SameSite" => "none"]);
 		// else
