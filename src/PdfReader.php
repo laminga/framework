@@ -4,9 +4,9 @@ namespace minga\framework;
 
 use minga\classes\cache\PdfHtmlCache;
 use minga\classes\cache\PdfTextCache;
-use rodrigoq\pdftohtml\PdfInfo;
 use rodrigoq\pdftohtml\PdfToHtml;
-use rodrigoq\pdftohtml\PdfToText;
+use rodrigoq\pdftoinfo\PdfInfo;
+use rodrigoq\pdftotext\PdfToText;
 
 class PdfReader
 {
