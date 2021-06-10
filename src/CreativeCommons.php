@@ -6,7 +6,7 @@ class CreativeCommons
 {
 	public static function GetVersions()
 	{
-		return array("4.0/deed.es" => "Internacional 4.0 (recomendada)",
+		return ["4.0/deed.es" => "Internacional 4.0 (recomendada)",
 			"4.0" => "Internacional 4.0 (inglés)",
 			"4.0/deed.pt" => "Internacional 4.0 (portugués)",
 			"" => "-------- Otras versiones  -----------",
@@ -22,7 +22,7 @@ class CreativeCommons
 			"2.5/mx" => "México 2.5",
 			"2.5/pe" => "Perú 2.5",
 			"3.0/pr" => "Puerto Rico 3.0",
-			"3.0/ve" => "Venezuela 3.0");
+			"3.0/ve" => "Venezuela 3.0"];
 
 
 				/*
@@ -128,7 +128,7 @@ class CreativeCommons
 	{
 		if (self::UrlIsCC($url) == false)
 			return "";
-		$availables = array("by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa");
+		$availables = ["by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa"];
 		foreach($availables as $image)
 			if (Str::Contains($url, "/" . $image . "/"))
 				return "/images/licenses/cc/" . $image . "." . $extension;

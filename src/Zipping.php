@@ -216,7 +216,7 @@ class Zipping
 				$filename = [$filename];
 				$filesrc = [$filesrc];
 			}
-			for($n = 0; $n < sizeof($filename); $n++)
+			for($n = 0; $n < count($filename); $n++)
 			{
 				if ($zip->FileExists($filename[$n]))
 					$zip->FileReplace($filename[$n], $filesrc[$n], TBSZIP_FILE);

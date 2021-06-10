@@ -135,15 +135,17 @@ class Params
 		return self::CheckParseMonthValue($value);
 	}
 
-	public static function GetIntArray($param, $default = array())
+	public static function GetIntArray($param, $default = [])
 	{
 		$value = self::Get($param, null);
-		if ($value === null || $value === '')
+		if ($value === null || $value === '' || $value === '[]')
 			return $default;
+		if (Str::StartsWith($value, "[") && Str::EndsWith($value, "]"))
+			$value = substr($value, 1, strlen($value) - 2);
 		$arr = explode(',', $value);
-		for($n = 0; $n < sizeof($arr); $n++)
+		for($n = 0; $n < count($arr); $n++)
 			$arr[$n] = self::CheckParseIntValue($arr[$n]);
-	
+
 		return $arr;
 	}
 
@@ -158,7 +160,7 @@ class Params
 	{
 		$uri = Request::GetRequestURI(true);
 		$parts = explode('/', $uri);
-		if (sizeof($parts) <= $position)
+		if (count($parts) <= $position)
 			return $default;
 		else
 			return $parts[$position];

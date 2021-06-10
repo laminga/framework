@@ -68,8 +68,8 @@ class CompressedInParentDirectory
 				$tmp = $this->GetFilename();
 
 			$_ = new Zip($tmp);
-			$files = array();
-			$sources = array();
+			$files = [];
+			$sources = [];
 			foreach(IO::GetFiles($this->path) as $file)
 			{
 				$files[] = $this->dirName . '/' . $file;

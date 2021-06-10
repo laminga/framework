@@ -64,7 +64,7 @@ class PhpSession
 		else
 		{
 			if (self::$sessionValues == null)
-					self::$sessionValues = [];
+				self::$sessionValues = [];
 		}
 	}
 
@@ -85,6 +85,13 @@ class PhpSession
 			//intencional y ningún redirect o unset lo resuelve.
 			exit();
 		}
+
+		session_set_cookie_params(["Secure" => Cookies::IsSecure()]);
+		session_set_cookie_params(["SameSite" => "none"]);
+		// if (Context::Settings()->allowCrossSiteSessionCookie)
+		// 	session_set_cookie_params(["SameSite" => "none"]);
+		// else
+		// 	//exit;
 		return session_start();
 	}
 

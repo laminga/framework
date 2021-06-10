@@ -60,7 +60,7 @@ class GlobalizeDebugSession
 			return IO::ReadJson($path);
 		}
 		else
-			return array();
+			return [];
 	}
 	private static function readGlobalizedFileValue($ip)
 	{
@@ -69,7 +69,7 @@ class GlobalizeDebugSession
 		$val = Arr::SafeGet($arr, $ip, null);
 		if ($val === null)
 		{
-			$val = array('value' => '', 'date' => null);
+			$val = ['value' => '', 'date' => null];
 		}
 		self::$currentFileValue = $val['value'];
 		self::$currentFileDate = intval($val['date']);
@@ -79,7 +79,7 @@ class GlobalizeDebugSession
 	{
 		GlobalDebugLock::BeginWrite();
 		$arr = self::readGlobalizedFile();
-		$arr[$ip] = array('value' => $value, 'date' => $date);
+		$arr[$ip] = ['value' => $value, 'date' => $date];
 		$path = self::resolveGlobalizedPath();
 		IO::WriteJson($path, $arr);
 		GlobalDebugLock::EndWrite();

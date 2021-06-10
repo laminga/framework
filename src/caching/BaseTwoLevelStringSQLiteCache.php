@@ -18,7 +18,7 @@ class BaseTwoLevelStringSQLiteCache
 	{
 		$this->path = Context::Paths()->GetStorageCaches() . '/services/' . $path;
 		IO::EnsureExists($this->path);
-		$this->db = new SQLiteList('k', array('v'));
+		$this->db = new SQLiteList('k', ['v']);
 	}
 
 	private function OpenRead($key = null, $throwLockErrors = true)

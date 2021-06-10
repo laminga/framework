@@ -879,6 +879,44 @@ class IO
 		return $name;
 	}
 
+	/**
+	 * Creates a random unique temporary directory, with specified parameters,
+	 * that does not already exist (like tempnam(), but for dirs).
+	 *
+	 * Created dir will begin with the specified prefix, followed by random
+	 * numbers.
+	 *
+	 * @link https://php.net/manual/en/function.tempnam.php
+	 *
+	 * @param string $prefix String with which to prefix created dirs.
+	 * @param int $maxAttempts Maximum attempts before giving up (to prevent
+	 * endless loops).
+	 * @return string|bool Full path to newly-created dir, or false on failure.
+	 */
+	public static function GetTempDir($prefix = 'tmp_', $maxAttempts = 1000)
+	{
+		$dir = Context::Paths()->GetTempPath();
+		self::EnsureExists($dir);
+
+		/* Make sure characters in prefix are safe. */
+		if (strpbrk($prefix, '\\/:*?"<>|') !== false)
+			return false;
+
+		/* Attempt to create a random directory until it works. Abort if we reach
+		 * $maxAttempts. Something screwy could be happening with the filesystem
+		 * and our loop could otherwise become endless.
+		 */
+		$attempts = 0;
+		do
+		{
+			$path = sprintf('%s%s%s%s', $dir, DIRECTORY_SEPARATOR, $prefix, mt_rand(100000, mt_getrandmax()));
+		}
+		while (mkdir($path, 0700) == false
+			&& $attempts++ < $maxAttempts);
+
+		return $path;
+	}
+
 	public static function Copy($source, $target)
 	{
 		Profiling::BeginTimer();

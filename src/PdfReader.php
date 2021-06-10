@@ -4,6 +4,9 @@ namespace minga\framework;
 
 use minga\classes\cache\PdfHtmlCache;
 use minga\classes\cache\PdfTextCache;
+use rodrigoq\pdftohtml\PdfToHtml;
+use rodrigoq\pdftoinfo\PdfInfo;
+use rodrigoq\pdftotext\PdfToText;
 
 class PdfReader
 {
@@ -17,36 +20,44 @@ class PdfReader
 	//sin caracter para saltos de página y utf-8
 	const PDF_TO_TEXT_ARGS = '-nopgbrk -enc UTF-8';
 	const PDF_INFO_ARGS = '-enc UTF-8';
-	const PDF_TO_HTML_ARGS_FIRST_PAGE = '-enc UTF-8 -stdout -f 1 -l 1 -noframes -i ';
-	const PDF_TO_HTML_ARGS = '-enc UTF-8 -stdout -noframes -i ';
+	const PDF_TO_HTML_ARGS_FIRST_PAGE = '-f 1 -l 1';
+	const PDF_TO_HTML_ARGS = '-nofonts';
 
-	public static function Truncate64k($cad)
+	public static function Truncate64k(string $cad) : string
 	{
 		if (strlen($cad) > 65534)
 			return mb_strcut($cad, 0, 65534);
-		else
-			return $cad;
+
+		return $cad;
 	}
 
-	public static function GetText($file, $truncate = true)
+	public static function GetText(string $file, bool $truncate = true, bool $removeSpaces = true) : string
 	{
 		Profiling::BeginTimer();
 
-		$text = implode(' ', self::RunPdfToText($file));
-		$text = trim(preg_replace('/\s+/', ' ', $text));
+		$sep = "\n";
+		if($removeSpaces)
+			$sep = ' ';
+
+		$text = implode($sep , self::RunPdfToText($file));
+		if($removeSpaces)
+			$text = preg_replace('/\s+/', ' ', $text);
+
+		// Remueve caracter inválido: 0xf0b7
+		$text = str_replace("", "\n", $text);
 
 		if($truncate)
-			$text = self::Truncate64k($text);
+			$text = self::Truncate64k(trim($text));
 
 		Profiling::EndTimer();
-		return $text;
+		return trim($text);
 	}
 
-	public static function GetHtml($file, $firstPageOnly = false)
+	public static function GetHtml(string $file, bool $firstPageOnly = false) : string
 	{
 		Profiling::BeginTimer();
 
-		$html = implode("\n", self::RunPdfToHtml($file, $firstPageOnly));
+		$html = self::RunPdfToHtml($file, $firstPageOnly);
 		//Sobre el resultado ejecutar esto si se quiere
 		//el texto en una sola línea, sin espacios extra.
 		//trim(preg_replace('/\s+/', ' ', $text));
@@ -55,13 +66,13 @@ class PdfReader
 		return $html;
 	}
 
-	public static function GetPageCount($file)
+	public static function GetPageCount(string $file) : int
 	{
 		$info = self::GetMetadataInfo($file);
-		return $info['pages'];
+		return (int)$info['pages'];
 	}
 
-	public static function GetMetadataInfo($file)
+	public static function GetMetadataInfo(string $file) : array
 	{
 		$ret = ['pages' => 0, 'encrypted' => false];
 		$lines = self::GetInfo($file);
@@ -83,7 +94,7 @@ class PdfReader
 		return $ret;
 	}
 
-	public static function GetInfo($file)
+	public static function GetInfo(string $file) : array
 	{
 		try
 		{
@@ -100,46 +111,128 @@ class PdfReader
 		return [];
 	}
 
-	private static function RunPdfToText($file)
+	private static function RunPdfToText(string $file) : array
 	{
-		$bits = System::GetArchitecture();
-		$command = self::PDF_TO_TEXT . $bits
-			. ' ' . self::PDF_TO_TEXT_ARGS
-			. ' ' . escapeshellarg($file) . ' -';
-		return System::RunCommandOnPath($command);
+		$command = self::GetPdfToTextCommand($file, self::PDF_TO_TEXT_ARGS, $path);
+		return System::RunCommandOnPath($command, $path);
 	}
 
-	private static function RunPdfInfo($file)
+	private static function RunPdfInfo(string $file) : array
 	{
-		$bits = System::GetArchitecture();
-		$command = self::PDF_INFO . $bits
-			. ' ' . self::PDF_INFO_ARGS
-			. ' ' . escapeshellarg($file);
-		return System::RunCommandOnPath($command);
+		$command = self::GetPdfInfoCommand($file, self::PDF_INFO_ARGS, $path);
+		return System::RunCommandOnPath($command, $path);
 	}
 
-	private static function RunPdfToHtml($file, $firstPageOnly)
+	private static function RunPdfToHtml(string $file, bool $firstPageOnly) : string
 	{
+		$outPath = '';
 		try
 		{
-			$bits = System::GetArchitecture();
-			if(System::IsWindows())
-				$bits .= '.exe';
-
 			$args = self::PDF_TO_HTML_ARGS;
 			if ($firstPageOnly)
 				$args = self::PDF_TO_HTML_ARGS_FIRST_PAGE;
 
-			$command = self::PDF_TO_HTML . $bits
-				. ' ' . escapeshellarg($args)
-				. ' ' . escapeshellarg($file);
+			$outPath = IO::GetTempDir();
+			IO::RemoveDirectory($outPath);
+			$command = self::GetPdfToHtmlCommand($file, $args, $outPath, $path);
+			System::RunCommandOnPath($command, $path);
+			$files = IO::GetFilesStartsWithAndExt($outPath, 'page', 'html', true);
+			natsort($files);
+			$text = '';
+			$first = true;
+			foreach($files as $file)
+			{
+				$part = file_get_contents($file);
+				if($first == false)
+					$part = str_replace(["<html>", "<head>", "</head>", "<body>"], "", $part);
+				$first = false;
+				$part = str_replace(["</body>", "</html>"], "", $part);
+				$text .= $part;
+			}
 
-			return System::RunCommandOnPath($command);
+			return trim($text . "</body></html>");
+
 		}
 		catch(\Exception $e)
 		{
 			Log::HandleSilentException($e);
-			return [];
+			return '';
+		}
+		finally
+		{
+			IO::RemoveDirectory($outPath);
 		}
 	}
+
+	private static function GetPdfToTextCommand(string $file, string $args, ?string &$path) : string
+	{
+		$ext = '';
+		if(System::IsWindows())
+			$ext = '.exe';
+
+		if(class_exists(PdfToText::class))
+		{
+			$bin = './' . PdfToText::GetBin();
+			$path = PdfToText::GetPath();
+
+			return $bin . $ext . ' ' . $args
+				. ' ' . escapeshellarg($file) . ' -';
+		}
+
+		$path = null;
+		$bits = System::GetArchitecture();
+		return self::PDF_TO_TEXT . $ext . $bits
+			. ' ' . $args
+			. ' ' . escapeshellarg($file) . ' -';
+	}
+
+
+	private static function GetPdfInfoCommand(string $file, string $args, ?string &$path) : string
+	{
+		$ext = '';
+		if(System::IsWindows())
+			$ext = '.exe';
+
+		if(class_exists(PdfInfo::class))
+		{
+			$bin = './' . PdfInfo::GetBin();
+			$path = PdfInfo::GetPath();
+
+			return $bin . $ext . ' ' . $args
+				. ' ' . escapeshellarg($file);
+		}
+
+		$path = null;
+		$bits = System::GetArchitecture();
+		return self::PDF_INFO . $ext . $bits
+			. ' ' . $args
+			. ' ' . escapeshellarg($file);
+	}
+
+	private static function GetPdfToHtmlCommand(string $file, string $args, string $outPath, ?string &$path) : string
+	{
+		$ext = '';
+		if(System::IsWindows())
+			$ext = '.exe';
+
+		if(class_exists(PdfToHtml::class))
+		{
+			$bin = './' . PdfToHtml::GetBin();
+			$path = PdfToHtml::GetPath();
+
+			return $bin . $ext . ' ' . $args
+				. ' ' . escapeshellarg($file)
+				. ' ' . escapeshellarg($outPath);
+		}
+
+		$path = null;
+		$bits = System::GetArchitecture();
+		return self::PDF_TO_HTML . $ext . $bits
+			. ' ' . $args
+			. ' ' . escapeshellarg($file)
+			. ' ' . escapeshellarg($outPath);
+	}
+
 }
+
+

@@ -10,7 +10,7 @@ class Cookies
 		$expire = time() + 60 * 60 * 24 * $expireDays;
 
 		//Si tiene https no importa el entorno, es segura.
-		$secure = self::isSecure();
+		$secure = self::IsSecure();
 		$host = $_SERVER['HTTP_HOST'];
 		if ($host == false)
 			$host = parse_url(Context::Settings()->GetPublicUrl(), PHP_URL_HOST);
@@ -21,7 +21,7 @@ class Cookies
 			Log::HandleSilentException(new ErrorException('SetCookie'));
 	}
 
-	private static function isSecure()
+	public static function IsSecure()
 	{
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
 			return true;

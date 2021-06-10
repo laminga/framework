@@ -10,7 +10,7 @@ class MultiQuery
 	public function __construct($query1, $query2 = null, $query3 = null, $query4 = null, $query5 = null,
 		$query6 = null, $query7 = null, $query8 = null, $query9 = null, $query10 = null)
 	{
-		$queries = array();
+		$queries = [];
 		if ($query1 != null)
 			$queries[] = $query1;
 		if ($query2 != null)
@@ -37,7 +37,7 @@ class MultiQuery
 		$where = "";
 		$groupBy = "";
 		$orderBy = "";
-		$params = array();
+		$params = [];
 
 		foreach($queries as $query)
 		{

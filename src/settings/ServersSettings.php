@@ -18,7 +18,9 @@ class ServersSettings
 	public $Python3 = null;
 	public $PhpCli = 'php';
 
-	public $LoopLocalPort = null;
+	public $LoopLocalPort = 8000;
+	public $LoopLocalHost = 'localhost';
+	public $LoopLocalScheme = 'http';
 
 	public function RegisterServer($name, $url, $isCDN = false)
 	{
@@ -116,7 +118,7 @@ class ServersSettings
 		$svrs = [];
 		foreach($cdns as $key => $value)
 			$svrs[] = $value->publicUrl;
-		if (sizeof($svrs) == 0)
+		if (count($svrs) == 0)
 			$svrs = $this->Current()->publicUrl;
 		return $svrs;
 	}

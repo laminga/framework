@@ -12,7 +12,7 @@ class QueryPart
 	public $OrderBy;
 	public $MaxRows;
 
-	public function __construct($from, $where, $params = array(), $select = null, $groupBy = null, $orderBy = null, $maxRows = null)
+	public function __construct($from, $where, $params = [], $select = null, $groupBy = null, $orderBy = null, $maxRows = null)
 	{
 		$this->From = $from;
 		$this->Where = $where;

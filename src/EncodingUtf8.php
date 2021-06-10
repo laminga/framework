@@ -46,7 +46,7 @@ class EncodingUtf8
 	const ICONV_IGNORE = "IGNORE";
 	const WITHOUT_ICONV = "";
 
-	protected static $win1252ToUtf8 = array(
+	protected static $win1252ToUtf8 = [
 		128 => "\xe2\x82\xac",
 
 		130 => "\xe2\x80\x9a",
@@ -79,9 +79,9 @@ class EncodingUtf8
 
 		158 => "\xc5\xbe",
 		159 => "\xc5\xb8"
-	);
+	];
 
-	protected static $brokenUtf8ToUtf8 = array(
+	protected static $brokenUtf8ToUtf8 = [
 		"\xc2\x80" => "\xe2\x82\xac",
 
 		"\xc2\x82" => "\xe2\x80\x9a",
@@ -114,9 +114,9 @@ class EncodingUtf8
 
 		"\xc2\x9e" => "\xc5\xbe",
 		"\xc2\x9f" => "\xc5\xb8"
-	);
+	];
 
-	protected static $utf8ToWin1252 = array(
+	protected static $utf8ToWin1252 = [
 		"\xe2\x82\xac" => "\x80",
 
 		"\xe2\x80\x9a" => "\x82",
@@ -149,7 +149,7 @@ class EncodingUtf8
 
 		"\xc5\xbe"     => "\x9e",
 		"\xc5\xb8"     => "\x9f"
-	);
+	];
 
 	/**
 	 * Function \ForceUTF8\Encoding::ToUTF8
@@ -193,12 +193,12 @@ class EncodingUtf8
 		$buf = "";
 		for($i = 0; $i < $max; $i++)
 		{
-			$c1 = $text{$i};
+			$c1 = $text[$i];
 			if($c1>="\xc0")
 			{ //Should be converted to UTF8, if it's not UTF8 already
-				$c2 = $i+1 >= $max? "\x00" : $text{$i+1};
-				$c3 = $i+2 >= $max? "\x00" : $text{$i+2};
-				$c4 = $i+3 >= $max? "\x00" : $text{$i+3};
+				$c2 = $i+1 >= $max? "\x00" : $text[$i+1];
+				$c3 = $i+2 >= $max? "\x00" : $text[$i+2];
+				$c4 = $i+3 >= $max? "\x00" : $text[$i+3];
 				if($c1 >= "\xc0" & $c1 <= "\xdf")
 				{ //looks like 2 bytes UTF8
 					if($c2 >= "\x80" && $c2 <= "\xbf")
@@ -341,7 +341,7 @@ class EncodingUtf8
 	{
 		$encoding = strtoupper($encodingLabel);
 		$encoding = preg_replace('/[^a-zA-Z0-9\s]/', '', $encoding);
-		$equivalences = array(
+		$equivalences = [
 			'ISO88591' => 'ISO-8859-1',
 			'ISO8859'  => 'ISO-8859-1',
 			'ISO'      => 'ISO-8859-1',
@@ -351,7 +351,7 @@ class EncodingUtf8
 			'UTF'      => 'UTF-8',
 			'WIN1252'  => 'ISO-8859-1',
 			'WINDOWS1252' => 'ISO-8859-1'
-		);
+		];
 
 		if(empty($equivalences[$encoding]))
 			return 'UTF-8';
