@@ -31,18 +31,26 @@ class PdfReader
 		return $cad;
 	}
 
-	public static function GetText(string $file, bool $truncate = true) : string
+	public static function GetText(string $file, bool $truncate = true, bool $removeSpaces = true) : string
 	{
 		Profiling::BeginTimer();
 
-		$text = implode(' ', self::RunPdfToText($file));
-		$text = trim(preg_replace('/\s+/', ' ', $text));
+		$sep = "\n";
+		if($removeSpaces)
+			$sep = ' ';
+
+		$text = implode($sep , self::RunPdfToText($file));
+		if($removeSpaces)
+			$text = preg_replace('/\s+/', ' ', $text);
+
+		// Remueve caracter inválido: 0xf0b7
+		$text = str_replace("", "\n", $text);
 
 		if($truncate)
-			$text = self::Truncate64k($text);
+			$text = self::Truncate64k(trim($text));
 
 		Profiling::EndTimer();
-		return $text;
+		return trim($text);
 	}
 
 	public static function GetHtml(string $file, bool $firstPageOnly = false) : string
