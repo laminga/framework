@@ -61,6 +61,25 @@ class AppPaths
 		return $this->GetStorageRoot() . '/log';
 	}
 
+	public function GetDumpLocalPath()
+	{
+		return $this->GetStorageRoot() . '/dump';
+	}
+
+	public function GetDumpMonthlyLocalPath()
+	{
+		$ret = $this->GetDumpLocalPath() . '/' . Date::GetLogMonthFolder();
+		IO::EnsureExists($ret);
+		return $ret;
+	}
+
+	public function GetDumpMonthlyCurrentUserLocalPath()
+	{
+		$ret = $this->GetDumpMonthlyLocalPath() . '/' . Str::UrlencodeFriendly(Context::LoggedUser());
+		IO::EnsureExists($ret);
+		return $ret;
+	}
+
 	public static function GetTwigCache()
 	{
 		return Context::Paths()->GetRoot() . "/compilation_cache";
