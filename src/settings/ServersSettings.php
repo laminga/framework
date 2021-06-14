@@ -18,7 +18,7 @@ class ServersSettings
 	public $Python3 = null;
 	public $PhpCli = 'php';
 
-	public $LoopLocalPort = 8000;
+	public $LoopLocalPort = null;
 	public $LoopLocalHost = 'localhost';
 	public $LoopLocalScheme = 'http';
 
