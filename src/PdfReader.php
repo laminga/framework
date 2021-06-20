@@ -181,7 +181,7 @@ class PdfReader
 
 		$path = null;
 		$bits = System::GetArchitecture();
-		return self::PDF_TO_TEXT . $ext . $bits
+		return self::PDF_TO_TEXT . $bits . $ext
 			. ' ' . $args
 			. ' ' . escapeshellarg($file) . ' -';
 	}
@@ -204,7 +204,7 @@ class PdfReader
 
 		$path = null;
 		$bits = System::GetArchitecture();
-		return self::PDF_INFO . $ext . $bits
+		return self::PDF_INFO . $bits . $ext
 			. ' ' . $args
 			. ' ' . escapeshellarg($file);
 	}
@@ -227,7 +227,7 @@ class PdfReader
 
 		$path = null;
 		$bits = System::GetArchitecture();
-		return self::PDF_TO_HTML . $ext . $bits
+		return self::PDF_TO_HTML . $bits . $ext
 			. ' ' . $args
 			. ' ' . escapeshellarg($file)
 			. ' ' . escapeshellarg($outPath);
