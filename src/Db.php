@@ -5,17 +5,56 @@ namespace minga\framework;
 class Db
 {
 	public $Host = 'localhost';
-	public $Name;
-	public $User;
-	public $NoDb;
-	public $Password;
+	public $Name = '';
+	public $User = '';
+	public $NoDb = false;
+	public $Password = '';
 	public $Port = 3306;
 	public $Charset = 'utf8';
 
-	private static $db = null;
+	//@var mixed PDO|\Doctrine\DBAL\Connection
+	public $db = null;
+	private $isInTransaction = false;
+	private $lastRows = -1;
 
-	public function __construct()
+	public function __construct($db = null, $profiler =  null)
 	{
+		if($db === null)
+		{
+			$this->Connect();
+			return;
+		}
+
+		$this->db = $db;
+
+		if (Context::Settings()->Db()->ForceStrictTables)
+			$this->db->executeQuery("SET sql_mode =(SELECT CONCAT(@@session.sql_mode,',STRICT_TRANS_TABLES'));");
+		if (Context::Settings()->Db()->ForceOnlyFullGroupBy)
+			$this->db->executeQuery("SET sql_mode =(SELECT CONCAT(@@session.sql_mode,',ONLY_FULL_GROUP_BY'));");
+
+		if (Profiling::IsProfiling() && $profiler !== null)
+			$this->db->getConfiguration()->setSQLLogger($profiler);
+	}
+
+	public function GetEntityManager()
+	{
+		// @phpstan-ignore-next-line
+		return App::Orm()->GetEntityManager();
+	}
+
+	public function IsInTransaction() : bool
+	{
+		return $this->isInTransaction;
+	}
+
+	private function Connect() : void
+	{
+		if ($this->db !== null)
+			return;
+
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+
 		// Inicia Base de datos
 		$this->NoDb = Context::Settings()->Db()->NoDb;
 		$this->Host = Context::Settings()->Db()->Host;
@@ -24,32 +63,19 @@ class Db
 		$this->Port = Context::Settings()->Db()->Port;
 		$this->Password = Context::Settings()->Db()->Password;
 		$this->Charset = 'utf8';
-		$this->Connection();
+
+		$this->db = new \PDO('mysql:host=' . $this->Host
+			. ';port=' . $this->Port
+			. ';dbname=' . $this->Name
+			. ';charset=' . $this->Charset,
+			$this->User,
+			$this->Password);
+		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		$this->db->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+
+		Performance::EndDbWait();
+		Profiling::EndTimer();
 	}
-
-	private function Connection()
-	{
-		if (self::$db == null)
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-
-			$db = new \PDO('mysql:host=' . $this->Host
-				. ';port=' . $this->Port
-				. ';dbname=' . $this->Name
-				. ';charset=' . $this->Charset,
-				$this->User,
-				$this->Password);
-			$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-			$db->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-			self::$db = $db;
-		}
-		return self::$db;
-	}
-
 
 	public function execute(string $query, array $data = []) : int
 	{
@@ -74,7 +100,7 @@ class Db
 
 	private function doExecuteNamedParams(string $query, array $data = []) : int
 	{
-		$stmt = $this->Connection()->prepare($query);
+		$stmt = $this->db->prepare($query);
 		foreach($data as $k => $v)
 			$stmt->bindValue($k, $v, $this->getParamType($v));
 		$stmt->execute();
@@ -83,7 +109,7 @@ class Db
 
 	private function doExecute(string $query, array $data = []) : int
 	{
-		$stmt = $this->Connection()->prepare($query);
+		$stmt = $this->db->prepare($query);
 		$stmt->execute($data);
 		return $stmt->rowCount();
 	}
@@ -96,14 +122,14 @@ class Db
 	 * @paran int $fetchStyle Fetch style PDO Constant
 	 * @return array
 	 */
-	public function fetchAll(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC)
+	public function fetchAll(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC) : array
 	{
 		try
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 			$query = $this->parseArrayParams($query, $params);
-			$stmt = $this->Connection()->prepare($query);
+			$stmt = $this->db->prepare($query);
 			if(key($params) === 0)
 				$stmt->execute($params);
 			else
@@ -121,6 +147,12 @@ class Db
 		}
 	}
 
+	public function fetchAllByPos(string $query, array $params = []) : array
+	{
+		return $this->fetchAll($query, $params, \PDO::FETCH_NUM);
+	}
+
+
 	/**
 	 * Prepares and executes a multi SQL query and returns the
 	 * results sets as an array of associative arrays.
@@ -130,16 +162,16 @@ class Db
 	 * @paran int $fetchStyle Fetch style PDO Constant
 	 * @return array
 	 */
-	public function fetchAllMultipleResults(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC)
+	public function fetchAllMultipleResults(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC) : array
 	{
 		try
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 
-			$this->Connection()->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+			$this->db->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
 			$query = $this->parseArrayParams($query, $params);
-			$stmt = $this->Connection()->prepare($query);
+			$stmt = $this->db->prepare($query);
 
 			if(key($params) === 0)
 				$stmt->execute($params);
@@ -159,18 +191,27 @@ class Db
 		}
 		finally
 		{
-			$this->Connection()->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+			$this->db->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 			Performance::EndDbWait();
 			Profiling::EndTimer();
 		}
 	}
 
-	public function fetchScalarInt(string $query, array $params = [])
+	public function fetchScalarInt(string $query, array $params = []) : int
 	{
 		return (int)$this->fetchScalar($query, $params);
 	}
 
-	public function fetchScalar(string $query, array $params = [])
+	public function fetchScalarIntNullable(string $query, array $params = []) : ?int
+	{
+		$ret = $this->fetchScalarNullable($query, $params);
+		if ($ret === null)
+			return null;
+
+		return (int)$ret;
+	}
+
+	public function fetchScalarNullable(string $query, array $params = [])
 	{
 		try
 		{
@@ -179,7 +220,8 @@ class Db
 			$ret = $this->fetchAssoc($query, $params);
 			if($ret === false)
 				return null;
-			return $ret[array_keys($ret)[0]];
+
+			return current($ret);
 		}
 		finally
 		{
@@ -188,10 +230,18 @@ class Db
 		}
 	}
 
+	public function fetchScalar(string $query, array $params = [])
+	{
+		$ret = $this->fetchScalarNullable($query, $params);
+		if($ret === null)
+			throw new PublicException("No se ha obtenido ningún resultado en la consulta cuando se esperaba uno.");
+		return $ret;
+	}
+
 	private function fetch(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC)
 	{
 		$query = $this->parseArrayParams($query, $params);
-		$stmt = $this->Connection()->prepare($query);
+		$stmt = $this->db->prepare($query);
 		if(key($params) === 0)
 			$stmt->execute($params);
 		else
@@ -238,7 +288,7 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 			$query = $this->parseArrayParams($query, $params);
-			$stmt = $this->Connection()->prepare($query);
+			$stmt = $this->db->prepare($query);
 			if(key($params) === 0)
 				$stmt->execute($params);
 			else
@@ -264,7 +314,7 @@ class Db
 	 */
 	public function lastInsertId() : int
 	{
-		return (int)$this->Connection()->lastInsertId();
+		return (int)$this->db->lastInsertId();
 	}
 
 	/**
@@ -428,7 +478,7 @@ class Db
 					$ret .= '0, ';
 			}
 			else
-				$ret .= $this->Connection()->quote($v, $this->getParamType($v)) . ', ';
+				$ret .= $this->db->quote($v, $this->getParamType($v)) . ', ';
 		}
 
 		return rtrim($ret, ', ');
@@ -460,7 +510,7 @@ class Db
 	 * @param array $params             prepared statement params
 	 * @return array
 	 */
-	public function fetchArray(string $statement, array $params = [])
+	public function fetchArray(string $statement, array $params = []) : array
 	{
 		try
 		{
@@ -559,7 +609,15 @@ class Db
 		return $value;
 	}
 
-	/*
+	/**
+	 * Alias de beginTransacion()
+	 */
+	public function begin() : bool
+	{
+		return $this->beginTransaction();
+	}
+
+	/**
 	 * Initiates a transaction.
 	 */
 	public function beginTransaction() : bool
@@ -568,7 +626,8 @@ class Db
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
-			return $this->Connection()->beginTransaction();
+			$this->isInTransaction = true;
+			return $this->db->beginTransaction();
 		}
 		finally
 		{
@@ -577,7 +636,7 @@ class Db
 		}
 	}
 
-	/*
+	/**
 	 * Commits a transaction.
 	 */
 	public function commit() : bool
@@ -586,7 +645,8 @@ class Db
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
-			return $this->Connection()->commit();
+			$this->isInTransaction = false;
+			return $this->db->commit();
 		}
 		finally
 		{
@@ -595,7 +655,7 @@ class Db
 		}
 	}
 
-	/*
+	/**
 	 * Rolls back a transaction.
 	 */
 	public function rollBack() : bool
@@ -604,13 +664,35 @@ class Db
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
-			return $this->Connection()->rollBack();
+			$this->isInTransaction = false;
+			return $this->db->rollBack();
 		}
 		finally
 		{
 			Performance::EndDbWait();
 			Profiling::EndTimer();
 		}
+	}
+
+	public function ensureBegin() : bool
+	{
+		if ($this->isInTransaction == false)
+			return $this->begin();
+		return true;
+	}
+
+	public function ensureCommit() : bool
+	{
+		if ($this->isInTransaction)
+			return $this->commit();
+		return true;
+	}
+
+	public function ensureRollback() : bool
+	{
+		if ($this->isInTransaction)
+			return $this->rollback();
+		return true;
 	}
 
 	public static function QueryToString(string $sql, array $params) : string
@@ -641,9 +723,182 @@ class Db
 		return '`' . $name . '`';
 	}
 
-	public static function QuoteTable($name)
+	public static function QuoteTable(string $name) : string
 	{
 		return self::QuoteColumn($name);
 	}
 
+	public function GetDBSize()
+	{
+		try
+		{
+			Profiling::BeginTimer();
+			$sql = "SELECT
+				SUM(data_length) AS data, SUM(index_length) AS `index`
+				FROM information_schema.tables
+				WHERE table_schema = ?
+				GROUP BY table_schema";
+			return $this->fetchAssoc($sql,
+				[Context::Settings()->Db()->Name]);
+		}
+		catch(\Exception $e)
+		{
+			Log::HandleSilentException($e);
+			return '-1';
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
+	}
+
+	public function dropTable(string $table) : void
+	{
+		Profiling::BeginTimer();
+		$this->ensureBegin();
+		$sql = "DROP TABLE IF EXISTS " . self::QuoteTable($table);
+		$this->execDDL($sql);
+		Profiling::EndTimer();
+	}
+
+	public function dropTemporaryTable(string $table) : void
+	{
+		Profiling::BeginTimer();
+		$this->ensureBegin();
+		$sql = "DROP TEMPORARY TABLE " . self::QuoteTable($table);
+		$this->exec($sql);
+		Profiling::EndTimer();
+	}
+
+	public function rowExists(string $table, string $field, string $value) : bool
+	{
+		Profiling::BeginTimer();
+		$sql = "SELECT CASE WHEN EXISTS (SELECT * FROM " . self::QuoteTable($table) . " WHERE " . self::QuoteColumn($field) . " = ?) THEN 1 ELSE 0 END";
+		$ret = $this->fetchScalarInt($sql, [$value]);
+		Profiling::EndTimer();
+		return $ret === 1;
+	}
+
+	public function tableExists(string $table) : bool
+	{
+		try
+		{
+			Profiling::BeginTimer();
+			$query = "SELECT 1 FROM information_schema.tables
+				WHERE table_schema = ? AND table_name = ? LIMIT 1";
+			$ret = $this->fetchScalarIntNullable($query, [Context::Settings()->Db()->Name, $table]);
+			return $ret !== null;
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
+	}
+
+	public function renameTable(string $tableSource, string $tableTarget) : void
+	{
+		Profiling::BeginTimer();
+		$this->ensureBegin();
+		$sql = "RENAME TABLE " . self::QuoteTable($tableSource) . " TO " . self::QuoteTable($tableTarget);
+		$this->execDDL($sql);
+		Profiling::EndTimer();
+	}
+
+	public function execDDL(string $sql, array $params = [])
+	{
+		// Los cambios de estructura finalizan la transacción activa
+		$wasInTransaction = $this->isInTransaction;
+		// Cierra si había una
+		if ($wasInTransaction)
+			$this->commit();
+
+		$ret = $this->executeQuery($sql, $params);
+
+		if ($wasInTransaction)
+		{
+			$this->commit();
+			// Reabre
+			$this->ensureBegin();
+		}
+		return $ret;
+	}
+
+	public function GetTableSize(string $table)
+	{
+		try
+		{
+			Profiling::BeginTimer();
+
+			$sql = "SELECT
+				data_length `data`,
+				index_length `index`,
+				data_length + index_length `total`,
+				table_rows `rows`
+				FROM information_schema.tables
+				WHERE table_schema = ?
+				AND table_name = ?";
+
+			return $this->fetchAssoc($sql,
+				[Context::Settings()->Db()->Name, $table]);
+		}
+		catch(\Exception $e)
+		{
+			Log::HandleSilentException($e);
+			return '-';
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
+	}
+
+	public function setFetchMode(int $mode) : void
+	{
+		$this->db->setFetchMode($mode);
+	}
+
+	public function lastRowsAffected() : int
+	{
+		return $this->lastRows;
+	}
+
+	public function exec(string $query, array $params = []) : int
+	{
+		return $this->executeQuery($query, $params);
+	}
+
+	public function executeQuery(string $query, array $params = []) : int
+	{
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$this->ensureBegin();
+			$this->lastRows = $this->db->executeQuery($query, $params)->rowCount();
+			return $this->lastRows;
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
+	}
+
+	public function execRead(string $query, array $params = [])
+	{
+		try
+		{
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			$this->ensureBegin();
+			$this->db->executeQuery($query, $params);
+		}
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
+	}
+
 }
+
