@@ -169,6 +169,8 @@ class Log
 			return true;
 		}
 
+		if(Str::ContainsI($errorMessage, "ResizeObserver loop limit"))
+			return true;
 
 		if(Str::ContainsI($errorMessage, 'redefine non-configurable property "userAgent"'))
 			return true;
