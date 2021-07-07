@@ -160,8 +160,20 @@ class Sorter
 
 	public static function ByFullName($a, $b, $mult = 1)
 	{
-		$aName = $a['fullName'];
-		$bName = $b['fullName'];
+		if(isset($a['fullName']))
+			$aName = $a['fullName'];
+		else if(isset($a['fullname']))
+			$aName = $a['fullname'];
+		else
+			throw new \Exception('Fullname a is not set');
+
+		if(isset($b['fullName']))
+			$bName = $b['fullName'];
+		else if(isset($b['fullname']))
+			$bName = $b['fullname'];
+		else
+			throw new \Exception('Fullname b is not set');
+
 		$aDescription = Arr::SafeGet($a, 'description');
 		$bDescription = Arr::SafeGet($b, 'description');
 		if ($aName == $bName)

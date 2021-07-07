@@ -12,6 +12,8 @@ class MailSettings
 	public $NotifyAddress = "";
 	public $NotifyAddressErrors = "";
 
+	public $NoMail = false;
+
 	public $Provider = self::SMTP;
 
 	// File Settings
