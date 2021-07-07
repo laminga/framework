@@ -111,9 +111,8 @@ class Db
 	/**
 	 * Prepares and executes an SQL query and returns the result as an associative array.
 	 *
-	 * @param string $query The SQL query.
+	 * @param string $sql The SQL query.
 	 * @param array $params The query parameters.
-	 * @paran int $fetchStyle Fetch style PDO Constant
 	 * @return array
 	 */
 	public function fetchAll($sql, array $params = array())
