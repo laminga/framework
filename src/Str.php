@@ -5,6 +5,11 @@ namespace minga\framework;
 class Str
 {
 
+	public static function IsEmail(string $email) : bool
+	{
+		return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+	}
+
 	public static function Convert(string $str, string $to = 'Windows-1252', string $from = 'UTF-8', bool $translit = false, bool $ignore = false) : string
 	{
 		if($translit)

@@ -6,9 +6,9 @@ use minga\framework\PhpSession;
 
 class OauthData
 {
-	public $fullName = '';
-	public $firstName = '';
-	public $lastName = '';
+	public $fullname = '';
+	public $firstname = '';
+	public $lastname = '';
 	public $verified = '';
 	public $id = '';
 	public $email = '';
@@ -21,11 +21,11 @@ class OauthData
 		$this->provider = 'google';
 
 		if(isset($data['name']))
-			$this->fullName = $data['name'];
+			$this->fullname = $data['name'];
 		if(isset($data['given_name']))
-			$this->firstName = $data['given_name'];
+			$this->firstname = $data['given_name'];
 		if(isset($data['family_name']))
-			$this->lastName = $data['family_name'];
+			$this->lastname = $data['family_name'];
 
 		if(isset($data['verified_email']))
 			$this->verified = $data['verified_email'];
@@ -46,14 +46,14 @@ class OauthData
 		$this->provider = 'facebook';
 
 		if(isset($data['name']))
-			$this->fullName = $data['name'];
+			$this->fullname = $data['name'];
 		if(isset($data['first_name']))
-			$this->firstName = $data['first_name'];
+			$this->firstname = $data['first_name'];
 		if(isset($data['middle_name']))
-			$this->firstName .=  trim($this->firstName.' '.$data['middle_name']);
+			$this->firstname .=  trim($this->firstname.' '.$data['middle_name']);
 
 		if(isset($data['last_name']))
-			$this->lastName = $data['last_name'];
+			$this->lastname = $data['last_name'];
 
 		//Si trae el email de facebook está verificado.
 		if(isset($data['email']))
@@ -78,9 +78,9 @@ class OauthData
 		$data = [
 			'provider' => $this->provider,
 			'id' => $this->id,
-			'fullName' => $this->fullName,
-			'firstName' => $this->firstName,
-			'lastName' => $this->lastName,
+			'fullname' => $this->fullname,
+			'firstname' => $this->firstname,
+			'lastname' => $this->lastname,
 			'email' => $this->email,
 			'gender' => $this->gender,
 			'picture' => $this->picture,
@@ -105,9 +105,9 @@ class OauthData
 		$ret = new self();
 		$ret->provider = $data['provider'];
 		$ret->id = $data['id'];
-		$ret->fullName = $data['fullName'];
-		$ret->firstName = $data['firstName'];
-		$ret->lastName = $data['lastName'];
+		$ret->fullname = $data['fullname'];
+		$ret->firstname = $data['firstname'];
+		$ret->lastname = $data['lastname'];
 		$ret->email = $data['email'];
 		$ret->gender = $data['gender'];
 		$ret->picture = $data['picture'];

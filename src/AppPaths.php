@@ -141,6 +141,11 @@ class AppPaths
 		return $this->GetFrameworkPath() . '/tests';
 	}
 
+	public function GetFrameworkTestDataPath()
+	{
+		return $this->GetFrameworkTestsPath() . '/data';
+	}
+
 	public function GetMpdfTempPath()
 	{
 		$ret = $this->GetTempPath() . '/mpdftemp';
