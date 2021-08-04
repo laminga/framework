@@ -42,7 +42,6 @@ class Settings
 	public $useOldProjects = true;
 
 	public $useProjects = false;
-	public $useGeographies = false;
 	public $useEvents = true;
 	public $useProfiles = true;
 
