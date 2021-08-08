@@ -140,6 +140,12 @@ class Log
 		if(Str::Contains($errorMessage, 'function_bar'))
 			return true;
 
+		if(Str::Contains($errorMessage,  "property 'localdata' of undefined")
+			&& Str::Contains($errorSource, '/jqwidgets/'))
+		{
+			return true;
+		}
+
 		if(Str::Contains($errorMessage, 'w.source._source is undefined')
 			&& Str::Contains($errorSource, '/jqwidgets/'))
 		{
@@ -158,11 +164,6 @@ class Log
 			return true;
 		}
 
-		if($errorSource == '' && $errorLine == 0 && $errorColumn == 0 && $trace == '')
-		{
-			return true;
-		}
-
 		if(Str::Contains($errorMessage, "Uncaught SyntaxError: Unexpected identifier")
 			&& Str::Contains($trace, "at XMLHttpRequest.r.onload (<anonymous>:30:38)"))
 		{
@@ -172,9 +173,18 @@ class Log
 		if(Str::ContainsI($errorMessage, "ResizeObserver loop limit"))
 			return true;
 
+		if($errorSource == '' && $errorLine == 0 && $errorColumn == 0 && $trace == '')
+			return true;
+
 		//No funciona...
 		// if(Str::ContainsI($errorMessage, 'redefine non-configurable property "userAgent"'))
-		// 	return true;
+		//A ver si por separado funciona
+		if(Str::ContainsI($errorMessage, 'redefine')
+			&& Str::ContainsI($errorMessage, 'property')
+			&& Str::ContainsI($errorMessage, 'userAgent'))
+		{
+			return true;
+		}
 
 		if(Str::ContainsI($errorMessage, 'useragent'))
 			return true;
