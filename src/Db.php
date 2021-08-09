@@ -35,7 +35,7 @@ class Db
 		if (Profiling::IsProfiling() && $profiler !== null)
 			$this->db->getConfiguration()->setSQLLogger($profiler);
 	}
-	
+
 	public function IsInTransaction() : bool
 	{
 		return $this->isInTransaction;
@@ -117,30 +117,33 @@ class Db
 	 */
 	public function fetchAll($sql, array $params = array())
 	{
-		Profiling::BeginTimer();
-		Performance::BeginDbWait();
-		if (method_exists($this->db, 'fetchAll'))
+		try
 		{
-			$ret = $this->db->fetchAll($sql, $params);
-		}
-		else
-		{
-			$query = $this->parseArrayParams($sql, $params);
-			$stmt = $this->db->prepare($query);
-			if(key($params) === 0)
-				$stmt->execute($params);
+			Profiling::BeginTimer();
+			Performance::BeginDbWait();
+			if (method_exists($this->db, 'fetchAll'))
+				return $this->db->fetchAll($sql, $params);
 			else
 			{
-				foreach($params as $k => $v)
-					$stmt->bindValue($k, $v, $this->getParamType($v));
-				$stmt->execute();
+
+				$query = $this->parseArrayParams($sql, $params);
+				$stmt = $this->db->prepare($query);
+				if(key($params) === 0)
+					$stmt->execute($params);
+				else
+				{
+					foreach($params as $k => $v)
+						$stmt->bindValue($k, $v, $this->getParamType($v));
+					$stmt->execute();
+				}
+				return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 			}
-			$fetchStyle = \PDO::FETCH_ASSOC;
-			$ret = $stmt->fetchAll($fetchStyle);
 		}
-		Performance::EndDbWait();
-		Profiling::EndTimer();
-		return $ret;
+		finally
+		{
+			Performance::EndDbWait();
+			Profiling::EndTimer();
+		}
 	}
 
 	public function fetchAllByPos($sql, array $params = array())
