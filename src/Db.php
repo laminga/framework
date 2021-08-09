@@ -125,7 +125,6 @@ class Db
 				return $this->db->fetchAll($sql, $params);
 			else
 			{
-
 				$query = $this->parseArrayParams($sql, $params);
 				$stmt = $this->db->prepare($query);
 				if(key($params) === 0)
