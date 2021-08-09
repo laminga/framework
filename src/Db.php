@@ -119,7 +119,25 @@ class Db
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
-		$ret = $this->db->fetchAll($sql, $params);
+		if (method_exists($this->db, 'fetchAll'))
+		{
+			$ret = $this->db->fetchAll($sql, $params);
+		}
+		else
+		{
+			$query = $this->parseArrayParams($sql, $params);
+			$stmt = $this->db->prepare($query);
+			if(key($params) === 0)
+				$stmt->execute($params);
+			else
+			{
+				foreach($params as $k => $v)
+					$stmt->bindValue($k, $v, $this->getParamType($v));
+				$stmt->execute();
+			}
+			$fetchStyle = \PDO::FETCH_ASSOC;
+			$ret = $stmt->fetchAll($fetchStyle);
+		}
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
