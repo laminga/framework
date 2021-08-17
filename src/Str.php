@@ -5,6 +5,14 @@ namespace minga\framework;
 class Str
 {
 
+	public static function Guid() : string
+	{
+		$str = bin2hex(random_bytes(16));
+		return substr($str, 0, 8) . '-' . substr($str, 8, 4)
+			. '-' . substr($str, 12, 4) . '-' . substr($str, 16, 4)
+			. '-' . substr($str, 20, 12);
+	}
+
 	public static function IsEmail(string $email) : bool
 	{
 		return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
