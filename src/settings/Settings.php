@@ -88,6 +88,9 @@ class Settings
 	// otras globales
 	public $section = '';
 
+	// Específico Tabu
+	public $SaveHtmlOnExport = false;
+
 	public function Initialize($rootPath)
 	{
 		$this->catalog = 'mySql';
@@ -165,7 +168,7 @@ class Settings
 		return $this->log;
 	}
 
-	
+
 	public function Notifications()
 	{
 		if ($this->notifications == null)

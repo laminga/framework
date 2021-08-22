@@ -646,15 +646,9 @@ class Str
 		return $parts[count($parts) - 1];
 	}
 
-	public static function Ellipsis($cad, $maxSize = 50)
+	public static function Ellipsis(string $cad, int $maxSize = 50)
 	{
-		//TODO: se puede reemplazar por
-		//return mb_strimwidth($cad, 0, $maxSize, '…', 'UTF-8');
-		//hay que probarlo.
-
-		if (self::Length($cad) > $maxSize)
-			$cad = mb_substr($cad, 0, $maxSize - 2, "UTF-8") . "…";
-		return $cad;
+		return mb_strimwidth($cad, 0, $maxSize, '…', 'UTF-8');
 	}
 
 	public static function EllipsisAnsi($cad, $maxSize = 40, $signal = '..')

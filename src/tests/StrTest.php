@@ -19,7 +19,6 @@ class StrTest extends TestCaseBase
 		$this->assertTrue(Str::StartsWithAlfabetic('Á'));
 	}
 
-
 	public function testIsEmail() : void
 	{
 		$this->assertTrue(Str::IsEmail('a@b.c'));
@@ -40,6 +39,15 @@ class StrTest extends TestCaseBase
 		. '@dominio.com'));
 	}
 
+	public function testEllipsis()
+	{
+		$val = '0123456789';
+		$this->assertEquals(Str::Ellipsis($val, 10), $val);
+		$this->assertEquals(Str::Ellipsis($val, 11), $val);
+		$this->assertEquals(Str::Ellipsis($val, 9), '01234567…');
+		$this->assertEquals(Str::Ellipsis($val, 1), '…');
+		$this->assertEquals(Str::Ellipsis($val, 0), $val);
+		$this->assertEquals(Str::Ellipsis('Tábú', 3), 'Tá…');
+	}
 }
-
 
