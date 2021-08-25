@@ -160,8 +160,6 @@ class MessageBox
 
 	public static function ThrowFileNotFound($extraInfo = '')
 	{
-	set_error_handler(null);
-
 	self::Set404NotFoundHeaders();
 		Performance::SetController('cErrPageNotFound', 'Show');
 		if (Context::Settings()->Debug()->debug)
