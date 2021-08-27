@@ -28,9 +28,11 @@ class Db
 		$this->db = $db;
 
 		if (Context::Settings()->Db()->ForceStrictTables)
-			$this->db->executeQuery("SET sql_mode =(SELECT CONCAT(@@session.sql_mode,',STRICT_TRANS_TABLES'));");
+			$this->db->executeQuery("SET sql_mode = (SELECT CONCAT(@@session.sql_mode, ',STRICT_TRANS_TABLES'));");
 		if (Context::Settings()->Db()->ForceOnlyFullGroupBy)
-			$this->db->executeQuery("SET sql_mode =(SELECT CONCAT(@@session.sql_mode,',ONLY_FULL_GROUP_BY'));");
+			$this->db->executeQuery("SET sql_mode = (SELECT CONCAT(@@session.sql_mode, ',ONLY_FULL_GROUP_BY'));");
+		if (Context::Settings()->Db()->SetTimeZone)
+			$this->db->executeQuery("SET time_zone=?", [(new \DateTime())->format('P')]);
 
 		if (Profiling::IsProfiling() && $profiler !== null)
 			$this->db->getConfiguration()->setSQLLogger($profiler);
