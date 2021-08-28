@@ -74,31 +74,34 @@ class Date
 
 	public static function ConvertFormattedDateDDMMYYYYHHMM($date)
 	{
-		if ($date == "") return "";
-		return substr($date, 8, 2) . '/' . substr($date, 5, 2).'/' .
-			substr($date, 0, 4) . ' ' . substr($date, 11, 2) . ':' . substr($date, 14, 2);
+		if ($date == "")
+			return "";
+		return substr($date, 8, 2) . '/' . substr($date, 5, 2) . '/'
+			. substr($date, 0, 4) . ' ' . substr($date, 11, 2) . ':' . substr($date, 14, 2);
 	}
 
 	public static function ConvertFormattedDateDDMMYYYY($date)
 	{
-		if ($date == "") return "";
-		return substr($date, 8, 2) . '/' . substr($date, 5, 2).'/' .
-			substr($date, 0, 4);
+		if ($date == "")
+			return "";
+		return substr($date, 8, 2) . '/' . substr($date, 5, 2)
+			. '/' . substr($date, 0, 4);
 	}
 
 	public static function ConvertFromDDMMYYYYToYYYYMMDD($date)
 	{
-		if ($date == "") return "";
+		if ($date == "")
+			return "";
 		if (strlen(trim($date)) != 10)
 			$date = self::AddZerosInDate($date);
-		return substr($date, 6, 4) . '-' . substr($date, 3, 2).'-' . substr($date, 0, 2);
+		return substr($date, 6, 4) . '-' . substr($date, 3, 2) . '-' . substr($date, 0, 2);
 	}
 
 	public static function AbsoluteMonth($date)
 	{
 		return self::DateTimeGetYear($date) * 12 + self::DateTimeGetMonth($date) - 1;
 	}
-	
+
 	public static function DateTimeGetMonth($date)
 	{
 		return intval($date->format('m'));
@@ -149,7 +152,7 @@ class Date
 		$mod = $minutes % 60;
 		$ret = floor($minutes / 60);
 		if ($mod > 0)
-		  	$ret .= ":" . ($mod <= 9 ? '0' : '') . $mod;
+			$ret .= ":" . ($mod <= 9 ? '0' : '') . $mod;
 		return $ret . "hs";
 	}
 
@@ -341,7 +344,7 @@ class Date
 		$date = str_replace(" ", "", $date);
 		$parts = explode('/', $date);
 		if (count($parts) != 3)
-		  	return false;
+			return false;
 		for($i = 0; $i < count($parts); $i++)
 		{
 			$prev = $parts[$i];

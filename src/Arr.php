@@ -353,7 +353,8 @@ class Arr
 	public static function RemoveItemByNamedKey($array, $name, $key)
 	{
 		$pos = self::IndexOfByNamedValue($array, $name, $key);
-		if ($pos == -1) return false;
+		if ($pos == -1)
+			return false;
 
 		return self::RemoveAt($array, $pos);
 	}
@@ -636,7 +637,8 @@ class Arr
 	public static function CutArrayAndSummarize($arr, $newSize)
 	{
 		$total = 0;
-		if (count($arr) <= $newSize) return $arr;
+		if (count($arr) <= $newSize)
+			return $arr;
 		$keys = array_keys($arr);
 		$ret = [];
 		for($i = 0; $i < $newSize; $i++)

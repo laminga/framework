@@ -132,12 +132,14 @@ class clsTbsZip {
 
 	function FileAdd($Name, $Data, $DataType=TBSZIP_STRING, $Compress=true) {
 
-		if ($Data===false) return $this->FileCancelModif($Name, false); // Cancel a previously added file
+		if ($Data===false)
+			return $this->FileCancelModif($Name, false); // Cancel a previously added file
 
 		// Save information for adding a new file into the archive
 		$Diff = 30 + 46 + 2*strlen($Name); // size of the header + cd info
 		$Ref = $this->_DataCreateNewRef($Data, $DataType, $Compress, $Diff);
-		if ($Ref===false) return false;
+		if ($Ref===false)
+			return false;
 		$Ref['name'] = $Name;
 		$this->AddInfo[] = $Ref;
 		return $Ref['res'];
@@ -166,8 +168,10 @@ class clsTbsZip {
 		$this->CdFileNbr = $this->CdInfo['file_nbr_curr'];
 		$this->CdPos = $this->CdInfo['p_cd'];
 
-		if ($this->CdFileNbr<=0) return $this->RaiseError('No header found in the Central Directory.');
-		if ($this->CdPos<=0) return $this->RaiseError('No position found for the Central Directory.');
+		if ($this->CdFileNbr<=0)
+			return $this->RaiseError('No header found in the Central Directory.');
+		if ($this->CdPos<=0)
+			return $this->RaiseError('No position found for the Central Directory.');
 
 		$this->_MoveTo($this->CdPos);
 		for ($i=0;$i<$this->CdFileNbr;$i++) {
@@ -200,7 +204,8 @@ class clsTbsZip {
 		$b = $this->_ReadData(46);
 
 		$x = $this->_GetHex($b,0,4);
-		if ($x!=='h:02014b50') return $this->RaiseError("Signature of Central Directory Header #".$idx." (file information) expected but not found at position ".$this->_TxtPos(ftell($this->ArchHnd) - 46).".");
+		if ($x!=='h:02014b50')
+			return $this->RaiseError("Signature of Central Directory Header #".$idx." (file information) expected but not found at position ".$this->_TxtPos(ftell($this->ArchHnd) - 46).".");
 
 		$x = [];
 		$x['vers_used'] = $this->_GetDec($b,4,2);
@@ -317,10 +322,12 @@ class clsTbsZip {
 
 	function FileGetIdxAdd($Name) {
 		// Check if a file name exists in the list of file to add, and return its index
-		if (!is_string($Name)) return false;
+		if (!is_string($Name))
+			return false;
 		$idx_lst = array_keys($this->AddInfo);
 		foreach ($idx_lst as $idx) {
-			if ($this->AddInfo[$idx]['name']===$Name) return $idx;
+			if ($this->AddInfo[$idx]['name']===$Name)
+				return $idx;
 		}
 		return false;
 	}
@@ -331,7 +338,8 @@ class clsTbsZip {
 		$this->LastReadIdx = false;
 
 		$idx = $this->FileGetIdx($NameOrIdx);
-		if ($idx===false) return $this->RaiseError('File "'.$NameOrIdx.'" is not found in the Central Directory.');
+		if ($idx===false)
+			return $this->RaiseError('File "'.$NameOrIdx.'" is not found in the Central Directory.');
 
 		$pos = $this->CdFileLst[$idx]['p_loc'];
 		$this->_MoveTo($pos);
@@ -369,7 +377,8 @@ class clsTbsZip {
 		$b = $this->_ReadData(30);
 
 		$x = $this->_GetHex($b,0,4);
-		if ($x!=='h:04034b50') return $this->RaiseError("Signature of Local File Header #".$idx." (data section) expected but not found at position ".$this->_TxtPos(ftell($this->ArchHnd)-30).".");
+		if ($x!=='h:04034b50')
+			return $this->RaiseError("Signature of Local File Header #".$idx." (data section) expected but not found at position ".$this->_TxtPos(ftell($this->ArchHnd)-30).".");
 
 		$x = [];
 		$x['vers'] = $this->_GetDec($b,4,2);
@@ -447,7 +456,8 @@ class clsTbsZip {
 		// Store replacement information.
 
 		$idx = $this->FileGetIdx($NameOrIdx);
-		if ($idx===false) return $this->RaiseError('File "'.$NameOrIdx.'" is not found in the Central Directory.');
+		if ($idx===false)
+			return $this->RaiseError('File "'.$NameOrIdx.'" is not found in the Central Directory.');
 
 		$pos = $this->CdFileLst[$idx]['p_loc'];
 
@@ -459,7 +469,8 @@ class clsTbsZip {
 			// file to replace
 			$Diff = - $this->CdFileLst[$idx]['l_data_c'];
 			$Ref = $this->_DataCreateNewRef($Data, $DataType, $Compress, $Diff);
-			if ($Ref===false) return false;
+			if ($Ref===false)
+				return false;
 			$this->ReplInfo[$idx] = $Ref;
 			$Result = $Ref['res'];
 		}
@@ -548,7 +559,8 @@ class clsTbsZip {
 		$date = $this->_MsDos_Date($now);
 		$time = $this->_MsDos_Time($now);
 
-		if (!$this->OutputOpen($Render, $File, $ContentType)) return false;
+		if (!$this->OutputOpen($Render, $File, $ContentType))
+			return false;
 
 		// output modified zipped files and unmodified zipped files that are beetween them
 		ksort($this->ReplByPos);
@@ -724,7 +736,8 @@ class clsTbsZip {
 
 	function OutputFromArch($pos, $pos_stop) {
 		$len = $pos_stop - $pos;
-		if ($len<0) return;
+		if ($len<0)
+			return;
 		$this->_MoveTo($pos);
 		$block = 1024;
 		while ($len>0) {
@@ -741,13 +754,13 @@ class clsTbsZip {
 			echo $data; // donwload
 		} elseif ($this->OutputMode===TBSZIP_STRING) {
 			$this->OutputSrc .= $data; // to string
-		// Esto estaba así en el código original:
-		// } elseif (TBSZIP_FILE) {
-		// Es siempre true y parece que es un error
-		// y debería ser así:
-		// } elseif ($this->OutputMode===TBSZIP_FILE) {
-		// Pero como siempre funcionó así, quizás se
-		// rompe algo así que lo dejo como true siempre
+			// Esto estaba así en el código original:
+			// } elseif (TBSZIP_FILE) {
+			// Es siempre true y parece que es un error
+			// y debería ser así:
+			// } elseif ($this->OutputMode===TBSZIP_FILE) {
+			// Pero como siempre funcionó así, quizás se
+			// rompe algo así que lo dejo como true siempre
 		} else {
 			fwrite($this->OutputHandle, $data); // to file
 		}
@@ -1050,7 +1063,8 @@ class clsTbsZip {
 				// file to delete
 				$Info =& $this->CdFileLst[$i];
 				if (!isset($this->VisFileLst[$i])) {
-					if ($Optim) return false; // if $Optimization is set to true, then we d'ont rewind to read information
+					if ($Optim)
+						return false; // if $Optimization is set to true, then we d'ont rewind to read information
 					$this->_MoveTo($Info['p_loc']);
 					$this->_ReadFile($i, false);
 				}

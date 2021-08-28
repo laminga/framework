@@ -362,7 +362,8 @@ class EncodingUtf8
 	public static function Encode($encodingLabel, $text)
 	{
 		$encodingLabel = self::NormalizeEncoding($encodingLabel);
-		if($encodingLabel == 'ISO-8859-1') return self::ToLatin1($text);
+		if($encodingLabel == 'ISO-8859-1')
+			return self::ToLatin1($text);
 		return self::ToUTF8($text);
 	}
 

@@ -12,7 +12,7 @@ class StringCache
 	{
 		if ($forceFileSystem)
 			$this->cache = new BaseTwoLevelStringFileCache($path);
-		else 
+		else
 			$this->cache = Context::Settings()->Cache()->CreateFileCache($path);
 	}
 
@@ -34,7 +34,8 @@ class StringCache
 	}
 	public function PutDataIfMissing($key, $value)
 	{
-		if ($this->HasData($key)) return;
+		if ($this->HasData($key))
+			return;
 		$this->PutData($key, $value);
 	}
 
