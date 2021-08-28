@@ -4,27 +4,27 @@ namespace minga\framework;
 
 class AppPaths
 {
-	public function GetRoot()
+	public function GetRoot() : string
 	{
 		return Context::Settings()->rootPath;
 	}
 
-	public function GetBinPath()
+	public function GetBinPath() : string
 	{
 		return $this->GetRoot() . "/cgi-bin";
 	}
 
-	public function GetStorageRoot()
+	public function GetStorageRoot() : string
 	{
 		return Context::Settings()->storagePath;
 	}
 
-	public function GetStorageData()
+	public function GetStorageData() : string
 	{
 		return $this->GetStorageRoot() . "/data";
 	}
 
-	public function GetQueuePath()
+	public function GetQueuePath() : string
 	{
 		$path = $this->GetStorageRoot() . "/queue";
 		IO::EnsureExists($path . '/ran');
@@ -32,121 +32,121 @@ class AppPaths
 		return $path;
 	}
 
-	public static function GetHtmlPurifierCachePath()
+	public static function GetHtmlPurifierCachePath() : string
 	{
 		$path = Context::Paths()->GetStorageCaches() . '/htmlpurifier';
 		IO::EnsureExists($path);
 		return $path;
 	}
 
-	public function GetStorageCaches()
+	public function GetStorageCaches() : string
 	{
 		return $this->GetStorageRoot() . "/caches";
 	}
 
-	public function GetTokensPath()
+	public function GetTokensPath() : string
 	{
 		return $this->GetStorageRoot() . "/tokens";
 	}
 
-	public function GetFeedbackPath()
+	public function GetFeedbackPath() : string
 	{
 		$path = $this->GetStorageRoot() . "/feedback";
 		IO::EnsureExists($path);
 		return $path;
 	}
 
-	public function GetLogLocalPath()
+	public function GetLogLocalPath() : string
 	{
 		return $this->GetStorageRoot() . '/log';
 	}
 
-	public function GetDumpLocalPath()
+	public function GetDumpLocalPath() : string
 	{
 		return $this->GetStorageRoot() . '/dump';
 	}
 
-	public function GetDumpMonthlyLocalPath()
+	public function GetDumpMonthlyLocalPath() : string
 	{
 		$ret = $this->GetDumpLocalPath() . '/' . Date::GetLogMonthFolder();
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public function GetDumpMonthlyCurrentUserLocalPath()
+	public function GetDumpMonthlyCurrentUserLocalPath() : string
 	{
 		$ret = $this->GetDumpMonthlyLocalPath() . '/' . Str::UrlencodeFriendly(Context::LoggedUser());
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public static function GetTwigCache()
+	public static function GetTwigCache() : string
 	{
 		return Context::Paths()->GetRoot() . "/compilation_cache";
 	}
 
 
-	public function GetTrafficLocalPath()
+	public function GetTrafficLocalPath() : string
 	{
 		$ret = $this->GetStorageRoot() . '/traffic';
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public function GetSearchLogLocalPath()
+	public function GetSearchLogLocalPath() : string
 	{
 		$ret = $this->GetStorageRoot() . '/search';
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public function GetPerformanceLocalPath()
+	public function GetPerformanceLocalPath() : string
 	{
 		$ret = $this->GetStorageRoot() . '/performance';
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public function GetMemoryPeakPath()
+	public function GetMemoryPeakPath() : string
 	{
 		$ret = $this->GetLogLocalPath() . '/memory';
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public function GetTempPath()
+	public function GetTempPath() : string
 	{
 		$ret = $this->GetStorageRoot() . '/temp';
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public function GetBucketsPath()
+	public function GetBucketsPath() : string
 	{
 		return $this->GetStorageRoot() . '/buckets';
 	}
 
-	public function GetFrameworkPath()
+	public function GetFrameworkPath() : string
 	{
 		return __DIR__;
 	}
 
-	public function GetFrameworkDataPath()
+	public function GetFrameworkDataPath() : string
 	{
 		return realpath($this->GetFrameworkPath() . '/../data');
 	}
 
-	public function GetFrameworkTestsPath()
+	public function GetFrameworkTestsPath() : string
 	{
 		return $this->GetFrameworkPath() . '/tests';
 	}
 
-	public function GetFrameworkTestDataPath()
+	public function GetFrameworkTestDataPath() : string
 	{
 		return $this->GetFrameworkTestsPath() . '/data';
 	}
 
-	public function GetMpdfTempPath()
+	public function GetMpdfTempPath() : string
 	{
 		$ret = $this->GetTempPath() . '/mpdftemp';
 		IO::EnsureExists($ret);
