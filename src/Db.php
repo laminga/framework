@@ -262,21 +262,15 @@ class Db
 
 	public function fetchAllColumn(string $query, array $params = [])
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$data = $this->fetchAll($query, $params);
-			for($i = 0; $i < count($data); $i++)
-				$data[$i] = reset($data[$i]);
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$data = $this->fetchAll($query, $params);
+		for($i = 0; $i < count($data); $i++)
+			$data[$i] = reset($data[$i]);
 
-			return $data;
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $data;
 	}
 
 	/**
@@ -290,28 +284,23 @@ class Db
 	 */
 	public function fetchColumn(string $query, array $params = [], int $colnum = 0)
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$query = $this->parseArrayParams($query, $params);
-			$stmt = $this->db->prepare($query);
-			if(key($params) === 0)
-				$stmt->execute($params);
-			else
-			{
-				foreach($params as $k => $v)
-					$stmt->bindValue($k, $v, $this->getParamType($v));
-				$stmt->execute();
-			}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$query = $this->parseArrayParams($query, $params);
+		$stmt = $this->db->prepare($query);
+		if(key($params) === 0)
 			$stmt->execute($params);
-			return $stmt->fetchColumn($colnum);
-		}
-		finally
+		else
 		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
+			foreach($params as $k => $v)
+				$stmt->bindValue($k, $v, $this->getParamType($v));
+			$stmt->execute();
 		}
+		$stmt->execute($params);
+		$ret = $stmt->fetchColumn($colnum);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	/**
@@ -329,22 +318,17 @@ class Db
 	 */
 	private function insertOrReplace(string $tableName, array $data, string $command) : int
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
 
-			$query = $command . ' INTO ' . self::QuoteTable($tableName)
-				. ' (' . implode(', ', self::QuoteColumn(array_keys($data))) . ')'
-				. ' VALUES (' . rtrim(str_repeat('?,', count($data)),',') . ')';
+		$query = $command . ' INTO ' . self::QuoteTable($tableName)
+			. ' (' . implode(', ', self::QuoteColumn(array_keys($data))) . ')'
+			. ' VALUES (' . rtrim(str_repeat('?,', count($data)),',') . ')';
 
-			return $this->doExecute($query, array_values($data));
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		$ret = $this->doExecute($query, array_values($data));
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	/**
@@ -380,40 +364,30 @@ class Db
 	 */
 	public function delete(string $tableName, array $identifier) : int
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$criteria = [];
-			foreach ($identifier as $columnName => $_)
-				$criteria[] = self::QuoteColumn($columnName) . ' = :' . $columnName;
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$criteria = [];
+		foreach ($identifier as $columnName => $_)
+			$criteria[] = self::QuoteColumn($columnName) . ' = :' . $columnName;
 
-			$query = 'DELETE FROM ' . self::QuoteTable($tableName) . ' WHERE ' . implode(' AND ', $criteria);
-			return $this->doExecuteNamedParams($query, $identifier);
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		$query = 'DELETE FROM ' . self::QuoteTable($tableName) . ' WHERE ' . implode(' AND ', $criteria);
+		$ret = $this->doExecuteNamedParams($query, $identifier);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	public function deleteSet(string $tableName, string $columnName, array $values) : int
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$query = 'DELETE FROM ' . self::QuoteTable($tableName)
-				. ' WHERE ' . self::QuoteColumn($columnName)
-				. ' IN (' . self::JoinPlaceholders($values) . ')';
-			return $this->doExecute($query, $values);
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$query = 'DELETE FROM ' . self::QuoteTable($tableName)
+			. ' WHERE ' . self::QuoteColumn($columnName)
+			. ' IN (' . self::JoinPlaceholders($values) . ')';
+		$ret = $this->doExecute($query, $values);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	private function JoinPlaceholders(array $values) : string
@@ -431,17 +405,12 @@ class Db
 	 */
 	public function fetchAssoc(string $statement, array $params = [])
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			return $this->fetch($statement, $params, \PDO::FETCH_ASSOC);
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$ret = $this->fetch($statement, $params, \PDO::FETCH_ASSOC);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	/**
@@ -519,17 +488,12 @@ class Db
 	 */
 	public function fetchArray(string $statement, array $params = []) : array
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			return $this->fetch($statement, $params, \PDO::FETCH_NUM);
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$ret = $this->fetch($statement, $params, \PDO::FETCH_NUM);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 
@@ -540,18 +504,13 @@ class Db
 	 */
 	public function truncate(string $tableName) : int
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$query = 'TRUNCATE TABLE ' . self::QuoteTable($tableName);
-			return $this->doExecute($query);
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$query = 'TRUNCATE TABLE ' . self::QuoteTable($tableName);
+		$ret = $this->doExecute($query);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	/**
@@ -564,42 +523,37 @@ class Db
 	 */
 	public function update(string $tableName, array $data, array $identifier) : int
 	{
-		try
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+
+		$i = 0;
+		$dataNew = [];
+		$set = [];
+		foreach ($data as $columnName => $value)
 		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-
-			$i = 0;
-			$dataNew = [];
-			$set = [];
-			foreach ($data as $columnName => $value)
-			{
-				$name = $columnName . $i++;
-				$set[] = self::QuoteColumn($columnName) . ' = :' . $name;
-				$dataNew[$name] = self::ConvertType($value);
-			}
-
-			$identifierNew = [];
-			$where = [];
-			foreach ($identifier as $columnName => $value)
-			{
-				$name = $columnName . $i++;
-				$where[] = self::QuoteColumn($columnName) . ' = :' . $name;
-				$identifierNew[$name] = self::ConvertType($value);
-			}
-
-			$params = array_merge($dataNew, $identifierNew);
-
-			$sql = 'UPDATE ' . self::QuoteTable($tableName) . ' SET ' . implode(', ', $set)
-				. ' WHERE ' . implode(' AND ', $where);
-
-			return $this->doExecuteNamedParams($sql, $params);
+			$name = $columnName . $i++;
+			$set[] = self::QuoteColumn($columnName) . ' = :' . $name;
+			$dataNew[$name] = self::ConvertType($value);
 		}
-		finally
+
+		$identifierNew = [];
+		$where = [];
+		foreach ($identifier as $columnName => $value)
 		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
+			$name = $columnName . $i++;
+			$where[] = self::QuoteColumn($columnName) . ' = :' . $name;
+			$identifierNew[$name] = self::ConvertType($value);
 		}
+
+		$params = array_merge($dataNew, $identifierNew);
+
+		$sql = 'UPDATE ' . self::QuoteTable($tableName) . ' SET ' . implode(', ', $set)
+			. ' WHERE ' . implode(' AND ', $where);
+
+		$ret = $this->doExecuteNamedParams($sql, $params);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	/**
@@ -629,18 +583,13 @@ class Db
 	 */
 	public function beginTransaction() : bool
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$this->isInTransaction = true;
-			return $this->db->beginTransaction();
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$this->isInTransaction = true;
+		$ret = $this->db->beginTransaction();
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	/**
@@ -648,18 +597,13 @@ class Db
 	 */
 	public function commit() : bool
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$this->isInTransaction = false;
-			return $this->db->commit();
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$this->isInTransaction = false;
+		$ret = $this->db->commit();
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	/**
@@ -667,18 +611,13 @@ class Db
 	 */
 	public function rollBack() : bool
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$this->isInTransaction = false;
-			return $this->db->rollBack();
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$this->isInTransaction = false;
+		$ret = $this->db->rollBack();
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	public function ensureBegin() : bool
@@ -788,18 +727,12 @@ class Db
 
 	public function tableExists(string $table) : bool
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			$query = "SELECT 1 FROM information_schema.tables
-				WHERE table_schema = ? AND table_name = ? LIMIT 1";
-			$ret = $this->fetchScalarIntNullable($query, [Context::Settings()->Db()->Name, $table]);
-			return $ret !== null;
-		}
-		finally
-		{
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		$query = "SELECT 1 FROM information_schema.tables
+			WHERE table_schema = ? AND table_name = ? LIMIT 1";
+		$ret = $this->fetchScalarIntNullable($query, [Context::Settings()->Db()->Name, $table]);
+		Profiling::EndTimer();
+		return $ret !== null;
 	}
 
 	public function renameTable(string $tableSource, string $tableTarget) : void
@@ -876,35 +809,24 @@ class Db
 
 	public function executeQuery(string $query, array $params = []) : int
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$this->ensureBegin();
-			$this->lastRows = $this->db->executeQuery($query, $params)->rowCount();
-			return $this->lastRows;
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$this->ensureBegin();
+		$this->lastRows = $this->db->executeQuery($query, $params)->rowCount();
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $this->lastRows;
 	}
 
-	public function execRead(string $query, array $params = [])
+	public function execRead(string $query, array $params = []) : int
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			Performance::BeginDbWait();
-			$this->ensureBegin();
-			$this->db->executeQuery($query, $params);
-		}
-		finally
-		{
-			Performance::EndDbWait();
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
+		$this->ensureBegin();
+		$ret = $this->db->executeQuery($query, $params);
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 }

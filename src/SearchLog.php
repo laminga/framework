@@ -20,9 +20,7 @@ class SearchLog
 		{
 			Profiling::BeginTimer();
 			if (is_array($text))
-			{
 				$text = Arr::AssocToString($text, true, true);
-			}
 			$this->Save($text, $matches);
 		}
 		catch(\Exception $e)

@@ -508,7 +508,7 @@ class Performance
 			}
 		}
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails.
-';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
+			';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
 	}
 
 	private static function ParseHit($value, &$hits, &$duration, &$locked,

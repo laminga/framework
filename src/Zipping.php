@@ -86,14 +86,11 @@ class Zipping
 
 			if ($container == null)
 				return null;
-			else
-			{
-				$index = $container->locateName($file);
-				if ($index === false)
-					return null;
-				else
-					return $container->statIndex($index);
-			}
+
+			$index = $container->locateName($file);
+			if ($index === false)
+				return null;
+			return $container->statIndex($index);
 		}
 		finally
 		{
@@ -105,8 +102,8 @@ class Zipping
 	{
 		if (self::IsZipped($filename) == false)
 			return file_exists($filename);
-		else
-			return self::CompressedFileExists($filename);
+
+		return self::CompressedFileExists($filename);
 	}
 
 	private static function ExtractToGetTempFile($filename)
@@ -117,12 +114,10 @@ class Zipping
 
 		if ($container == null)
 			return '';
-		else
-		{
-			$tmpfile = IO::GetTempFilename();
-			$container->extractTo($tmpfile, $file);
-			return $tmpfile . '/' . $file;
-		}
+
+		$tmpfile = IO::GetTempFilename();
+		$container->extractTo($tmpfile, $file);
+		return $tmpfile . '/' . $file;
 	}
 
 	private static function ReleaseTempFile($tmpFilename)
@@ -159,11 +154,8 @@ class Zipping
 
 			if ($container == null)
 				return false;
-			else
-			{
-				$index = $container->locateName($file);
-				return ($index !== false);
-			}
+			$index = $container->locateName($file);
+			return ($index !== false);
 		}
 		finally
 		{

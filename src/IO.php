@@ -134,19 +134,14 @@ class IO
 
 	public static function ReadJson($path)
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			$text = self::ReadAllText($path);
-			return json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
-		}
-		finally
-		{
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		$text = self::ReadAllText($path);
+		$ret = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
+		Profiling::EndTimer();
+		return $ret;
 	}
 
-	public static function AppendLine($path, $line)
+	public static function AppendLine($path, $line) : bool
 	{
 		$handle = fopen($path, 'a');
 		if ($handle === false)
@@ -631,7 +626,7 @@ class IO
 			if($file != '.' && $file != '..'
 				&& is_dir($dirSource . '/' . $file) == false
 				&& ($timeFrom == null
-					|| self::FileMTime($dirSource . '/' . $file) >= $timeFrom))
+				|| self::FileMTime($dirSource . '/' . $file) >= $timeFrom))
 			{
 				copy($dirSource . '/' . $file, $dirDest . '/' . $file);
 			}
@@ -758,16 +753,10 @@ class IO
 
 	public static function GetDirectoryINodesCount($dir)
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			$ret = System::RunCommandRaw('find ' . $dir . '/. | wc -l');
-			return $ret['lastLine'];
-		}
-		finally
-		{
-			Profiling::EndTimer();
-		}
+		Profiling::BeginTimer();
+		$ret = System::RunCommandRaw('find ' . $dir . '/. | wc -l');
+		Profiling::EndTimer();
+		return $ret['lastLine'];
 	}
 
 	public static function GetDirectorySizeUnix($dir)
