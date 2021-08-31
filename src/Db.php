@@ -823,7 +823,7 @@ class Db
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
 		$this->ensureBegin();
-		$ret = $this->db->executeQuery($query, $params);
+		$ret = $this->db->executeQuery($query, $params)->rowCount();
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
