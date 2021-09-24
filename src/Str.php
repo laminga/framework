@@ -320,6 +320,22 @@ class Str
 		$pos = strpos($haystack , $needle);
 		return ($pos !== false);
 	}
+	
+	public static function ContainsAny($haystack, array $needles)
+	{
+		foreach($needles as $needle)
+			if (self::Contains($haystack, $needle))
+				return true;
+		return false;
+	}
+
+	public static function ContainsAnyI($haystack, array $needles)
+	{
+		foreach($needles as $needle)
+			if (self::ContainsI($haystack, $needle))
+				return true;
+		return false;
+	}
 
 	public static function EscapeJavascript($string)
 	{
@@ -341,6 +357,28 @@ class Str
 			$value = self::RemoveEnding($value, "s");
 		return $value;
 	}
+	private static function AssociateShortWords($words)
+	{
+		$ret = [];
+		$min = Context::Settings()->Db()->FullTextMinWordLength;
+		for($n = 0; $n < sizeof($words); $n++)
+		{
+			$isLast = ($n === sizeof($words) - 1);
+			$isBeforeLast = ($n === sizeof($words) - 2);
+			// si es corta la asocia con la siguiente, o si es la anteúltima y
+			// la última es corta
+			if ((!$isLast && strlen($words[$n]) < $min) ||
+					($isBeforeLast && strlen($words[$n+1]) < $min))
+			{
+				$ret[] = '"' . $words[$n] . ' ' . $words[$n + 1] . '"';
+				$n++;
+			}
+			else
+				$ret[] = $words[$n];
+		}
+		return $ret;
+	}
+	
 	private static function HasShortWord($arr)
 	{
 		$min = Context::Settings()->Db()->FullTextMinWordLength;
@@ -380,10 +418,12 @@ class Str
 					foreach($keyBlocks as $block)
 					{
 						$keywords = explode(" ", trim($block));
-						if (self::HasShortWord($keywords))
-							$ret .= $replacer(['"' . trim($block) . '"']) . ' ';
-						else
-							$ret .= $replacer($keywords) . " ";
+						$keywordBlocks = self::AssociateShortWords($keywords);
+						$ret .= $replacer($keywordBlocks) . " ";
+						//if (self::HasShortWord($keywords))
+						//  $ret .= $replacer(['"' . trim($block) . '"']) . ' ';
+						//else
+						//  $ret .= $replacer($keywords) . " ";
 					}
 				}
 				else
@@ -522,7 +562,6 @@ class Str
 				$ret[] = $word;
 		return $ret;
 	}
-
 
 	public static function ReplaceGroup($cad, $str, $s2)
 	{
