@@ -47,7 +47,8 @@ class TwoLevelObjectCache
 	}
 	public function PutDataIfMissing($key1, $key2, $value)
 	{
-		if ($this->HasData($key1, $key2)) return;
+		if ($this->HasData($key1, $key2))
+			return;
 		$this->PutData($key1, $key2, $value);
 	}
 

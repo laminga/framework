@@ -20,9 +20,7 @@ class SearchLog
 		{
 			Profiling::BeginTimer();
 			if (is_array($text))
-			{
 				$text = Arr::AssocToString($text, true, true);
-			}
 			$this->Save($text, $matches);
 		}
 		catch(\Exception $e)
@@ -78,7 +76,8 @@ class SearchLog
 
 	private static function ParseHit($value, &$user, &$dateTime, &$text, &$matches, &$ellapsed)
 	{
-		if ($value == null) return false;
+		if ($value == null)
+			return false;
 		$parts = explode("\t", $value);
 		$user = $parts[0];
 		$dateTime = $parts[1];

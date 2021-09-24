@@ -39,7 +39,8 @@ class ObjectCache
 	}
 	public function PutDataIfMissing($key, $value)
 	{
-		if ($this->HasData($key)) return;
+		if ($this->HasData($key))
+			return;
 		$this->PutData($key, $value);
 	}
 

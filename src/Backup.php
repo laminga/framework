@@ -46,7 +46,8 @@ class Backup
 
 	public static function AppendEntry($set, $file)
 	{
-		if (self::GetState() == "") return;
+		if (self::GetState() == "")
+			return;
 		$relative = self::GetRelativePath($file);
 		if ($relative !== null && self::IsInExcludedFolder($relative) == false)
 		{

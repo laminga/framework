@@ -42,7 +42,6 @@ class Settings
 	public $useOldProjects = true;
 
 	public $useProjects = false;
-	public $useGeographies = false;
 	public $useEvents = true;
 	public $useProfiles = true;
 
@@ -166,7 +165,7 @@ class Settings
 		return $this->log;
 	}
 
-	
+
 	public function Notifications()
 	{
 		if ($this->notifications == null)

@@ -18,26 +18,20 @@ class Ghostscript
 	public static function Merge(string $coverFile, string $originalFile, string $targetFile, string $title, string $authors) : bool
 	{
 		Profiling::BeginTimer();
-		try
-		{
-			self::TruncateMetadata($title, $authors);
+		self::TruncateMetadata($title, $authors);
 
-			$args = '-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="'
-				. $targetFile . '" "' . $coverFile . '" "' . $originalFile
-				. '" -c "[/Producer(AAcademica.org)/Author '
-				. self::EscapeUnicode2($authors) . ' /Title '
-				. self::EscapeUnicode2($title) . ' /DOCINFO pdfmark"';
+		$args = '-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile="'
+			. $targetFile . '" "' . $coverFile . '" "' . $originalFile
+			. '" -c "[/Producer(AAcademica.org)/Author '
+			. self::EscapeUnicode2($authors) . ' /Title '
+			. self::EscapeUnicode2($title) . ' /DOCINFO pdfmark"';
 
+		IO::Delete($targetFile);
+		$ret = self::Run($args);
+		if ($ret == false)
 			IO::Delete($targetFile);
-			$ret = self::Run($args);
-			if ($ret == false)
-				IO::Delete($targetFile);
-			return $ret;
-		}
-		finally
-		{
-			Profiling::EndTimer();
-		}
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	private static function TruncateMetadata(string &$title, string &$authors) : void

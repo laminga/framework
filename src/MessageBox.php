@@ -4,6 +4,8 @@ namespace minga\framework;
 
 class MessageBox
 {
+	public static $IsThrowingMessage = false;
+
 	public static function ThrowInternalError($message)
 	{
 		if(Context::Settings()->isTesting)
@@ -19,6 +21,7 @@ class MessageBox
 
 	public static function ThrowMessage($message, $action = '', $title = 'Atención', $caption = 'Continuar')
 	{
+		self::$IsThrowingMessage = true;
 		if (Context::Settings()->isFramed)
 		{
 			echo "<!doctype html><html lang='es'><head><meta charset='utf-8'></head><body onload=\"parent.ThrowMessage('" . Str::EscapeJavascript($message) . "');\"></body></html>";
@@ -157,7 +160,7 @@ class MessageBox
 
 	public static function ThrowFileNotFound($extraInfo = '')
 	{
-		self::Set404NotFoundHeaders();
+	self::Set404NotFoundHeaders();
 		Performance::SetController('cErrPageNotFound', 'Show');
 		if (Context::Settings()->Debug()->debug)
 		{

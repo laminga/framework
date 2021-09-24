@@ -111,9 +111,13 @@ class Params
 		return self::CheckParseMonthValue($value);
 	}
 
-	public static function GetBoolMandatory($param)
+	public static function GetBoolMandatory(string $param) : bool
 	{
-		$value = self::GetIntMandatory($param);
+		$value = self::GetMandatory($param);
+		if(strtolower($value) == 'false')
+			return false;
+		if(strtolower($value) == 'true')
+			return true;
 		return self::CheckParseIntValue($value) !== 0;
 	}
 

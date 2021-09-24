@@ -44,10 +44,14 @@ class Request
 	public static function RequestURIStartsWith($arg1, $arg2 = null, $arg3 = null, $arg4 = null)
 	{
 		$uri = self::GetRequestURI();
-		if (Str::StartsWith($uri, $arg1)) return true;
-		if (Str::StartsWith($uri, $arg2)) return true;
-		if (Str::StartsWith($uri, $arg3)) return true;
-		if (Str::StartsWith($uri, $arg4)) return true;
+		if (Str::StartsWith($uri, $arg1))
+			return true;
+		if (Str::StartsWith($uri, $arg2))
+			return true;
+		if (Str::StartsWith($uri, $arg3))
+			return true;
+		if (Str::StartsWith($uri, $arg4))
+			return true;
 		return false;
 	}
 

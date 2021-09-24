@@ -508,7 +508,7 @@ class Performance
 			}
 		}
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails.
-';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
+			';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
 	}
 
 	private static function ParseHit($value, &$hits, &$duration, &$locked,
@@ -654,7 +654,8 @@ class Performance
 
 	private static function IsAdmin($controller)
 	{
-		if ($controller == 'Services') return true;
+		if ($controller == 'Services')
+			return true;
 		$path = Context::Paths()->GetRoot() . '/website/admin/controllers';
 
 		$path2 = Context::Paths()->GetRoot() . '/src/controllers/logs';

@@ -43,7 +43,7 @@ class TwoLevelFileFileCache
 
 	public function HasData($key1, $key2, &$out = null, $overriteTwoState = false)
 	{
-	 if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled && $overriteTwoState == false)
+		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled && $overriteTwoState == false)
 			return false;
 
 		$file = $this->ResolveFilename($key1, $key2);
@@ -61,7 +61,8 @@ class TwoLevelFileFileCache
 	}
 	public function PutDataIfMissing($key1, $key2, $value)
 	{
-		if ($this->HasData($key1, $key2)) return;
+		if ($this->HasData($key1, $key2))
+			return;
 		$this->PutData($key1, $key2, $value);
 	}
 

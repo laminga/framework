@@ -12,20 +12,15 @@ class ExifTool
 	public static function UpdateMetadata(string $file, string $title, string $authors) : bool
 	{
 		Profiling::BeginTimer();
-		try
-		{
-			$title = self::PrepareText($title);
-			$authors = self::PrepareText($authors);
+		$title = self::PrepareText($title);
+		$authors = self::PrepareText($authors);
 
-			$args = '-overwrite_original -L -Producer="AAcademica.org" -Author="'
-				. $authors . '" -Title="' . $title . '" "' . $file . '"';
+		$args = '-overwrite_original -L -Producer="AAcademica.org" -Author="'
+			. $authors . '" -Title="' . $title . '" "' . $file . '"';
 
-			return self::Run($args);
-		}
-		finally
-		{
-			Profiling::EndTimer();
-		}
+		$ret = self::Run($args);
+		Profiling::EndTimer();
+		return $ret;
 	}
 
 	private static function PrepareText(string $text) : string

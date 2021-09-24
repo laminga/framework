@@ -18,9 +18,11 @@ class DbSettings
 	public $FullTextMinWordLength = 4;
 
 	public $SpecialWords = [];
-	
+
 	public $ForceStrictTables = false;
 	public $ForceOnlyFullGroupBy = false;
+
+	public $SetTimeZone = true;
 
 	public function SetDatabase($host, $dbName, $user, $password, $port = 3306)
 	{
