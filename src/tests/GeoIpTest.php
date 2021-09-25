@@ -35,19 +35,16 @@ class GeoIpTest extends TestCaseBase
 	{
 		$_SERVER['REMOTE_ADDR'] = '';
 		$loc = GeoIp::GetClientCountryCode();
-		$this->assertEquals('--', $loc);
+		$this->assertEquals('--', $loc, $_SERVER['REMOTE_ADDR']);
 
 		$_SERVER['REMOTE_ADDR'] = '77.111.247.71';
 		$loc = GeoIp::GetClientCountryCode();
-		$this->assertEquals('--', $loc);
+		$this->assertEquals('--', $loc, $_SERVER['REMOTE_ADDR']);
 
 		$_SERVER['REMOTE_ADDR'] = '152.170.72.21';
 		$loc = GeoIp::GetClientCountryCode();
-		$this->assertEquals('AR', $loc);
+		$this->assertEquals('AR', $loc, $_SERVER['REMOTE_ADDR']);
 
-		$_SERVER['REMOTE_ADDR'] = '23.12.155.1';
-		$loc = GeoIp::GetClientCountryCode();
-		$this->assertEquals('US', $loc);
 	}
 
 	public function testGetNameFromCode()

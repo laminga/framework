@@ -6,7 +6,11 @@ class ExifTool
 {
 	public static function GetBinary() : string
 	{
-		return Context::Paths()->GetBinPath() . '/exiftool/exiftool';
+		$binPath = Context::Paths()->GetBinPath();
+		if (Str::Contains($binPath, " "))
+			return '"' . $binPath . '/exiftool/exiftool"';
+		else 
+			return $binPath . '/exiftool/exiftool';
 	}
 
 	public static function UpdateMetadata(string $file, string $title, string $authors) : bool

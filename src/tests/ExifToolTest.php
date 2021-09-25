@@ -5,6 +5,7 @@ namespace minga\framework\tests;
 use minga\framework\Context;
 use minga\framework\ExifTool;
 use minga\framework\IO;
+use minga\framework\Str;
 
 class ExifToolTest extends TestCaseBase
 {
@@ -13,7 +14,7 @@ class ExifToolTest extends TestCaseBase
 
 	public function setUp() : void
 	{
-		if(file_exists(ExifTool::GetBinary()) == false)
+		if(file_exists(ExifTool::GetBinary()) == false && file_exists(Str::Replace(ExifTool::GetBinary(), '"', '') . ".exe") == false)
 			$this->markTestSkipped('No está instalado ExifTool.');
 
 		$this->testFile = IO::GetTempFilename() . '.pdf';
