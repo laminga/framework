@@ -45,7 +45,10 @@ class Settings
 	public $useEvents = true;
 	public $useProfiles = true;
 
+	// Deprecated en AA
 	public $skipExternalLibraries = false;
+
+	public $useCDN = true;
 	public $useOpenId = false;
 	public $useOpenIdFacebook = false;
 	public $useOpenIdGoogle = false;
