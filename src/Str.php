@@ -1014,6 +1014,16 @@ class Str
 		return $ret;
 	}
 
+	public static function SanitizeFilename($title)
+	{
+		$title = trim($title);
+		//remueve caracteres no válidos en nombres de archivo, windows y mac.
+		$title = preg_replace('#[/¿¡\?\<\>\\:\*\|"\^\r\n\t]#u', '', $title);
+		//140 es un número razonable para el máximo, windows soporta 256 sumando directorios.
+		$title = self::EllipsisAnsi($title, 140, "(...)");
+		return $title;
+	}
+
 	public static function IsAllLetters($cad)
 	{
 		$cad = self::RemoveAccents(self::ToLower($cad));
