@@ -100,8 +100,12 @@ class CreativeCommons
 		$ret .= "/" . $licenseVersion;
 		return $ret;
 	}
-
 	public static function GetLeyendByUrl($url, $wide = false)
+	{	
+		// backward compatibility
+		return self::GetLegendByUrl($url, $wide);
+	}
+	public static function GetLegendByUrl($url, $wide = false)
 	{
 		if (self::UrlIsCC($url) == false)
 			return "";
