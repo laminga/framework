@@ -170,6 +170,10 @@ class Log
 			return true;
 		}
 
+		// Es un virus que pueden tener algunos clientes.
+		if(Str::ContainsI($errorSource, 'massehight'))
+			return true;
+
 		if(Str::ContainsI($errorMessage, "ResizeObserver loop limit"))
 			return true;
 
