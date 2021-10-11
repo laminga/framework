@@ -5,6 +5,7 @@ namespace minga\framework;
 use minga\framework\IO;
 use minga\framework\Context;
 use minga\framework\Cookies;
+use minga\framework\Params;
 use minga\framework\locking\GlobalDebugLock;
 
 class GlobalizeDebugSession
@@ -17,7 +18,7 @@ class GlobalizeDebugSession
 
 	public static function GlobalizeDebug()
 	{
-		$ip = Arr::SafeGet($_SERVER, 'REMOTE_ADDR', '') . '@' . Arr::SafeGet($_SERVER, 'HTTP_X_FORWARDED_FOR', '');
+		$ip = Params::SafeServer('REMOTE_ADDR') . '@' . Params::SafeServer('HTTP_X_FORWARDED_FOR');
 		// Lee archivo
 		self::readGlobalizedFileValue($ip);
 		// Lee Cookie
