@@ -45,6 +45,7 @@ class Settings
 	public $useEvents = true;
 	public $useProfiles = true;
 
+	public $userUseCertificates = [];
 	// Deprecated en AA
 	public $skipExternalLibraries = false;
 
