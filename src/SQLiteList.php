@@ -200,7 +200,22 @@ class SQLiteList
 
 		$statement->execute();
 	}
+	public function AppendColumn($columnName, $isNumber, $isUnique, $caseSensitive)
+	{
+		$sql = "ALTER TABLE data ADD COLUMN " . $columnName . " ";
+		if ($isNumber)
+			$sql .= " INTEGER ";
+		else
+			$sql .= " VARCHAR(255) " . ($caseSensitive ? "" : "COLLATE NOCASE ");
 
+		$this->Execute($sql);
+
+		if ($isNumber)
+		{
+			$sql = "CREATE INDEX short_" . $columnName . " ON data (" . $columnName . ");";
+			$this->Execute($sql);
+		}
+	}
 	public function DeleteAll()
 	{
 		$sql = "DELETE FROM data";

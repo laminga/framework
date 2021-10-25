@@ -328,7 +328,7 @@ class Str
 		$pos = strpos($haystack , $needle);
 		return ($pos !== false);
 	}
-	
+
 	public static function ContainsAny($haystack, array $needles)
 	{
 		foreach($needles as $needle)
@@ -386,7 +386,7 @@ class Str
 		}
 		return $ret;
 	}
-	
+
 	private static function HasShortWord($arr)
 	{
 		$min = Context::Settings()->Db()->FullTextMinWordLength;
@@ -1068,7 +1068,7 @@ class Str
 
 	public static function RandomString($len = 12)
 	{
-		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		$chars = "abcdefghkmnopqrstuvwxyzabcdefghkmnopqrstuvwxyzABCDEFGHKMNOPQRSTUVWXYZ0123456789";
 		$rand = random_bytes($len);
 		$str = '';
 		for($i = 0; $i < $len; $i++)
