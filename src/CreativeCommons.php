@@ -114,7 +114,7 @@ class CreativeCommons
 		$licenseText = "Esta obra está bajo una licencia de Creative Commons.<br>";
 		$licenseText .= "Para ver una copia de esta licencia, visite ";
 		if (!$wide) $licenseText .= "<br>";
-		$licenseText .= "<a href='" . $url . "' target='_blank'>". $url . "</a>.";
+		$licenseText .= "<a style='text-decoration: none' href='" . $url . "' target='_blank'>". $url . "</a>.";
 
 		return $licenseText;
 	}
