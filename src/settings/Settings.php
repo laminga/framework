@@ -88,7 +88,7 @@ class Settings
 
 	// ARKS
 	public $arkNAAN = null;
-	public $arkGlobalServer = 'https://n2t.net';
+	public $arkGlobalServer = '';
 
 	// Mirrors
 	public $publicCacheURL = '';
