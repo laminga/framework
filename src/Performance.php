@@ -609,30 +609,63 @@ class Performance
 		$extras = Context::ExtraHitsLabels();
 		$extraValues = array_fill(0, count($extras), []);
 
+		// Para columna de totales
+		$totalsDataHitRow = 0;
+		$totalsGoogleRow = 0;
+		$totalsMailRow = 0;
+		$totalsDataMsRow = 0;
+		$totalsDataLockedRow = 0;
+		$totalsDataDbMsRow = 0;
+		$totalsDataDbHitRow = 0;
+		$totalsExtraValues = array_fill(0, count($extraValues), 0);
+			
 		foreach($days as $key => $value)
 		{
 			$headerRow[] = $key;
 			self::ParseHit($value, $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $extraHits);
 			$dataHitRow[] = $hits;
+			$totalsDataHitRow += $hits;
 
 			$googleRow[] = $google;
+			$totalsGoogleRow += $google;
 			$mailRow[] = $mails;
+			$totalsMailRow += $mails;
 
 			$dataMsRow[] = round($duration / 1000 / 60, 1);
+			$totalsDataMsRow += $duration;
 			$dataAvgRow[] = round($duration / $hits);
 			$dataLockedRow[] = round($locked / 1000, 1);
+			$totalsDataLockedRow += $locked;
 			$dataDbMsRow[] = round($dbMs / 1000 / 60, 1);
+			$totalsDataDbMsRow += $dbMs;
 			$dataDbHitRow[] = $dbHits;
+			$totalsDataDbHitRow += $dbHits;
 
 			for($n = 0; $n < count($extraValues); $n++)
 			{
 				if ($n < count($extraHits))
+				{
 					$extraValues[$n][] = $extraHits[$n];
+					$totalsExtraValues[$n] += $extraHits[$n];
+				}
 				else
 					$extraValues[$n][] = '-';
 			}
 		}
+		// Agrega la columna de totales
+		$headerRow[] = 'Total';
+		$dataHitRow[] = $totalsDataHitRow;
+		$googleRow[] = $totalsGoogleRow;
+		$mailRow[] = $totalsMailRow;
+		$dataMsRow[] = round($totalsDataMsRow / 1000 / 60, 1);
+		$dataAvgRow[] = round($totalsDataMsRow / $totalsDataHitRow);
+		$dataLockedRow[] = round($totalsDataLockedRow / 1000, 1);
+		$dataDbMsRow[] = round($totalsDataDbMsRow / 1000 / 60, 1);
+		$dataDbHitRow[] = $totalsDataDbHitRow;
+		for($n = 0; $n < count($extraValues); $n++)
+			$extraValues[$n][] = $totalsExtraValues[$n];
 
+		// Arma la matriz
 		$ret = [
 			'Día' => $headerRow,
 			'Hits' => $dataHitRow,
