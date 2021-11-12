@@ -585,7 +585,7 @@ class Performance
 		return $path . '/locks.txt';
 	}
 
-	public static function GetDaylyTable($month)
+	public static function GetDaylyTable($month, $appendTotals = false)
 	{
 		$lock = new PerformanceLock();
 		$lock->LockRead();
@@ -654,32 +654,34 @@ class Performance
 					$extraValues[$n][] = '-';
 			}
 		}
-		// Agrega la columna de promedios diarios
-		$headerRow[] = 'Promedio';
-		$dataHitRow[] = round($totalsDataHitRow / count($days));
-		$googleRow[] =  round($totalsGoogleRow/ count($days));
-		$mailRow[] = round($totalsMailRow/ count($days));
-		$dataMsRow[] = round($totalsDataMsRow / count($days) / 1000 / 60, 1);
-		$dataAvgRow[] = round($totalsAvgRow / count($days));
-		$dataLockedRow[] = round($totalsDataLockedRow / count($days) / 1000, 1);
-		$dataDbMsRow[] = round($totalsDataDbMsRow / count($days) / 1000 / 60, 1);
-		$dataDbHitRow[] = round($totalsDataDbHitRow / count($days));
-		for($n = 0; $n < count($extraValues); $n++)
-			$extraValues[$n][] = round($totalsExtraValues[$n] / count($days));
+		if ($appendTotals)
+		{
+			// Agrega la columna de promedios diarios
+			$headerRow[] = 'Promedio';
+			$dataHitRow[] = round($totalsDataHitRow / count($days));
+			$googleRow[] =  round($totalsGoogleRow/ count($days));
+			$mailRow[] = round($totalsMailRow/ count($days));
+			$dataMsRow[] = round($totalsDataMsRow / count($days) / 1000 / 60, 1);
+			$dataAvgRow[] = round($totalsAvgRow / count($days));
+			$dataLockedRow[] = round($totalsDataLockedRow / count($days) / 1000, 1);
+			$dataDbMsRow[] = round($totalsDataDbMsRow / count($days) / 1000 / 60, 1);
+			$dataDbHitRow[] = round($totalsDataDbHitRow / count($days));
+			for($n = 0; $n < count($extraValues); $n++)
+				$extraValues[$n][] = round($totalsExtraValues[$n] / count($days));
 
-		// Agrega la columna de totales
-		$headerRow[] = 'Total';
-		$dataHitRow[] = $totalsDataHitRow;
-		$googleRow[] = $totalsGoogleRow;
-		$mailRow[] = $totalsMailRow;
-		$dataMsRow[] = round($totalsDataMsRow / 1000 / 60, 1);
-		$dataAvgRow[] = round($totalsDataMsRow / $totalsDataHitRow);
-		$dataLockedRow[] = round($totalsDataLockedRow / 1000, 1);
-		$dataDbMsRow[] = round($totalsDataDbMsRow / 1000 / 60, 1);
-		$dataDbHitRow[] = $totalsDataDbHitRow;
-		for($n = 0; $n < count($extraValues); $n++)
-			$extraValues[$n][] = $totalsExtraValues[$n];
-
+			// Agrega la columna de totales
+			$headerRow[] = 'Total';
+			$dataHitRow[] = $totalsDataHitRow;
+			$googleRow[] = $totalsGoogleRow;
+			$mailRow[] = $totalsMailRow;
+			$dataMsRow[] = round($totalsDataMsRow / 1000 / 60, 1);
+			$dataAvgRow[] = round($totalsDataMsRow / $totalsDataHitRow);
+			$dataLockedRow[] = round($totalsDataLockedRow / 1000, 1);
+			$dataDbMsRow[] = round($totalsDataDbMsRow / 1000 / 60, 1);
+			$dataDbHitRow[] = $totalsDataDbHitRow;
+			for($n = 0; $n < count($extraValues); $n++)
+				$extraValues[$n][] = $totalsExtraValues[$n];
+		}
 		// Arma la matriz
 		$ret = [
 			'Día' => $headerRow,
