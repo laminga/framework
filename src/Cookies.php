@@ -11,6 +11,7 @@ class Cookies
 
 		//Si tiene https no importa el entorno, es segura.
 		$secure = self::IsSecure();
+		$secure = true;
 		$host = $_SERVER['HTTP_HOST'];
 		if ($host == false)
 			$host = parse_url(Context::Settings()->GetPublicUrl(), PHP_URL_HOST);

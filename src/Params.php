@@ -163,6 +163,46 @@ class Params
 		return $value;
 	}
 
+	public static function GetUploadedImageMemory($param, $maxFileSize = -1)
+	{
+		$file = self::GetUploadedImage($param, $maxFileSize);
+		return IO::ReadAllBytes($file);
+	}
+
+	public static function GetUploadedFileMemory($param, $maxFileSize = -1, $validFileTypes = [])
+	{
+		$file = self::GetUploadedFile($param, $maxFileSize, $validFileTypes);
+		return IO::ReadAllBytes($file);
+	}
+
+	public static function GetUploadedImage($param, $maxFileSize = -1)
+	{
+		return self::GetUploadedFile($param, $maxFileSize,
+            ['jpg' => 'image/jpeg',
+            'png' => 'image/png']);
+	}
+
+	public static function GetUploadedFile($param, $maxFileSize = -1, $validFileTypes = [])
+	{
+		// You should also check filesize here.
+    if ($maxFileSize === -1 || $_FILES[$param]['size'] > $maxFileSize) {
+			throw new \RuntimeException('Exceeded filesize limit.');
+    }
+    // Check MIME Type by yourself.
+    $finfo = new \finfo(FILEINFO_MIME_TYPE);
+    if (sizeof($validFileTypes) == 0 ||  !array_search(
+        $finfo->file($_FILES[$param]['tmp_name']),
+        $validFileTypes, true)) {
+			throw new \RuntimeException('Invalid file format.');
+    }
+		$tmpFile = IO::GetTempFilename();
+    // On this example, obtain safe unique name from its binary data.
+    if (!move_uploaded_file($_FILES[$param]['tmp_name'], $tmpFile)) {
+        throw new \RuntimeException('Failed to move uploaded file.');
+    }
+		return $tmpFile;
+	}
+
 	public static function FromPath($position, $default = null)
 	{
 		$uri = Request::GetRequestURI(true);

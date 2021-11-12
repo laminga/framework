@@ -614,6 +614,7 @@ class Performance
 		$totalsGoogleRow = 0;
 		$totalsMailRow = 0;
 		$totalsDataMsRow = 0;
+		$totalsAvgRow = 0;
 		$totalsDataLockedRow = 0;
 		$totalsDataDbMsRow = 0;
 		$totalsDataDbHitRow = 0;
@@ -634,6 +635,7 @@ class Performance
 			$dataMsRow[] = round($duration / 1000 / 60, 1);
 			$totalsDataMsRow += $duration;
 			$dataAvgRow[] = round($duration / $hits);
+			$totalsAvgRow += ($duration / $hits);
 			$dataLockedRow[] = round($locked / 1000, 1);
 			$totalsDataLockedRow += $locked;
 			$dataDbMsRow[] = round($dbMs / 1000 / 60, 1);
@@ -652,6 +654,19 @@ class Performance
 					$extraValues[$n][] = '-';
 			}
 		}
+		// Agrega la columna de promedios diarios
+		$headerRow[] = 'Promedio';
+		$dataHitRow[] = round($totalsDataHitRow / count($days));
+		$googleRow[] =  round($totalsGoogleRow/ count($days));
+		$mailRow[] = round($totalsMailRow/ count($days));
+		$dataMsRow[] = round($totalsDataMsRow / count($days) / 1000 / 60, 1);
+		$dataAvgRow[] = round($totalsAvgRow / count($days));
+		$dataLockedRow[] = round($totalsDataLockedRow / count($days) / 1000, 1);
+		$dataDbMsRow[] = round($totalsDataDbMsRow / count($days) / 1000 / 60, 1);
+		$dataDbHitRow[] = round($totalsDataDbHitRow / count($days));
+		for($n = 0; $n < count($extraValues); $n++)
+			$extraValues[$n][] = round($totalsExtraValues[$n] / count($days));
+
 		// Agrega la columna de totales
 		$headerRow[] = 'Total';
 		$dataHitRow[] = $totalsDataHitRow;
