@@ -87,8 +87,8 @@ class PhpSession
 		}
 
 		session_set_cookie_params(["Secure" => Cookies::IsSecure()]);
-		session_set_cookie_params(["SameSite" => "none"]);
-		// if (Context::Settings()->allowCrossSiteSessionCookie)
+		if (Context::Settings()->allowCrossSiteSessionCookie)
+			session_set_cookie_params(["SameSite" => "none"]);
 		// 	session_set_cookie_params(["SameSite" => "none"]);
 		// else
 		// 	//exit;

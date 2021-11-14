@@ -579,6 +579,11 @@ class Str
 		return $cad;
 	}
 
+	public static function ReplaceI($subject, $search, $replace)
+	{
+		return str_ireplace($search, $replace, $subject);
+	}
+
 	public static function Replace($subject, $search, $replace)
 	{
 		return str_replace($search, $replace, $subject);

@@ -158,6 +158,10 @@ class Performance
 			self::SetController($uri, strtolower($_SERVER['REQUEST_METHOD']));
 	}
 
+	public static function AppendControllerSuffix($suffix)
+	{
+		self::$controller .= "#" . $suffix;
+	}
 	public static function SetController($controller, $method, $forceSet = false)
 	{
 		if (self::$controller == null || $forceSet)
@@ -191,7 +195,6 @@ class Performance
 		if (self::$timeStart == null)
 			return;
 		PerformanceLock::BeginWrite();
-
 		$ellapsedSeconds = microtime(true) - self::$timeStart - self::$pauseEllapsedSecs;
 		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
 
@@ -256,6 +259,7 @@ class Performance
 		$keyMs = self::$method;
 
 		$vals = self::ReadIfExists($file);
+
 		self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$dbHitCount);
 		// graba
 		IO::WriteIniFile($file, $vals);

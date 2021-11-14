@@ -20,6 +20,16 @@ class Request
 	{
 		return Params::SafeServer('HTTP_REFERER');
 	}
+	public static function Host()
+	{
+		return Params::SafeServer('HTTP_HOST');
+	}
+	public static function Subdomain()
+	{
+		$host = self::Host();
+		$parts = explode('.', $host);
+		return $parts[0];
+	}
 
 	public static function GetSecondUriPart()
 	{
