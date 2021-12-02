@@ -45,7 +45,6 @@ class Settings
 	public $useEvents = true;
 	public $useProfiles = true;
 
-	public $userUseCertificates = [];
 	// Deprecated en AA
 	public $skipExternalLibraries = false;
 
@@ -91,6 +90,7 @@ class Settings
 	// ARKS
 	public $arkNAAN = null;
 	public $arkGlobalServer = '';
+	public $useArks = true;
 
 	// Mirrors
 	public $publicCacheURL = '';

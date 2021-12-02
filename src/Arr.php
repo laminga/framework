@@ -4,6 +4,14 @@ namespace minga\framework;
 
 class Arr
 {
+	public static function Clone(array $arr) : array
+	{
+		$ret = [];
+		foreach($arr as $k => $v)
+			$ret[$k] = clone $v;
+		return $ret;
+	}
+
 	public static function GetItemByNamedValue($arr, $itemName, $itemValue, $default = null)
 	{
 		$index = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
