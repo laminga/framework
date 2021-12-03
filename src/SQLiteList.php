@@ -44,12 +44,12 @@ class SQLiteList
 		}
 	}
 
-	public function Query($sql)
+	public function Query(string $sql)
 	{
 		return $this->db->query($sql);
 	}
 
-	public function QueryAll($sql, $args = null)
+	public function QueryAll(string $sql, $args = null) : array
 	{
 		if ($args != null && is_array($args) == false)
 			$args = [$args];
@@ -63,15 +63,18 @@ class SQLiteList
 		return $ret;
 	}
 
-	public function QueryRow($sql, $params = null)
+	public function QueryRow(string $sql, $params = null) : ?array
 	{
 		$result = $this->Execute($sql, $params);
 		if ($result == null)
 			return null;
-		return $result->fetchArray(SQLITE3_ASSOC);
+		$ret = $result->fetchArray(SQLITE3_ASSOC);
+		if($ret === false)
+			return null;
+		return $ret;
 	}
 
-	public function Open($path, $readonly = false)
+	public function Open(string $path, bool $readonly = false) : void
 	{
 		Profiling::BeginTimer();
 		$existed = file_exists($path);
@@ -90,7 +93,7 @@ class SQLiteList
 		Profiling::EndTimer();
 	}
 
-	private function CreateSql()
+	private function CreateSql() : string
 	{
 		$sql = "CREATE TABLE data ("
 			. "pID INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -115,14 +118,14 @@ class SQLiteList
 		return $sql;
 	}
 
-	public function Close()
+	public function Close() : void
 	{
 		Profiling::BeginTimer();
 		$this->db->close();
 		Profiling::EndTimer();
 	}
 
-	public function InsertOrUpdate()
+	public function InsertOrUpdate() : void
 	{
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -134,7 +137,7 @@ class SQLiteList
 		$this->Execute($sql, $args);
 	}
 
-	public function Execute($sql, $args = [])
+	public function Execute(string $sql, $args = [])
 	{
 		if (is_array($args) == false)
 			$args = [$args];
@@ -154,7 +157,7 @@ class SQLiteList
 		}
 	}
 
-	private function ParamsToText($sql, $args)
+	private function ParamsToText(string $sql, array $args) : string
 	{
 		$text = 'No se ha podido completar la operación en SQLite. ';
 		if ($this->path != null)
@@ -168,12 +171,13 @@ class SQLiteList
 				$paramsAsText .= ', ';
 			$paramsAsText .= $arg;
 		}
-		if ($paramsAsText == '') $paramsAsText = 'Ninguno';
+		if ($paramsAsText == '')
+			$paramsAsText = 'Ninguno';
 		$text .= '. Parámetros: ' . $paramsAsText;
 		return $text;
 	}
 
-	public function Insert()
+	public function Insert() : void
 	{
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -190,7 +194,7 @@ class SQLiteList
 		$statement->execute();
 	}
 
-	public function Update($key, $column, $value)
+	public function Update($key, string $column, $value) : void
 	{
 		$sql = "UPDATE data SET " . $column . " = :p2 WHERE " . $this->keyColumn . " = :p1;";
 
@@ -200,7 +204,7 @@ class SQLiteList
 
 		$statement->execute();
 	}
-	public function AppendColumn($columnName, $isNumber, $isUnique, $caseSensitive)
+	public function AppendColumn(string $columnName, bool $isNumber, $caseSensitive) : void
 	{
 		$sql = "ALTER TABLE data ADD COLUMN " . $columnName . " ";
 		if ($isNumber)
@@ -216,14 +220,14 @@ class SQLiteList
 			$this->Execute($sql);
 		}
 	}
-	public function DeleteAll()
+	public function DeleteAll() : void
 	{
 		$sql = "DELETE FROM data";
 		$statement = $this->db->prepare($sql);
 		$statement->execute();
 	}
 
-	public function Delete($key)
+	public function Delete($key) : void
 	{
 		$sql = "DELETE FROM data WHERE " . $this->keyColumn . " = :p1;";
 
@@ -233,13 +237,13 @@ class SQLiteList
 		$statement->execute();
 	}
 
-	public function Truncate()
+	public function Truncate() : void
 	{
 		$this->Close();
 		unlink($this->path);
 	}
 
-	public function ReadValue($key, $column)
+	public function ReadValue($key, $column) : ?array
 	{
 		try
 		{
@@ -265,7 +269,7 @@ class SQLiteList
 		}
 	}
 
-	public function ReadRowByKey($key)
+	public function ReadRowByKey($key) : ?array
 	{
 		$sql = "SELECT * FROM data WHERE " . $this->keyColumn . " = :p1;";
 
@@ -281,18 +285,18 @@ class SQLiteList
 		return $res;
 	}
 
-	public function Begin()
+	public function Begin() : void
 	{
 		$this->Execute('PRAGMA journal_mode=DELETE');
 		$this->db->query("BEGIN TRANSACTION;");
 	}
 
-	public function Commit()
+	public function Commit() : void
 	{
 		$this->db->query("COMMIT TRANSACTION;");
 	}
 
-	public function Increment($key, $column)
+	public function Increment($key, $column) : void
 	{
 		Profiling::BeginTimer();
 		$res = $this->ReadValue($key, $column);
@@ -302,8 +306,8 @@ class SQLiteList
 			// update
 			$id = $res[0];
 			$n = intval($res[1]) + 1;
-			$sql = "UPDATE data SET ". $column . " = " . $n .
-				" WHERE pID = :p1;";
+			$sql = "UPDATE data SET ". $column . " = " . $n
+				.  " WHERE pID = :p1;";
 			$statement = $this->db->prepare($sql);
 			$statement->bindValue(':p1', $id);
 
