@@ -83,6 +83,12 @@ class Log
 		if (Context::Settings()->Log()->LogErrorsToDisk)
 			self::PutToErrorLog($text);
 
+		//Temporalmente no manda mas mails de error de conexión a cdsa.
+		if(Str::Contains($text, 'host: https://cdsa.aacademica.org'))
+			return $textToShow;
+		if(Str::Contains($text, 'TargetUrl: https://cdsa.aacademica.org/services/grid/getFulltextEntries.php'))
+			return $textToShow;
+
 		self::LogErrorSendMail($text);
 
 		return $textToShow;

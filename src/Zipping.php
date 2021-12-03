@@ -49,9 +49,10 @@ class Zipping
 
 	public static function FileMTime($filename)
 	{
-		if (self::IsZipped($filename) == false)
+		if (Str::StartsWith($filename, "streams:"))
+			return SQLiteList::GetNamedStreamDateTime($filename);
+		else if (self::IsZipped($filename) == false)
 			return IO::FileMTime($filename);
-
 		$stat = self::GetStat($filename);
 		if ($stat == null)
 			return false;
