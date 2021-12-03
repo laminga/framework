@@ -6,14 +6,14 @@ class IO
 {
 	private static $compressedDirectories;
 
-	public static function AppendAllBytes($filename, $bytes)
+	public static function AppendAllBytes($filename, $bytes) : void
 	{
 		$fp = fopen($filename, 'a');
 		fwrite($fp, $bytes);
 		fclose($fp);
 	}
 
-	public static function MoveDirectoryContents($dirsource, $target)
+	public static function MoveDirectoryContents($dirsource, $target) : void
 	{
 		IO::EnsureExists($target);
 		// limpia
@@ -30,8 +30,7 @@ class IO
 	{
 		if ($maxLength == -1)
 			return file_get_contents($path);
-		else
-			return file_get_contents($path, false, null, 0, $maxLength);
+		return file_get_contents($path, false, null, 0, $maxLength);
 	}
 
 	public static function GetDirectory($file)
@@ -59,8 +58,8 @@ class IO
 		$n = strrpos($file, '.');
 		if ($n !== false && $n > 0)
 			return substr($file, 0, $n);
-		else
-			return $file;
+
+		return $file;
 	}
 
 	public static function GetRelativePath($folder)
@@ -68,8 +67,7 @@ class IO
 		$base = Context::Paths()->GetRoot();
 		if (Str::StartsWith($folder, $base))
 			return substr($folder, strlen($base));
-		else
-			return $folder;
+		return $folder;
 	}
 
 	public static function ReadText($path, $length)
@@ -115,7 +113,7 @@ class IO
 		return self::WriteAllText($path, json_encode($data, $flags));
 	}
 
-	public static function ReadFileChunked($filepath)
+	public static function ReadFileChunked($filepath) : bool
 	{
 		$handle = fopen($filepath, 'rb');
 		if($handle === false)
@@ -155,7 +153,7 @@ class IO
 		return true;
 	}
 
-	public static function ReadTitleTextFile($file, &$title, &$text)
+	public static function ReadTitleTextFile($file, &$title, &$text) : void
 	{
 		// formato
 		$pStart = "<p style='margin: 6px 0px 6px 0px;'>";
@@ -172,7 +170,7 @@ class IO
 		$text = $pStart . implode($pEnd . $pStart, $lines) . $pEnd;
 	}
 
-	public static function ReadKeyValueCSVFile($path)
+	public static function ReadKeyValueCSVFile($path) : array
 	{
 		//TODO: Agregar manejo de errores.
 		$fp = fopen($path, 'r');
@@ -195,7 +193,7 @@ class IO
 		fclose($fp);
 	}
 
-	public static function CompareFileSize($fileA, $fileB)
+	public static function CompareFileSize($fileA, $fileB) : bool
 	{
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
@@ -204,7 +202,7 @@ class IO
 
 	}
 
-	public static function CompareBinaryFile($fileA, $fileB)
+	public static function CompareBinaryFile($fileA, $fileB) : bool
 	{
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
@@ -256,7 +254,7 @@ class IO
 		return $attributes;
 	}
 
-	public static function WriteEscapedIniFileWithSections($path, $assocArr)
+	public static function WriteEscapedIniFileWithSections($path, $assocArr) : bool
 	{
 		$content = "";
 		foreach($assocArr as $section => $values)
@@ -297,7 +295,7 @@ class IO
 		return $content;
 	}
 
-	public static function WriteIniFile($path, $assocArr)
+	public static function WriteIniFile($path, $assocArr) : bool
 	{
 		$handle = fopen($path, 'w');
 		if ($handle === false)
@@ -316,7 +314,7 @@ class IO
 		return true;
 	}
 
-	public static function WriteEscapedIniFile($path, $assocArr, $keepSections = false)
+	public static function WriteEscapedIniFile($path, $assocArr, $keepSections = false) : bool
 	{
 		$directory = dirname($path);
 
@@ -455,7 +453,7 @@ class IO
 		return $files;
 	}
 
-	public static function HasFiles($path, $ext = '')
+	public static function HasFiles($path, $ext = '') : bool
 	{
 		if ($handle = self::OpenDirNoWarning($path))
 		{
@@ -473,7 +471,7 @@ class IO
 		return false;
 	}
 
-	public static function GetFilesCount($path, $ext = '')
+	public static function GetFilesCount($path, $ext = '') : int
 	{
 		return count(self::GetFilesFullPath($path, $ext));
 	}
@@ -609,7 +607,7 @@ class IO
 		return self::doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
 	}
 
-	public static function CopyFiles($dirSource, $dirDest, $exclusions = null, $timeFrom = null)
+	public static function CopyFiles($dirSource, $dirDest, $exclusions = null, $timeFrom = null) : bool
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
@@ -635,7 +633,7 @@ class IO
 		return true;
 	}
 
-	private static function doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension ='')
+	private static function doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension ='') : bool
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
@@ -643,7 +641,7 @@ class IO
 			foreach($exclusions as $exclusion)
 			{
 				if ($exclusion == $dirSource)
-					return;
+					return false;
 			}
 		}
 
@@ -906,16 +904,15 @@ class IO
 		return $path;
 	}
 
-	public static function Copy($source, $target)
+	public static function Copy($source, $target) : bool
 	{
 		Profiling::BeginTimer();
-
-		copy($source, $target);
-
+		$ret = copy($source, $target);
 		Profiling::EndTimer();
+		return $ret;
 	}
 
-	public static function Move($source, $target)
+	public static function Move($source, $target) : bool
 	{
 		try
 		{
@@ -930,7 +927,7 @@ class IO
 		return false;
 	}
 
-	public static function IsCompressedDirectory($path)
+	public static function IsCompressedDirectory($path) : bool
 	{
 		$dir = new CompressedDirectory($path);
 		$simple = $dir->IsCompressed();
@@ -960,7 +957,7 @@ class IO
 		return $dir;
 	}
 
-	public static function ReleaseCompressedDirectories()
+	public static function ReleaseCompressedDirectories() : void
 	{
 		if (self::$compressedDirectories != null)
 		{
@@ -969,7 +966,7 @@ class IO
 		}
 	}
 
-	public static function Delete($file)
+	public static function Delete($file) : bool
 	{
 		try
 		{
@@ -984,7 +981,7 @@ class IO
 		return false;
 	}
 
-	public static function Exists($file)
+	public static function Exists($file) : bool
 	{
 		return file_exists($file);
 	}
