@@ -204,6 +204,19 @@ class SQLiteList
 
 		$statement->execute();
 	}
+
+	public function Replace($key, string $column, $oldValue, $newValue) : void
+	{
+		$sql = "UPDATE data SET " . $column . " = REPLACE( " . $column . ", :p2, :p3) WHERE " . $this->keyColumn . " = :p1;";
+
+		$statement = $this->db->prepare($sql);
+		$statement->bindValue(':p1', $key);
+		$statement->bindValue(':p2', $oldValue);
+		$statement->bindValue(':p3', $newValue);
+
+		$statement->execute();
+	}
+
 	public function AppendColumn(string $columnName, bool $isNumber, $caseSensitive) : void
 	{
 		$sql = "ALTER TABLE data ADD COLUMN " . $columnName . " ";

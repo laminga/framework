@@ -517,7 +517,7 @@ class Db
 	 * Executes an SQL UPDATE statement on a table.
 	 *
 	 * @param string $tableName The name of the table to update.
-	 * @param array $data
+	 * @param array $data The data to update. An associative array containing column-value pairs.
 	 * @param array $identifier The update criteria. An associative array containing column-value pairs.
 	 * @return integer The number of affected rows.
 	 */
