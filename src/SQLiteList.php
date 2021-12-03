@@ -74,7 +74,12 @@ class SQLiteList
 		$result = $this->Execute($sql, $params);
 		if ($result == null)
 			return null;
-		return $result->fetchArray(SQLITE3_ASSOC);
+		$res = $result->fetchArray(SQLITE3_ASSOC);
+
+		if ($res === false)
+			return null;
+		else
+			return $res;
 	}
 
 	public function Open(string $path, bool $readonly = false) : void
