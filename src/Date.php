@@ -213,6 +213,16 @@ class Date
 		return date("Y-m-d");
 	}
 
+	public static function CurrentDay()
+	{
+		return intval(date("j"));
+	}
+
+	public static function CurrentMonth()
+	{
+		return intval(date("m"));
+	}
+
 	public static function CurrentYear()
 	{
 		return self::GetYearFromDay(date("Y-m-d"));

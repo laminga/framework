@@ -2,6 +2,7 @@
 
 namespace minga\framework\settings;
 
+use minga\framework\Date;
 use minga\framework\ErrorException;
 use Defuse\Crypto\Key;
 
@@ -32,6 +33,19 @@ class KeysSettings
 			throw new ErrorException('HashKeyed key not set. Please, add it to /config/settings.php file.');
 
 		return base64_decode($this->HashKeyedKey);
+	}
+
+	public function GetGoogleMapsKey()
+	{
+		$keys = $this->GoogleMapsKey;
+		if (!is_array($keys))
+			return $keys;
+		$day = Date::CurrentDay();
+		$step = 30 / count($keys);
+		$current = intval($day / $step);
+		if ($current >= count($keys))
+			$current = count($keys) - 1;
+		return $keys[$current];
 	}
 
 	public function CreateNewRememberKey()
