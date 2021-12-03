@@ -8,6 +8,7 @@ class SQLiteList
 	private $columns;
 	private $intColumns;
 	private $uniqueColumns;
+	private $blobColumns;
 
 	private $commaColumns;
 	private $commaArgs;
@@ -16,12 +17,17 @@ class SQLiteList
 
 	private $db = null;
 
-	public function __construct($key, $columns = null, $intColumns = null, $uniqueColumns = null)
+	private static $OpenStreams = [];
+	private static $OpenStreamsSizes = [];
+	private static $OpenStreamsTimes = [];
+
+	public function __construct($key, $columns = null, $intColumns = null, $uniqueColumns = null, $blobColumns = null)
 	{
 		$this->keyColumn = $key;
 		$this->columns = $columns;
 		$this->intColumns = $intColumns;
 		$this->uniqueColumns = $uniqueColumns;
+		$this->blobColumns = $blobColumns;
 
 		$this->commaColumns = "";
 		$this->commaArgs = "";
@@ -99,7 +105,11 @@ class SQLiteList
 		{
 			foreach($this->columns as $column)
 			{
-				$sql .=	", " . $column . " VARCHAR(255) ";
+				if (!$this->blobColumns || !in_array($column, $this->blobColumns))
+					$sql .=	", " . $column . " TEXT ";
+				else
+					$sql .=	", " . $column . " BLOB ";
+				
 				if ($this->uniqueColumns != null && in_array($column, $this->uniqueColumns))
 					$sql .= " UNIQUE";
 				$sql .= " COLLATE NOCASE ";
@@ -122,6 +132,20 @@ class SQLiteList
 		Profiling::EndTimer();
 	}
 
+	public function InsertOrUpdateBlob()
+	{
+		$args = func_get_args();
+		if (count($args) == 1 && is_array($args[0]))
+			$args = $args[0];
+		// el 1ro es el key, el 2do es el blob
+		if ($args[1] !== null)
+			$args[1] = self::GetNamedStream($args[1]); 
+		$sql = "INSERT OR REPLACE INTO data (pID, " . $this->keyColumn . $this->commaColumns . ") VALUES
+			((SELECT pID FROM data WHERE " . $this->keyColumn . " = :p1), :p1 " . $this->commaArgs . ");";
+			
+		$this->Execute($sql, $args, 1);
+	}
+
 	public function InsertOrUpdate()
 	{
 		$args = func_get_args();
@@ -134,7 +158,7 @@ class SQLiteList
 		$this->Execute($sql, $args);
 	}
 
-	public function Execute($sql, $args = [])
+	public function Execute($sql, $args = [], $blobIndex = -1)
 	{
 		if (is_array($args) == false)
 			$args = [$args];
@@ -145,7 +169,16 @@ class SQLiteList
 			$statement = $this->db->prepare($sql);
 			$n = 1;
 			foreach($args as $arg)
-				$statement->bindValue(':p' . ($n++), $arg);
+			{
+				if ($n - 1 === $blobIndex)
+				{
+					$statement->bindValue(':p' . ($n++), $arg, SQLITE3_BLOB);
+				}
+				else
+				{
+					$statement->bindValue(':p' . ($n++), $arg);
+				}
+			}
 			return $statement->execute();
 		}
 		catch(\Exception $e)
@@ -239,30 +272,71 @@ class SQLiteList
 		unlink($this->path);
 	}
 
+	
+	public function ReadBlobValue($key, $column)
+	{
+		Profiling::BeginTimer();
+
+		$row = $this->ReadValue($key, 'RowId, length, time'); 
+		
+		if ($row === null)
+			return null;
+
+		$lob = $this->db->openBlob('data', $column, $row[1]);
+		$tmpFilename = self::CreateNameStreamFromStream($lob, $row[2], $row[3]);
+		Profiling::EndTimer();
+		return $tmpFilename;
+	}
+
+	public static function CreateNamedStreamFromFile($filename) 
+	{
+		$key = "streams::" . Str::Guid();
+		$lob = fopen($filename, 'rb');
+		self::$OpenStreams[$key] = $lob;
+		self::$OpenStreamsSizes[$key] = filesize($filename);
+		self::$OpenStreamsTimes[$key] = filemtime($filename);
+		return $key;
+	}
+
+	public static function CreateNameStreamFromStream($lob, $size, $time) 
+	{
+		$key = "streams::" . Str::Guid();
+		self::$OpenStreams[$key] = $lob;
+		self::$OpenStreamsSizes[$key] = $size;
+		self::$OpenStreamsTimes[$key] = $time;
+		return $key;
+	}
+
+	public static function GetNamedStream($key) 
+	{
+		return self::$OpenStreams[$key];
+	}
+	public static function GetNamedStreamSize($key) 
+	{
+		return self::$OpenStreamsSizes[$key];
+	}
+	public static function GetNamedStreamDateTime($key) 
+	{
+		return self::$OpenStreamsTimes[$key];
+	}
 	public function ReadValue($key, $column)
 	{
-		try
-		{
-			Profiling::BeginTimer();
-			$sql = "SELECT pID, ". $column .
-				" FROM data WHERE " . $this->keyColumn . " = :p1;";
+		Profiling::BeginTimer();
+		$sql = "SELECT pID, ". $column .
+			" FROM data WHERE " . $this->keyColumn . " = :p1;";
 
-			$statement = $this->db->prepare($sql);
-			$statement->bindValue(':p1', $key);
+		$statement = $this->db->prepare($sql);
+		$statement->bindValue(':p1', $key);
 
-			$result = $statement->execute();
+		$result = $statement->execute();
 
-			$res = $result->fetchArray(SQLITE3_NUM);
+		$res = $result->fetchArray(SQLITE3_NUM);
 
-			if ($res === false)
-				return null;
+		if ($res === false)
+			return null;
 
-			return $res;
-		}
-		finally
-		{
-			Profiling::EndTimer();
-		}
+		Profiling::EndTimer();
+		return $res;
 	}
 
 	public function ReadRowByKey($key)
