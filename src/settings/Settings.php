@@ -80,6 +80,8 @@ class Settings
 	public $isFramed = false;
 	public $timerStart = '';
 
+	public $isAPIEnabled = false;
+
 	public $allowPHPsession = true;
 	public $allowCrossSiteSessionCookie = false;
 

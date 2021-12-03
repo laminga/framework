@@ -465,7 +465,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function SanitizeIds($arr)
+	public static function SanitizeIds($arr, $ommitZeros = true)
 	{
 		$ret = [];
 		foreach($arr as $a)
@@ -474,7 +474,7 @@ class Arr
 			if ($a !== "")
 			{
 				$i = intval($a);
-				if ($i > 0)
+				if ($i > 0 || !$ommitZeros)
 					$ret[] = $i;
 			}
 		}

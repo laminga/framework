@@ -50,12 +50,12 @@ class SQLiteList
 		}
 	}
 
-	public function Query($sql)
+	public function Query(string $sql)
 	{
 		return $this->db->query($sql);
 	}
 
-	public function QueryAll($sql, $args = null)
+	public function QueryAll(string $sql, $args = null) : array
 	{
 		if ($args != null && is_array($args) == false)
 			$args = [$args];
@@ -69,7 +69,7 @@ class SQLiteList
 		return $ret;
 	}
 
-	public function QueryRow($sql, $params = null)
+	public function QueryRow(string $sql, $params = null) : ?array
 	{
 		$result = $this->Execute($sql, $params);
 		if ($result == null)
@@ -77,7 +77,7 @@ class SQLiteList
 		return $result->fetchArray(SQLITE3_ASSOC);
 	}
 
-	public function Open($path, $readonly = false)
+	public function Open(string $path, bool $readonly = false) : void
 	{
 		Profiling::BeginTimer();
 		$existed = file_exists($path);
@@ -95,8 +95,8 @@ class SQLiteList
 		$this->Execute('PRAGMA journal_mode=WAL');
 		Profiling::EndTimer();
 	}
-
-	private function CreateSql()
+	 
+	private function CreateSql() : string
 	{
 		$sql = "CREATE TABLE data ("
 			. "pID INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -125,14 +125,14 @@ class SQLiteList
 		return $sql;
 	}
 
-	public function Close()
+	public function Close() : void
 	{
 		Profiling::BeginTimer();
 		$this->db->close();
 		Profiling::EndTimer();
 	}
 
-	public function InsertOrUpdateBlob()
+	public function InsertOrUpdateBlob() : void
 	{
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -146,7 +146,7 @@ class SQLiteList
 		$this->Execute($sql, $args, 1);
 	}
 
-	public function InsertOrUpdate()
+	public function InsertOrUpdate() : void
 	{
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -158,7 +158,7 @@ class SQLiteList
 		$this->Execute($sql, $args);
 	}
 
-	public function Execute($sql, $args = [], $blobIndex = -1)
+	public function Execute(string $sql, $args = [], $blobIndex = -1)
 	{
 		if (is_array($args) == false)
 			$args = [$args];
@@ -187,7 +187,7 @@ class SQLiteList
 		}
 	}
 
-	private function ParamsToText($sql, $args)
+	private function ParamsToText(string $sql, array $args) : string
 	{
 		$text = 'No se ha podido completar la operación en SQLite. ';
 		if ($this->path != null)
@@ -206,7 +206,7 @@ class SQLiteList
 		return $text;
 	}
 
-	public function Insert()
+	public function Insert() : void
 	{
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -223,7 +223,7 @@ class SQLiteList
 		$statement->execute();
 	}
 
-	public function Update($key, $column, $value)
+	public function Update($key, string $column, $value) : void
 	{
 		$sql = "UPDATE data SET " . $column . " = :p2 WHERE " . $this->keyColumn . " = :p1;";
 
@@ -233,7 +233,7 @@ class SQLiteList
 
 		$statement->execute();
 	}
-	public function AppendColumn($columnName, $isNumber, $isUnique, $caseSensitive)
+	public function AppendColumn(string $columnName, bool $isNumber, bool $indexed, bool $caseSensitive) : void
 	{
 		$sql = "ALTER TABLE data ADD COLUMN " . $columnName . " ";
 		if ($isNumber)
@@ -243,20 +243,20 @@ class SQLiteList
 
 		$this->Execute($sql);
 
-		if ($isNumber)
+		if ($indexed)
 		{
 			$sql = "CREATE INDEX short_" . $columnName . " ON data (" . $columnName . ");";
 			$this->Execute($sql);
 		}
 	}
-	public function DeleteAll()
+	public function DeleteAll() : void
 	{
 		$sql = "DELETE FROM data";
 		$statement = $this->db->prepare($sql);
 		$statement->execute();
 	}
 
-	public function Delete($key)
+	public function Delete($key) : void
 	{
 		$sql = "DELETE FROM data WHERE " . $this->keyColumn . " = :p1;";
 
@@ -266,14 +266,14 @@ class SQLiteList
 		$statement->execute();
 	}
 
-	public function Truncate()
+	public function Truncate() : void
 	{
 		$this->Close();
 		unlink($this->path);
 	}
 
 	
-	public function ReadBlobValue($key, $column)
+	public function ReadBlobValue($key, string $column)
 	{
 		Profiling::BeginTimer();
 
@@ -288,7 +288,7 @@ class SQLiteList
 		return $tmpFilename;
 	}
 
-	public static function CreateNamedStreamFromFile($filename) 
+	public static function CreateNamedStreamFromFile(string $filename) : string
 	{
 		$key = "streams::" . Str::Guid();
 		$lob = fopen($filename, 'rb');
@@ -298,7 +298,7 @@ class SQLiteList
 		return $key;
 	}
 
-	public static function CreateNameStreamFromStream($lob, $size, $time) 
+	public static function CreateNameStreamFromStream($lob, int $size, $time) : string
 	{
 		$key = "streams::" . Str::Guid();
 		self::$OpenStreams[$key] = $lob;
@@ -307,19 +307,19 @@ class SQLiteList
 		return $key;
 	}
 
-	public static function GetNamedStream($key) 
+	public static function GetNamedStream(string $key) 
 	{
 		return self::$OpenStreams[$key];
 	}
-	public static function GetNamedStreamSize($key) 
+	public static function GetNamedStreamSize(string $key) : int
 	{
 		return self::$OpenStreamsSizes[$key];
 	}
-	public static function GetNamedStreamDateTime($key) 
+	public static function GetNamedStreamDateTime(string $key) 
 	{
 		return self::$OpenStreamsTimes[$key];
 	}
-	public function ReadValue($key, $column)
+	public function ReadValue($key, string $column)
 	{
 		Profiling::BeginTimer();
 		$sql = "SELECT pID, ". $column .
@@ -339,7 +339,7 @@ class SQLiteList
 		return $res;
 	}
 
-	public function ReadRowByKey($key)
+	public function ReadRowByKey($key) : ?array
 	{
 		$sql = "SELECT * FROM data WHERE " . $this->keyColumn . " = :p1;";
 
@@ -355,18 +355,18 @@ class SQLiteList
 		return $res;
 	}
 
-	public function Begin()
+	public function Begin() : void
 	{
 		$this->Execute('PRAGMA journal_mode=DELETE');
 		$this->db->query("BEGIN TRANSACTION;");
 	}
 
-	public function Commit()
+	public function Commit() : void
 	{
 		$this->db->query("COMMIT TRANSACTION;");
 	}
 
-	public function Increment($key, $column)
+	public function Increment($key, string $column) : void
 	{
 		Profiling::BeginTimer();
 		$res = $this->ReadValue($key, $column);
