@@ -100,7 +100,7 @@ class SQLiteList
 		$this->Execute('PRAGMA journal_mode=WAL');
 		Profiling::EndTimer();
 	}
-	 
+
 	private function CreateSql() : string
 	{
 		$sql = "CREATE TABLE data ("
@@ -114,7 +114,7 @@ class SQLiteList
 					$sql .=	", " . $column . " TEXT ";
 				else
 					$sql .=	", " . $column . " BLOB ";
-				
+
 				if ($this->uniqueColumns != null && in_array($column, $this->uniqueColumns))
 					$sql .= " UNIQUE";
 				$sql .= " COLLATE NOCASE ";
@@ -144,10 +144,10 @@ class SQLiteList
 			$args = $args[0];
 		// el 1ro es el key, el 2do es el blob
 		if ($args[1] !== null)
-			$args[1] = self::GetNamedStream($args[1]); 
+			$args[1] = self::GetNamedStream($args[1]);
 		$sql = "INSERT OR REPLACE INTO data (pID, " . $this->keyColumn . $this->commaColumns . ") VALUES
 			((SELECT pID FROM data WHERE " . $this->keyColumn . " = :p1), :p1 " . $this->commaArgs . ");";
-			
+
 		$this->Execute($sql, $args, 1);
 	}
 
@@ -251,8 +251,6 @@ class SQLiteList
 		$statement->execute();
 	}
 
-	public function AppendColumn(string $columnName, bool $isNumber, $caseSensitive) : void
-
 	public function AppendColumn(string $columnName, bool $isNumber, bool $indexed, bool $caseSensitive) : void
 	{
 		$sql = "ALTER TABLE data ADD COLUMN " . $columnName . " ";
@@ -292,13 +290,13 @@ class SQLiteList
 		unlink($this->path);
 	}
 
-	
+
 	public function ReadBlobValue($key, string $column)
 	{
 		Profiling::BeginTimer();
 
-		$row = $this->ReadValue($key, 'RowId, length, time'); 
-		
+		$row = $this->ReadValue($key, 'RowId, length, time');
+
 		if ($row === null)
 			return null;
 
@@ -327,7 +325,7 @@ class SQLiteList
 		return $key;
 	}
 
-	public static function GetNamedStream(string $key) 
+	public static function GetNamedStream(string $key)
 	{
 		return self::$OpenStreams[$key];
 	}
@@ -335,7 +333,7 @@ class SQLiteList
 	{
 		return self::$OpenStreamsSizes[$key];
 	}
-	public static function GetNamedStreamDateTime(string $key) 
+	public static function GetNamedStreamDateTime(string $key)
 	{
 		return self::$OpenStreamsTimes[$key];
 	}
