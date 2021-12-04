@@ -41,7 +41,7 @@ class TwoLevelFileFileCache
 		IO::Delete($file);
 	}
 
-	public function HasData($key1, $key2, &$out = null, $overriteTwoState = false)
+	public function HasData($key1, $key2, &$out = null, $overriteTwoState = false) : bool
 	{
 		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled && $overriteTwoState == false)
 			return false;

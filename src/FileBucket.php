@@ -64,7 +64,7 @@ class FileBucket
 		return $ret;
 	}
 
-	public function Delete()
+	public function Delete() : void
 	{
 		IO::RemoveDirectory($this->path);
 	}

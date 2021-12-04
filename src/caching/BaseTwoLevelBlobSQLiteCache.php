@@ -101,7 +101,7 @@ class BaseTwoLevelBlobSQLiteCache
 		}
 	}
 
-	public function HasData($key1, $key2, &$value = null)
+	public function HasData($key1, $key2, &$value = null) : bool
 	{
 		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled)
 		{

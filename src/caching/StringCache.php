@@ -16,30 +16,24 @@ class StringCache
 			$this->cache = Context::Settings()->Cache()->CreateFileCache($path);
 	}
 
-	public function Clear($key = null)
+	public function Clear($key = null) : void
 	{
 		$this->cache->Clear($key);
 	}
 
-	public function HasData($key, & $out = null)
+	public function HasData($key, & $out = null) : bool
 	{
-		if ($this->cache->HasData($key, null, $out))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return $this->cache->HasData($key, null, $out);
 	}
-	public function PutDataIfMissing($key, $value)
+
+	public function PutDataIfMissing($key, $value) : void
 	{
 		if ($this->HasData($key))
 			return;
 		$this->PutData($key, $value);
 	}
 
-	public function PutData($key, $value)
+	public function PutData($key, $value) : void
 	{
 		$this->cache->PutData($key, null, $value);
 	}

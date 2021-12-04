@@ -19,7 +19,7 @@ class TwoLevelObjectCache
 	{
 		$this->cache->Clear($key1, $key2 = null);
 	}
-	public function HasData($key1, $key2, & $out = null)
+	public function HasData($key1, $key2, & $out = null) : bool
 	{
 		try
 		{

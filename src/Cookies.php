@@ -35,7 +35,7 @@ class Cookies
 		return false;
 	}
 
-	public static function RenewCookie($name, $expireDays = 30)
+	public static function RenewCookie($name, $expireDays = 30) : void
 	{
 		$cookie = self::GetCookie($name);
 		if($cookie != '')
@@ -50,7 +50,7 @@ class Cookies
 		return '';
 	}
 
-	public static function DeleteCookie($name)
+	public static function DeleteCookie($name) : void
 	{
 		self::RenewCookie($name, -365);
 		unset($_COOKIE[$name]);
