@@ -34,9 +34,9 @@ class clsTbsZip {
 	private $CdInfo;
 	private $CdPos;
 	private $DisplayError;
-	private $Error;
-	private $LastReadComp;
-	private $LastReadIdx;
+	// private $Error;
+	// private $LastReadComp;
+	// private $LastReadIdx;
 	private $Meth8Ok;
 	private $OutputHandle;
 	private $OutputMode;
@@ -49,7 +49,7 @@ class clsTbsZip {
 		$this->Meth8Ok = extension_loaded('zlib'); // check if Zlib extension is available. This is need for compress and uncompress with method 8.
 		$this->DisplayError = true;
 		$this->ArchFile = '';
-		$this->Error = false;
+		// $this->Error = false;
 	}
 	public static function getTimeOffset()
 	{
@@ -79,9 +79,10 @@ class clsTbsZip {
 
 	function CreateNew($ArchName='new.zip') {
 		// Create a new virtual empty archive, the name will be the default name when the archive is flushed.
-		if (!isset($this->Meth8Ok)) $this->__construct(); // for PHP 4 compatibility
+		if (!isset($this->Meth8Ok))
+		  	$this->__construct(); // for PHP 4 compatibility
 		$this->Close(); // note that $this->ArchHnd is set to false here
-		$this->Error = false;
+		// $this->Error = false;
 		$this->ArchFile = $ArchName;
 		$this->ArchIsNew = true;
 		$bin = 'PK'.chr(05).chr(06).str_repeat(chr(0), 18);
@@ -92,9 +93,10 @@ class clsTbsZip {
 
 	function Open($ArchFile, $UseIncludePath=false) {
 		// Open the zip archive
-		if (!isset($this->Meth8Ok)) $this->__construct(); // for PHP 4 compatibility
+		if (!isset($this->Meth8Ok))
+		  	$this->__construct(); // for PHP 4 compatibility
 		$this->Close(); // close handle and init info
-		$this->Error = false;
+		// $this->Error = false;
 		$this->ArchIsNew = false;
 		$this->ArchIsStream = (is_resource($ArchFile) && (get_resource_type($ArchFile)=='stream'));
 		if ($this->ArchIsStream) {
@@ -123,8 +125,8 @@ class clsTbsZip {
 	}
 
 	function ArchCancelModif() {
-		$this->LastReadComp = false; // compression of the last read file (1=compressed, 0=stored not compressed, -1= stored compressed but read uncompressed)
-		$this->LastReadIdx = false; // index of the last file read
+		// $this->LastReadComp = false; // compression of the last read file (1=compressed, 0=stored not compressed, -1= stored compressed but read uncompressed)
+		// $this->LastReadIdx = false; // index of the last file read
 		$this->ReplInfo = [];
 		$this->ReplByPos = [];
 		$this->AddInfo = [];
@@ -241,7 +243,7 @@ class clsTbsZip {
 				echo '<strong>'.get_class($this).' ERROR with the zip archive:</strong> '.$Msg.'<br>'."\r\n";
 			}
 		}
-		$this->Error = $Msg;
+		// $this->Error = $Msg;
 		return false;
 	}
 
@@ -334,8 +336,8 @@ class clsTbsZip {
 
 	function FileRead($NameOrIdx, $Uncompress=true) {
 
-		$this->LastReadComp = false; // means the file is not found
-		$this->LastReadIdx = false;
+		// $this->LastReadComp = false; // means the file is not found
+		// $this->LastReadIdx = false;
 
 		$idx = $this->FileGetIdx($NameOrIdx);
 		if ($idx===false)
@@ -344,7 +346,7 @@ class clsTbsZip {
 		$pos = $this->CdFileLst[$idx]['p_loc'];
 		$this->_MoveTo($pos);
 
-		$this->LastReadIdx = $idx; // Can be usefull to get the idx
+		// $this->LastReadIdx = $idx; // Can be usefull to get the idx
 
 		$Data = $this->_ReadFile($idx, true);
 
@@ -363,9 +365,10 @@ class clsTbsZip {
 		} elseif($meth==0) {
 			$Comp = 0; // means stored without compression
 		} else {
-			if ($Uncompress) $this->RaiseError('Unable to uncompress file "'.$NameOrIdx.'" because it is compressed with method '.$meth.'.');
+			if ($Uncompress)
+			  	$this->RaiseError('Unable to uncompress file "'.$NameOrIdx.'" because it is compressed with method '.$meth.'.');
 		}
-		$this->LastReadComp = $Comp;
+		// $this->LastReadComp = $Comp;
 
 		return $Data;
 

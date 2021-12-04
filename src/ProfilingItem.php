@@ -8,7 +8,6 @@ class ProfilingItem
 
 	private $startTime;
 	private $startMemory;
-	private $startMemoryPeak;
 
 	public $memory;
 	public $memoryPeak;
@@ -25,7 +24,6 @@ class ProfilingItem
 		$this->name = $name;
 		$this->startTime = 	microtime(true);
 		$this->startMemory = memory_get_usage();
-		$this->startMemoryPeak = memory_get_peak_usage();
 		$this->durationMs = 0;
 		$this->hits = 0;
 		$this->dbHits = 0;
