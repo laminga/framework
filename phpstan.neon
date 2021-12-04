@@ -1,5 +1,6 @@
 parameters:
 	ignoreErrors:
+		- '#[Mm]ethod .* is unused.#'
 		-
 			message: '#.*ForTestingParams has an unused parameter #'
 			path: src/tests/ReflectionTest.php
