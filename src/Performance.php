@@ -2,7 +2,14 @@
 
 namespace minga\framework;
 
-use minga\framework\locking\PerformanceLock;
+
+use minga\framework\locking\PerformanceMonthlyDayLock;
+use minga\framework\locking\PerformanceDaylyLocksLock;
+use minga\framework\locking\PerformanceDaylyUsageLock;
+use minga\framework\locking\PerformanceDaylyUserLock;
+use minga\framework\locking\PerformanceMonthlyLocksLock;
+use minga\framework\locking\PerformanceMonthlyUsageLock;
+use minga\framework\locking\PerformanceMonthlyUserLock;
 
 class Performance
 {
@@ -194,7 +201,6 @@ class Performance
 	{
 		if (self::$timeStart == null)
 			return;
-		PerformanceLock::BeginWrite();
 		$ellapsedSeconds = microtime(true) - self::$timeStart - self::$pauseEllapsedSecs;
 		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
 
@@ -208,23 +214,55 @@ class Performance
 			self::$controller = 'na';
 			self::$method = 'na';
 		}
-		// graba mensual
-		self::SaveControllerUsage($ellapsedMilliseconds);
-		self::SaveUserUsage($ellapsedMilliseconds);
-		self::SaveLocks();
-		// graba diario
-		self::CheckDaylyReset();
-		self::SaveControllerUsage($ellapsedMilliseconds, 'dayly');
-		self::SaveUserUsage($ellapsedMilliseconds, 'dayly');
-		$limitArgs = self::SaveDaylyUsage($ellapsedMilliseconds);
-		self::SaveDaylyLocks();
-		// listo
-		PerformanceLock::EndWrite();
 
+		// graba mensual
+		$limitArgs = self::SaveMonthtly($ellapsedMilliseconds);
+
+		// se fija si avisa el cambio de día
+		self::CheckDaylyReset();
+
+		// graba diario
+		PerformanceDaylyUsageLock::BeginWrite();
+		self::SaveControllerUsage($ellapsedMilliseconds, 'dayly');
+		PerformanceDaylyUsageLock::EndWrite();
+
+		if (Context::Settings()->Performance()->PerformancePerUser)
+		{
+			PerformanceDaylyUserLock::BeginWrite();
+			self::SaveUserUsage($ellapsedMilliseconds, 'dayly');
+			PerformanceDaylyUserLock::EndWrite();
+		}
+
+		PerformanceDaylyLocksLock::BeginWrite();
+		self::SaveDaylyLocks();
+		PerformanceDaylyLocksLock::EndWrite();
+		// listo
+		
 		// Chequea límites
 		self::CheckLimits($limitArgs['days'], $limitArgs['key'], $limitArgs['prevHits'],
 			$limitArgs['prevDuration'], $limitArgs['prevLock'],
 			$ellapsedMilliseconds);
+	}
+
+	private static function SaveMonthtly($ellapsedMilliseconds)
+	{
+		PerformanceMonthlyUsageLock::BeginWrite();
+		self::SaveControllerUsage($ellapsedMilliseconds);
+		PerformanceMonthlyUsageLock::EndWrite();
+		if (Context::Settings()->Performance()->PerformancePerUser)
+		{
+				PerformanceMonthlyUserLock::BeginWrite();
+				self::SaveUserUsage($ellapsedMilliseconds);
+				PerformanceMonthlyUserLock::EndWrite();
+		}
+		PerformanceMonthlyLocksLock::BeginWrite();
+		self::SaveLocks();
+		PerformanceMonthlyLocksLock::EndWrite();
+
+		PerformanceMonthlyDayLock::BeginWrite();
+		$limitArgs = self::SaveDaylyUsage($ellapsedMilliseconds);
+		PerformanceMonthlyDayLock::EndWrite();
+		return $limitArgs;
 	}
 
 	public static function IsNewDay()
@@ -270,6 +308,11 @@ class Performance
 		if(self::$daylyResetChecked)
 			return;
 
+		PerformanceDaylyUsageLock::BeginWrite();
+		if (Context::Settings()->Performance()->PerformancePerUser)
+				PerformanceDaylyUserLock::BeginWrite();
+		PerformanceDaylyLocksLock::BeginWrite();
+
 		$folder = self::ResolveFolder('dayly');
 		$path = $folder . '/today.txt';
 		$today = Date::Today();
@@ -291,6 +334,11 @@ class Performance
 			self::DayCompleted(self::$warnToday);
 			Traffic::DayCompleted();
 		}
+
+		PerformanceDaylyUsageLock::EndWrite();
+		if (Context::Settings()->Performance()->PerformancePerUser)
+				PerformanceDaylyUserLock::EndWrite();
+		PerformanceDaylyLocksLock::EndWrite();
 	}
 
 	private static function DayCompleted($newDay)
@@ -591,7 +639,7 @@ class Performance
 
 	public static function GetDaylyTable($month, $appendTotals = false)
 	{
-		$lock = new PerformanceLock();
+		$lock = new PerformanceMonthlyDayLock();
 		$lock->LockRead();
 
 		$path = self::ResolveFilenameDayly($month);
@@ -723,11 +771,24 @@ class Performance
 
 	public static function GetControllerTable($month, $adminControllers, $getUsers, $methods)
 	{
-		$lock = new PerformanceLock();
-		$lock->LockRead();
-
 		if ($month == '')
 			$month = 'dayly';
+		$lockUser = null;
+		if ($month === 'dayly' || $month === 'yesterday')
+		{
+			$lock = new PerformanceDaylyUsageLock();
+			if (Context::Settings()->Performance()->PerformancePerUser)
+				$lockUser = new PerformanceDaylyUserLock();
+		}
+		else
+		{
+			$lock = new PerformanceMonthlyUsageLock();
+			if (Context::Settings()->Performance()->PerformancePerUser)
+				$lockUser = new PerformanceMonthlyUserLock();
+		}
+		$lock->LockRead();
+		if (Context::Settings()->Performance()->PerformancePerUser)
+			$lockUser->LockRead();
 
 		$path = self::ResolveFolder($month);
 		$rows = [];
@@ -758,6 +819,8 @@ class Performance
 		}
 
 		$lock->Release();
+		if (Context::Settings()->Performance()->PerformancePerUser)
+			$lockUser->Release();
 
 		// arma fila de encabezados
 		$rows = [];
@@ -846,10 +909,18 @@ class Performance
 
 	public static function GetLocksTable($month)
 	{
-		$lock = new PerformanceLock();
+		if ($month == '') 
+		{
+			$month = 'dayly';
+		}
+
+		if ($month === 'dayly' || $month === 'yesterday')
+			$lock = new PerformanceDaylyLocksLock();
+		else
+			$lock = new PerformanceMonthlyLocksLock();
+		
 		$lock->LockRead();
 
-		if ($month == '') $month = 'dayly';
 		$path = self::ResolveFilenameLocks($month);
 		$rows = self::ReadIfExists($path);
 		$lock->Release();

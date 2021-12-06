@@ -165,8 +165,22 @@ class Lock
 
 	public static function ReleaseAllStaticLocks()
 	{
-		while (PerformanceLock::IsWriting())
-			PerformanceLock::EndWrite();
+		while (PerformanceDaylyLocksLock::IsWriting())
+			PerformanceDaylyLocksLock::EndWrite();
+		while (PerformanceDaylyUsageLock::IsWriting())
+			PerformanceDaylyUsageLock::EndWrite();
+		while (PerformanceDaylyUserLock::IsWriting())
+			PerformanceDaylyUserLock::EndWrite();
+
+		while (PerformanceMonthlyLocksLock::IsWriting())
+			PerformanceMonthlyLocksLock::EndWrite();
+		while (PerformanceMonthlyUsageLock::IsWriting())
+			PerformanceMonthlyUsageLock::EndWrite();
+		while (PerformanceMonthlyUserLock::IsWriting())
+			PerformanceMonthlyUserLock::EndWrite();
+		while (PerformanceMonthlyDayLock::IsWriting())
+			PerformanceMonthlyDayLock::EndWrite();
+			
 	}
 
 }
