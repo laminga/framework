@@ -13,10 +13,9 @@ class AttributeEntity
 	public function LoadAttributesOnly($path)
 	{
 		$this->path = $path;
+		$this->attributes = [];
 		if ($path != "" && file_exists($path))
 			$this->attributes = IO::ReadEscapedIniFile($path);
-		else
-			$this->attributes = [];
 	}
 
 	public function SafeGet($key, $default = '')
@@ -25,8 +24,7 @@ class AttributeEntity
 			return $this->attributes[$key];
 		else if (array_key_exists($key, $this->extraAttributes))
 			return $this->extraAttributes[$key];
-		else
-			return $default;
+		return $default;
 	}
 
 	public function SafeAppend($key, $valueArray)

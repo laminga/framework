@@ -287,7 +287,7 @@ class IO
 			return null;
 	}
 
-	private static function AssocArraySectionToString($section, $assocArr)
+	private static function AssocArraySectionToString(string $section, array $assocArr) : string
 	{
 		$content = "[" . $section. "]\r\n";
 		foreach($assocArr as $key => $value)
@@ -314,7 +314,7 @@ class IO
 		return true;
 	}
 
-	public static function WriteEscapedIniFile($path, $assocArr, $keepSections = false) : bool
+	public static function WriteEscapedIniFile($path, array $assocArr, bool $keepSections = false) : bool
 	{
 		$directory = dirname($path);
 

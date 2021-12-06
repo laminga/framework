@@ -78,8 +78,8 @@ class SQLiteList
 
 		if ($res === false)
 			return null;
-		else
-			return $res;
+
+		return $res;
 	}
 
 	public function Open(string $path, bool $readonly = false) : void
