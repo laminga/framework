@@ -7,7 +7,7 @@ use minga\framework\locking\TrafficLock;
 
 class Traffic
 {
-	const C_FACTOR = 4;
+	const C_FACTOR = 2;
 
 	public static function RegisterIP(string $ip, string $userAgent = '', bool $isMegaUser = false) : void
 	{
