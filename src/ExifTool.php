@@ -9,7 +9,7 @@ class ExifTool
 		$binPath = Context::Paths()->GetBinPath();
 		if (Str::Contains($binPath, " "))
 			return '"' . $binPath . '/exiftool/exiftool"';
-		else 
+		else
 			return $binPath . '/exiftool/exiftool';
 	}
 
@@ -33,6 +33,8 @@ class ExifTool
 		$text = str_replace(["\r", "\n"], ' ', $text);
 		$text = Str::Replace($text, "\\", "\\\\");
 		$text = Str::Replace($text, '"', '\"');
+		$text = Str::Replace($text, '`', '\`');
+		$text = Str::Replace($text, '´', '\´');
 		return $text;
 	}
 
