@@ -429,9 +429,9 @@ class Str
 						$keywordBlocks = self::AssociateShortWords($keywords);
 						$ret .= $replacer($keywordBlocks) . " ";
 						//if (self::HasShortWord($keywords))
-						//  $ret .= $replacer(['"' . trim($block) . '"']) . ' ';
+						// $ret .= $replacer(['"' . trim($block) . '"']) . ' ';
 						//else
-						//  $ret .= $replacer($keywords) . " ";
+						// $ret .= $replacer($keywords) . " ";
 					}
 				}
 				else

@@ -241,7 +241,7 @@ class SQLiteList
 
 	public function Replace($key, string $column, $oldValue, $newValue) : void
 	{
-		$sql = "UPDATE data SET " . $column . " = REPLACE( " . $column . ", :p2, :p3) WHERE " . $this->keyColumn . " = :p1;";
+		$sql = "UPDATE data SET " . $column . " = REPLACE(" . $column . ", :p2, :p3) WHERE " . $this->keyColumn . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
 		$statement->bindValue(':p1', $key);

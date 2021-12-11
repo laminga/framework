@@ -146,7 +146,7 @@ class Log
 		if(Str::Contains($errorMessage, 'function_bar'))
 			return true;
 
-		if(Str::Contains($errorMessage,  "property 'localdata' of undefined")
+		if(Str::Contains($errorMessage, "property 'localdata' of undefined")
 			&& Str::Contains($errorSource, '/jqwidgets/'))
 		{
 			return true;

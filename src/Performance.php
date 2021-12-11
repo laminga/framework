@@ -237,7 +237,7 @@ class Performance
 		self::SaveDaylyLocks();
 		PerformanceDaylyLocksLock::EndWrite();
 		// listo
-		
+
 		// Chequea límites
 		self::CheckLimits($limitArgs['days'], $limitArgs['key'], $limitArgs['prevHits'],
 			$limitArgs['prevDuration'], $limitArgs['prevLock'],
@@ -423,7 +423,7 @@ class Performance
 		$maxLockMs = Context::Settings()->Limits()->WarningDaylyLockMinutes * 60 * 1000;
 		$maxRequestSeconds = Context::Settings()->Limits()->WarningRequestSeconds;
 
-		if ($prevHits < $maxHits && $hits >= $maxHits )
+		if ($prevHits < $maxHits && $hits >= $maxHits)
 			self::SendPerformanceWarning('hits', $maxHits . ' hits', $hits . ' hits');
 		if ($prevDuration < $maxMs && $duration >= $maxMs)
 			self::SendPerformanceWarning('minutos de CPU', self::Format($maxMs, 1000 * 60, 'minutos'), self::Format($duration, 1000 * 60, 'minutos'));
@@ -671,7 +671,7 @@ class Performance
 		$totalsDataDbMsRow = 0;
 		$totalsDataDbHitRow = 0;
 		$totalsExtraValues = array_fill(0, count($extraValues), 0);
-			
+
 		foreach($days as $key => $value)
 		{
 			$headerRow[] = $key;
@@ -711,7 +711,7 @@ class Performance
 			// Agrega la columna de promedios diarios
 			$headerRow[] = 'Promedio';
 			$dataHitRow[] = round($totalsDataHitRow / count($days));
-			$googleRow[] =  round($totalsGoogleRow/ count($days));
+			$googleRow[] = round($totalsGoogleRow/ count($days));
 			$mailRow[] = round($totalsMailRow/ count($days));
 			$dataMsRow[] = round($totalsDataMsRow / count($days) / 1000 / 60, 1);
 			$dataAvgRow[] = round($totalsAvgRow / count($days));
@@ -909,7 +909,7 @@ class Performance
 
 	public static function GetLocksTable($month)
 	{
-		if ($month == '') 
+		if ($month == '')
 		{
 			$month = 'dayly';
 		}
@@ -918,7 +918,7 @@ class Performance
 			$lock = new PerformanceDaylyLocksLock();
 		else
 			$lock = new PerformanceMonthlyLocksLock();
-		
+
 		$lock->LockRead();
 
 		$path = self::ResolveFilenameLocks($month);

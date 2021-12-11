@@ -249,7 +249,7 @@ class Date
 	{
 		$ret = $Day . " de " . Str::ToLower(self::MonthToString($Month));
 		if ($Year != "")
-			$ret .=  " de " . $Year;
+			$ret .= " de " . $Year;
 		return $ret;
 	}
 
@@ -311,7 +311,7 @@ class Date
 		}
 	}
 
-	public static function FormattedDateToDateTime($date) : \DateTime
+	public static function FormattedDateToDateTime($date)
 	{
 		return \DateTime::createFromFormat("Y-m-d@H.i.s", $date);
 	}
@@ -338,6 +338,8 @@ class Date
 			throw new ErrorException('Days must be a positive integer');
 
 		$dt = self::FormattedDateToDateTime($date);
+		if($dt === false)
+			throw new ErrorException('Invalid Format');
 
 		$dt->add(new \DateInterval('P' . $days . 'D'));
 		$now = new \DateTime('now');

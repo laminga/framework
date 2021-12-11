@@ -17,7 +17,7 @@ class Db
 	private $isInTransaction = false;
 	private $lastRows = -1;
 
-	public function __construct($db = null, $profiler =  null)
+	public function __construct($db = null, $profiler = null)
 	{
 		if($db === null)
 		{
@@ -482,8 +482,8 @@ class Db
 	 * Prepares and executes an SQL query and returns the first row of the result
 	 * as a numerically indexed array.
 	 *
-	 * @param string $statement         sql query to be executed
-	 * @param array $params             prepared statement params
+	 * @param string $statement query to be executed
+	 * @param array $params statement params
 	 * @return array
 	 */
 	public function fetchArray(string $statement, array $params = []) : array

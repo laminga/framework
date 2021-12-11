@@ -36,7 +36,7 @@ class TemplateMessage extends AttributeEntity
 		$viewAction['organization'] = Context::Settings()->applicationName;
 		$viewAction['organization_url'] = Context::Settings()->GetMainServerPublicUrl();
 
-		$this->SetValue('viewAction', $viewAction );
+		$this->SetValue('viewAction', $viewAction);
 	}
 
 	public function Send($template = '')

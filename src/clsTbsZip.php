@@ -80,7 +80,7 @@ class clsTbsZip {
 	function CreateNew($ArchName='new.zip') {
 		// Create a new virtual empty archive, the name will be the default name when the archive is flushed.
 		if (!isset($this->Meth8Ok))
-		  	$this->__construct(); // for PHP 4 compatibility
+			$this->__construct(); // for PHP 4 compatibility
 		$this->Close(); // note that $this->ArchHnd is set to false here
 		// $this->Error = false;
 		$this->ArchFile = $ArchName;
@@ -94,7 +94,7 @@ class clsTbsZip {
 	function Open($ArchFile, $UseIncludePath=false) {
 		// Open the zip archive
 		if (!isset($this->Meth8Ok))
-		  	$this->__construct(); // for PHP 4 compatibility
+			$this->__construct(); // for PHP 4 compatibility
 		$this->Close(); // close handle and init info
 		// $this->Error = false;
 		$this->ArchIsNew = false;
@@ -366,7 +366,7 @@ class clsTbsZip {
 			$Comp = 0; // means stored without compression
 		} else {
 			if ($Uncompress)
-			  	$this->RaiseError('Unable to uncompress file "'.$NameOrIdx.'" because it is compressed with method '.$meth.'.');
+				$this->RaiseError('Unable to uncompress file "'.$NameOrIdx.'" because it is compressed with method '.$meth.'.');
 		}
 		// $this->LastReadComp = $Comp;
 
@@ -375,7 +375,7 @@ class clsTbsZip {
 	}
 
 	function _ReadFile($idx, $ReadData) {
-		// read the file header (and maybe the data ) in the archive, assuming the cursor in at a new file position
+		// read the file header (and maybe the data) in the archive, assuming the cursor in at a new file position
 
 		$b = $this->_ReadData(30);
 
@@ -543,7 +543,7 @@ class clsTbsZip {
 
 	function Flush($Render=TBSZIP_DOWNLOAD, $File='', $ContentType='') {
 
-		if ( ($File!=='') && ($this->ArchFile===$File) && ($Render==TBSZIP_FILE) ) {
+		if (($File!=='') && ($this->ArchFile===$File) && ($Render==TBSZIP_FILE)) {
 			$this->RaiseError('Method Flush() cannot overwrite the current opened archive: \''.$File.'\''); // this makes corrupted zip archives without PHP error.
 			return false;
 		}
@@ -675,7 +675,7 @@ class clsTbsZip {
 		// Output "end of central directory record"
 		$b2 = $this->CdInfo['bin'];
 		$DelNbr = count($DelLst);
-		if ( ($AddNbr>0) or ($DelNbr>0) ) {
+		if (($AddNbr>0) or ($DelNbr>0)) {
 			// total number of entries in the central directory on this disk
 			$n = $this->_GetDec($b2, 8, 2);
 			$this->_PutDec($b2, $n + $AddNbr - $DelNbr, 8, 2);
@@ -770,7 +770,7 @@ class clsTbsZip {
 	}
 
 	function OutputClose() {
-		if ( ($this->OutputMode===TBSZIP_FILE) && ($this->OutputHandle!==false) ) {
+		if (($this->OutputMode===TBSZIP_FILE) && ($this->OutputHandle!==false)) {
 			fclose($this->OutputHandle);
 			$this->OutputHandle = false;
 		}
@@ -894,7 +894,7 @@ class clsTbsZip {
 		$nbr = 1;
 		$p = false;
 		$pos = ftell($this->ArchHnd) - 4 - 256;
-		while ( $nbr<256 ) {
+		while ($nbr<256) {
 			if ($pos<=0) {
 				$pos = 0;
 				$nbr = 256; // in order to make this a last check

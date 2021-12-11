@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class ORM
 {
-  // avance
+	// avance
 
 	// más mejoras
 

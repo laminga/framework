@@ -92,7 +92,7 @@ class IO
 		$i = 0;
 		while (feof($handle) == false)
 		{
-			$ret[]  = fgets($handle);
+			$ret[] = fgets($handle);
 			if($maxLines !== null && ++$i >= $maxLines)
 				break;
 		}

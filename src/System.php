@@ -142,7 +142,7 @@ class System
 				throw new ErrorException('Error de permisos: "' . $command . '".');
 			else
 				throw new ErrorException('Error RunCommandOnPath: "' . $command
-				.  '", retval: ' . $return .  ', last line: "' . $lastLine . '"');
+				. '", retval: ' . $return . ', last line: "' . $lastLine . '"');
 		}
 		chdir($prevDir);
 		return $output;
@@ -172,7 +172,7 @@ class System
 			throw new ErrorException('No se encontró el binario: "' . $command. '".');
 
 		if (Str::StartsWith($args, ' ') == false)
-		  	$args = ' ' . $args;
+			$args = ' ' . $args;
 
 		exec($command . $args, $out, $returnCode);
 
@@ -198,8 +198,8 @@ class System
 
 		return [
 			'command' => $command,
-		  	'output' => implode("\n", $output),
-		  	'lastLine' => $lastLine,
+			'output' => implode("\n", $output),
+			'lastLine' => $lastLine,
 			'return' => $return
 		];
 	}

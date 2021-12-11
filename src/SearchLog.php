@@ -71,7 +71,7 @@ class SearchLog
 		if(is_array($text) || is_array($matches))
 			return '';
 
-		return $user . "\t" . $now . "\t" .  $matches . "\t" . Str::Replace($text, "\t", ' ') . "\t" . $ellapsedMs;
+		return $user . "\t" . $now . "\t" . $matches . "\t" . Str::Replace($text, "\t", ' ') . "\t" . $ellapsedMs;
 	}
 
 	private static function ParseHit($value, &$user, &$dateTime, &$text, &$matches, &$ellapsed)

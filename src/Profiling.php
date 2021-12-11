@@ -219,7 +219,7 @@ class Profiling
 				. self::FixColWidth($v7, 11)
 				. self::FixColWidth($v8, 11)
 				. self::FixColWidth($v9, 11)
-			  	. " \n";
+				. " \n";
 		}
 	}
 
