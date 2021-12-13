@@ -6,6 +6,7 @@ use minga\framework\ErrorException;
 
 class ServersSettings
 {
+	/** @var ServerItem[] */
 	private $servers = [];
 	private $currentServer = null;
 
@@ -22,7 +23,7 @@ class ServersSettings
 	public $LoopLocalHost = 'localhost';
 	public $LoopLocalScheme = 'http';
 
-	public function RegisterServer($name, $url, $isCDN = false)
+	public function RegisterServer(string $name, string $url, bool $isCDN = false) : void
 	{
 		$type = ($isCDN ? 'cdns' : 'main');
 
@@ -32,38 +33,40 @@ class ServersSettings
 		$this->servers[$name] = $server;
 	}
 
-	public function RegisterCDNServer($name, $url)
+	public function RegisterCDNServer(string $name, string $url) : void
 	{
 		$this->RegisterServer($name, $url, true);
 	}
 
-	public function SetCurrentServer($name)
+	public function SetCurrentServer(string $name) : void
 	{
 		$this->currentServer = $name;
 	}
 
-	public function CurrentIsMain()
+	public function CurrentIsMain() : bool
 	{
 		$server = $this->Current();
 		return $server->type == 'main';
 	}
 
-	public function Current()
+	public function Current() : ServerItem
 	{
 		if ($this->currentServerObj == null)
 			$this->currentServerObj = $this->ResolveCurrentServer();
 
 		return $this->currentServerObj;
 	}
-	public function RegisterServers($appUrl, $homeUrl = null)
+
+	public function RegisterServers($appUrl, $homeUrl = null) : void
 	{
-		if (!$homeUrl) $homeUrl = $appUrl;
+		if ($homeUrl == false)
+			$homeUrl = $appUrl;
 		$this->RegisterServer('home', $homeUrl);
 		$this->RegisterServer('app', $appUrl);
 		$this->SetCurrentServer('app');
 	}
 
-	private function ResolveCurrentServer()
+	private function ResolveCurrentServer() : ServerItem
 	{
 		if ($this->currentServer == null)
 		{
@@ -84,8 +87,7 @@ class ServersSettings
 		return $this->servers[$this->currentServer];
 	}
 
-
-	public function OnlyCDNs()
+	public function OnlyCDNs() : bool
 	{
 		foreach($this->servers as $key => $value)
 		{
@@ -95,7 +97,7 @@ class ServersSettings
 		return true;
 	}
 
-	public function GetCDNServers()
+	public function GetCDNServers() : array
 	{
 		$ret = [];
 		foreach($this->servers as $key => $value)
@@ -106,33 +108,31 @@ class ServersSettings
 		return $ret;
 	}
 
-	public function GetServers()
+	public function GetServers() : array
 	{
 		return $this->servers;
 	}
 
-	public function GetContentServerUris()
+	public function GetContentServerUris() : array
 	{
 		// Trae el
 		$cdns = $this->GetCDNServers();
-		$svrs = [];
+		$servers = [];
 		foreach($cdns as $key => $value)
-			$svrs[] = $value->publicUrl;
-		if (count($svrs) == 0)
-			$svrs = $this->Current()->publicUrl;
-		return $svrs;
+			$servers[] = $value->publicUrl;
+		if (count($servers) == 0)
+			$servers = $this->Current()->publicUrl;
+		return $servers;
 	}
 
-	public function GetServer($name)
+	public function GetServer(string $name) : ServerItem
 	{
 		if(isset($this->servers[$name]))
 			return $this->servers[$name];
-		else
-			return $this->Current();
+		return $this->Current();
 	}
 
-
-	public function Home()
+	public function Home() : ServerItem
 	{
 		foreach($this->servers as $key => $value)
 		{
@@ -142,13 +142,11 @@ class ServersSettings
 		return $this->Main();
 	}
 
-
-	public function Main()
+	public function Main() : ServerItem
 	{
 		if ($this->mainServerObj == null)
 			return $this->Current();
 			//throw new ErrorException('No main server is set in configuration settings.');
-		else
-			return $this->mainServerObj;
+		return $this->mainServerObj;
 	}
 }
