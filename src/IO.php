@@ -278,13 +278,12 @@ class IO
 		return true;
 	}
 
-	public static function GetSectionFromIniFile($path, $section)
+	public static function GetSectionFromIniFile(string $path, string $section)
 	{
 		$sections = self::ReadEscapedIniFileWithSections($path);
 		if (array_key_exists($section, $sections))
 			return $sections[$section];
-		else
-			return null;
+		return null;
 	}
 
 	private static function AssocArraySectionToString(string $section, array $assocArr) : string
@@ -505,7 +504,7 @@ class IO
 		return $info['dirname'] . '/' . $info['filename'] . '_' . $i . '.' . $info['extension'];
 	}
 
-	public static function ClearDirectory($dir, $recursive = false)
+	public static function ClearDirectory($dir, bool $recursive = false) : int
 	{
 		if (file_exists($dir) == false)
 			return 0;
