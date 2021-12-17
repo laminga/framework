@@ -6,11 +6,14 @@ use minga\framework\ErrorException;
 
 class AttributeEntity
 {
+	/** @var string */
 	public $path = '';
+	/** @var array */
 	public $attributes = [];
+	/** @var array */
 	public $extraAttributes = [];
 
-	public function LoadAttributesOnly($path)
+	public function LoadAttributesOnly(string $path) : void
 	{
 		$this->path = $path;
 		$this->attributes = [];
@@ -18,16 +21,16 @@ class AttributeEntity
 			$this->attributes = IO::ReadEscapedIniFile($path);
 	}
 
-	public function SafeGet($key, $default = '')
+	public function SafeGet(string $key, $default = '')
 	{
-		if (array_key_exists($key, $this->attributes))
+		if (isset($this->attributes[$key]))
 			return $this->attributes[$key];
-		else if (array_key_exists($key, $this->extraAttributes))
+		else if (isset($this->extraAttributes[$key]))
 			return $this->extraAttributes[$key];
 		return $default;
 	}
 
-	public function SafeAppend($key, $valueArray)
+	public function SafeAppend(string $key, $valueArray) : void
 	{
 		// Lee los valores...
 		$current = $this->SafeGetArray($key);
@@ -46,12 +49,12 @@ class AttributeEntity
 		// listo
 	}
 
-	public function SafeGetArray($key)
+	public function SafeGetArray(string $key) : array
 	{
 		// Lee los valores...
 		$n = 1;
 		$current = [];
-		while(array_key_exists($key . $n, $this->attributes))
+		while(isset($this->attributes[$key . $n]))
 		{
 			$value = $this->attributes[$key . $n];
 			$current[] = $value;
@@ -60,11 +63,11 @@ class AttributeEntity
 		return $current;
 	}
 
-	public function SafeSetArray($key, $valueArray)
+	public function SafeSetArray(string $key, array $valueArray) : void
 	{
 		// Lee los valores...
 		$n = 1;
-		while(array_key_exists($key . $n, $this->attributes))
+		while(isset($this->attributes[$key . $n]))
 		{
 			unset($this->attributes[$key . $n]);
 			$n++;
@@ -83,37 +86,37 @@ class AttributeEntity
 		// listo
 	}
 
-	public function GetAllAttributes()
+	public function GetAllAttributes() : array
 	{
 		return array_merge($this->attributes, $this->extraAttributes);
 	}
 
-	public function SaveAttributesOnly()
+	public function SaveAttributesOnly() : void
 	{
 		if ($this->path == '')
 			throw new ErrorException("Tried to save to an uninitialized entity.");
 		IO::WriteEscapedIniFile($this->path, $this->attributes);
 	}
 
-	public function SetValue($key, $value)
+	public function SetValue(string $key, $value) : void
 	{
 		$this->attributes[$key] = $value;
 	}
 
-	public function GetValue($key)
+	public function GetValue(string $key)
 	{
 		return $this->attributes[$key];
 	}
 
-	public function RemoveKey($key)
+	public function RemoveKey(string $key) : void
 	{
-		if (array_key_exists($key, $this->attributes))
+		if (isset($this->attributes[$key]))
 			unset($this->attributes[$key]);
 	}
 
-	public function SetDefault($key, $default)
+	public function SetDefault(string $key, $default) : void
 	{
-		if (!array_key_exists($key, $this->attributes))
+		if (isset($this->attributes[$key]) == false)
 			$this->attributes[$key] = $default;
 	}
 }
