@@ -17,7 +17,7 @@ class MailSettings
 	public $Provider = self::SMTP;
 
 	// File Settings
-	public $EmailFilePath  = "";
+	public $EmailFilePath = "";
 
 	// SMTP Settings
 	public $SMTPSecure = ""; // Opciones: "" | "tls"

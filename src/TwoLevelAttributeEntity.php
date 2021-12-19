@@ -4,83 +4,83 @@ namespace minga\framework;
 
 class TwoLevelAttributeEntity
 {
+	//* @var string */
 	public $path = '';
+	//* @var array */
 	public $sections = [];
+	//* @var bool */
 	protected $keepSectionCreationDate = false;
 
-	public function SetLocation($path)
+	public function SetLocation(string $path) : void
 	{
 		$this->path = $path;
 	}
 
-	public function LoadAttributesOnly($path)
+	public function LoadAttributesOnly(string $path) : void
 	{
 		$this->path = $path;
+		$this->sections = [];
 		if ($path != "" && file_exists($path))
 			$this->sections = IO::ReadEscapedIniFileWithSections($path);
-		else
-			$this->sections = [];
 	}
 
-	public function GetCreateDate($section)
+	public function GetCreateDate(string $section)
 	{
 		return $this->SafeGet($section, 'created');
 	}
 
-	public function SafeGetSection($section, $default = [])
+	public function SafeGetSection(string $section, $default = [])
 	{
-		if (array_key_exists($section, $this->sections))
+		if (isset($this->sections[$section]))
 			return $this->sections[$section];
 		return $default;
 	}
 
-	public function SafeGet($section, $key, $default = '')
+	public function SafeGet(string $section, string $key, $default = '')
 	{
-		if (array_key_exists($section, $this->sections))
+		if (isset($this->sections[$section]))
 		{
 			$sectionValues = $this->sections[$section];
-			if (array_key_exists($key, $sectionValues))
+			if (isset($sectionValues[$key]))
 				return $sectionValues[$key];
 		}
 		return $default;
 	}
 
-	public function SaveAttributesOnly()
+	public function SaveAttributesOnly() : void
 	{
 		if ($this->path == '')
 			throw new ErrorException("Tried to save to an uninitialized entity.");
 		IO::WriteEscapedIniFileWithSections($this->path, $this->sections);
 	}
 
-	public function GetItem($section)
+	public function GetItem(string $section)
 	{
 		return $this->sections[$section];
 	}
 
-	public function SafeGetItem($section, $default = null)
+	public function SafeGetItem(string $section, $default = null)
 	{
 		if(isset($this->sections[$section]))
 			return $this->sections[$section];
 		return $default;
 	}
 
-	public function GetSectionArray()
+	public function GetSectionArray() : array
 	{
 		return array_keys($this->sections);
 	}
 
-	public function SetItem($section, $value)
+	public function SetItem(string $section, $value) : void
 	{
-		if ($this->keepSectionCreationDate && array_key_exists($section, $this->sections) == false)
-		{
+		if ($this->keepSectionCreationDate && isset($this->sections[$section]) == false)
 			$value['created'] = Date::FormattedArNow();
-		}
 		$this->sections[$section] = $value;
 	}
 
-	public function SetValue($section, $key, $value)
+	public function SetValue(string $section, string $key, $value) : void
 	{
-		if (array_key_exists($section, $this->sections) == false)
+		if (isset($this->sections[$section]) == false)
 		{
 			$this->sections[$section] = [];
 			if ($this->keepSectionCreationDate)
@@ -89,38 +89,32 @@ class TwoLevelAttributeEntity
 		$this->sections[$section][$key] = $value;
 	}
 
-	public function KeyExists($section, $key = null)
+	public function KeyExists(string $section, string $key = '') : bool
 	{
-		if (array_key_exists($section, $this->sections) == false)
-			return false;
-		if ($key == null)
-			return true;
-		else
-			return array_key_exists($key, $this->sections[$section]);
+		if ($key == '')
+			return isset($this->sections[$section]);
+		return isset($this->sections[$section][$key]);
 	}
 
-	public function Clear()
+	public function Clear() : void
 	{
 		$this->sections = [];
 	}
 
-	public function RemoveKey($section, $key = null)
+	public function RemoveKey(string $section, string $key = '') : void
 	{
-		if (array_key_exists($section, $this->sections))
-		{
-			if ($key == null)
-				unset($this->sections[$section]);
-			else if (array_key_exists($key, $this->sections[$section]))
-				unset($this->sections[$section][$key]);
-		}
+		if ($key == '')
+			unset($this->sections[$section]);
+		else if (isset($this->sections[$section][$key]))
+			unset($this->sections[$section][$key]);
 	}
 
-	public function Count()
+	public function Count() : int
 	{
 		return count($this->sections);
 	}
 
-	public function SafeGetArray($section, $key)
+	public function SafeGetArray(string $section, string $key) : array
 	{
 		$sectionArray = $this->SafeGetSection($section);
 		// Lee los valores...
@@ -135,7 +129,7 @@ class TwoLevelAttributeEntity
 		return $current;
 	}
 
-	public function SafeSetArray($section, $key, $valueArray)
+	public function SafeSetArray(string $section, string $key, array $valueArray) : void
 	{
 		if ($this->KeyExists($section) == false)
 			$this->sections[$section] = [];
@@ -148,7 +142,17 @@ class TwoLevelAttributeEntity
 		}
 		// Guarda
 		for($n = 0; $n < count($valueArray); $n++)
-			$this->sections[$section][$key . ($n+1)] = $valueArray[$n];
-		// listo
+			$this->sections[$section][$key . ($n + 1)] = $valueArray[$n];
 	}
+
+	public function RenameSection(string $oldSection, string $newSection) : void
+	{
+		if(isset($this->sections[$oldSection]))
+		{
+			$this->sections[$newSection] = $this->sections[$oldSection];
+			unset($this->sections[$oldSection]);
+			$this->SaveAttributesOnly();
+		}
+	}
+
 }

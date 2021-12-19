@@ -32,7 +32,7 @@ class MultiQuery
 		if ($query10 != null)
 			$queries[] = $query10;
 
-		$select =  "";
+		$select = "";
 		$from = "";
 		$where = "";
 		$groupBy = "";

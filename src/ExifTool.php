@@ -7,20 +7,19 @@ class ExifTool
 	public static function GetBinary() : string
 	{
 		$binPath = Context::Paths()->GetBinPath();
-		if (Str::Contains($binPath, " "))
-			return '"' . $binPath . '/exiftool/exiftool"';
-		else
-			return $binPath . '/exiftool/exiftool';
+		return '"' . $binPath . '/exiftool/exiftool"';
 	}
 
 	public static function UpdateMetadata(string $file, string $title, string $authors) : bool
 	{
 		Profiling::BeginTimer();
+		// Borra temporal anterior si existe
+		IO::Delete($file . '_exiftool_tmp');
 		$title = self::PrepareText($title);
 		$authors = self::PrepareText($authors);
 
-		$args = '-overwrite_original -L -Producer="AAcademica.org" -Author="'
-			. $authors . '" -Title="' . $title . '" "' . $file . '"';
+		$args = '-overwrite_original -L -Producer="AAcademica.org" -Author='
+			. $authors . ' -Title=' . $title . ' ' . $file;
 
 		$ret = self::Run($args);
 		Profiling::EndTimer();
@@ -31,11 +30,7 @@ class ExifTool
 	{
 		$text = Str::Convert($text, 'ISO-8859-1', 'UTF-8', true, true);
 		$text = str_replace(["\r", "\n"], ' ', $text);
-		$text = Str::Replace($text, "\\", "\\\\");
-		$text = Str::Replace($text, '"', '\"');
-		$text = Str::Replace($text, '`', '\`');
-		$text = Str::Replace($text, '´', '\´');
-		return $text;
+		return escapeshellarg(trim($text));
 	}
 
 	private static function Run(string $args) : bool

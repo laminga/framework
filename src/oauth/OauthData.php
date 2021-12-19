@@ -50,7 +50,7 @@ class OauthData
 		if(isset($data['first_name']))
 			$this->firstname = $data['first_name'];
 		if(isset($data['middle_name']))
-			$this->firstname .=  trim($this->firstname.' '.$data['middle_name']);
+			$this->firstname .= trim($this->firstname.' '.$data['middle_name']);
 
 		if(isset($data['last_name']))
 			$this->lastname = $data['last_name'];

@@ -23,7 +23,7 @@ class OauthFacebook extends OauthConnector
 		// 		array ('permission' => 'email', 'status' => 'granted'),
 		// 		array ('permission' => 'public_profile', 'status' => 'granted'),
 		// 	)
-		// );
+		//);
 		if(isset($result['data']) && is_array($result['data']))
 		{
 			foreach($result['data'][0] as $data)

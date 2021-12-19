@@ -18,7 +18,7 @@ class FatalErrorSender
 	public static function SendErrorLog($silent = false)
 	{
 		$path = self::GetFatalLogPath();
-		$file = $path  . '/error_log';
+		$file = $path . '/error_log';
 		$found = false;
 		if (file_exists($file))
 		{

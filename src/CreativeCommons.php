@@ -9,7 +9,7 @@ class CreativeCommons
 		return ["4.0/deed.es" => "Internacional 4.0 (recomendada)",
 			"4.0" => "Internacional 4.0 (inglés)",
 			"4.0/deed.pt" => "Internacional 4.0 (portugués)",
-			"" => "-------- Otras versiones  -----------",
+			"" => "-------- Otras versiones -----------",
 			"2.5/ar" => "Argentina 2.5",
 			"3.0/br" => "Brasil 3.0",
 			"3.0/cl" => "Chile 3.0",
@@ -101,7 +101,7 @@ class CreativeCommons
 		return $ret;
 	}
 	public static function GetLeyendByUrl($url, $wide = false)
-	{	
+	{
 		// backward compatibility
 		return self::GetLegendByUrl($url, $wide);
 	}
