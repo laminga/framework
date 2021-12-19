@@ -125,7 +125,7 @@ class Lock
 		Performance::EndLockedWait($hadToWait);
 	}
 
-	public function Release()
+	public function Release($deleteLockFile = false)
 	{
 		if ($this->ReleaseUsed())
 		{
@@ -138,6 +138,11 @@ class Lock
 
 			flock($this->handle, LOCK_UN);
 			fclose($this->handle);
+			if ($deleteLockFile)
+			{
+				$file = $this->ResolveFilename();
+				IO::Delete($file);
+			}
 			$this->handle = null;
 		}
 		else
