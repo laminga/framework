@@ -10,17 +10,24 @@ use minga\framework\Profiling;
 class Lock
 {
 	protected $handle;
+	/** @var string */
 	protected $folder;
+	/** @var string */
 	private $file;
+	/** @var bool */
 	private $readWrite;
+	/** @var bool */
 	public $isLocked = false;
+	/** @var bool */
 	public $isWriteLocked = false;
 
+	/** @var string */
 	protected $statsKey = 'default';
 
+	/** @var array */
 	private static $locks = [];
 
-	public function __construct($folder, $file = 'lock', $readWrite = false)
+	public function __construct(string $folder, string $file = 'lock', bool $readWrite = false)
 	{
 		$this->file = $file;
 		$this->folder = $folder;
@@ -28,14 +35,14 @@ class Lock
 		$this->readWrite = $readWrite;
 	}
 
-	public function LockRead()
+	public function LockRead() : void
 	{
 		if ($this->LockUsed(false))
 			return;
 		$this->doLock(LOCK_SH);
 	}
 
-	public function LockWrite()
+	public function LockWrite() : void
 	{
 		if ($this->LockUsed(true))
 			return;
@@ -43,7 +50,7 @@ class Lock
 		$this->isWriteLocked = true;
 	}
 
-	private function LockUsed($write)
+	private function LockUsed(bool $write) : bool
 	{
 		$file = $this->ResolveFilename();
 
@@ -64,7 +71,7 @@ class Lock
 		}
 	}
 
-	private function ReleaseUsed()
+	private function ReleaseUsed() : bool
 	{
 		$file = $this->ResolveFilename();
 
@@ -87,12 +94,12 @@ class Lock
 			throw new ErrorException('The lock could not be released.');
 	}
 
-	public function ResolveFilename()
+	public function ResolveFilename() : string
 	{
 		return $this->folder . '/' . $this->file . '.lock';
 	}
 
-	private function doLock($type)
+	private function doLock($type) : void
 	{
 		$mode = ($this->readWrite ? 'c+' : 'w+');
 		$this->handle = fopen($this->ResolveFilename(), $mode);
@@ -125,7 +132,7 @@ class Lock
 		Performance::EndLockedWait($hadToWait);
 	}
 
-	public function Release($deleteLockFile = false)
+	public function Release(bool $deleteLockFile = false) : void
 	{
 		if ($this->ReleaseUsed())
 		{
@@ -152,7 +159,7 @@ class Lock
 		$this->isWriteLocked = false;
 	}
 
-	private function AppendLockInfo($info, $type = -1)
+	private function AppendLockInfo(string $info, $type = -1) : void
 	{
 		if (Profiling::IsProfiling() == false)
 			return;
@@ -168,7 +175,7 @@ class Lock
 		Profiling::AppendLockInfo($this->statsKey . ': ' . $info . $folder . '/' . $this->file);
 	}
 
-	public static function ReleaseAllStaticLocks()
+	public static function ReleaseAllStaticLocks() : void
 	{
 		while (PerformanceDaylyLocksLock::IsWriting())
 			PerformanceDaylyLocksLock::EndWrite();
@@ -185,7 +192,6 @@ class Lock
 			PerformanceMonthlyUserLock::EndWrite();
 		while (PerformanceMonthlyDayLock::IsWriting())
 			PerformanceMonthlyDayLock::EndWrite();
-			
 	}
 
 }
