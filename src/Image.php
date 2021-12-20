@@ -5,7 +5,7 @@ namespace minga\framework;
 class Image
 {
 	/**
-	 * Cambia el tamaño de una imagen, pero sólo reduce,
+	 * Cambia el tamaño de una imagen, pero solo reduce,
 	 * no agranda. Siempre proporcional, tomando a escala
 	 * el menor valor pasado.
 	 * Si ambas medidas son cero, sale.

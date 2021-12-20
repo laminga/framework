@@ -50,7 +50,7 @@ abstract class OauthConnector
 	{
 		try
 		{
-			//Sólo acá el provider es con mayúscula.
+			//Solo acá el provider es con mayúscula.
 			$provider = Str::Capitalize(static::Provider);
 
 			$this->storage->storeAuthorizationState($provider, $state);

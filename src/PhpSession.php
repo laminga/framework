@@ -81,7 +81,7 @@ class PhpSession
 		if (ini_get('session.use_cookies') && isset($_COOKIE['PHPSESSID'])
 			&& preg_match('/^[a-zA-Z0-9,\-]{22,40}$/', $_COOKIE['PHPSESSID']) == false)
 		{
-			//Sale con página vacía. Este error es sólo por manipulación
+			//Sale con página vacía. Este error es solo por manipulación
 			//intencional y ningún redirect o unset lo resuelve.
 			exit();
 		}

@@ -14,7 +14,7 @@ class HtmlFilter
 	}
 
 	/**
-	 * Permite sólo links y formato básico.
+	 * Permite solo links y formato básico.
 	 * Filtra todo lo demás, está relacionado
 	 * a la función setupMinimal del ckeditor.
 	 * Permite lo mismo que los botones visibles

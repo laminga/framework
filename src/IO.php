@@ -716,7 +716,7 @@ class IO
 	/**
 	 * Wrapper de función rmdir de php,
 	 * para evitar warnings.
-	 * Sólo borra directorios vacíos.
+	 * Solo borra directorios vacíos.
 	 */
 	public static function RmDir($dir)
 	{
