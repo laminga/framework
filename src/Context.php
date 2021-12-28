@@ -6,11 +6,12 @@ use minga\framework\settings\Settings;
 
 class Context
 {
+	/** @var Settings */
 	private static $settings = null;
 	private static $calls = null;
 	private static $paths = null;
 
-	public static function Settings()
+	public static function Settings() : Settings
 	{
 		if(self::$settings === null)
 			self::$settings = new Settings();

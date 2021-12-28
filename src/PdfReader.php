@@ -10,6 +10,7 @@ use rodrigoq\pdftotext\PdfToText;
 
 class PdfReader
 {
+	const MAX_LENGTH = 65534; // en bytes
 	/**
 	 * binarios
 	 */
@@ -25,8 +26,8 @@ class PdfReader
 
 	public static function Truncate64k(string $cad) : string
 	{
-		if (strlen($cad) > 65534)
-			return mb_strcut($cad, 0, 65534);
+		if (strlen($cad) > self::MAX_LENGTH)
+			return mb_strcut($cad, 0, self::MAX_LENGTH);
 
 		return $cad;
 	}
