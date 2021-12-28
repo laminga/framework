@@ -36,9 +36,9 @@ class TwoLevelAttributeEntity
 		return $default;
 	}
 
-	public function SafeGet(string $section, string $key, $default = '')
+	public function SafeGet(?string $section, string $key, $default = '')
 	{
-		if (isset($this->sections[$section]))
+		if ($section !== null && isset($this->sections[$section]))
 		{
 			$sectionValues = $this->sections[$section];
 			if (isset($sectionValues[$key]))
