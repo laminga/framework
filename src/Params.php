@@ -129,8 +129,8 @@ class Params
 	public static function GetInt($param, $default = null)
 	{
 		$value = self::Get($param, $default);
-		if ($value === null || $value === '')
-			return null;
+		if ($value === null || $value === '' || $value === $default)
+			return $default;
 		return self::CheckParseIntValue($value);
 	}
 
