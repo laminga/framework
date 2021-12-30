@@ -444,14 +444,10 @@ class Db
 		$ret = '';
 		foreach($arr as $v)
 		{
-			if($this->getParamType($v) == \PDO::PARAM_INT)
-				$ret .= (int)$v . ', ';
-			elseif($this->getParamType($v) == \PDO::PARAM_BOOL)
+			if($this->getParamType($v) == \PDO::PARAM_INT
+				|| $this->getParamType($v) == \PDO::PARAM_BOOL)
 			{
-				if($v)
-					$ret .= '1, ';
-				else
-					$ret .= '0, ';
+				$ret .= (int)$v . ', ';
 			}
 			else
 				$ret .= $this->db->quote($v, $this->getParamType($v)) . ', ';
