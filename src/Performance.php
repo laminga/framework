@@ -465,7 +465,7 @@ class Performance
 
 	private static function Format($n, $divider, $unit) : string
 	{
-		return intval($n / $divider) . ' ' . $unit;
+		return (int)($n / $divider) . ' ' . $unit;
 	}
 
 	private static function ReadIfExists($file)

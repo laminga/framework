@@ -1057,7 +1057,7 @@ class Str
 		while(strpos($p, "&#") !== false)
 		{
 			$pos = strpos($p, "&#");
-			$i = intval(substr($p, $pos + 2, 3));
+			$i = (int)(substr($p, $pos + 2, 3));
 			$p = substr($p, 0, $pos) . chr($i) . substr($p, $pos + 6);
 		}
 		$p = self::Replace($p, '\\"', '"');

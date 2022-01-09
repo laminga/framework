@@ -72,7 +72,7 @@ class clsTbsZip {
 		$z2->open($tmpzip2);
 		$stat = $z2->statIndex(0);
 		$z2->close();
-		$ti2 = intval($stat['mtime']);
+		$ti2 = (int)($stat['mtime']);
 		self::$timeOffset = ($ti2 - $zip->now);
 		IO::Delete($tmpzip2);
 	}
@@ -838,7 +838,7 @@ class clsTbsZip {
 			if ($val==0) {
 				$z = 0;
 			} else {
-				$z = intval($val % 256);
+				$z = (int)($val % 256);
 				if (($val<0) && ($z!=0)) { // ($z!=0) is very important, example: val=-420085702
 					// special opration for negative value. If the number id too big, PHP stores it into a signed integer. For example: crc32('coucou') => -256185401 instead of 4038781895. NegVal = BigVal - (MaxVal+1) = BigVal - 256^4
 					$val = ($val - $z)/256 -1;
@@ -860,7 +860,7 @@ class clsTbsZip {
 	function _MsDos_Time($Timestamp = false) {
 		// convert a date-time timstamp into the MS-Dos format
 		$d = getdate($Timestamp);
-		return ($d['hours']*2048) + ($d['minutes']*32) + intval($d['seconds']/2); // seconds are rounded to an even number in order to save 1 bit
+		return ($d['hours']*2048) + ($d['minutes']*32) + (int)($d['seconds']/2); // seconds are rounded to an even number in order to save 1 bit
 	}
 
 	function _MsDos_Debug($date, $time) {

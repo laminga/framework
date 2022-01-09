@@ -191,7 +191,7 @@ class Date
 	public static function DaysDiff($date1, $date2)
 	{
 		$interval = date_diff($date1, $date2);
-		return intval($interval->format('%a'));
+		return (int)($interval->format('%a'));
 	}
 
 	public static function DateTimeNow()
@@ -214,12 +214,12 @@ class Date
 
 	public static function CurrentDay()
 	{
-		return intval(date("j"));
+		return (int)(date("j"));
 	}
 
 	public static function CurrentMonth()
 	{
-		return intval(date("m"));
+		return (int)(date("m"));
 	}
 
 	public static function CurrentYear()

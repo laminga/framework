@@ -42,7 +42,7 @@ class KeysSettings
 			return $keys;
 		$day = Date::CurrentDay();
 		$step = 30 / count($keys);
-		$current = intval($day / $step);
+		$current = (int)($day / $step);
 		if ($current >= count($keys))
 			$current = count($keys) - 1;
 		return $keys[$current];

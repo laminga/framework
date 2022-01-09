@@ -39,7 +39,7 @@ class Arr
 		{
 			$value = $arr[$n][$column];
 			if ($value !== null)
-				$arr[$n][$column] = floatval($value);
+				$arr[$n][$column] = (float)$value;
 		}
 	}
 
@@ -185,12 +185,12 @@ class Arr
 	{
 		$ret = [];
 		$interval = count($items) / $size;
-		$first = rand(0, intval($interval) - 1);
+		$first = rand(0, (int)$interval - 1);
 		$pos = $first;
 		$count = 0;
 		while($count < $size)
 		{
-			$ret[] = $items[intval($pos)];
+			$ret[] = $items[(int)$pos];
 			$pos += $interval;
 			$count++;
 		}
@@ -473,7 +473,7 @@ class Arr
 			$a = trim($a);
 			if ($a !== "")
 			{
-				$i = intval($a);
+				$i = (int)$a;
 				if ($i > 0 || !$ommitZeros)
 					$ret[] = $i;
 			}
@@ -652,7 +652,7 @@ class Arr
 		for($i = 0; $i < $newSize; $i++)
 			$ret[$keys[$i]] = $arr[$keys[$i]];
 		for($i = $newSize; $i < count($arr); $i++)
-			$total = intval($total + $arr[$keys[$i]]);
+			$total = (int)($total + $arr[$keys[$i]]);
 		$ret['Otros'] = $total;
 		return $ret;
 	}
@@ -668,7 +668,7 @@ class Arr
 		$total = 0;
 		$keys = array_keys($arr);
 		for($i = 0; $i < count($arr); $i++)
-			$total = intval(($total + $arr[$keys[$i]]));
+			$total = (int)(($total + $arr[$keys[$i]]));
 		$ret = [];
 		for($i = 0; $i < count($arr); $i++)
 		{

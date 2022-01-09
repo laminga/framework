@@ -232,7 +232,7 @@ class Zip
 			$stat = $zip->statIndex($i);
 			if($stat === false)
 				throw new \Exception('Failed to extract files');
-			$mtime = intval($stat['mtime']);
+			$mtime = (int)($stat['mtime']);
 			$extracted = $path . '/' . $filename;
 			touch($extracted, $mtime, time());
 		}

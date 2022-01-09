@@ -38,7 +38,7 @@ class GlobalizeDebugSession
 	private static function readCookie()
 	{
 		self::$currentCookie = Cookies::GetCookie('XDEBUG_SESSION');
-		self::$currentCookieTime = intval(Cookies::GetCookie('XDEBUG_SESSION_TIME'));
+		self::$currentCookieTime = (int)(Cookies::GetCookie('XDEBUG_SESSION_TIME'));
 		if (self::$currentCookie != '' && self::$currentCookieTime == 0)
 		{
 			self::$currentCookieTime = time();
@@ -69,7 +69,7 @@ class GlobalizeDebugSession
 			$val = ['value' => '', 'date' => null];
 		}
 		self::$currentFileValue = $val['value'];
-		self::$currentFileDate = intval($val['date']);
+		self::$currentFileDate = (int)($val['date']);
 		GlobalDebugLock::EndRead();
 	}
 	private static function writeGlobalizedFile($ip, $value, $date)
