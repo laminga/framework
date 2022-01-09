@@ -4,7 +4,7 @@ namespace minga\framework\oauth;
 
 class OauthGoogle extends OauthConnector
 {
-	const Provider = 'google';
+	public const Provider = 'google';
 
 	protected function GetFields()
 	{

@@ -10,10 +10,10 @@ class Log
 	public static $extraErrorTarget = null;
 	public static $extraErrorInfo = null;
 
-	const FatalErrorsPath = 'fatalErrors';
-	const JsErrorsPath = 'jsErrors';
-	const ErrorsPath = 'errors';
-	const MailsPath = 'mails';
+	public const FatalErrorsPath = 'fatalErrors';
+	public const JsErrorsPath = 'jsErrors';
+	public const ErrorsPath = 'errors';
+	public const MailsPath = 'mails';
 
 
 	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine,

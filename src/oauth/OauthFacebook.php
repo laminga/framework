@@ -4,7 +4,7 @@ namespace minga\framework\oauth;
 
 class OauthFacebook extends OauthConnector
 {
-	const Provider = 'facebook';
+	public const Provider = 'facebook';
 
 	// http://demos.idiotminds.com/social/
 	// &display=popup

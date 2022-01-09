@@ -6,7 +6,7 @@ use minga\framework\locking\BackupLock;
 
 class Backup
 {
-	const MAX_ZIP_SIZE = 5000000;
+	public const MAX_ZIP_SIZE = 5000000;
 	private static $blocks = ["file_modified", "file_deleted", "directory_created", "directory_deleted"];
 
 	public static $exclusions = [

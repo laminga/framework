@@ -45,7 +45,7 @@ class clsTbsZip {
 	private $ReplInfo;
 	private $VisFileLst;
 
-	function __construct() {
+	public function __construct() {
 		$this->Meth8Ok = extension_loaded('zlib'); // check if Zlib extension is available. This is need for compress and uncompress with method 8.
 		$this->DisplayError = true;
 		$this->ArchFile = '';
@@ -77,7 +77,7 @@ class clsTbsZip {
 		IO::Delete($tmpzip2);
 	}
 
-	function CreateNew($ArchName='new.zip') {
+	public function CreateNew($ArchName='new.zip') {
 		// Create a new virtual empty archive, the name will be the default name when the archive is flushed.
 		if (!isset($this->Meth8Ok))
 			$this->__construct(); // for PHP 4 compatibility
@@ -91,7 +91,7 @@ class clsTbsZip {
 		$this->CdPos = $this->CdInfo['p_cd'];
 	}
 
-	function Open($ArchFile, $UseIncludePath=false) {
+	public function Open($ArchFile, $UseIncludePath=false) {
 		// Open the zip archive
 		if (!isset($this->Meth8Ok))
 			$this->__construct(); // for PHP 4 compatibility
@@ -112,7 +112,7 @@ class clsTbsZip {
 		return $ok;
 	}
 
-	function Close() {
+	public function Close() {
 		if (isset($this->ArchHnd) and ($this->ArchHnd!==false)) fclose($this->ArchHnd);
 		$this->ArchFile = '';
 		$this->ArchHnd = false;
@@ -124,7 +124,7 @@ class clsTbsZip {
 		$this->ArchCancelModif();
 	}
 
-	function ArchCancelModif() {
+	public function ArchCancelModif() {
 		// $this->LastReadComp = false; // compression of the last read file (1=compressed, 0=stored not compressed, -1= stored compressed but read uncompressed)
 		// $this->LastReadIdx = false; // index of the last file read
 		$this->ReplInfo = [];
@@ -132,7 +132,7 @@ class clsTbsZip {
 		$this->AddInfo = [];
 	}
 
-	function FileAdd($Name, $Data, $DataType=TBSZIP_STRING, $Compress=true) {
+	public function FileAdd($Name, $Data, $DataType=TBSZIP_STRING, $Compress=true) {
 
 		if ($Data===false)
 			return $this->FileCancelModif($Name, false); // Cancel a previously added file
@@ -148,7 +148,7 @@ class clsTbsZip {
 
 	}
 
-	function CentralDirRead() {
+	public function CentralDirRead() {
 		$cd_info = 'PK'.chr(05).chr(06); // signature of the Central Directory
 		$cd_pos = -22;
 		$this->_MoveTo($cd_pos, SEEK_END);
@@ -186,7 +186,7 @@ class clsTbsZip {
 		return true;
 	}
 
-	function CentralDirRead_End($cd_info) {
+	public function CentralDirRead_End($cd_info) {
 		$b = $cd_info.$this->_ReadData(18);
 		$x = [];
 		$x['disk_num_curr'] = $this->_GetDec($b,4,2); // number of this disk
@@ -201,7 +201,7 @@ class clsTbsZip {
 		return $x;
 	}
 
-	function CentralDirRead_File($idx) {
+	public function CentralDirRead_File($idx) {
 
 		$b = $this->_ReadData(46);
 
@@ -235,7 +235,7 @@ class clsTbsZip {
 		return $x;
 	}
 
-	function RaiseError($Msg) {
+	public function RaiseError($Msg) {
 		if ($this->DisplayError) {
 			if (PHP_SAPI==='cli') {
 				echo get_class($this).' ERROR with the zip archive: '.$Msg."\r\n";
@@ -247,7 +247,7 @@ class clsTbsZip {
 		return false;
 	}
 
-	function Debug($FileHeaders=false) {
+	public function Debug($FileHeaders=false) {
 
 		$this->DisplayError = true;
 
@@ -290,7 +290,7 @@ class clsTbsZip {
 
 	}
 
-	function DebugArray($arr) {
+	public function DebugArray($arr) {
 		foreach ($arr as $k=>$v) {
 			if (is_array($v)) {
 				$arr[$k] = $this->DebugArray($v);
@@ -301,11 +301,11 @@ class clsTbsZip {
 		return $arr;
 	}
 
-	function FileExists($NameOrIdx) {
+	public function FileExists($NameOrIdx) {
 		return ($this->FileGetIdx($NameOrIdx)!==false);
 	}
 
-	function FileGetIdx($NameOrIdx) {
+	public function FileGetIdx($NameOrIdx) {
 		// Check if a file name, or a file index exists in the Central Directory, and return its index
 		if (is_string($NameOrIdx)) {
 			if (isset($this->CdFileByName[$NameOrIdx])) {
@@ -322,7 +322,7 @@ class clsTbsZip {
 		}
 	}
 
-	function FileGetIdxAdd($Name) {
+	public function FileGetIdxAdd($Name) {
 		// Check if a file name exists in the list of file to add, and return its index
 		if (!is_string($Name))
 			return false;
@@ -334,7 +334,7 @@ class clsTbsZip {
 		return false;
 	}
 
-	function FileRead($NameOrIdx, $Uncompress=true) {
+	public function FileRead($NameOrIdx, $Uncompress=true) {
 
 		// $this->LastReadComp = false; // means the file is not found
 		// $this->LastReadIdx = false;
@@ -374,7 +374,7 @@ class clsTbsZip {
 
 	}
 
-	function _ReadFile($idx, $ReadData) {
+	public function _ReadFile($idx, $ReadData) {
 		// read the file header (and maybe the data) in the archive, assuming the cursor in at a new file position
 
 		$b = $this->_ReadData(30);
@@ -455,7 +455,7 @@ class clsTbsZip {
 
 	}
 
-	function FileReplace($NameOrIdx, $Data, $DataType=TBSZIP_STRING, $Compress=true) {
+	public function FileReplace($NameOrIdx, $Data, $DataType=TBSZIP_STRING, $Compress=true) {
 		// Store replacement information.
 
 		$idx = $this->FileGetIdx($NameOrIdx);
@@ -489,7 +489,7 @@ class clsTbsZip {
 	 * @return string|false
 	 * 'u'=unchanged, 'm'=modified, 'd'=deleted, 'a'=added, false=unknown
 	 */
-	function FileGetState($NameOrIdx) {
+	public function FileGetState($NameOrIdx) {
 
 		$idx = $this->FileGetIdx($NameOrIdx);
 		if ($idx===false) {
@@ -511,7 +511,7 @@ class clsTbsZip {
 
 	}
 
-	function FileCancelModif($NameOrIdx, $ReplacedAndDeleted=true) {
+	public function FileCancelModif($NameOrIdx, $ReplacedAndDeleted=true) {
 		// cancel added, modified or deleted modifications on a file in the archive
 		// return the number of cancels
 
@@ -541,7 +541,7 @@ class clsTbsZip {
 
 	}
 
-	function Flush($Render=TBSZIP_DOWNLOAD, $File='', $ContentType='') {
+	public function Flush($Render=TBSZIP_DOWNLOAD, $File='', $ContentType='') {
 
 		if (($File!=='') && ($this->ArchFile===$File) && ($Render==TBSZIP_FILE)) {
 			$this->RaiseError('Method Flush() cannot overwrite the current opened archive: \''.$File.'\''); // this makes corrupted zip archives without PHP error.
@@ -700,7 +700,7 @@ class clsTbsZip {
 	// output functions
 	// ----------------
 
-	function OutputOpen($Render, $File, $ContentType) {
+	public function OutputOpen($Render, $File, $ContentType) {
 
 		if (($Render & TBSZIP_FILE)==TBSZIP_FILE) {
 			$this->OutputMode = TBSZIP_FILE;
@@ -737,7 +737,7 @@ class clsTbsZip {
 
 	}
 
-	function OutputFromArch($pos, $pos_stop) {
+	public function OutputFromArch($pos, $pos_stop) {
 		$len = $pos_stop - $pos;
 		if ($len<0)
 			return;
@@ -752,7 +752,7 @@ class clsTbsZip {
 		unset($x);
 	}
 
-	function OutputFromString($data) {
+	public function OutputFromString($data) {
 		if ($this->OutputMode===TBSZIP_DOWNLOAD) {
 			echo $data; // donwload
 		} elseif ($this->OutputMode===TBSZIP_STRING) {
@@ -769,7 +769,7 @@ class clsTbsZip {
 		}
 	}
 
-	function OutputClose() {
+	public function OutputClose() {
 		if (($this->OutputMode===TBSZIP_FILE) && ($this->OutputHandle!==false)) {
 			fclose($this->OutputHandle);
 			$this->OutputHandle = false;
@@ -780,11 +780,11 @@ class clsTbsZip {
 	// Reading functions
 	// ----------------
 
-	function _MoveTo($pos, $relative = SEEK_SET) {
+	public function _MoveTo($pos, $relative = SEEK_SET) {
 		fseek($this->ArchHnd, $pos, $relative);
 	}
 
-	function _ReadData($len) {
+	public function _ReadData($len) {
 		if ($len>0) {
 			$x = fread($this->ArchHnd, $len);
 			return $x;
@@ -797,7 +797,7 @@ class clsTbsZip {
 	// Take info from binary data
 	// ----------------
 
-	function _GetDec($txt, $pos, $len) {
+	public function _GetDec($txt, $pos, $len) {
 		$x = substr($txt, $pos, $len);
 		$z = 0;
 		for ($i=0;$i<$len;$i++) {
@@ -807,12 +807,12 @@ class clsTbsZip {
 		return $z;
 	}
 
-	function _GetHex($txt, $pos, $len) {
+	public function _GetHex($txt, $pos, $len) {
 		$x = substr($txt, $pos, $len);
 		return 'h:'.bin2hex(strrev($x));
 	}
 
-	function _GetBin($txt, $pos, $len) {
+	public function _GetBin($txt, $pos, $len) {
 		$x = substr($txt, $pos, $len);
 		$z = '';
 		for ($i=0;$i<$len;$i++) {
@@ -832,7 +832,7 @@ class clsTbsZip {
 	// Put info into binary data
 	// ----------------
 
-	function _PutDec(&$txt, $val, $pos, $len) {
+	public function _PutDec(&$txt, $val, $pos, $len) {
 		$x = '';
 		for ($i=0;$i<$len;$i++) {
 			if ($val==0) {
@@ -852,18 +852,18 @@ class clsTbsZip {
 		$txt = substr_replace($txt, $x, $pos, $len);
 	}
 
-	function _MsDos_Date($Timestamp = false) {
+	public function _MsDos_Date($Timestamp = false) {
 		// convert a date-time timstamp into the MS-Dos format
 		$d = ($Timestamp===false) ? getdate() : getdate($Timestamp);
 		return (($d['year']-1980)*512) + ($d['mon']*32) + $d['mday'];
 	}
-	function _MsDos_Time($Timestamp = false) {
+	public function _MsDos_Time($Timestamp = false) {
 		// convert a date-time timstamp into the MS-Dos format
 		$d = getdate($Timestamp);
 		return ($d['hours']*2048) + ($d['minutes']*32) + (int)($d['seconds']/2); // seconds are rounded to an even number in order to save 1 bit
 	}
 
-	function _MsDos_Debug($date, $time) {
+	public function _MsDos_Debug($date, $time) {
 		// Display the formated date and time. Just for debug purpose.
 		// date end time are encoded on 16 bits (2 bytes) : date = yyyyyyymmmmddddd , time = hhhhhnnnnnssssss
 		$y = ($date & 65024) / 512 + 1980;
@@ -879,7 +879,7 @@ class clsTbsZip {
 			. str_pad((string)$s, 2, '0', STR_PAD_LEFT);
 	}
 
-	function _TxtPos($pos) {
+	public function _TxtPos($pos) {
 		// Return the human readable position in both decimal and hexa
 		return $pos." (h:".dechex($pos).")";
 	}
@@ -890,7 +890,7 @@ class clsTbsZip {
 	 * Return false if the record is not found. The comment cannot exceed 65335 bytes (=FFFF).
 	 * The method is read backwards a block of 256 bytes and search the key in this block.
 	 */
-	function _FindCDEnd($cd_info) {
+	public function _FindCDEnd($cd_info) {
 		$nbr = 1;
 		$p = false;
 		$pos = ftell($this->ArchHnd) - 4 - 256;
@@ -912,7 +912,7 @@ class clsTbsZip {
 		return false;
 	}
 
-	function _DataOuputAddedFile($Idx, $PosLoc) {
+	public function _DataOuputAddedFile($Idx, $PosLoc) {
 
 		$Ref =& $this->AddInfo[$Idx];
 		$this->_DataPrepare($Ref); // get data from external file if necessary
@@ -978,7 +978,7 @@ class clsTbsZip {
 
 	}
 
-	function _DataCreateNewRef($Data, $DataType, $Compress, $Diff) {
+	public function _DataCreateNewRef($Data, $DataType, $Compress, $Diff) {
 
 		if (is_array($Compress)) {
 			$result = 2;
@@ -1048,7 +1048,7 @@ class clsTbsZip {
 		}
 	}
 
-	function _EstimateNewArchSize($Optim=true) {
+	public function _EstimateNewArchSize($Optim=true) {
 		// Return the size of the new archive, or false if it cannot be calculated (because of external file that must be compressed before to be insered)
 		if ($this->ArchIsNew) {
 			$Len = strlen($this->CdInfo['bin']);

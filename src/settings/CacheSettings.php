@@ -7,12 +7,12 @@ use minga\framework\caching\BaseTwoLevelStringSQLiteCache;
 
 class CacheSettings
 {
-	const Disabled = 0;
-	const Enabled = 1;
-	const DisabledWrite = 2;
+	public const Disabled = 0;
+	public const Enabled = 1;
+	public const DisabledWrite = 2;
 
-	const FILE = 0;
-	const SQLITE3 = 1;
+	public const FILE = 0;
+	public const SQLITE3 = 1;
 
 	public $Enabled = self::Enabled;
 

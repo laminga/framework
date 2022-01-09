@@ -17,7 +17,7 @@ use OAuth\Common\Storage\Memory;
 abstract class OauthConnector
 {
 	//los hijos deben declarar el provider de este modo.
-	const Provider = '';
+	public const Provider = '';
 
 	protected $storage;
 	protected $service;

@@ -4,10 +4,10 @@ namespace minga\framework\settings;
 
 class MailSettings
 {
-	const SMTP = 0;
-	const SendGrid = 2;
-	const File = 4;
-	const Mail = 5;
+	public const SMTP = 0;
+	public const SendGrid = 2;
+	public const File = 4;
+	public const Mail = 5;
 
 	public $NotifyAddress = "";
 	public $NotifyAddressErrors = "";

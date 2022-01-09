@@ -8,19 +8,19 @@ use rodrigoq\pdftotext\PdfToText;
 
 class PdfReader
 {
-	const MAX_LENGTH = 65534; // en bytes
+	public const MAX_LENGTH = 65534; // en bytes
 	/**
 	 * binarios
 	 */
-	const PDF_INFO = './pdfinfo';
-	const PDF_TO_HTML = './pdftohtml';
-	const PDF_TO_TEXT = './pdftotext';
+	public const PDF_INFO = './pdfinfo';
+	public const PDF_TO_HTML = './pdftohtml';
+	public const PDF_TO_TEXT = './pdftotext';
 
 	//sin caracter para saltos de página y utf-8
-	const PDF_TO_TEXT_ARGS = '-nopgbrk -enc UTF-8';
-	const PDF_INFO_ARGS = '-enc UTF-8';
-	const PDF_TO_HTML_ARGS_FIRST_PAGE = '-f 1 -l 1';
-	const PDF_TO_HTML_ARGS = '-nofonts';
+	public const PDF_TO_TEXT_ARGS = '-nopgbrk -enc UTF-8';
+	public const PDF_INFO_ARGS = '-enc UTF-8';
+	public const PDF_TO_HTML_ARGS_FIRST_PAGE = '-f 1 -l 1';
+	public const PDF_TO_HTML_ARGS = '-nofonts';
 
 	public static function Truncate64k(string $cad) : string
 	{
