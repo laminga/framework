@@ -2,10 +2,6 @@
 
 namespace minga\framework;
 
-use minga\framework\IO;
-use minga\framework\Context;
-use minga\framework\Cookies;
-use minga\framework\Params;
 use minga\framework\locking\GlobalDebugLock;
 
 class GlobalizeDebugSession

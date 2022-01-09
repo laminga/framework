@@ -2,7 +2,6 @@
 
 namespace minga\framework\caching;
 
-use minga\framework\Context;
 use minga\framework\Serializator;
 use minga\framework\Profiling;
 

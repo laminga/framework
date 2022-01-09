@@ -2,7 +2,6 @@
 
 namespace minga\framework;
 
-use minga\framework\ErrorException;
 
 class CompressedInParentDirectory
 {

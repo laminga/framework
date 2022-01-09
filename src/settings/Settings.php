@@ -3,7 +3,6 @@
 namespace minga\framework\settings;
 
 use minga\framework\Context;
-use minga\framework\Str;
 
 class Settings
 {

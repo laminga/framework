@@ -2,7 +2,6 @@
 
 namespace minga\framework;
 
-use minga\classes\fulltext\Catalog;
 use minga\framework\locking\SearchLogLock;
 
 class SearchLog
