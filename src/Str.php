@@ -60,17 +60,17 @@ class Str
 		// en el encoding MACROMAN (macintosh)
 		$tokens = [
 			chr(0x87) // á -> ‡
-			, chr(0x8e) // é -> Ž
+			, chr(0x8E) // é -> Ž
 			//, chr(0x92) // í -> ’
 			//, chr(0x97) // ó -> —
 			//, chr(0x9c) // ú -> œ
 			//, chr(0xe7) // Á -> ç (en portugués es frecuente ç; en castellano, no tanto Á)
 			, chr(0x83) // É -> ƒ
 			//, chr(0xea) // Í -> ê
-			, chr(0xee) // Ó -> î
+			, chr(0xEE) // Ó -> î
 			//, chr(0xf2) // Ú -> ò
 
-			, chr(0x9f) // ü -> Ÿ
+			, chr(0x9F) // ü -> Ÿ
 			, chr(0x86) // Ü -> †
 			//, chr(0x96) // ñ -> –
 			, chr(0x84) // Ñ -> „
@@ -904,12 +904,12 @@ class Str
 		$replace = [
 			chr(0x0000), chr(0x0001), chr(0x0002), chr(0x0003),
 			chr(0x0004), chr(0x0005), chr(0x0006), chr(0x0007),
-			chr(0x0008), chr(0x0009), chr(0x000a), chr(0x000b),
-			chr(0x000c), chr(0x000d), chr(0x000e), chr(0x000f),
+			chr(0x0008), chr(0x0009), chr(0x000A), chr(0x000B),
+			chr(0x000C), chr(0x000D), chr(0x000E), chr(0x000F),
 			chr(0x0010), chr(0x0011), chr(0x0012), chr(0x0013),
 			chr(0x0014), chr(0x0015), chr(0x0016), chr(0x0017),
-			chr(0x0018), chr(0x0019), chr(0x001a), chr(0x001b),
-			chr(0x001c), chr(0x001d), chr(0x001e), chr(0x001f),
+			chr(0x0018), chr(0x0019), chr(0x001A), chr(0x001B),
+			chr(0x001C), chr(0x001D), chr(0x001E), chr(0x001F),
 		];
 		return htmlspecialchars(
 			str_replace($replace, '', $str));

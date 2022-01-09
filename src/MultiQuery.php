@@ -93,7 +93,7 @@ class MultiQuery
 	{
 		$n = strpos($str, '?');
 		$i = 0;
-		while($n !== FALSE)
+		while($n !== false)
 		{
 			$str = substr($str, 0, $n) . Str::CheapSqlEscape($params[$i++]) . substr($str, $n + 1);
 			$n = strpos($str, '?');

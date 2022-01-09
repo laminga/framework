@@ -81,7 +81,7 @@ class GeoIp
 		$long_ip = ip2long($ip);
 		if ($long_ip != -1)
 		{
-			foreach ($pri_addrs AS $pri_addr)
+			foreach ($pri_addrs as $pri_addr)
 			{
 				list($start, $end) = explode('|', $pri_addr);
 

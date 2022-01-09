@@ -182,7 +182,7 @@ class MessageBox
 		MessageBox::ThrowMessage('Acceso denegado.', Context::Settings()->GetMainServerPublicUrl());
 	}
 
-	private static Function GetTraceLog($trace)
+	private static function GetTraceLog($trace)
 	{
 		$log = '<p>';
 		foreach ($trace as $i => $t)

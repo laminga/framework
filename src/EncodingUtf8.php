@@ -325,7 +325,7 @@ class EncodingUtf8
 
 	public static function RemoveBOM($str = "")
 	{
-		if(substr($str, 0, 3) == pack("CCC", 0xef, 0xbb, 0xbf))
+		if(substr($str, 0, 3) == pack("CCC", 0xEF, 0xBB, 0xBF))
 			$str = substr($str, 3);
 
 		return $str;
