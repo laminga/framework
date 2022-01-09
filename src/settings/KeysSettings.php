@@ -2,9 +2,9 @@
 
 namespace minga\framework\settings;
 
+use Defuse\Crypto\Key;
 use minga\framework\Date;
 use minga\framework\ErrorException;
-use Defuse\Crypto\Key;
 
 class KeysSettings
 {

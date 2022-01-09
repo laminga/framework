@@ -4,9 +4,9 @@ namespace minga\framework\caching;
 
 use minga\framework\Context;
 use minga\framework\IO;
+use minga\framework\settings\CacheSettings;
 use minga\framework\SQLiteList;
 use minga\framework\Str;
-use minga\framework\settings\CacheSettings;
 
 class BaseTwoLevelStringSQLiteCache
 {

@@ -2,8 +2,8 @@
 
 namespace minga\framework\tests;
 
-use PHPUnit\Framework\TestCase;
 use minga\framework\Context;
+use PHPUnit\Framework\TestCase;
 
 class TestCaseBase extends TestCase
 {

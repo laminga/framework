@@ -2,8 +2,8 @@
 
 namespace minga\framework\tests;
 
-use minga\framework\GeoIp;
 use minga\framework\Date;
+use minga\framework\GeoIp;
 
 class GeoIpTest extends TestCaseBase
 {

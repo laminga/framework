@@ -2,8 +2,8 @@
 
 namespace minga\framework;
 
-use PHPMailer\PHPMailer\PHPMailerSendGrid;
 use minga\framework\settings\MailSettings;
+use PHPMailer\PHPMailer\PHPMailerSendGrid;
 
 class Mail
 {

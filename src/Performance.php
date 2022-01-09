@@ -3,10 +3,10 @@
 namespace minga\framework;
 
 
-use minga\framework\locking\PerformanceMonthlyDayLock;
 use minga\framework\locking\PerformanceDaylyLocksLock;
 use minga\framework\locking\PerformanceDaylyUsageLock;
 use minga\framework\locking\PerformanceDaylyUserLock;
+use minga\framework\locking\PerformanceMonthlyDayLock;
 use minga\framework\locking\PerformanceMonthlyLocksLock;
 use minga\framework\locking\PerformanceMonthlyUsageLock;
 use minga\framework\locking\PerformanceMonthlyUserLock;
