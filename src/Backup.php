@@ -333,7 +333,7 @@ class Backup
 			ob_end_flush();
 
 		readfile($filename);
-		die;
+		exit;
 	}
 
 	public function NotifyGetFilesCompleted()

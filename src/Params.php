@@ -191,7 +191,7 @@ class Params
 		}
 		// Check MIME Type by yourself.
 		$finfo = new \finfo(FILEINFO_MIME_TYPE);
-		if (sizeof($validFileTypes) == 0 || !array_search(
+		if (count($validFileTypes) == 0 || !array_search(
 			$finfo->file($_FILES[$param]['tmp_name']),
 			$validFileTypes, true)) {
 			throw new \RuntimeException('Invalid file format.');

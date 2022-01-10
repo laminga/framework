@@ -368,10 +368,10 @@ class Str
 	{
 		$ret = [];
 		$min = Context::Settings()->Db()->FullTextMinWordLength;
-		for($n = 0; $n < sizeof($words); $n++)
+		for($n = 0; $n < count($words); $n++)
 		{
-			$isLast = ($n === sizeof($words) - 1);
-			$isBeforeLast = ($n === sizeof($words) - 2);
+			$isLast = ($n === count($words) - 1);
+			$isBeforeLast = ($n === count($words) - 2);
 			// si es corta la asocia con la siguiente, o si es la anteúltima y
 			// la última es corta
 			if ((!$isLast && strlen($words[$n]) < $min) ||
@@ -401,7 +401,7 @@ class Str
 				return strlen($word) >= Context::Settings()->Db()->FullTextMinWordLength;
 			});
 
-			$subQuery = join("* +", $keywords_filtered);
+			$subQuery = implode("* +", $keywords_filtered);
 			if ($subQuery != '')
 				$subQuery = '+' . $subQuery . '*';
 			return $subQuery;
