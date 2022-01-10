@@ -141,7 +141,7 @@ class Backup
 		$backupFolderWorkingFolder = $backupFolder . "/backup";
 		self::CheckState("CHECKPOINTCREATED");
 		self::Log("Begin site backup");
-		//
+		
 		$this->initializeFolder();
 		// Copia todo lo modificado hasta la actualidad
 

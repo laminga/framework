@@ -79,7 +79,7 @@ class Zip
 		$myfiles = $this->AddFolderToPath($myfiles, $basePath . $relativePathToZip);
 		// create myfiles filtered
 		$currentfiles = [];
-		//
+		
 		foreach($myfiles as $file)
 		{
 			$currentBytes += filesize($file);
