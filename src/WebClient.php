@@ -331,7 +331,7 @@ class WebClient
 				$headers['http_code'] = $line;
 			else
 			{
-				list ($key, $value) = explode(': ', $line);
+				 [$key, $value] = explode(': ', $line);
 
 				$headers[$key] = $value;
 			}
@@ -349,7 +349,7 @@ class WebClient
 			{
 				if ($line != '' && Str::Contains($line, ': '))
 				{
-					list ($key, $value) = explode(': ', $line);
+					 [$key, $value] = explode(': ', $line);
 					$headers[$key] = $value;
 				}
 			}

@@ -2,7 +2,6 @@
 
 namespace minga\framework;
 
-
 use minga\framework\locking\PerformanceDaylyLocksLock;
 use minga\framework\locking\PerformanceDaylyUsageLock;
 use minga\framework\locking\PerformanceDaylyUserLock;

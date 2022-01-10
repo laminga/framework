@@ -83,7 +83,7 @@ class GeoIp
 		{
 			foreach ($pri_addrs as $pri_addr)
 			{
-				list($start, $end) = explode('|', $pri_addr);
+				[$start, $end] = explode('|', $pri_addr);
 
 				// IF IS PRIVATE
 				if ($long_ip >= ip2long($start) && $long_ip <= ip2long($end))

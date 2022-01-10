@@ -2,7 +2,6 @@
 
 namespace minga\framework\settings;
 
-
 class DebugSettings
 {
 	public $debug = false;

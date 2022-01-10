@@ -2,7 +2,6 @@
 
 namespace minga\framework;
 
-
 class FileBucket
 {
 	public $path;
