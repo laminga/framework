@@ -177,7 +177,6 @@ class IO
 	public static function ReadKeyValueCSVFile(string $path) : array
 	{
 		$fp = fopen($path, 'r');
-		if($fp === false)
 		$ret = [];
 		while (($data = fgetcsv($fp)) !== false)
 		{
