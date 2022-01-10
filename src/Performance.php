@@ -392,7 +392,7 @@ class Performance
 			'days' => $days,
 			'key' => $key,
 			'prevHits' => $prevHits,
-		  	'prevDuration' => $prevDuration,
+			'prevDuration' => $prevDuration,
 			'prevLock' => $prevLock,
 		];
 	}
