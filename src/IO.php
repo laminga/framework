@@ -72,7 +72,6 @@ class IO
 
 	public static function ReadText($path, $length)
 	{
-		//TODO: Agregar manejo de errores.
 		$handle = fopen($path, "r");
 		$contents = fread($handle, $length);
 		fclose($handle);
@@ -86,7 +85,6 @@ class IO
 
 	public static function ReadAllLines($path, $maxLines = null)
 	{
-		//TODO: Agregar manejo de errores.
 		$handle = fopen($path, 'r');
 		$ret = [];
 		$i = 0;
@@ -176,10 +174,10 @@ class IO
 		$text = $pStart . implode($pEnd . $pStart, $lines) . $pEnd;
 	}
 
-	public static function ReadKeyValueCSVFile($path) : array
+	public static function ReadKeyValueCSVFile(string $path) : array
 	{
-		//TODO: Agregar manejo de errores.
 		$fp = fopen($path, 'r');
+		if($fp === false)
 		$ret = [];
 		while (($data = fgetcsv($fp)) !== false)
 		{
@@ -192,7 +190,6 @@ class IO
 
 	public static function WriteKeyValueCSVFile($path, $assocArr)
 	{
-		//TODO: Agregar manejo de errores.
 		$fp = fopen($path, 'w');
 		foreach ($assocArr as $key => $value)
 			fputcsv($fp, [$key, $value]);
@@ -215,7 +212,6 @@ class IO
 
 		if (filesize($fileA) == filesize($fileB))
 		{
-			//TODO: Agregar manejo de errores.
 			$fpA = fopen($fileA, 'rb');
 			$fpB = fopen($fileB, 'rb');
 
