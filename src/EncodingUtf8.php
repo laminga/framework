@@ -41,7 +41,6 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 class EncodingUtf8
 {
-
 	public const ICONV_TRANSLIT = "TRANSLIT";
 	public const ICONV_IGNORE = "IGNORE";
 	public const WITHOUT_ICONV = "";

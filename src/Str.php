@@ -4,7 +4,6 @@ namespace minga\framework;
 
 class Str
 {
-
 	public static function Guid() : string
 	{
 		$str = bin2hex(random_bytes(16));

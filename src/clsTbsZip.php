@@ -17,7 +17,8 @@ define('TBSZIP_NOHEADER',4); // option to use with DOWNLOAD: no header is sent
 define('TBSZIP_FILE',8); // output to file, or add from file
 define('TBSZIP_STRING',32); // output to string, or add from string
 
-class clsTbsZip {
+class clsTbsZip
+{
 	public $now = null;
 	private $applyTimeOffset = true;
 	public static $timeOffset = null;

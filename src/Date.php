@@ -4,7 +4,6 @@ namespace minga\framework;
 
 class Date
 {
-
 	public static function GetLogDayFolder()
 	{
 		return date("d");

@@ -4,7 +4,6 @@ namespace minga\framework;
 
 class Multipart
 {
-
 	/**
 	 * Split the zip archive.
 	 * @param string $i The zip archive.

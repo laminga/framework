@@ -6,7 +6,6 @@ use minga\framework\Reflection;
 
 final class ReflectionTest extends TestCaseBase
 {
-
 	public function testGetMethod()
 	{
 		$call = [__CLASS__, 'ForTesting'];

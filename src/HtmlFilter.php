@@ -4,7 +4,6 @@ namespace minga\framework;
 
 class HtmlFilter
 {
-
 	public static function DefaultConfig() : \HTMLPurifier_Config
 	{
 		$config = \HTMLPurifier_Config::createDefault();
