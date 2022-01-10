@@ -109,7 +109,8 @@ class SearchLog
 		$lock->Release();
 
 		$ret = [];
-		if ($includeHeaders) $ret[] = ['Fecha','Búsqueda','Resultados','Duración (ms)', 'Usuario o sesión'];
+		if ($includeHeaders)
+			$ret[] = ['Fecha', 'Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
 
 		$currentDay = Date::FormattedArDate();
 		for($n = count($rows) - 1; $n >= 0; $n--)

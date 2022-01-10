@@ -390,7 +390,7 @@ class Performance
 		IO::WriteIniFile($daylyProcessor, $days);
 
 		return ['days' => $days, 'key' => $key, 'prevHits' => $prevHits, 'prevDuration' => $prevDuration,
-			'prevLock' => $prevLock ];
+			'prevLock' => $prevLock];
 	}
 
 	public static function SaveDaylyLocks()
@@ -927,7 +927,7 @@ class Performance
 
 		ksort($rows);
 
-		$ret = ['Clase' => ['Locks','Promedio (ms)', 'Total (seg.)']];
+		$ret = ['Clase' => ['Locks', 'Promedio (ms)', 'Total (seg.)']];
 
 		foreach($rows as $key => $value)
 		{

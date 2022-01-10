@@ -117,7 +117,7 @@ class Db
 	 * @param array $params The query parameters.
 	 * @return array
 	 */
-	public function fetchAll($sql, array $params = array())
+	public function fetchAll($sql, array $params = [])
 	{
 		try
 		{
@@ -147,7 +147,7 @@ class Db
 		}
 	}
 
-	public function fetchAllByPos($sql, array $params = array())
+	public function fetchAllByPos($sql, array $params = [])
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
