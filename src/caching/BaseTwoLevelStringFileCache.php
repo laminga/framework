@@ -58,7 +58,7 @@ class BaseTwoLevelStringFileCache
 			Profiling::EndTimer();
 			return true;
 		}
-		else
+
 			return false;
 	}
 
@@ -73,7 +73,7 @@ class BaseTwoLevelStringFileCache
 				IO::EnsureExists($folder);
 			return $folder . "/" . $key2 . ".txt";
 		}
-		else
+
 			return $this->path . "/" . $key1 . ".txt";
 	}
 

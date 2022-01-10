@@ -210,7 +210,7 @@ class Params
 		$parts = explode('/', $uri);
 		if (count($parts) <= $position)
 			return $default;
-		else
+
 			return $parts[$position];
 	}
 

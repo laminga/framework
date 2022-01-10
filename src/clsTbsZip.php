@@ -161,10 +161,10 @@ class clsTbsZip
 			//echo 'p='.var_export($p,true); exit;
 			if ($p === false) {
 				return $this->RaiseError('The End of Central Directory Record is not found.');
-			} else {
+			}
 				$this->CdEndPos = $p;
 				$this->_MoveTo($p + 4);
-			}
+
 		}
 		$this->CdInfo = $this->CentralDirRead_End($cd_info);
 		$this->CdFileLst = [];
@@ -311,16 +311,16 @@ class clsTbsZip
 		if (is_string($NameOrIdx)) {
 			if (isset($this->CdFileByName[$NameOrIdx])) {
 				return $this->CdFileByName[$NameOrIdx];
-			} else {
-				return false;
 			}
-		} else {
+				return false;
+
+		}
 			if (isset($this->CdFileLst[$NameOrIdx])) {
 				return $NameOrIdx;
-			} else {
-				return false;
 			}
-		}
+				return false;
+
+
 	}
 
 	public function FileGetIdxAdd($Name) {
@@ -450,9 +450,9 @@ class clsTbsZip
 		// Return the info
 		if ($ReadData) {
 			return $Data;
-		} else {
-			return true;
 		}
+			return true;
+
 
 	}
 
@@ -497,18 +497,18 @@ class clsTbsZip
 			$idx = $this->FileGetIdxAdd($NameOrIdx);
 			if ($idx === false) {
 				return false;
-			} else {
-				return 'a';
 			}
+				return 'a';
+
 		} elseif (isset($this->ReplInfo[$idx])) {
 			if ($this->ReplInfo[$idx] === false) {
 				return 'd';
-			} else {
-				return 'm';
 			}
-		} else {
-			return 'u';
+				return 'm';
+
 		}
+			return 'u';
+
 
 	}
 
@@ -789,9 +789,9 @@ class clsTbsZip
 		if ($len > 0) {
 			$x = fread($this->ArchHnd, $len);
 			return $x;
-		} else {
-			return '';
 		}
+			return '';
+
 	}
 
 	// ----------------
@@ -1089,9 +1089,9 @@ class clsTbsZip
 			$Ref = &$this->AddInfo[$i];
 			if ($Ref['len_c'] === false) {
 				return false; // information not yet known
-			} else {
-				$Len += $Ref['len_c'] + $Ref['diff'];
 			}
+				$Len += $Ref['len_c'] + $Ref['diff'];
+
 		}
 
 		return $Len;

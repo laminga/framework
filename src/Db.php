@@ -125,8 +125,8 @@ class Db
 			Performance::BeginDbWait();
 			if (method_exists($this->db, 'fetchAll'))
 				return $this->db->fetchAll($sql, $params);
-			else
-			{
+
+
 				$query = $this->parseArrayParams($sql, $params);
 				$stmt = $this->db->prepare($query);
 				if(key($params) === 0)
@@ -138,7 +138,7 @@ class Db
 					$stmt->execute();
 				}
 				return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			}
+
 		}
 		finally
 		{
@@ -470,7 +470,7 @@ class Db
 			return \PDO::PARAM_BOOL;
 		elseif(is_int($var))
 			return \PDO::PARAM_INT;
-		else
+
 			return \PDO::PARAM_STR;
 	}
 

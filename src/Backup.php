@@ -255,7 +255,7 @@ class Backup
 		$ret = $backupFolder . "/state.txt";
 		if (file_exists($ret) == false)
 			return "";
-		else
+
 			return IO::ReadAllText($ret);
 	}
 

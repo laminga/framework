@@ -40,11 +40,11 @@ class FileFileCache
 			$out = $file;
 			return true;
 		}
-		else
-		{
+
+
 			$out = null;
 			return false;
-		}
+
 	}
 	public function PutDataIfMissing($key1, $value)
 	{

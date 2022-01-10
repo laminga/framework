@@ -208,8 +208,8 @@ class Profiling
 				. "<td " . $tdStyle . " align='right'>" . $cellFormat . $v9 . $cellFormatClose . "</td>"
 				. "</tr>";
 		}
-		else
-		{
+
+
 			return self::FixColWidth(str_repeat("_", $depth * 2) . $v1, 71, true)
 				. self::FixColWidth($v2, 7)
 				. self::FixColWidth($v3, 7)
@@ -220,7 +220,7 @@ class Profiling
 				. self::FixColWidth($v8, 11)
 				. self::FixColWidth($v9, 11)
 				. " \n";
-		}
+
 	}
 
 	private static function FixColWidth($val, $width, $textAlignLeft = false)

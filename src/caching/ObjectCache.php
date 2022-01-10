@@ -29,12 +29,12 @@ class ObjectCache
 			Profiling::EndTimer();
 			return true;
 		}
-		else
-		{
+
+
 			$out = null;
 			Profiling::EndTimer();
 			return false;
-		}
+
 	}
 	public function PutDataIfMissing($key, $value)
 	{

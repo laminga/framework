@@ -56,7 +56,7 @@ class GlobalizeDebugSession
 		{
 			return IO::ReadJson($path);
 		}
-		else
+
 			return [];
 	}
 	private static function readGlobalizedFileValue($ip)

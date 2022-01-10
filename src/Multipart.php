@@ -55,7 +55,7 @@ class Multipart
 			IO::Delete($i);
 			return true;
 		}
-		else
+
 			return false;
 	}
 

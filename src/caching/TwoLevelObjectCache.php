@@ -31,12 +31,12 @@ class TwoLevelObjectCache
 				Profiling::EndTimer();
 				return true;
 			}
-			else
-			{
+
+
 				$out = null;
 				Profiling::EndTimer();
 				return false;
-			}
+
 		}
 		catch(\Exception $e)
 		{

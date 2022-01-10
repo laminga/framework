@@ -279,7 +279,7 @@ class EncodingUtf8
 		}
 		elseif(is_string($text))
 			return static::Utf8Decode($text, $option);
-		else
+
 			return $text;
 	}
 

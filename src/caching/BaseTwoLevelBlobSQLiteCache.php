@@ -122,7 +122,7 @@ class BaseTwoLevelBlobSQLiteCache
 			$value = $value;
 			return true;
 		}
-		else
+
 			return false;
 	}
 

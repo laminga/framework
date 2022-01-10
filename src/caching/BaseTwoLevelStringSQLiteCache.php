@@ -120,7 +120,7 @@ class BaseTwoLevelStringSQLiteCache
 			$value = $value[1];
 			return true;
 		}
-		else
+
 			return false;
 	}
 

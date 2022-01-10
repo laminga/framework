@@ -207,7 +207,7 @@ class WebClient
 			}
 			return '';
 		}
-		else
+
 			return $ret;
 	}
 
@@ -260,7 +260,7 @@ class WebClient
 			}
 			return '';
 		}
-		else
+
 			return $ret;
 	}
 

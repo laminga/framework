@@ -354,17 +354,17 @@ class Log
 					$inner->getCode(), $inner->getMessage(), $inner->getFile(),
 					$inner->getLine(), $inner->getTraceAsString());
 			}
-			else
-			{
+
+
 				return self::LogError($exception->getCode(), $message, $exception->getFile(),
 					$exception->getLine(), [], $exception->getTraceAsString(), $inner);
-			}
+
 		}
-		else
-		{
+
+
 			return self::LogError($exception->getCode(), $message, $exception->getFile(),
 				$exception->getLine(), [], $exception->getTraceAsString());
-		}
+
 	}
 
 	public static function PutToFatalErrorLog(string $text) : void
