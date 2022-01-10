@@ -19,7 +19,7 @@ class WebResponse
 		$this->echoLine('file', $this->file);
 		$this->echoLine('uri', $this->uri);
 		$this->echoLine('error', $this->error);
-		echo ('headers:');
+		echo 'headers:';
 		print_r($this->headers);
 	}
 
@@ -33,7 +33,7 @@ class WebResponse
 
 	private function echoLine($key, $value)
 	{
-		echo($key . ': ' . $value . '<br>');
+		echo $key . ': ' . $value . '<br>';
 	}
 
 	public function HasLocationHeader()

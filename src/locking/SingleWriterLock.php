@@ -14,7 +14,7 @@ abstract class SingleWriterLock extends Lock
 
 	public static function IsWriting()
 	{
-		return (self::$writeLock != null);
+		return self::$writeLock != null;
 	}
 
 	public static function BeginRead()

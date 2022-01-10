@@ -63,7 +63,7 @@ class Profiling
 		$ses = self::$localIsProfiling;
 
 		if ($ses != "")
-			return ($ses == "1");
+			return $ses == "1";
 		if (isset(Context::Settings()->Debug()->profiling) == false)
 			return false;
 

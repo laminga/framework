@@ -9,7 +9,7 @@ class MessageBox
 	public static function ThrowInternalError($message)
 	{
 		if(Context::Settings()->isTesting)
-			echo('ERROR. ' . $message . '<br>');
+			echo 'ERROR. ' . $message . '<br>';
 		Log::HandleSilentException(new ErrorException($message));
 	}
 
@@ -121,7 +121,7 @@ class MessageBox
 		$params = array_merge($params, [
 			'message' => $message,
 			'page' => $title,
-			'popup' => true
+			'popup' => true,
 		]);
 		Context::Calls()->RenderTemplate('dialogPopup.html.twig', $params);
 	}

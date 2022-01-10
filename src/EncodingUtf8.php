@@ -77,7 +77,7 @@ class EncodingUtf8
 		156 => "\xc5\x93",
 
 		158 => "\xc5\xbe",
-		159 => "\xc5\xb8"
+		159 => "\xc5\xb8",
 	];
 
 	protected static $brokenUtf8ToUtf8 = [
@@ -112,7 +112,7 @@ class EncodingUtf8
 		"\xc2\x9c" => "\xc5\x93",
 
 		"\xc2\x9e" => "\xc5\xbe",
-		"\xc2\x9f" => "\xc5\xb8"
+		"\xc2\x9f" => "\xc5\xb8",
 	];
 
 	protected static $utf8ToWin1252 = [
@@ -147,7 +147,7 @@ class EncodingUtf8
 		"\xc5\x93" => "\x9c",
 
 		"\xc5\xbe" => "\x9e",
-		"\xc5\xb8" => "\x9f"
+		"\xc5\xb8" => "\x9f",
 	];
 
 	/**
@@ -349,7 +349,7 @@ class EncodingUtf8
 			'UTF8' => 'UTF-8',
 			'UTF' => 'UTF-8',
 			'WIN1252' => 'ISO-8859-1',
-			'WINDOWS1252' => 'ISO-8859-1'
+			'WINDOWS1252' => 'ISO-8859-1',
 		];
 
 		if(empty($equivalences[$encoding]))

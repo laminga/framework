@@ -21,7 +21,7 @@ class Backup
 		"/buckets",
 		"/backup",
 		"/tokens",
-		"/stats"
+		"/stats",
 	];
 
 	public static function AppendModified($file)

@@ -303,7 +303,7 @@ class clsTbsZip
 	}
 
 	public function FileExists($NameOrIdx) {
-		return ($this->FileGetIdx($NameOrIdx) !== false);
+		return $this->FileGetIdx($NameOrIdx) !== false;
 	}
 
 	public function FileGetIdx($NameOrIdx) {

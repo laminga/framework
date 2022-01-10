@@ -313,10 +313,10 @@ class WebClient
 
 	public function printInfo()
 	{
-		echo('<p>');
+		echo '<p>';
 		$info = curl_getinfo($this->ch);
 		print_r($info);
-		echo('</p>');
+		echo '</p>';
 	}
 
 	private function get_headers_from_curl_response(&$response)

@@ -106,9 +106,9 @@ class System
 	public static function IsOnIIS()
 	{
 		if(isset($_SERVER['SERVER_SOFTWARE']) == false)
-			return (PHP_OS === "WINNT");
+			return PHP_OS === "WINNT";
 		$software = Str::ToLower($_SERVER['SERVER_SOFTWARE']);
-		return (strpos($software, 'microsoft-iis') !== false);
+		return strpos($software, 'microsoft-iis') !== false;
 	}
 
 	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -200,7 +200,7 @@ class System
 			'command' => $command,
 			'output' => implode("\n", $output),
 			'lastLine' => $lastLine,
-			'return' => $return
+			'return' => $return,
 		];
 	}
 

@@ -156,7 +156,7 @@ class Zipping
 			if ($container == null)
 				return false;
 			$index = $container->locateName($file);
-			return ($index !== false);
+			return $index !== false;
 		}
 		finally
 		{

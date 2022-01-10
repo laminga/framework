@@ -22,7 +22,7 @@ class CreativeCommons
 			"2.5/mx" => "México 2.5",
 			"2.5/pe" => "Perú 2.5",
 			"3.0/pr" => "Puerto Rico 3.0",
-			"3.0/ve" => "Venezuela 3.0"];
+			"3.0/ve" => "Venezuela 3.0", ];
 
 
 				/*
@@ -141,9 +141,9 @@ class CreativeCommons
 
 	private static function UrlIsCC($url)
 	{
-		return (Str::StartsWith($url, "http://creativecommons.")
+		return Str::StartsWith($url, "http://creativecommons.")
 			|| Str::StartsWith($url, "http://www.creativecommons.")
 			|| Str::StartsWith($url, "https://creativecommons.")
-			|| Str::StartsWith($url, "https://www.creativecommons."));
+			|| Str::StartsWith($url, "https://www.creativecommons.");
 	}
 }

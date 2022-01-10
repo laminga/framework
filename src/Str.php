@@ -36,7 +36,7 @@ class Str
 			'macintosh',
 			'Windows-1252',
 			'SJIS',
-			'ISO-8859-1'
+			'ISO-8859-1',
 		];
 
 		$encoding = 'UTF-8';
@@ -72,7 +72,7 @@ class Str
 			, chr(0x9F) // ü -> Ÿ
 			, chr(0x86) // Ü -> †
 			//, chr(0x96) // ñ -> –
-			, chr(0x84) // Ñ -> „
+			, chr(0x84), // Ñ -> „
 		];
 		foreach($tokens as $token)
 		{
@@ -319,13 +319,13 @@ class Str
 	public static function ContainsI($haystack, $needle)
 	{
 		$pos = stripos($haystack , $needle);
-		return ($pos !== false);
+		return $pos !== false;
 	}
 
 	public static function Contains($haystack, $needle)
 	{
 		$pos = strpos($haystack , $needle);
-		return ($pos !== false);
+		return $pos !== false;
 	}
 
 	public static function ContainsAny($haystack, array $needles)
@@ -530,7 +530,7 @@ class Str
 		$length = strlen($needle);
 		if ($length == 0)
 			return true;
-		return (substr($haystack, -$length) === $needle);
+		return substr($haystack, -$length) === $needle;
 	}
 
 	private static function InsecureHash($cad)
@@ -680,7 +680,7 @@ class Str
 
 	public static function IsNullOrEmpty($cad)
 	{
-		return ($cad === '' || $cad === null);
+		return $cad === '' || $cad === null;
 	}
 
 	public static function GetEndingPart($name, $separator)
@@ -1169,7 +1169,7 @@ class Str
 			'eth' => '&#240;', 'ntilde' => '&#241;', 'ograve' => '&#242;', 'oacute' => '&#243;',
 			'ocirc' => '&#244;', 'otilde' => '&#245;', 'ouml' => '&#246;', 'divide' => '&#247;',
 			'oslash' => '&#248;', 'ugrave' => '&#249;', 'uacute' => '&#250;', 'ucirc' => '&#251;',
-			'uuml' => '&#252;', 'yacute' => '&#253;', 'thorn' => '&#254;', 'yuml' => '&#255;'
+			'uuml' => '&#252;', 'yacute' => '&#253;', 'thorn' => '&#254;', 'yuml' => '&#255;',
 		];
 		if (isset($table[$matches[1]]))
 			return $table[$matches[1]];

@@ -93,7 +93,7 @@ class Zip
 		foreach($currentfiles as $file)
 			IO::Delete($file);
 
-		return ($currentBytes <= $bytesLimit);
+		return $currentBytes <= $bytesLimit;
 	}
 
 	public function AppendFilesToZipRecursiveDeleting($basePath, array $relativePathsToZip, $ext, $bytesLimit, &$currentBytes)
@@ -141,7 +141,7 @@ class Zip
 		foreach($currentfiles as $file)
 			IO::Delete($file);
 
-		return ($currentBytes <= $bytesLimit);
+		return $currentBytes <= $bytesLimit;
 	}
 
 	private function AddFolderToPath(array $files, $path)

@@ -200,7 +200,7 @@ class IO
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
 
-		return (filesize($fileA) == filesize($fileB));
+		return filesize($fileA) == filesize($fileB);
 
 	}
 
@@ -563,7 +563,7 @@ class IO
 		foreach($files as $file)
 		{
 			if ($showOnly)
-				echo($dir . '/' . $file . '<br>');
+				echo $dir . '/' . $file . '<br>';
 			else
 				self::Delete($dir . '/' . $file);
 			$n++;

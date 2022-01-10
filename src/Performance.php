@@ -267,7 +267,7 @@ class Performance
 	public static function IsNewDay()
 	{
 		self::CheckDaylyReset();
-		return (self::$warnToday != null);
+		return self::$warnToday != null;
 	}
 
 	private static function SaveUserUsage($ellapsedMilliseconds, $month = '')
@@ -388,8 +388,13 @@ class Performance
 		$daylyProcessor = self::ResolveFilenameDayly();
 		IO::WriteIniFile($daylyProcessor, $days);
 
-		return ['days' => $days, 'key' => $key, 'prevHits' => $prevHits, 'prevDuration' => $prevDuration,
-			'prevLock' => $prevLock];
+		return [
+			'days' => $days,
+			'key' => $key,
+			'prevHits' => $prevHits,
+		  	'prevDuration' => $prevDuration,
+			'prevLock' => $prevLock,
+		];
 	}
 
 	public static function SaveDaylyLocks()

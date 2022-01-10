@@ -168,7 +168,7 @@ class Traffic
 	private static function IsMobileOrTablet() : bool
 	{
 		$detect = new \Mobile_Detect();
-		return ($detect->isMobile() || $detect->isTablet());
+		return $detect->isMobile() || $detect->isTablet();
 	}
 
 	private static function GetLimit() : int
