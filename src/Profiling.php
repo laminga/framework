@@ -290,7 +290,7 @@ class Profiling
 		}
 		$newItem = new ProfilingItem($name);
 		$newItem->isInternal = $isInternalFunction;
-		self::$stack [] = $newItem;
+		self::$stack[] = $newItem;
 
 		// integridad
 		if (count(self::$stack) > 128)

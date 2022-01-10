@@ -206,7 +206,7 @@ class SQLiteList
 			$paramsAsText .= $arg;
 		}
 		if ($paramsAsText == '')
-		  	$paramsAsText = 'Ninguno';
+			$paramsAsText = 'Ninguno';
 		$text .= '. Parámetros: ' . $paramsAsText;
 		return $text;
 	}

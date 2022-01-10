@@ -28,7 +28,7 @@ class Mail
 		if (Context::Settings()->Log()->LogEmailsToDisk)
 			$this->PutToLog();
 
-		if (Context::Settings()->Mail()->NoMail) 
+		if (Context::Settings()->Mail()->NoMail)
 			return;
 
 		$mail = new PHPMailerSendGrid($throwException);

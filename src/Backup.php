@@ -116,7 +116,7 @@ class Backup
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$backupFolderWorkingFolder = $backupFolder . "/backup";
-	  	$filename = $backupFolder . "/backup.zip";
+		$filename = $backupFolder . "/backup.zip";
 		IO::Delete($filename);
 		// Copia todo lo modificado hasta la actualidad
 		IO::RemoveDirectory($backupFolderWorkingFolder . '/root');
@@ -141,7 +141,7 @@ class Backup
 		$backupFolderWorkingFolder = $backupFolder . "/backup";
 		self::CheckState("CHECKPOINTCREATED");
 		self::Log("Begin site backup");
-		
+
 		$this->initializeFolder();
 		// Copia todo lo modificado hasta la actualidad
 

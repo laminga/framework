@@ -387,7 +387,7 @@ class Arr
 		{
 			if (array_key_exists($key, $item) == false
 				|| $item[$key] != $value)
-				$ret [] = $item;
+				$ret[] = $item;
 		}
 		return $ret;
 	}
@@ -681,7 +681,7 @@ class Arr
 			else
 				$pc = 0;
 			//$ret[$keys[$i] . " (" . $pc . "%)"] = $arr[$keys[$i]];
-			$ret[$keys[$i] ] = $arr[$keys[$i]] . $unit . " (" . $pc . "%)";
+			$ret[$keys[$i]] = $arr[$keys[$i]] . $unit . " (" . $pc . "%)";
 		}
 		return $ret;
 	}

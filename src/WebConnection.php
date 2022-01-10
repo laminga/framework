@@ -20,7 +20,7 @@ class WebConnection
 	public $logFile2 = null;
 	public $contentType = '';
 	public $requestHeaders = [];
-	public $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8'; 
+	public $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8';
 	private $cookieFile = '';
 
 	public function __construct($throwErrors = false)

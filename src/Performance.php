@@ -941,7 +941,7 @@ class Performance
 				$locked / 1000,
 			];
 
-			$ret[$key . ($waited > 0 ? ' (waited)' : '') ] = $cells;
+			$ret[$key . ($waited > 0 ? ' (waited)' : '')] = $cells;
 		}
 		return $ret;
 	}

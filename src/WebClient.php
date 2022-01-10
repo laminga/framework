@@ -233,7 +233,7 @@ class WebClient
 
 		// indica el archivo
 		$fh = null;
-	  	if ($file != '')
+		if ($file != '')
 		{
 			$fh = fopen($file, 'w');
 			curl_setopt($this->ch, CURLOPT_FILE, $fh);
