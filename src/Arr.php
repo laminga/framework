@@ -501,7 +501,7 @@ class Arr
 		krsort($arr);
 	}
 
-	/*** Sorter Wrappers ***/
+	// Sorter Wrappers
 
 	public static function SortByField(&$arr, $field)
 	{

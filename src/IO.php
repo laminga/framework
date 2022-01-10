@@ -885,7 +885,7 @@ class IO
 		$dir = Context::Paths()->GetTempPath();
 		self::EnsureExists($dir);
 
-		/* Make sure characters in prefix are safe. */
+		// Make sure characters in prefix are safe.
 		if (strpbrk($prefix, '\\/:*?"<>|') !== false)
 			return false;
 

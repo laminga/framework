@@ -12,7 +12,7 @@ class Db
 	public $Port = 3306;
 	public $Charset = 'utf8';
 
-	//@var mixed PDO|\Doctrine\DBAL\Connection
+	/** @var mixed PDO|\Doctrine\DBAL\Connection */
 	public $db = null;
 	private $isInTransaction = false;
 	private $lastRows = -1;
