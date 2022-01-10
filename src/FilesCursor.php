@@ -37,8 +37,8 @@ class FilesCursor
 				$this->Close();
 				return false;
 			}
-			if (($this->ext == '' || Str::EndsWith($entry, $this->ext)) &&
-				$entry != '..' && $entry != '.' && is_file($this->path . '/'. $entry))
+			if (($this->ext == '' || Str::EndsWith($entry, $this->ext))
+				&& $entry != '..' && $entry != '.' && is_file($this->path . '/' . $entry))
 			{
 				$this->Current = $entry;
 				return true;

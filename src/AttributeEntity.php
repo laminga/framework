@@ -43,7 +43,7 @@ class AttributeEntity
 		}
 		// Guarda
 		for($n = 0; $n < count($current); $n++)
-			$this->attributes[$key . ($n+1)] = $current[$n];
+			$this->attributes[$key . ($n + 1)] = $current[$n];
 		// listo
 	}
 
@@ -80,7 +80,7 @@ class AttributeEntity
 		}
 		// Guarda
 		for($n = 0; $n < count($current); $n++)
-			$this->attributes[$key . ($n+1)] = $current[$n];
+			$this->attributes[$key . ($n + 1)] = $current[$n];
 		// listo
 	}
 

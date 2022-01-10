@@ -37,8 +37,8 @@ class DirectoriesCursor
 				$this->Close();
 				return false;
 			}
-			if (($this->ext == '' || Str::EndsWith($entry, $this->ext)) &&
-				$entry != '..' && $entry != '.' && is_dir($this->path . '/'. $entry))
+			if (($this->ext == '' || Str::EndsWith($entry, $this->ext))
+				&& $entry != '..' && $entry != '.' && is_dir($this->path . '/' . $entry))
 			{
 				$this->Current = $entry;
 				return true;

@@ -61,10 +61,10 @@ class MultiQuery
 			$where = substr($where, 5);
 
 		$this->params = $params;
-		$this->sql = "SELECT " . $select . " FROM " . $from .
-			($where != "" ? " WHERE " . $where : "") .
-			($groupBy != "" ? " GROUP BY " . $groupBy : "").
-			($orderBy != "" ? " ORDER BY " . $orderBy : "");
+		$this->sql = "SELECT " . $select . " FROM " . $from
+			. ($where != "" ? " WHERE " . $where : "")
+			. ($groupBy != "" ? " GROUP BY " . $groupBy : "")
+			. ($orderBy != "" ? " ORDER BY " . $orderBy : "");
 	}
 
 	public function setMaxRows($max)

@@ -88,7 +88,7 @@ class System
 			case 8:
 				return '64'; //64 bit version of PHP
 			default:
-				throw new ErrorException('PHP_INT_SIZE is '.PHP_INT_SIZE);
+				throw new ErrorException('PHP_INT_SIZE is ' . PHP_INT_SIZE);
 		}
 	}
 
@@ -169,7 +169,7 @@ class System
 	public static function RunCommandGS(string $command, string $args, &$returnCode = null, $returnFirstLineOnly = false, $checkFile = true)
 	{
 		if ($checkFile && file_exists($command) == false)
-			throw new ErrorException('No se encontró el binario: "' . $command. '".');
+			throw new ErrorException('No se encontró el binario: "' . $command . '".');
 
 		if (Str::StartsWith($args, ' ') == false)
 			$args = ' ' . $args;

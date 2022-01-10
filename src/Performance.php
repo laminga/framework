@@ -509,7 +509,7 @@ class Performance
 			$dbMs += $newDbMs;
 			$dbHitCount += $newDb_hitCount;
 		}
-		$arr[$key] = $hits . ';' . $duration . ';' . $locked. ';' . $dbMs . ';' . $dbHitCount;
+		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $dbMs . ';' . $dbHitCount;
 	}
 
 	private static function IncrementLockKey(&$arr, $key, $value, $newHits, $newLocked)
@@ -558,8 +558,8 @@ class Performance
 					$newExtraHits[$n] += $extraHits[$n];
 			}
 		}
-		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails.
-			';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
+		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails
+			. ';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
 	}
 
 	private static function ParseHit($value, &$hits, &$duration, &$locked,
@@ -710,8 +710,8 @@ class Performance
 			// Agrega la columna de promedios diarios
 			$headerRow[] = 'Promedio';
 			$dataHitRow[] = round($totalsDataHitRow / count($days));
-			$googleRow[] = round($totalsGoogleRow/ count($days));
-			$mailRow[] = round($totalsMailRow/ count($days));
+			$googleRow[] = round($totalsGoogleRow / count($days));
+			$mailRow[] = round($totalsMailRow / count($days));
 			$dataMsRow[] = round($totalsDataMsRow / count($days) / 1000 / 60, 1);
 			$dataAvgRow[] = round($totalsAvgRow / count($days));
 			$dataLockedRow[] = round($totalsDataLockedRow / count($days) / 1000, 1);
@@ -805,7 +805,7 @@ class Performance
 					$isAdmin = self::IsAdmin($controller);
 					if ($isAdmin == $adminControllers)
 					{
-						$data = self::ReadIfExists($path. '/' . $file);
+						$data = self::ReadIfExists($path . '/' . $file);
 						$controllers[$controller] = $data;
 						foreach($data as $key => $_)
 						{
@@ -897,11 +897,11 @@ class Performance
 			$shareValue = number_format($duration / $totalDuration * 100, 1, ".", "") . '%';
 			$share = $shareValue;
 			if ($shareValue > 50)
-				$share = '<span style="background-color: red">'. $share .'</span>';
+				$share = '<span style="background-color: red">' . $share . '</span>';
 			else if ($shareValue > 25)
-				$share = '<span style="background-color: yellow">'. $share .'</span>';
+				$share = '<span style="background-color: yellow">' . $share . '</span>';
 			else if ($shareValue > 5)
-				$share = '<b>'. $share .'</b>';
+				$share = '<b>' . $share . '</b>';
 		}
 		return $share;
 	}

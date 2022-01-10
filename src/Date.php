@@ -182,7 +182,7 @@ class Date
 
 	public static function DateTimeArNow()
 	{
-		$date = new \DateTime;
+		$date = new \DateTime();
 		$date->setTimestamp(self::ArNow());
 		return $date;
 	}
@@ -195,7 +195,7 @@ class Date
 
 	public static function DateTimeNow()
 	{
-		$date = new \DateTime;
+		$date = new \DateTime();
 		$date->setTimestamp(time());
 		return $date;
 	}
@@ -376,6 +376,6 @@ class Date
 		$bret = self::TryParseDate($date, $day, $month, $year);
 		if ($bret == false)
 			throw new ErrorException('Invalid date.');
-		return $year . '-' . $month .'-' . $day;
+		return $year . '-' . $month . '-' . $day;
 	}
 }

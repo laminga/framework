@@ -22,7 +22,7 @@ class ProfilingItem
 	public function __construct($name)
 	{
 		$this->name = $name;
-		$this->startTime = 	microtime(true);
+		$this->startTime = microtime(true);
 		$this->startMemory = memory_get_usage();
 		$this->durationMs = 0;
 		$this->hits = 0;

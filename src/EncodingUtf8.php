@@ -119,18 +119,18 @@ class EncodingUtf8
 		"\xe2\x82\xac" => "\x80",
 
 		"\xe2\x80\x9a" => "\x82",
-		"\xc6\x92"     => "\x83",
+		"\xc6\x92" => "\x83",
 		"\xe2\x80\x9e" => "\x84",
 		"\xe2\x80\xa6" => "\x85",
 		"\xe2\x80\xa0" => "\x86",
 		"\xe2\x80\xa1" => "\x87",
-		"\xcb\x86"     => "\x88",
+		"\xcb\x86" => "\x88",
 		"\xe2\x80\xb0" => "\x89",
-		"\xc5\xa0"     => "\x8a",
+		"\xc5\xa0" => "\x8a",
 		"\xe2\x80\xb9" => "\x8b",
-		"\xc5\x92"     => "\x8c",
+		"\xc5\x92" => "\x8c",
 
-		"\xc5\xbd"     => "\x8e",
+		"\xc5\xbd" => "\x8e",
 
 
 		"\xe2\x80\x98" => "\x91",
@@ -140,14 +140,14 @@ class EncodingUtf8
 		"\xe2\x80\xa2" => "\x95",
 		"\xe2\x80\x93" => "\x96",
 		"\xe2\x80\x94" => "\x97",
-		"\xcb\x9c"     => "\x98",
+		"\xcb\x9c" => "\x98",
 		"\xe2\x84\xa2" => "\x99",
-		"\xc5\xa1"     => "\x9a",
+		"\xc5\xa1" => "\x9a",
 		"\xe2\x80\xba" => "\x9b",
-		"\xc5\x93"     => "\x9c",
+		"\xc5\x93" => "\x9c",
 
-		"\xc5\xbe"     => "\x9e",
-		"\xc5\xb8"     => "\x9f"
+		"\xc5\xbe" => "\x9e",
+		"\xc5\xb8" => "\x9f"
 	];
 
 	/**
@@ -193,11 +193,11 @@ class EncodingUtf8
 		for($i = 0; $i < $max; $i++)
 		{
 			$c1 = $text[$i];
-			if($c1>="\xc0")
+			if($c1 >= "\xc0")
 			{ //Should be converted to UTF8, if it's not UTF8 already
-				$c2 = $i+1 >= $max? "\x00" : $text[$i+1];
-				$c3 = $i+2 >= $max? "\x00" : $text[$i+2];
-				$c4 = $i+3 >= $max? "\x00" : $text[$i+3];
+				$c2 = $i + 1 >= $max ? "\x00" : $text[$i + 1];
+				$c3 = $i + 2 >= $max ? "\x00" : $text[$i + 2];
+				$c4 = $i + 3 >= $max ? "\x00" : $text[$i + 3];
 				if($c1 >= "\xc0" & $c1 <= "\xdf")
 				{ //looks like 2 bytes UTF8
 					if($c2 >= "\x80" && $c2 <= "\xbf")
@@ -304,7 +304,7 @@ class EncodingUtf8
 		}
 
 		$last = "";
-		while($last <> $text)
+		while($last != $text)
 		{
 			$last = $text;
 			$text = self::ToUTF8(static::Utf8Decode($text, $option));
@@ -332,8 +332,8 @@ class EncodingUtf8
 
 	protected static function Strlen($text)
 	{
-		return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload')) & 2) ?
-			mb_strlen($text,'8bit') : strlen($text);
+		return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload')) & 2)
+			? mb_strlen($text,'8bit') : strlen($text);
 	}
 
 	public static function NormalizeEncoding($encodingLabel)
@@ -342,13 +342,13 @@ class EncodingUtf8
 		$encoding = preg_replace('/[^a-zA-Z0-9\s]/', '', $encoding);
 		$equivalences = [
 			'ISO88591' => 'ISO-8859-1',
-			'ISO8859'  => 'ISO-8859-1',
-			'ISO'      => 'ISO-8859-1',
-			'LATIN1'   => 'ISO-8859-1',
-			'LATIN'    => 'ISO-8859-1',
-			'UTF8'     => 'UTF-8',
-			'UTF'      => 'UTF-8',
-			'WIN1252'  => 'ISO-8859-1',
+			'ISO8859' => 'ISO-8859-1',
+			'ISO' => 'ISO-8859-1',
+			'LATIN1' => 'ISO-8859-1',
+			'LATIN' => 'ISO-8859-1',
+			'UTF8' => 'UTF-8',
+			'UTF' => 'UTF-8',
+			'WIN1252' => 'ISO-8859-1',
 			'WINDOWS1252' => 'ISO-8859-1'
 		];
 

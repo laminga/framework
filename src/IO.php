@@ -17,7 +17,7 @@ class IO
 	{
 		IO::EnsureExists($target);
 		// limpia
-		$dirname = substr($dirsource,strrpos($dirsource,"/")+1);
+		$dirname = substr($dirsource,strrpos($dirsource,"/") + 1);
 		if (file_exists($target . "/" . $dirname))
 			IO::RemoveDirectory($target . "/" . $dirname);
 		// copia
@@ -290,9 +290,9 @@ class IO
 
 	private static function AssocArraySectionToString(string $section, array $assocArr) : string
 	{
-		$content = "[" . $section. "]\r\n";
+		$content = "[" . $section . "]\r\n";
 		foreach($assocArr as $key => $value)
-			$content .= $key. "=" . urlencode($value) . "\r\n";
+			$content .= $key . "=" . urlencode($value) . "\r\n";
 		return $content;
 	}
 
@@ -426,9 +426,9 @@ class IO
 		}
 
 		if($recursive)
-			$ret = self::rglob($path . '/' . $start . '*'. $ext);
+			$ret = self::rglob($path . '/' . $start . '*' . $ext);
 		else
-			$ret = glob($path . '/' . $start . '*'. $ext);
+			$ret = glob($path . '/' . $start . '*' . $ext);
 
 		if($notAlpha)
 			$ret = preg_grep('/^' . preg_quote($path . '/', '/') . '[^a-zA-Z].*/', $ret);
@@ -460,8 +460,8 @@ class IO
 		{
 			while (false !== ($entry = readdir($handle)))
 			{
-				if (($ext == '' || Str::EndsWith($entry, $ext)) &&
-					$entry != '..' && $entry != '.' && is_file($path . '/'. $entry))
+				if (($ext == '' || Str::EndsWith($entry, $ext))
+					&& $entry != '..' && $entry != '.' && is_file($path . '/' . $entry))
 				{
 					closedir($handle);
 					return true;
@@ -634,7 +634,7 @@ class IO
 		return true;
 	}
 
-	private static function doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension ='') : bool
+	private static function doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension = '') : bool
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)

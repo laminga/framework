@@ -16,7 +16,7 @@ class TwoLevelStringCache
 	{
 		$this->cache->Clear($key1, $key2 = null);
 	}
-	public function HasData($key1, $key2, & $out = null) : bool
+	public function HasData($key1, $key2, &$out = null) : bool
 	{
 		return $this->cache->HasData($key1, $key2, $out);
 	}

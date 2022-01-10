@@ -293,7 +293,7 @@ class Str
 		$pow = (int)floor(($bytes ? log($bytes) : 0) / log(1024));
 		$pow = min($pow, count($units) - 1);
 		$bytes /= pow(1024, $pow);
-		return number_format($bytes, $precision, ".", ",").' '.$units[$pow];
+		return number_format($bytes, $precision, ".", ",") . ' ' . $units[$pow];
 	}
 
 	public static function StartsWith($haystack, $needle)
@@ -374,8 +374,8 @@ class Str
 			$isBeforeLast = ($n === count($words) - 2);
 			// si es corta la asocia con la siguiente, o si es la anteúltima y
 			// la última es corta
-			if ((!$isLast && strlen($words[$n]) < $min) ||
-					($isBeforeLast && strlen($words[$n+1]) < $min))
+			if ((!$isLast && strlen($words[$n]) < $min)
+					|| ($isBeforeLast && strlen($words[$n + 1]) < $min))
 			{
 				$ret[] = '"' . $words[$n] . ' ' . $words[$n + 1] . '"';
 				$n++;
@@ -622,7 +622,7 @@ class Str
 	public static function RemoveDot($cad)
 	{
 		if (self::EndsWith($cad, "."))
-			return substr($cad, 0, strlen($cad) -1);
+			return substr($cad, 0, strlen($cad) - 1);
 		return $cad;
 	}
 
@@ -648,8 +648,8 @@ class Str
 			{
 				$end += strlen($endTag);
 				// remueve el pedazo
-				$cad = substr($cad, 0, $n).
-					substr($cad, $end);
+				$cad = substr($cad, 0, $n)
+					. substr($cad, $end);
 			}
 			else
 				$cad = substr($cad, 0, $n);
@@ -1092,7 +1092,7 @@ class Str
 	{
 		$format = '%0';
 		if ($leadingZeros > 0)
-			$format	.= $leadingZeros;
+			$format .= $leadingZeros;
 		$format .= "." . $decimals . "f";
 		return sprintf($format, $value);
 	}

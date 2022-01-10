@@ -77,8 +77,8 @@ class FileBucket
 		$email = Context::LoggedUser();
 		if ($email == '')
 			$email = "global";
-		$this->path = Context::Paths()->GetBucketsPath() . "/" .
-			Str::UrlencodeFriendly($email) . "-" . $id;
+		$this->path = Context::Paths()->GetBucketsPath() . "/"
+			. Str::UrlencodeFriendly($email) . "-" . $id;
 	}
 
 }

@@ -201,7 +201,7 @@ class Backup
 						Multipart::Split($filename , $maxSize);
 				}
 				else
-					self::ScanAndSplitRecursive($dirsource.'/'.$file, $maxSize);
+					self::ScanAndSplitRecursive($dirsource . '/' . $file, $maxSize);
 			}
 		}
 		if($dir_handle != null)

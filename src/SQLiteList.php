@@ -111,9 +111,9 @@ class SQLiteList
 			foreach($this->columns as $column)
 			{
 				if (!$this->blobColumns || !in_array($column, $this->blobColumns))
-					$sql .=	", " . $column . " TEXT ";
+					$sql .= ", " . $column . " TEXT ";
 				else
-					$sql .=	", " . $column . " BLOB ";
+					$sql .= ", " . $column . " BLOB ";
 
 				if ($this->uniqueColumns != null && in_array($column, $this->uniqueColumns))
 					$sql .= " UNIQUE";
@@ -123,10 +123,10 @@ class SQLiteList
 		if ($this->intColumns != null)
 		{
 			foreach($this->intColumns as $column)
-				$sql .=	", " . $column . " integer ";
+				$sql .= ", " . $column . " integer ";
 		}
 
-		$sql .=	")";
+		$sql .= ")";
 		return $sql;
 	}
 
@@ -356,7 +356,7 @@ class SQLiteList
 	public function ReadValue($key, string $column)
 	{
 		Profiling::BeginTimer();
-		$sql = "SELECT pID, ". $column
+		$sql = "SELECT pID, " . $column
 			. " FROM data WHERE " . $this->keyColumn . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
@@ -410,8 +410,8 @@ class SQLiteList
 			// update
 			$id = $res[0];
 			$n = (int)$res[1] + 1;
-			$sql = "UPDATE data SET ". $column . " = " . $n .
-				" WHERE pID = :p1;";
+			$sql = "UPDATE data SET " . $column . " = " . $n
+				. " WHERE pID = :p1;";
 			$statement = $this->db->prepare($sql);
 			$statement->bindValue(':p1', $id);
 

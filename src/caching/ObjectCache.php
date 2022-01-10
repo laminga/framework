@@ -19,7 +19,7 @@ class ObjectCache
 		$this->cache->Clear($key);
 	}
 
-	public function HasData($key, & $out = null) : bool
+	public function HasData($key, &$out = null) : bool
 	{
 		Profiling::BeginTimer();
 		$stringValue = null;

@@ -127,13 +127,13 @@ class Profiling
 	{
 		if($isUserCode)
 		{
-			$cellFormat ="<i>";
-			$cellFormatClose ="</i>";
+			$cellFormat = "<i>";
+			$cellFormatClose = "</i>";
 		}
 		else
 		{
-			$cellFormat ="";
-			$cellFormatClose ="";
+			$cellFormat = "";
+			$cellFormatClose = "";
 		}
 
 		if ($isTotal)
@@ -141,7 +141,7 @@ class Profiling
 		else
 		{
 			$colorn = min(160 + 32 * $depth, 255);
-			$tdStyle = "style='background-color: #" . dechex($colorn).dechex($colorn).dechex($colorn). ";'";
+			$tdStyle = "style='background-color: #" . dechex($colorn) . dechex($colorn) . dechex($colorn) . ";'";
 		}
 		if ($profileData->hits > 0)
 		{
@@ -176,7 +176,7 @@ class Profiling
 		$residual->hits = "-";
 		foreach($profileData->children as $child)
 		{
-			$ret .= self::RecursiveShow($child, $depth+1, $totalMs, $profileData->durationMs);
+			$ret .= self::RecursiveShow($child, $depth + 1, $totalMs, $profileData->durationMs);
 			// suma el total para hacer después el residual de user-code
 			$residual->durationMs -= $child->durationMs;
 			$residual->memory -= $child->memory;
@@ -185,7 +185,7 @@ class Profiling
 		}
 		if (count($profileData->children) > 0 && ($residual->durationMs >= 1 || $residual->dbHits >= 1))
 		{
-			$ret .= self::RecursiveShow($residual, $depth+1, $totalMs, $profileData->durationMs, false, true);
+			$ret .= self::RecursiveShow($residual, $depth + 1, $totalMs, $profileData->durationMs, false, true);
 		}
 		return $ret;
 	}
@@ -197,7 +197,7 @@ class Profiling
 		$v1 = $v1Parts[count($v1Parts) - 1];
 		if (self::$IsJson == false)
 		{
-			return "<tr><td " . $tdStyle . "><div style='padding-left: " .($depth * 12) . "px'>" . $cellFormat . $v1 . $cellFormatClose . "</div></td>"
+			return "<tr><td " . $tdStyle . "><div style='padding-left: " . ($depth * 12) . "px'>" . $cellFormat . $v1 . $cellFormatClose . "</div></td>"
 				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v2 . $cellFormatClose . "</td>"
 				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v3 . $cellFormatClose . "</td>"
 				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v4 . $cellFormatClose . "</td>"
@@ -227,7 +227,7 @@ class Profiling
 	{
 		$val = trim($val);
 		if (strlen($val) >= $width)
-			$val = substr($val, 0, $width-1);
+			$val = substr($val, 0, $width - 1);
 		return str_pad($val, $width, "_", ($textAlignLeft ? STR_PAD_RIGHT : STR_PAD_BOTH));
 	}
 
@@ -269,7 +269,7 @@ class Profiling
 				$bt[$i]['class'] = basename($bt[$i]['file']);
 				$bt[$i]['type'] = '->';
 			}
-			return $bt[$i]['class'].$bt[$i]['type'].$bt[$i]['function'];
+			return $bt[$i]['class'] . $bt[$i]['type'] . $bt[$i]['function'];
 		}
 		catch(\Exception $e)
 		{

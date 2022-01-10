@@ -35,9 +35,9 @@ class WebClient
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 		if ($path != '')
 		{
-			curl_setopt($this->ch, CURLOPT_COOKIEJAR, $path. '/cookie.txt');
-			curl_setopt($this->ch, CURLOPT_COOKIEFILE, $path. '/cookie.txt');
-			$this->logFile = $path. '/log.txt';
+			curl_setopt($this->ch, CURLOPT_COOKIEJAR, $path . '/cookie.txt');
+			curl_setopt($this->ch, CURLOPT_COOKIEFILE, $path . '/cookie.txt');
+			$this->logFile = $path . '/log.txt';
 		}
 		$this->isClosed = false;
 

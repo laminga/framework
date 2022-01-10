@@ -610,7 +610,7 @@ class Arr
 			if (self::SafeGet($group, 'isTopic'))
 			{
 				if ($target != null)
-					$ret[] =$target;
+					$ret[] = $target;
 				$target = $group;
 				$target['groups'] = [];
 			}
@@ -623,7 +623,7 @@ class Arr
 			}
 		}
 		if ($target != null)
-			$ret[] =$target;
+			$ret[] = $target;
 		return $ret;
 	}
 
@@ -675,7 +675,7 @@ class Arr
 			if ($total != 0)
 			{
 				$pc = round($arr[$keys[$i]] / $total * 100);
-				if ($pc==0)
+				if ($pc == 0)
 					$pc = "<1";
 			}
 			else

@@ -202,7 +202,7 @@ class Traffic
 		$limit = self::GetLimit();
 		if ($hits == $limit)
 		{
-			$defensiveMode= '';
+			$defensiveMode = '';
 			if (self::IsInDefensiveMode())
 				$defensiveMode = ' en modo defensivo';
 
@@ -304,7 +304,7 @@ class Traffic
 		Arr::SortByKeyDesc($ret, 'hits');
 
 		$ret[] = Str::BuildTotalsRow($ret, 'ip', ['hits']);
-		$ret[count($ret)-1]['ip'] = 'Total (' . (count($ret) - 1) . ')';
+		$ret[count($ret) - 1]['ip'] = 'Total (' . (count($ret) - 1) . ')';
 
 		return $ret;
 	}

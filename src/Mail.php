@@ -39,7 +39,7 @@ class Mail
 
 		$this->SetAddress($mail, $this->to, $this->toCaption);
 
-		if (! empty(Context::Settings()->Mail()->NotifyAddress) && ! $skipNotification && ! $this->skipNotify)
+		if (!empty(Context::Settings()->Mail()->NotifyAddress) && !$skipNotification && !$this->skipNotify)
 			$this->SetBCC($mail, Context::Settings()->Mail()->NotifyAddress);
 
 		if(empty($this->bcc) == false)
@@ -141,10 +141,10 @@ class Mail
 		else
 			$to = $this->to;
 
-		$text = "From: " . $this->from . "\r\n" .
-			"To: " . $to . "\r\n" .
-			"Subject: " . $this->subject . "\r\n".
-			$this->message;
+		$text = "From: " . $this->from . "\r\n"
+			. "To: " . $to . "\r\n"
+			. "Subject: " . $this->subject . "\r\n"
+			. $this->message;
 		Log::PutToLog(Log::MailsPath, $text);
 	}
 }

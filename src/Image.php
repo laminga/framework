@@ -37,7 +37,7 @@ class Image
 			$image = imagecreatefromgif($sourceFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: '. $type);
+			throw new \Exception('Unsupported type: ' . $type);
 		}
 		// Get current dimensions
 		$oldWidth = imagesx($image);
@@ -85,7 +85,7 @@ class Image
 			imagegif($new, $targetFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: '. $type);
+			throw new \Exception('Unsupported type: ' . $type);
 		}
 		imagedestroy($new);
 	}

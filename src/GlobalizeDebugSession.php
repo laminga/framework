@@ -20,9 +20,9 @@ class GlobalizeDebugSession
 		// Lee Cookie
 		self::readCookie();
 		// Compara
-		if (self::$currentCookie !== '' &&
-				(self::$currentFileValue == '' ||
-				self::$currentCookieTime > self::$currentFileDate))
+		if (self::$currentCookie !== ''
+				&& (self::$currentFileValue == ''
+				|| self::$currentCookieTime > self::$currentFileDate))
 		{
 			// Respeta cookie
 			if (self::$currentCookie !== self::$currentFileValue)

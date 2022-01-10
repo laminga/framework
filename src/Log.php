@@ -278,7 +278,7 @@ class Log
 			. $errorType . "\r\n"
 			. '=> Description: ' . $errorMessage . "\r\n"
 			. "=> File:        <a href='repath://" . $errorFile . '@' . $errorLine . "'>" . $errorFile . ':' . $errorLine . "</a>\r\n"
-			. '=> Level: ' . $level. "\r\n"
+			. '=> Level: ' . $level . "\r\n"
 			. '=> Stack: ' . $stack . "\r\n";
 	}
 

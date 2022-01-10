@@ -85,8 +85,8 @@ class PdfReader
 				$ret['pages'] = (int)trim($data[1]);
 			else if(trim($data[0]) == 'Encrypted')
 			{
-				$ret['encrypted'] =
-					Str::StartsWith(trim($data[1]), 'yes');
+				$ret['encrypted']
+					= Str::StartsWith(trim($data[1]), 'yes');
 			}
 
 		}

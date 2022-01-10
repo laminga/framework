@@ -43,7 +43,7 @@ class Context
 
 	public static function InjectCallbacks($calls)
 	{
-		self::$calls= $calls;
+		self::$calls = $calls;
 	}
 
 	public static function Paths()

@@ -42,7 +42,7 @@ class GeoIp
 	public static function GetCityDatabaseDatetime()
 	{
 		$c = self::GetGeoDbCity();
-		$ret = new \DateTime;
+		$ret = new \DateTime();
 		$ret->setTimestamp($c->metadata()->buildEpoch);
 		return $ret;
 	}
@@ -50,7 +50,7 @@ class GeoIp
 	public static function GetCountryDatabaseDatetime()
 	{
 		$c = self::GetGeoDbCountry();
-		$ret = new \DateTime;
+		$ret = new \DateTime();
 		$ret->setTimestamp($c->metadata()->buildEpoch);
 		return $ret;
 	}
@@ -206,7 +206,7 @@ class GeoIp
 		if ($ip == '')
 			return null;
 		if ($ip == '127.0.0.1')
-			$ip ='190.55.175.193';
+			$ip = '190.55.175.193';
 
 		$country = self::GetCountry($ip);
 
