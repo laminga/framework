@@ -107,10 +107,14 @@ class IO
 
 	public static function WriteJson($path, $data, $pretty = false)
 	{
-		$flags = 0;
+		$flags = JSON_INVALID_UTF8_SUBSTITUTE;
 		if($pretty)
-			$flags = JSON_PRETTY_PRINT;
-		return self::WriteAllText($path, json_encode($data, $flags));
+			$flags |= JSON_PRETTY_PRINT;
+
+		$json = json_encode($data, $flags);
+		if($json === false)
+			throw new \ErrorException('Error al crear json.');
+		return self::WriteAllText($path, $json);
 	}
 
 	public static function ReadFileChunked($filepath) : bool
@@ -130,11 +134,13 @@ class IO
 		return fclose($handle);
 	}
 
-	public static function ReadJson($path)
+	public static function ReadJson(string $path)
 	{
 		Profiling::BeginTimer();
 		$text = self::ReadAllText($path);
-		$ret = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
+		$ret = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+		if($ret === false)
+			throw new \ErrorException('Error al leer json.');
 		Profiling::EndTimer();
 		return $ret;
 	}
