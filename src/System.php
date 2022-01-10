@@ -26,7 +26,7 @@ class System
 			$ret[] = ['name' => $flag['name'], 'value' => php_uname($flag['flag'])];
 
 		$ret[] = ['name' => 'Arquitectura', 'value' => self::GetArchitecture() . 'bits'];
-		$ret[] = ['name' => 'PHP', 'value' => phpversion()];
+		$ret[] = ['name' => 'PHP', 'value' => PHP_VERSION];
 		$ret[] = ['name' => 'php.ini', 'value' => php_ini_loaded_file()];
 
 		return $ret;

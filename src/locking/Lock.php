@@ -31,7 +31,7 @@ class Lock
 	{
 		$this->file = $file;
 		$this->folder = $folder;
-		$this->statsKey = get_class($this);
+		$this->statsKey = static::class;
 		$this->readWrite = $readWrite;
 	}
 

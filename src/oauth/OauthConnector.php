@@ -168,7 +168,7 @@ abstract class OauthConnector
 
 	public function ProviderName()
 	{
-		$c = get_called_class();
+		$c = static::class;
 		return Str::Capitalize($c::Provider);
 	}
 

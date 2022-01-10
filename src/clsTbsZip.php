@@ -239,9 +239,9 @@ class clsTbsZip
 	public function RaiseError($Msg) {
 		if ($this->DisplayError) {
 			if (PHP_SAPI === 'cli') {
-				echo get_class($this) . ' ERROR with the zip archive: ' . $Msg . "\r\n";
+				echo static::class . ' ERROR with the zip archive: ' . $Msg . "\r\n";
 			} else {
-				echo '<strong>' . get_class($this) . ' ERROR with the zip archive:</strong> ' . $Msg . '<br>' . "\r\n";
+				echo '<strong>' . static::class . ' ERROR with the zip archive:</strong> ' . $Msg . '<br>' . "\r\n";
 			}
 		}
 		// $this->Error = $Msg;
