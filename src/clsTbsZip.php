@@ -177,7 +177,7 @@ class clsTbsZip
 			return $this->RaiseError('No position found for the Central Directory.');
 
 		$this->_MoveTo($this->CdPos);
-		for ($i=0;$i<$this->CdFileNbr;$i++) {
+		for ($i=0; $i<$this->CdFileNbr; $i++) {
 			$x = $this->CentralDirRead_File($i);
 			if ($x!==false) {
 				$this->CdFileLst[$i] = $x;
@@ -609,7 +609,7 @@ class clsTbsZip
 				$Delta = $Delta + $ReplInfo['diff'] + $ReplInfo['len_c'];
 			}
 			// Update the delta of positions for zipped files which are physically after the currently replaced one
-			for ($i=0;$i<$this->CdFileNbr;$i++) {
+			for ($i=0; $i<$this->CdFileNbr; $i++) {
 				if ($this->CdFileLst[$i]['p_loc']>$ReplPos) {
 					$FicNewPos[$i] = $this->CdFileLst[$i]['p_loc'] + $Delta;
 				}
@@ -639,7 +639,7 @@ class clsTbsZip
 		// Modifiy file information in the Central Directory for replaced files
 		$b2 = '';
 		$old_cd_len = 0;
-		for ($i=0;$i<$this->CdFileNbr;$i++) {
+		for ($i=0; $i<$this->CdFileNbr; $i++) {
 			$b1 = $this->CdFileLst[$i]['bin'];
 			$old_cd_len += strlen($b1);
 			if (!isset($DelLst[$i])) {
@@ -801,7 +801,7 @@ class clsTbsZip
 	public function _GetDec($txt, $pos, $len) {
 		$x = substr($txt, $pos, $len);
 		$z = 0;
-		for ($i=0;$i<$len;$i++) {
+		for ($i=0; $i<$len; $i++) {
 			$asc = ord($x[$i]);
 			if ($asc>0) $z = $z + $asc*pow(256,$i);
 		}
@@ -816,10 +816,10 @@ class clsTbsZip
 	public function _GetBin($txt, $pos, $len) {
 		$x = substr($txt, $pos, $len);
 		$z = '';
-		for ($i=0;$i<$len;$i++) {
+		for ($i=0; $i<$len; $i++) {
 			$asc = ord($x[$i]);
 			if (isset($x[$i])) {
-				for ($j=0;$j<8;$j++) {
+				for ($j=0; $j<8; $j++) {
 					$z .= ($asc & pow(2,$j)) ? '1' : '0';
 				}
 			} else {
@@ -835,7 +835,7 @@ class clsTbsZip
 
 	public function _PutDec(&$txt, $val, $pos, $len) {
 		$x = '';
-		for ($i=0;$i<$len;$i++) {
+		for ($i=0; $i<$len; $i++) {
 			if ($val==0) {
 				$z = 0;
 			} else {
@@ -929,7 +929,7 @@ class clsTbsZip
 		$date = $this->_MsDos_Date($now);
 		$time = $this->_MsDos_Time($now);
 		$len_n = strlen($Ref['name']);
-		$purp = 2048 ; // purpose // +8 to indicates that there is an extended local header
+		$purp = 2048; // purpose // +8 to indicates that there is an extended local header
 
 		// Header for file in the data section
 		$b = 'PK'.chr(03).chr(04).str_repeat(' ',26); // signature

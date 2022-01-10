@@ -115,7 +115,8 @@ class Backup
 	private function initializeFolder()
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
-		$backupFolderWorkingFolder = $backupFolder . "/backup";		$filename = $backupFolder . "/backup.zip";
+		$backupFolderWorkingFolder = $backupFolder . "/backup";
+	  	$filename = $backupFolder . "/backup.zip";
 		IO::Delete($filename);
 		// Copia todo lo modificado hasta la actualidad
 		IO::RemoveDirectory($backupFolderWorkingFolder . '/root');

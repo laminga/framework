@@ -134,7 +134,7 @@ class Traffic
 	{
 		$parts = explode("\t", $value);
 
-		$hits = $parts[0] ;
+		$hits = $parts[0];
 		if(count($parts) > 3)
 			$device = $parts[3];
 

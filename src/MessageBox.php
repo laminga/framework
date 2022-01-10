@@ -152,7 +152,7 @@ class MessageBox
 			$log = '<p>' . self::GetTraceLog(debug_backtrace());
 			$msg = '';
 			if ($exception != null)
-				$msg = $exception->getMessage() ;
+				$msg = $exception->getMessage();
 			MessageBox::ThrowMessage('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes. ' . $msg . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
 		MessageBox::ThrowMessage('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes.', Context::Settings()->GetMainServerPublicUrl());
