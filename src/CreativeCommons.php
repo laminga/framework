@@ -22,7 +22,8 @@ class CreativeCommons
 			"2.5/mx" => "México 2.5",
 			"2.5/pe" => "Perú 2.5",
 			"3.0/pr" => "Puerto Rico 3.0",
-			"3.0/ve" => "Venezuela 3.0", ];
+			"3.0/ve" => "Venezuela 3.0",
+		];
 
 
 				/*
