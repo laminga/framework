@@ -106,6 +106,7 @@ class Db
 	private function doExecute(string $query, array $data = []) : int
 	{
 		$stmt = $this->db->prepare($query);
+		$data = $this->fixBoolParams($data);
 		$stmt->execute($data);
 		return $stmt->rowCount();
 	}
@@ -322,7 +323,6 @@ class Db
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
-
 		$query = $command . ' INTO ' . self::QuoteTable($tableName)
 			. ' (' . implode(', ', self::QuoteColumn(array_keys($data))) . ')'
 			. ' VALUES (' . rtrim(str_repeat('?,', count($data)), ',') . ')';
@@ -833,6 +833,16 @@ class Db
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
+	}
+
+	private function fixBoolParams(array $data) : array
+	{
+		foreach($data as $k => $v)
+		{
+			if(is_bool($v))
+				$data[$k] = (int)$v;
+		}
+		return $data;
 	}
 }
 
