@@ -160,7 +160,6 @@ class Db
 		return $ret;
 	}
 
-
 	/**
 	 * Prepares and executes a multi SQL query and returns the
 	 * results sets as an array of associative arrays.
@@ -503,7 +502,6 @@ class Db
 		return $ret;
 	}
 
-
 	/**
 	 * Truncate table.
 	 *
@@ -836,6 +834,5 @@ class Db
 		Profiling::EndTimer();
 		return $ret;
 	}
-
 }
 

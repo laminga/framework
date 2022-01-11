@@ -192,5 +192,4 @@ class MessageBox
 		}
 		return $log . '</p>';
 	}
-
 }

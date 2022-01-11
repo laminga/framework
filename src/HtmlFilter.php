@@ -151,5 +151,4 @@ class HtmlFilter
 
 		return [$width, $height];
 	}
-
 }

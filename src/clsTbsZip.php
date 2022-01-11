@@ -52,12 +52,14 @@ class clsTbsZip
 		$this->ArchFile = '';
 		// $this->Error = false;
 	}
+
 	public static function getTimeOffset()
 	{
 		if (self::$timeOffset == null)
 			self::CalculateTimeOffset();
 		return self::$timeOffset;
 	}
+
 	public static function CalculateTimeOffset() : void
 	{
 		$tmpzip2 = IO::GetTempFilename();
@@ -860,6 +862,7 @@ class clsTbsZip
 		$d = ($Timestamp === false) ? getdate() : getdate($Timestamp);
 		return (($d['year'] - 1980) * 512) + ($d['mon'] * 32) + $d['mday'];
 	}
+
 	public function _MsDos_Time($Timestamp = false) {
 		// convert a date-time timstamp into the MS-Dos format
 		$d = getdate($Timestamp);
@@ -1099,5 +1102,4 @@ class clsTbsZip
 		return $Len;
 
 	}
-
 }

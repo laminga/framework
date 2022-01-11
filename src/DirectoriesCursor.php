@@ -15,6 +15,7 @@ class DirectoriesCursor
 		$this->path = $path;
 		$this->ext = $ext;
 	}
+
 	public function Close() : void
 	{
 		if ($this->handle != null)
@@ -23,6 +24,7 @@ class DirectoriesCursor
 			$this->handle = null;
 		}
 	}
+
 	public function GetNext()
 	{
 		if ($this->handle == null)

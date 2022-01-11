@@ -54,5 +54,4 @@ class Cookies
 		self::RenewCookie($name, -365);
 		unset($_COOKIE[$name]);
 	}
-
 }

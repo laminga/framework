@@ -185,7 +185,6 @@ class PdfReader
 			. ' ' . escapeshellarg($file) . ' -';
 	}
 
-
 	private static function GetPdfInfoCommand(string $file, string $args, ?string &$path) : string
 	{
 		$ext = '';
@@ -231,7 +230,6 @@ class PdfReader
 			. ' ' . escapeshellarg($file)
 			. ' ' . escapeshellarg($outPath);
 	}
-
 }
 
 

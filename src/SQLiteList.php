@@ -280,6 +280,7 @@ class SQLiteList
 			$this->Execute($sql);
 		}
 	}
+
 	public function DeleteAll() : void
 	{
 		$sql = "DELETE FROM data";
@@ -302,7 +303,6 @@ class SQLiteList
 		$this->Close();
 		unlink($this->path);
 	}
-
 
 	public function ReadBlobValue($key, string $column)
 	{
@@ -428,5 +428,4 @@ class SQLiteList
 		}
 		Profiling::EndTimer();
 	}
-
 }

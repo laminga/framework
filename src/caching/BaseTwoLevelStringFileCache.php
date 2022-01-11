@@ -92,6 +92,5 @@ class BaseTwoLevelStringFileCache
 		$file = $this->ResolveFilename($key1, $key2, true);
 		IO::WriteAllText($file, $value);
 	}
-
 }
 

@@ -329,5 +329,4 @@ class Traffic
 	{
 		return Context::Paths()->GetTrafficLocalPath() . '/defensive.txt';
 	}
-
 }

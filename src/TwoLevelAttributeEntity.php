@@ -154,5 +154,4 @@ class TwoLevelAttributeEntity
 			$this->SaveAttributesOnly();
 		}
 	}
-
 }

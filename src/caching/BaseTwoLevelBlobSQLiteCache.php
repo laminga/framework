@@ -175,6 +175,5 @@ class BaseTwoLevelBlobSQLiteCache
 		}
 		$this->Close();
 	}
-
 }
 

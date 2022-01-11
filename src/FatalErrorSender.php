@@ -8,6 +8,7 @@ class FatalErrorSender
 	{
 		return Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
 	}
+
 	private static function ResolveFataLogSentPath()
 	{
 		$ret = self::GetFatalLogPath() . '/sent';

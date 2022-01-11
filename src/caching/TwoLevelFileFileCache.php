@@ -59,6 +59,7 @@ class TwoLevelFileFileCache
 			return false;
 
 	}
+
 	public function PutDataIfMissing($key1, $key2, $value) : void
 	{
 		if ($this->HasData($key1, $key2))
@@ -83,7 +84,6 @@ class TwoLevelFileFileCache
 			IO::EnsureExists($folder);
 		return $folder . "/" . $key2 . ".dat";
 	}
-
 }
 
 

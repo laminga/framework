@@ -51,10 +51,12 @@ class Params
 			$ret = trim($ret);
 		return $ret;
 	}
+
 	public static function Exists($key)
 	{
 		return isset($_GET[$key]);
 	}
+
 	//Método usado en mapas.
 	public static function Get($key, $default = null)
 	{

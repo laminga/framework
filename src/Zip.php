@@ -251,5 +251,4 @@ class Zip
 
 		$zip->close();
 	}
-
 }

@@ -45,10 +45,12 @@ class GlobalizeDebugSession
 			Cookies::SetCookie('XDEBUG_SESSION_TIME', self::$currentCookieTime);
 		}
 	}
+
 	private static function resolveGlobalizedPath()
 	{
 		return Context::Paths()->GetTempPath() . '/' . self::FILE;
 	}
+
 	private static function readGlobalizedFile()
 	{
 		$path = self::resolveGlobalizedPath();
@@ -59,6 +61,7 @@ class GlobalizeDebugSession
 
 			return [];
 	}
+
 	private static function readGlobalizedFileValue($ip) : void
 	{
 		GlobalDebugLock::BeginRead();
@@ -72,6 +75,7 @@ class GlobalizeDebugSession
 		self::$currentFileDate = (int)($val['date']);
 		GlobalDebugLock::EndRead();
 	}
+
 	private static function writeGlobalizedFile($ip, $value, $date) : void
 	{
 		GlobalDebugLock::BeginWrite();

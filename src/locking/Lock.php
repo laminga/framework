@@ -193,5 +193,4 @@ class Lock
 		while (PerformanceMonthlyDayLock::IsWriting())
 			PerformanceMonthlyDayLock::EndWrite();
 	}
-
 }

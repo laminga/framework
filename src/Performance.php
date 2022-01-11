@@ -80,6 +80,7 @@ class Performance
 
 		self::CheckMemoryPeaks();
 	}
+
 	private static function CheckMemoryPeaks() : void
 	{
 		if (Context::Settings()->Log()->LogMemoryPeaks == false)
@@ -168,6 +169,7 @@ class Performance
 	{
 		self::$controller .= "#" . $suffix;
 	}
+
 	public static function SetController($controller, $method, $forceSet = false) : void
 	{
 		if (self::$controller == null || $forceSet)
@@ -622,6 +624,7 @@ class Performance
 		$path = self::ResolveFolder($month);
 		return $path . '/' . self::$controller . '.txt';
 	}
+
 	public static function ResolveUserFilename($month = '')
 	{
 		$path = self::ResolveFolder($month);

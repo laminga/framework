@@ -85,7 +85,6 @@ class AppPaths
 		return Context::Paths()->GetRoot() . "/compilation_cache";
 	}
 
-
 	public function GetTrafficLocalPath() : string
 	{
 		$ret = $this->GetStorageRoot() . '/traffic';
@@ -152,5 +151,4 @@ class AppPaths
 		IO::EnsureExists($ret);
 		return $ret;
 	}
-
 }

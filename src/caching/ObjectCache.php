@@ -36,6 +36,7 @@ class ObjectCache
 			return false;
 
 	}
+
 	public function PutDataIfMissing($key, $value) : void
 	{
 		if ($this->HasData($key))

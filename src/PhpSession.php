@@ -94,5 +94,4 @@ class PhpSession
 		// 	//exit;
 		return session_start();
 	}
-
 }

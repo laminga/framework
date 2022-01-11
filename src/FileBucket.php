@@ -80,5 +80,4 @@ class FileBucket
 		$this->path = Context::Paths()->GetBucketsPath() . "/"
 			. Str::UrlencodeFriendly($email) . "-" . $id;
 	}
-
 }

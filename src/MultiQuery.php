@@ -71,6 +71,7 @@ class MultiQuery
 	{
 		$this->sql .= " LIMIT 0, " . $max;
 	}
+
 	public function dump() : void
 	{
 		echo 'Template: <br>' . $this->sql;
@@ -80,6 +81,7 @@ class MultiQuery
 
 		exit();
 	}
+
 	public function fetchAll()
 	{
 		return Context::Calls()->Db()->fetchAll($this->sql, $this->params);
@@ -89,6 +91,7 @@ class MultiQuery
 	{
 		return Context::Calls()->Db()->fetchAllByPos($this->sql, $this->params);
 	}
+
 	private function includeParams($str, $params)
 	{
 		$n = strpos($str, '?');

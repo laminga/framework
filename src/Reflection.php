@@ -93,6 +93,4 @@ class Reflection
 			Profiling::EndTimer();
 		}
 	}
-
-
 }

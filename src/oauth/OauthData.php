@@ -124,5 +124,4 @@ class OauthData
 		PhpSession::SetSessionValue('facebookOauthReturnUrl', '');
 		PhpSession::SetSessionValue('googleOauthReturnUrl', '');
 	}
-
 }

@@ -46,6 +46,7 @@ class FileFileCache
 			return false;
 
 	}
+
 	public function PutDataIfMissing($key1, $value) : void
 	{
 		if ($this->HasData($key1))
@@ -70,5 +71,4 @@ class FileFileCache
 			IO::EnsureExists($folder);
 		return $folder . "/" . $key1 . ".dat";
 	}
-
 }

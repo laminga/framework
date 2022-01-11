@@ -24,10 +24,12 @@ class CompressedInParentDirectory
 		IO::RemoveDirectory($this->expandedPath);
 		$this->expanded = false;
 	}
+
 	public function GetFilename()
 	{
 		return dirname($this->path) . '/' . $this->file;
 	}
+
 	public function IsCompressed()
 	{
 		if (!file_exists($this->GetFilename()))

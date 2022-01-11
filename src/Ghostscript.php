@@ -145,5 +145,4 @@ class Ghostscript
 		}
 		return true;
 	}
-
 }

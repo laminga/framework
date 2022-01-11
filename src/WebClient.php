@@ -444,6 +444,5 @@ class WebClient
 
 		return $ret;
 	}
-
 }
 

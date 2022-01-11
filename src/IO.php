@@ -43,10 +43,12 @@ class IO
 	{
 		return self::GetFilenameNoExtension(self::GetDirectory($file));
 	}
+
 	public static function GetFileExtension($file)
 	{
 		return pathinfo($file, PATHINFO_EXTENSION);
 	}
+
 	public static function GetFilenameNoExtension($file)
 	{
 		$pathParts = pathinfo($file);

@@ -15,10 +15,12 @@ class TwoLevelObjectCache
 	{
 		$this->cache = Context::Settings()->Cache()->CreateFileCache($path);
 	}
+
 	public function Clear($key1 = null, $key2 = null) : void
 	{
 		$this->cache->Clear($key1, $key2 = null);
 	}
+
 	public function HasData($key1, $key2, &$out = null) : bool
 	{
 		try
@@ -45,6 +47,7 @@ class TwoLevelObjectCache
 			return false;
 		}
 	}
+
 	public function PutDataIfMissing($key1, $key2, $value) : void
 	{
 		if ($this->HasData($key1, $key2))

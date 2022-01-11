@@ -104,6 +104,7 @@ class Date
 	{
 		return (int)$date->format('m');
 	}
+
 	public static function DateTimeGetYear($date) : int
 	{
 		return (int)$date->format('Y');

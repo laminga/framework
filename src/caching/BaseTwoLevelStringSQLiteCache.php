@@ -170,6 +170,5 @@ class BaseTwoLevelStringSQLiteCache
 		}
 		$this->Close();
 	}
-
 }
 

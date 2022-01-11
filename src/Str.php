@@ -363,6 +363,7 @@ class Str
 			$value = self::RemoveEnding($value, "s");
 		return $value;
 	}
+
 	private static function AssociateShortWords($words)
 	{
 		$ret = [];
@@ -393,6 +394,7 @@ class Str
 				return true;
 		return false;
 	}
+
 	public static function AppendFulltextEndsWithAndRequiredSigns($originalQuery)
 	{
 		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
@@ -557,7 +559,6 @@ class Str
 		$needRehash = false;
 		return false;
 	}
-
 
 	public static function TextContainsWordList($list, $cad)
 	{

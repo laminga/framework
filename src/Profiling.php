@@ -359,5 +359,4 @@ class Profiling
 		else
 			self::RecursiveMerge($targetItem, $depth + 1);
 	}
-
 }

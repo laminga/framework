@@ -200,7 +200,6 @@ class GeoIp
 		}
 	}
 
-
 	public static function GetCountryName($ip) : ?string
 	{
 		if ($ip == '')

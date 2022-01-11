@@ -22,5 +22,4 @@ class NullLock
 	public function Release() : void
 	{
 	}
-
 }

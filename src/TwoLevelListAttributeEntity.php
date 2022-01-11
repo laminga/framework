@@ -16,6 +16,7 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 		$values[] = json_encode($item);
 		$this->SafeSetArray($section, 'items', $values);
 	}
+
 	public function DeleteItem($section, $itemId) : void
 	{
 		// Lo busca entre los decodificados
@@ -29,12 +30,14 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 			Arr::RemoveAt($values, $n);
 		$this->SafeSetArray($section, 'items', $values);
 	}
+
 	public function getNextId()
 	{
 		$id = (int)($this->SafeGet('__id_numbers__', 'id', 0)) + 1;
 		$this->SetValue('__id_numbers__', 'id', $id);
 		return $id;
 	}
+
 	public function GetItems($section)
 	{
 		$values = $this->SafeGetArray($section, 'items');

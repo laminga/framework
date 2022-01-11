@@ -15,7 +15,6 @@ class Log
 	public const ErrorsPath = 'errors';
 	public const MailsPath = 'mails';
 
-
 	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine,
 		$context = [], $trace = null,
 		$innerErrorNumber = null, $innerErrorMessage = null,

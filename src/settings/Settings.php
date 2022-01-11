@@ -174,7 +174,6 @@ class Settings
 		return $this->log;
 	}
 
-
 	public function Notifications()
 	{
 		if ($this->notifications == null)
@@ -182,7 +181,6 @@ class Settings
 
 		return $this->notifications;
 	}
-
 
 	public function Debug()
 	{

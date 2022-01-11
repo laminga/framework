@@ -64,7 +64,6 @@ class Sorter
 		return -1 * self::StringByKey($a, $b, $key);
 	}
 
-
 	private static function StringBySortKeysArray($a, $b)
 	{
 		for ($i = 0; $i < count($a->sortKeys); $i++)
@@ -192,5 +191,4 @@ class Sorter
 
 		return $mult * Str::CultureCmp($aFull, $bFull);
 	}
-
 }
