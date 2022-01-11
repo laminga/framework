@@ -98,8 +98,7 @@ class WebClient
 					}
 				}
 			}
-			$ret = $this->doExecute($url, $file, $args, false);
-			return $ret;
+			return $this->doExecute($url, $file, $args, false);
 		}
 		finally
 		{

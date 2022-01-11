@@ -33,10 +33,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /**
  * @author   "Sebastián Grignoli" <grignoli@gmail.com>
+ *
  * @package  Encoding
+ *
  * @version  2.0
+ *
  * @link     https://github.com/neitanod/forceutf8
+ *
  * @example  https://github.com/neitanod/forceutf8
+ *
  * @license  Revised BSD
  */
 class EncodingUtf8
@@ -170,9 +175,10 @@ class EncodingUtf8
 	 * 3) when any of these: ðñòó  are followed by THREE chars from group B.
 	 *
 	 * @name ToUTF8
-	 * @param array|string $text  Any string.
-	 * @return array|string  The same string, UTF8 encoded
 	 *
+	 * @param array|string $text  Any string.
+	 *
+	 * @return array|string  The same string, UTF8 encoded
 	 */
 	public static function ToUTF8($text)
 	{

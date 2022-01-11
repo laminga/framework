@@ -131,8 +131,7 @@ class BaseTwoLevelBlobSQLiteCache
 		if ($key1 === null)
 			$key1 = 'cache';
 
-		$file = $this->path . "/" . $key1 . ".db";
-		return $file;
+		return $this->path . "/" . $key1 . ".db";
 	}
 
 	public function PutDataIfMissing($key1, $key2, $value)

@@ -258,8 +258,7 @@ class Str
 		$cad = self::Replace($cad, 'Ã¼', 'ü');
 		$cad = self::Replace($cad, 'Ã½', 'ý');
 		$cad = self::Replace($cad, 'Ã¾', 'þ');
-		$cad = self::Replace($cad, 'Ã¿', 'ÿ');
-		return $cad;
+		return self::Replace($cad, 'Ã¿', 'ÿ');
 	}
 
 	public static function UrldecodeFriendly($cad)
@@ -629,8 +628,7 @@ class Str
 	public static function RemoveWordHiddenFormat($cad)
 	{
 		$cad = self::RemoveBlock($cad, "<xml>", "</xml>");
-		$cad = self::RemoveBlock($cad, "<!--[if ", "<![endif]-->");
-		return $cad;
+		return self::RemoveBlock($cad, "<!--[if ", "<![endif]-->");
 	}
 
 	public static function RemoveHtmlFormat($cad)
@@ -674,8 +672,7 @@ class Str
 	public static function RemoveParenthesis($cad)
 	{
 		$cad = self::RemoveBegining($cad, "(");
-		$cad = self::RemoveEnding($cad, ")");
-		return $cad;
+		return self::RemoveEnding($cad, ")");
 	}
 
 	public static function IsNullOrEmpty($cad)
@@ -811,8 +808,7 @@ class Str
 		$newAbstract = self::RemoveBegining($newAbstract, 'Resumen.');
 		$newAbstract = self::RemoveBegining($newAbstract, 'abstract.');
 		$newAbstract = self::RemoveBegining($newAbstract, 'ABSTRACT.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'Abstract.');
-		return $newAbstract;
+		return self::RemoveBegining($newAbstract, 'Abstract.');
 	}
 
 	public static function RemoveWordFormats($str)
@@ -985,8 +981,7 @@ class Str
 			if ($n == 0)
 				return $cad;
 			$cad = substr($cad, $n + 1) . " " . substr($cad, 0, $n);
-			$cad = self::Replace($cad, "  ", " ");
-			return $cad;
+			return self::Replace($cad, "  ", " ");
 		}
 		throw new ErrorException('Invalid normalization argument.');
 	}
@@ -1024,8 +1019,7 @@ class Str
 		//remueve caracteres no válidos en nombres de archivo, windows y mac.
 		$title = preg_replace('#[/¿¡\?\<\>\\:\*\|"\^\r\n\t]#u', '', $title);
 		//140 es un número razonable para el máximo, windows soporta 256 sumando directorios.
-		$title = self::EllipsisAnsi($title, 140, "(...)");
-		return $title;
+		return self::EllipsisAnsi($title, 140, "(...)");
 	}
 
 	public static function IsAllLetters($cad)
@@ -1060,8 +1054,7 @@ class Str
 			$p = substr($p, 0, $pos) . chr($i) . substr($p, $pos + 6);
 		}
 		$p = self::Replace($p, '\\"', '"');
-		$p = self::Replace($p, "\\'", "'");
-		return $p;
+		return self::Replace($p, "\\'", "'");
 	}
 
 	//array_search case insensitve

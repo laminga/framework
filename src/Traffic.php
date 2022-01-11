@@ -126,8 +126,7 @@ class Traffic
 	private static function Clean(string $str) : string
 	{
 		$str = str_replace('"', "'", $str);
-		$str = str_replace("\t", ";", $str);
-		return $str;
+		return str_replace("\t", ";", $str);
 	}
 
 	private static function ParseHit($value, &$hits, &$agent, &$url, &$device) : void

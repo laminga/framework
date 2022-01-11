@@ -878,6 +878,7 @@ class IO
 	 * @param string $prefix String with which to prefix created dirs.
 	 * @param int $maxAttempts Maximum attempts before giving up (to prevent
 	 * endless loops).
+	 *
 	 * @return string|bool Full path to newly-created dir, or false on failure.
 	 */
 	public static function GetTempDir($prefix = 'tmp_', $maxAttempts = 1000)

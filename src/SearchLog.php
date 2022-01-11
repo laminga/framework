@@ -48,8 +48,7 @@ class SearchLog
 	{
 		$path = Context::Paths()->GetSearchLogLocalPath();
 		IO::EnsureExists($path);
-		$ret = $path . '/' . $item . '.txt';
-		return $ret;
+		return $path . '/' . $item . '.txt';
 	}
 
 	private static function SaveSearchHit($block, $text, $matches, $ellapsedMs)

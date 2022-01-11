@@ -14,7 +14,6 @@ class Image
 	 *
 	 * Por default siempre grababa el resultado en png
 	 * se agregó parámetro opcional para que no lo haga.
-	 *
 	 */
 	public static function Resize($type, $sourceFile,
 		$maxWidth, $maxHeight, $targetFile, $useTypeForSave = false)

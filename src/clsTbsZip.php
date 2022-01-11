@@ -487,6 +487,7 @@ class clsTbsZip
 
 	/**
 	 * Return the state of the file.
+	 *
 	 * @return string|false
 	 * 'u'=unchanged, 'm'=modified, 'd'=deleted, 'a'=added, false=unknown
 	 */
@@ -787,8 +788,7 @@ class clsTbsZip
 
 	public function _ReadData($len) {
 		if ($len > 0) {
-			$x = fread($this->ArchHnd, $len);
-			return $x;
+			return fread($this->ArchHnd, $len);
 		}
 			return '';
 

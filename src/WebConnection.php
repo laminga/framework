@@ -137,8 +137,7 @@ class WebConnection
 		if ($port != $lastPort)
 			return $url;
 		// perdió el https pero es el mismo server
-		$ret = 'https://' . substr($url, 7);
-		return $ret;
+		return 'https://' . substr($url, 7);
 	}
 
 	private function ResolveRelativeUrl($url)

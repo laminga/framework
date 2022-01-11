@@ -207,8 +207,7 @@ class Log
 		// Corrige problemas de new line de las diferentes fuentes.
 		$text = str_replace(["<br>", "<br/>", "<br />"], "", $text);
 		$text = str_replace("\r\n", "\n", $text);
-		$text = str_replace("\n", "<br>\r\n", $text);
-		return $text;
+		return str_replace("\n", "<br>\r\n", $text);
 	}
 
 	private static function TrimMessage(?string $text) : ?string

@@ -160,7 +160,7 @@ class Backup
 			copy($backupFolder . "/deleted_checkpoint.txt", $backupFolderWorkingFolder . "/deleted_checkpoint.txt");
 		// guarda el estado
 		self::SaveState("COPYSITEDONE");
-		return;
+
 	}
 
 	public function SplitLargeFiles()
@@ -180,7 +180,7 @@ class Backup
 		self::SaveState("SPLITDONE");
 		$zip->lock->Release();
 		self::Log("End splitting", true);
-		return;
+
 	}
 
 	private static function ScanAndSplitRecursive($dirsource, $maxSize)

@@ -202,8 +202,7 @@ class Date
 
 	public static function DateTimeToday()
 	{
-		$date = date_create(self::Today());
-		return $date;
+		return date_create(self::Today());
 	}
 
 	public static function Today()

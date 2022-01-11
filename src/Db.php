@@ -115,6 +115,7 @@ class Db
 	 *
 	 * @param string $sql The SQL query.
 	 * @param array $params The query parameters.
+	 *
 	 * @return array
 	 */
 	public function fetchAll($sql, array $params = [])
@@ -167,6 +168,7 @@ class Db
 	 * @param string $query The multi SQL query (FACET in sphinx).
 	 * @param array $params The query parameters.
 	 * @paran int $fetchStyle Fetch style PDO Constant
+	 *
 	 * @return array
 	 */
 	public function fetchAllMultipleResults(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC) : array
@@ -280,6 +282,7 @@ class Db
 	 * @param string $query sql query to be executed
 	 * @param array $params prepared statement params
 	 * @param int $colnum 0-indexed column number to retrieve
+	 *
 	 * @return mixed
 	 */
 	public function fetchColumn(string $query, array $params = [], int $colnum = 0)
@@ -336,6 +339,7 @@ class Db
 	 *
 	 * @param string $tableName The name of the table to insert data into.
 	 * @param array $data An associative array containing column-value pairs.
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function insert(string $tableName, array $data) : int
@@ -348,6 +352,7 @@ class Db
 	 *
 	 * @param string $tableName The name of the table to replace data into.
 	 * @param array $data An associative array containing column-value pairs.
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function replace(string $tableName, array $data) : int
@@ -360,6 +365,7 @@ class Db
 	 *
 	 * @param string $tableName The name of the table on which to delete.
 	 * @param array $identifier The deletion criteria. An associative array containing column-value pairs.
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function delete(string $tableName, array $identifier) : int
@@ -401,6 +407,7 @@ class Db
 	 *
 	 * @param string $statement The SQL query.
 	 * @param array $params The query parameters.
+	 *
 	 * @return array|false
 	 */
 	public function fetchAssoc(string $statement, array $params = [])
@@ -418,6 +425,7 @@ class Db
 	 * Non array parameters are returned as-is.
 	 *
 	 * @param array $params The parameters.
+	 *
 	 * @return string
 	 */
 	private function parseArrayParams(string $query, array &$params) : string
@@ -437,6 +445,7 @@ class Db
 	 * Convert an array into a \PDO quoted comma separated list, based on variable type.
 	 *
 	 * @param array $arr
+	 *
 	 * @return string
 	 */
 	private function arrayToList(array $arr) : string
@@ -460,6 +469,7 @@ class Db
 	 * Get the PDO param constant based on variable type.
 	 *
 	 * @param mixed $var
+	 *
 	 * @return integer PDO::PARAM constant.
 	 */
 	private function getParamType($var) : int
@@ -480,6 +490,7 @@ class Db
 	 *
 	 * @param string $statement query to be executed
 	 * @param array $params statement params
+	 *
 	 * @return array
 	 */
 	public function fetchArray(string $statement, array $params = []) : array
@@ -515,6 +526,7 @@ class Db
 	 * @param string $tableName The name of the table to update.
 	 * @param array $data The data to update. An associative array containing column-value pairs.
 	 * @param array $identifier The update criteria. An associative array containing column-value pairs.
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function update(string $tableName, array $data, array $identifier) : int
@@ -556,8 +568,8 @@ class Db
 	 * MySql no toma bien los bools, es mejor cambiarlos por 1 o 0.
 	 *
 	 * @param mixed $value El valor a convertir (si es bool).
-	 * @return mixed El valor convertido.
 	 *
+	 * @return mixed El valor convertido.
 	 */
 	private static function ConvertType($value)
 	{
