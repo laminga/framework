@@ -536,7 +536,7 @@ class Performance
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked;
 	}
 
-	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = []) : void	{
+	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = []) : void {
 		if (array_key_exists($key, $arr) == false)
 		{
 			$hits = $newHits;

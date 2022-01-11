@@ -317,13 +317,13 @@ class Str
 	//Contains case insensitve
 	public static function ContainsI($haystack, $needle)
 	{
-		$pos = stripos($haystack , $needle);
+		$pos = stripos($haystack, $needle);
 		return $pos !== false;
 	}
 
 	public static function Contains($haystack, $needle)
 	{
-		$pos = strpos($haystack , $needle);
+		$pos = strpos($haystack, $needle);
 		return $pos !== false;
 	}
 
@@ -591,7 +591,7 @@ class Str
 	{
 		$pos = strpos($cad, $str);
 		if ($pos !== false)
-			return substr_replace($cad,$s2,$pos,strlen($str));
+			return substr_replace($cad, $s2, $pos, strlen($str));
 
 		return $cad;
 	}

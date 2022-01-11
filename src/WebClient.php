@@ -307,7 +307,7 @@ class WebClient
 		if ($ret == false)
 			$this->AppendLogData('Error', $this->error);
 		else
-			$this->AppendLogData('Content-Length', curl_getinfo($this->ch,CURLINFO_CONTENT_LENGTH_DOWNLOAD));
+			$this->AppendLogData('Content-Length', curl_getinfo($this->ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD));
 	}
 
 	public function printInfo() : void

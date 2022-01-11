@@ -339,7 +339,7 @@ class EncodingUtf8
 	protected static function Strlen($text)
 	{
 		return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload')) & 2)
-			? mb_strlen($text,'8bit') : strlen($text);
+			? mb_strlen($text, '8bit') : strlen($text);
 	}
 
 	public static function NormalizeEncoding($encodingLabel)

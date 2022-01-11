@@ -38,7 +38,7 @@ class PdfReader
 		if($removeSpaces)
 			$sep = ' ';
 
-		$text = implode($sep , self::RunPdfToText($file));
+		$text = implode($sep, self::RunPdfToText($file));
 		if($removeSpaces)
 			$text = preg_replace('/\s+/', ' ', $text);
 

@@ -156,15 +156,15 @@ class Profiling
 			$memPeakavg = "-";
 		}
 
-		$ret = self::CreateRow($tdStyle, $cellFormat , $cellFormatClose, $depth,
+		$ret = self::CreateRow($tdStyle, $cellFormat, $cellFormatClose, $depth,
 			$profileData->name,
 			$profileData->hits,
 			$profileData->dbHits,
-			round($profileData->durationMs,0),
+			round($profileData->durationMs, 0),
 			Str::FormatPercentage($profileData->durationMs, $parentMs),
 			Str::FormatPercentage($profileData->durationMs, $totalMs),
 			$duravg,
-			Str::SizeToHumanReadable($profileData->memory, 1) ,
+			Str::SizeToHumanReadable($profileData->memory, 1),
 			Str::SizeToHumanReadable($memavg, 1)
 		);
 
@@ -241,7 +241,7 @@ class Profiling
 		$cellFormat = "<b>";
 		$cellFormatClose = "</b>";
 
-		$ret .= self::CreateRow($tdStyle, $cellFormat , $cellFormatClose, 0,
+		$ret .= self::CreateRow($tdStyle, $cellFormat, $cellFormatClose, 0,
 			'Profiling items',
 			'Hits',
 			'DbHits',

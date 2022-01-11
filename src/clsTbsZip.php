@@ -12,10 +12,10 @@ for TinyButStrong Template Engine (TBS). OpenTbs makes TBS able to merge OpenOff
 Visit http://www.tinybutstrong.com
  */
 
-define('TBSZIP_DOWNLOAD',1); // download (default)
-define('TBSZIP_NOHEADER',4); // option to use with DOWNLOAD: no header is sent
-define('TBSZIP_FILE',8); // output to file, or add from file
-define('TBSZIP_STRING',32); // output to string, or add from string
+define('TBSZIP_DOWNLOAD', 1); // download (default)
+define('TBSZIP_NOHEADER', 4); // option to use with DOWNLOAD: no header is sent
+define('TBSZIP_FILE', 8); // output to file, or add from file
+define('TBSZIP_STRING', 32); // output to string, or add from string
 
 class clsTbsZip
 {
@@ -190,13 +190,13 @@ class clsTbsZip
 	public function CentralDirRead_End($cd_info) {
 		$b = $cd_info . $this->_ReadData(18);
 		$x = [];
-		$x['disk_num_curr'] = $this->_GetDec($b,4,2); // number of this disk
-		$x['disk_num_cd'] = $this->_GetDec($b,6,2); // number of the disk with the start of the central directory
-		$x['file_nbr_curr'] = $this->_GetDec($b,8,2); // total number of entries in the central directory on this disk
-		$x['file_nbr_tot'] = $this->_GetDec($b,10,2); // total number of entries in the central directory
-		$x['l_cd'] = $this->_GetDec($b,12,4); // size of the central directory
-		$x['p_cd'] = $this->_GetDec($b,16,4); // position of start of central directory with respect to the starting disk number
-		$x['l_comm'] = $this->_GetDec($b,20,2); // .ZIP file comment length
+		$x['disk_num_curr'] = $this->_GetDec($b, 4, 2); // number of this disk
+		$x['disk_num_cd'] = $this->_GetDec($b, 6, 2); // number of the disk with the start of the central directory
+		$x['file_nbr_curr'] = $this->_GetDec($b, 8, 2); // total number of entries in the central directory on this disk
+		$x['file_nbr_tot'] = $this->_GetDec($b, 10, 2); // total number of entries in the central directory
+		$x['l_cd'] = $this->_GetDec($b, 12, 4); // size of the central directory
+		$x['p_cd'] = $this->_GetDec($b, 16, 4); // position of start of central directory with respect to the starting disk number
+		$x['l_comm'] = $this->_GetDec($b, 20, 2); // .ZIP file comment length
 		$x['v_comm'] = $this->_ReadData($x['l_comm']); // .ZIP file comment
 		$x['bin'] = $b . $x['v_comm'];
 		return $x;
@@ -206,27 +206,27 @@ class clsTbsZip
 
 		$b = $this->_ReadData(46);
 
-		$x = $this->_GetHex($b,0,4);
+		$x = $this->_GetHex($b, 0, 4);
 		if ($x !== 'h:02014b50')
 			return $this->RaiseError("Signature of Central Directory Header #" . $idx . " (file information) expected but not found at position " . $this->_TxtPos(ftell($this->ArchHnd) - 46) . ".");
 
 		$x = [];
-		$x['vers_used'] = $this->_GetDec($b,4,2);
-		$x['vers_necess'] = $this->_GetDec($b,6,2);
-		$x['purp'] = $this->_GetBin($b,8,2);
-		$x['meth'] = $this->_GetDec($b,10,2);
-		$x['time'] = $this->_GetDec($b,12,2);
-		$x['date'] = $this->_GetDec($b,14,2);
-		$x['crc32'] = $this->_GetDec($b,16,4);
-		$x['l_data_c'] = $this->_GetDec($b,20,4);
-		$x['l_data_u'] = $this->_GetDec($b,24,4);
-		$x['l_name'] = $this->_GetDec($b,28,2);
-		$x['l_fields'] = $this->_GetDec($b,30,2);
-		$x['l_comm'] = $this->_GetDec($b,32,2);
-		$x['disk_num'] = $this->_GetDec($b,34,2);
-		$x['int_file_att'] = $this->_GetDec($b,36,2);
-		$x['ext_file_att'] = $this->_GetDec($b,38,4);
-		$x['p_loc'] = $this->_GetDec($b,42,4);
+		$x['vers_used'] = $this->_GetDec($b, 4, 2);
+		$x['vers_necess'] = $this->_GetDec($b, 6, 2);
+		$x['purp'] = $this->_GetBin($b, 8, 2);
+		$x['meth'] = $this->_GetDec($b, 10, 2);
+		$x['time'] = $this->_GetDec($b, 12, 2);
+		$x['date'] = $this->_GetDec($b, 14, 2);
+		$x['crc32'] = $this->_GetDec($b, 16, 4);
+		$x['l_data_c'] = $this->_GetDec($b, 20, 4);
+		$x['l_data_u'] = $this->_GetDec($b, 24, 4);
+		$x['l_name'] = $this->_GetDec($b, 28, 2);
+		$x['l_fields'] = $this->_GetDec($b, 30, 2);
+		$x['l_comm'] = $this->_GetDec($b, 32, 2);
+		$x['disk_num'] = $this->_GetDec($b, 34, 2);
+		$x['int_file_att'] = $this->_GetDec($b, 36, 2);
+		$x['ext_file_att'] = $this->_GetDec($b, 38, 4);
+		$x['p_loc'] = $this->_GetDec($b, 42, 4);
 		$x['v_name'] = $this->_ReadData($x['l_name']);
 		$x['v_fields'] = $this->_ReadData($x['l_fields']);
 		$x['v_comm'] = $this->_ReadData($x['l_comm']);
@@ -258,7 +258,7 @@ class clsTbsZip
 			$pos = 0;
 			$pos_stop = $this->CdInfo['p_cd'];
 			$this->_MoveTo($pos);
-			while ($pos < $pos_stop && $this->_ReadFile($idx,false)) {
+			while ($pos < $pos_stop && $this->_ReadFile($idx, false)) {
 				$this->VisFileLst[$idx]['p_this_header (debug_mode only)'] = $pos;
 				$pos = ftell($this->ArchHnd);
 				$idx++;
@@ -295,7 +295,7 @@ class clsTbsZip
 		foreach ($arr as $k => $v) {
 			if (is_array($v)) {
 				$arr[$k] = $this->DebugArray($v);
-			} elseif (substr($k,0,2) == 'p_') {
+			} elseif (substr($k, 0, 2) == 'p_') {
 				$arr[$k] = $this->_TxtPos($v);
 			}
 		}
@@ -380,21 +380,21 @@ class clsTbsZip
 
 		$b = $this->_ReadData(30);
 
-		$x = $this->_GetHex($b,0,4);
+		$x = $this->_GetHex($b, 0, 4);
 		if ($x !== 'h:04034b50')
 			return $this->RaiseError("Signature of Local File Header #" . $idx . " (data section) expected but not found at position " . $this->_TxtPos(ftell($this->ArchHnd) - 30) . ".");
 
 		$x = [];
-		$x['vers'] = $this->_GetDec($b,4,2);
-		$x['purp'] = $this->_GetBin($b,6,2);
-		$x['meth'] = $this->_GetDec($b,8,2);
-		$x['time'] = $this->_GetDec($b,10,2);
-		$x['date'] = $this->_GetDec($b,12,2);
-		$x['crc32'] = $this->_GetDec($b,14,4);
-		$x['l_data_c'] = $this->_GetDec($b,18,4);
-		$x['l_data_u'] = $this->_GetDec($b,22,4);
-		$x['l_name'] = $this->_GetDec($b,26,2);
-		$x['l_fields'] = $this->_GetDec($b,28,2);
+		$x['vers'] = $this->_GetDec($b, 4, 2);
+		$x['purp'] = $this->_GetBin($b, 6, 2);
+		$x['meth'] = $this->_GetDec($b, 8, 2);
+		$x['time'] = $this->_GetDec($b, 10, 2);
+		$x['date'] = $this->_GetDec($b, 12, 2);
+		$x['crc32'] = $this->_GetDec($b, 14, 4);
+		$x['l_data_c'] = $this->_GetDec($b, 18, 4);
+		$x['l_data_u'] = $this->_GetDec($b, 22, 4);
+		$x['l_name'] = $this->_GetDec($b, 26, 2);
+		$x['l_fields'] = $this->_GetDec($b, 28, 2);
 		$x['v_name'] = $this->_ReadData($x['l_name']);
 		$x['v_fields'] = $this->_ReadData($x['l_fields']);
 
@@ -428,7 +428,7 @@ class clsTbsZip
 		$desc_ok = ($x['purp'][2 + 3] == '1');
 		if ($desc_ok) {
 			$b = $this->_ReadData(12);
-			$s = $this->_GetHex($b,0,4);
+			$s = $this->_GetHex($b, 0, 4);
 			$d = 0;
 			// the specification says the signature may or may not be present
 			if ($s == 'h:08074b50') {
@@ -439,9 +439,9 @@ class clsTbsZip
 			} else {
 				$x['desc_bin'] = $b;
 			}
-			$x['desc_crc32'] = $this->_GetDec($b,0 + $d,4);
-			$x['desc_l_data_c'] = $this->_GetDec($b,4 + $d,4);
-			$x['desc_l_data_u'] = $this->_GetDec($b,8 + $d,4);
+			$x['desc_crc32'] = $this->_GetDec($b, 0 + $d, 4);
+			$x['desc_l_data_c'] = $this->_GetDec($b, 4 + $d, 4);
+			$x['desc_l_data_u'] = $this->_GetDec($b, 8 + $d, 4);
 		}
 
 		// Save file info without the data
@@ -689,7 +689,7 @@ class clsTbsZip
 			$this->_PutDec($b2, $n + $DeltaCdLen, 12, 4);
 			$Delta = $Delta + $AddDataLen;
 		}
-		$this->_PutDec($b2, $this->CdPos + $Delta , 16, 4); // p_cd (offset of start of central directory with respect to the starting disk number)
+		$this->_PutDec($b2, $this->CdPos + $Delta, 16, 4); // p_cd (offset of start of central directory with respect to the starting disk number)
 		$this->OutputFromString($b2);
 
 		$this->OutputClose();
@@ -720,8 +720,9 @@ class clsTbsZip
 			if ('' . $File == '') $File = basename($this->ArchFile);
 			if (($Render & TBSZIP_NOHEADER) == TBSZIP_NOHEADER) {
 			} else {
-				header ('Pragma: no-cache');
-				if ($ContentType != '') header ('Content-Type: ' . $ContentType);
+				header('Pragma: no-cache');
+				if ($ContentType != '')
+					header('Content-Type: ' . $ContentType);
 				header('Content-Disposition: attachment; filename="' . $File . '"');
 				header('Expires: 0');
 				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -729,7 +730,8 @@ class clsTbsZip
 				header('Content-Description: File Transfer');
 				header('Content-Transfer-Encoding: binary');
 				$Len = $this->_EstimateNewArchSize();
-				if ($Len !== false) header('Content-Length: ' . $Len);
+				if ($Len !== false)
+					header('Content-Length: ' . $Len);
 			}
 		} else {
 			return $this->RaiseError('Method Flush is called with a unsupported render option.');
@@ -803,7 +805,7 @@ class clsTbsZip
 		$z = 0;
 		for ($i = 0; $i < $len; $i++) {
 			$asc = ord($x[$i]);
-			if ($asc > 0) $z = $z + $asc * pow(256,$i);
+			if ($asc > 0) $z = $z + $asc * pow(256, $i);
 		}
 		return $z;
 	}
@@ -820,7 +822,7 @@ class clsTbsZip
 			$asc = ord($x[$i]);
 			if (isset($x[$i])) {
 				for ($j = 0; $j < 8; $j++) {
-					$z .= ($asc & pow(2,$j)) ? '1' : '0';
+					$z .= ($asc & pow(2, $j)) ? '1' : '0';
 				}
 			} else {
 				$z .= '00000000';
@@ -932,17 +934,17 @@ class clsTbsZip
 		$purp = 2048; // purpose // +8 to indicates that there is an extended local header
 
 		// Header for file in the data section
-		$b = 'PK' . chr(03) . chr(04) . str_repeat(' ',26); // signature
-		$this->_PutDec($b,20,4,2); //vers = 20
-		$this->_PutDec($b,$purp,6,2); // purp
-		$this->_PutDec($b,$Ref['meth'],8,2); // meth
-		$this->_PutDec($b,$time,10,2); // time
-		$this->_PutDec($b,$date,12,2); // date
-		$this->_PutDec($b,$Ref['crc32'],14,4); // crc32
-		$this->_PutDec($b,$Ref['len_c'],18,4); // l_data_c
-		$this->_PutDec($b,$Ref['len_u'],22,4); // l_data_u
-		$this->_PutDec($b,$len_n,26,2); // l_name
-		$this->_PutDec($b,0,28,2); // l_fields
+		$b = 'PK' . chr(03) . chr(04) . str_repeat(' ', 26); // signature
+		$this->_PutDec($b, 20, 4, 2); //vers = 20
+		$this->_PutDec($b, $purp, 6, 2); // purp
+		$this->_PutDec($b, $Ref['meth'], 8, 2); // meth
+		$this->_PutDec($b, $time, 10, 2); // time
+		$this->_PutDec($b, $date, 12, 2); // date
+		$this->_PutDec($b, $Ref['crc32'], 14, 4); // crc32
+		$this->_PutDec($b, $Ref['len_c'], 18, 4); // l_data_c
+		$this->_PutDec($b, $Ref['len_u'], 22, 4); // l_data_u
+		$this->_PutDec($b, $len_n, 26, 2); // l_name
+		$this->_PutDec($b, 0, 28, 2); // l_fields
 		$b .= $Ref['name']; // name
 		$b .= ''; // fields
 
@@ -952,23 +954,23 @@ class clsTbsZip
 		unset($Ref['data']); // save PHP memory
 
 		// Information for file in the Central Directory
-		$b = 'PK' . chr(01) . chr(02) . str_repeat(' ',42); // signature
-		$this->_PutDec($b,20,4,2); // vers_used = 20
-		$this->_PutDec($b,20,6,2); // vers_necess = 20
-		$this->_PutDec($b,$purp,8,2); // purp
-		$this->_PutDec($b,$Ref['meth'],10,2); // meth
-		$this->_PutDec($b,$time,12,2); // time
-		$this->_PutDec($b,$date,14,2); // date
-		$this->_PutDec($b,$Ref['crc32'],16,4); // crc32
-		$this->_PutDec($b,$Ref['len_c'],20,4); // l_data_c
-		$this->_PutDec($b,$Ref['len_u'],24,4); // l_data_u
-		$this->_PutDec($b,$len_n,28,2); // l_name
-		$this->_PutDec($b,0,30,2); // l_fields
-		$this->_PutDec($b,0,32,2); // l_comm
-		$this->_PutDec($b,0,34,2); // disk_num
-		$this->_PutDec($b,0,36,2); // int_file_att
-		$this->_PutDec($b,0,38,4); // ext_file_att
-		$this->_PutDec($b,$PosLoc,42,4); // p_loc
+		$b = 'PK' . chr(01) . chr(02) . str_repeat(' ', 42); // signature
+		$this->_PutDec($b, 20, 4, 2); // vers_used = 20
+		$this->_PutDec($b, 20, 6, 2); // vers_necess = 20
+		$this->_PutDec($b, $purp, 8, 2); // purp
+		$this->_PutDec($b, $Ref['meth'], 10, 2); // meth
+		$this->_PutDec($b, $time, 12, 2); // time
+		$this->_PutDec($b, $date, 14, 2); // date
+		$this->_PutDec($b, $Ref['crc32'], 16, 4); // crc32
+		$this->_PutDec($b, $Ref['len_c'], 20, 4); // l_data_c
+		$this->_PutDec($b, $Ref['len_u'], 24, 4); // l_data_u
+		$this->_PutDec($b, $len_n, 28, 2); // l_name
+		$this->_PutDec($b, 0, 30, 2); // l_fields
+		$this->_PutDec($b, 0, 32, 2); // l_comm
+		$this->_PutDec($b, 0, 34, 2); // disk_num
+		$this->_PutDec($b, 0, 36, 2); // int_file_att
+		$this->_PutDec($b, 0, 38, 4); // ext_file_att
+		$this->_PutDec($b, $PosLoc, 42, 4); // p_loc
 		$b .= $Ref['name']; // v_name
 		$b .= ''; // v_fields
 		$b .= ''; // v_comm

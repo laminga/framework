@@ -198,7 +198,7 @@ class Backup
 				if(!is_dir($filename))
 				{
 					if (filesize($filename) > $maxSize)
-						Multipart::Split($filename , $maxSize);
+						Multipart::Split($filename, $maxSize);
 				}
 				else
 					self::ScanAndSplitRecursive($dirsource . '/' . $file, $maxSize);

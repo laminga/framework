@@ -17,7 +17,7 @@ class IO
 	{
 		IO::EnsureExists($target);
 		// limpia
-		$dirname = substr($dirsource,strrpos($dirsource,"/") + 1);
+		$dirname = substr($dirsource, strrpos($dirsource, "/") + 1);
 		if (file_exists($target . "/" . $dirname))
 			IO::RemoveDirectory($target . "/" . $dirname);
 		// copia

@@ -326,7 +326,7 @@ class Db
 
 		$query = $command . ' INTO ' . self::QuoteTable($tableName)
 			. ' (' . implode(', ', self::QuoteColumn(array_keys($data))) . ')'
-			. ' VALUES (' . rtrim(str_repeat('?,', count($data)),',') . ')';
+			. ' VALUES (' . rtrim(str_repeat('?,', count($data)), ',') . ')';
 
 		$ret = $this->doExecute($query, array_values($data));
 		Performance::EndDbWait();
