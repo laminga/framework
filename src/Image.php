@@ -16,7 +16,7 @@ class Image
 	 * se agregó parámetro opcional para que no lo haga.
 	 */
 	public static function Resize($type, $sourceFile,
-		$maxWidth, $maxHeight, $targetFile, $useTypeForSave = false)
+		$maxWidth, $maxHeight, $targetFile, $useTypeForSave = false) : void
 	{
 
 		if($maxWidth == 0 && $maxHeight == 0)

@@ -6,20 +6,20 @@ class MessageBox
 {
 	public static $IsThrowingMessage = false;
 
-	public static function ThrowInternalError($message)
+	public static function ThrowInternalError($message) : void
 	{
 		if(Context::Settings()->isTesting)
 			echo 'ERROR. ' . $message . '<br>';
 		Log::HandleSilentException(new ErrorException($message));
 	}
 
-	public static function ThrowAndLogMessage($message, $action = '')
+	public static function ThrowAndLogMessage($message, $action = '') : void
 	{
 			Log::HandleSilentException(new ErrorException($message));
 			self::ThrowMessage($message, $action);
 	}
 
-	public static function ThrowMessage($message, $action = '', $title = 'Atención', $caption = 'Continuar')
+	public static function ThrowMessage($message, $action = '', $title = 'Atención', $caption = 'Continuar') : void
 	{
 		self::$IsThrowingMessage = true;
 		if (Context::Settings()->isFramed)
@@ -44,7 +44,7 @@ class MessageBox
 		self::Render($params);
 	}
 
-	public static function ThrowWaitMessage($message, $action = '', $title = 'Atención')
+	public static function ThrowWaitMessage($message, $action = '', $title = 'Atención') : void
 	{
 		$action = "document.location='" . $action . "';";
 
@@ -57,7 +57,7 @@ class MessageBox
 		self::Render($params);
 	}
 
-	public static function ThrowBackMessage($message)
+	public static function ThrowBackMessage($message) : void
 	{
 		$params = [
 			'page' => 'Oops!',
@@ -69,7 +69,7 @@ class MessageBox
 		self::Render($params);
 	}
 
-	private static function Render($params)
+	private static function Render($params) : void
 	{
 		$params['useSearchBar'] = false;
 		if (Context::Settings()->isTesting == false)
@@ -85,28 +85,28 @@ class MessageBox
 		Context::EndRequest();
 	}
 
-	private static function Set500InternalServerErrorHeaders()
+	private static function Set500InternalServerErrorHeaders() : void
 	{
 		header('HTTP/1.1 ');
 		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		header('Status: 500 Internal Server Error');
 	}
 
-	private static function Set403AccessDeniedHeaders()
+	private static function Set403AccessDeniedHeaders() : void
 	{
 		header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 		header('Status: 403 Forbidden');
 		Context::Settings()->section = 'accessDenied';
 	}
 
-	public static function Set404NotFoundHeaders()
+	public static function Set404NotFoundHeaders() : void
 	{
 		header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 		header('Status: 404 Not Found');
 		Context::Settings()->section = 'notFound';
 	}
 
-	public static function ShowMessagePopup($message, $title = 'Enviar mensaje')
+	public static function ShowMessagePopup($message, $title = 'Enviar mensaje') : void
 	{
 		$params = [
 			'message' => $message,
@@ -116,7 +116,7 @@ class MessageBox
 		Context::Calls()->RenderTemplate('messagePopup.html.twig', $params);
 	}
 
-	public static function ShowDialogPopup($message, $title = 'Enviar mensaje', $params = [])
+	public static function ShowDialogPopup($message, $title = 'Enviar mensaje', $params = []) : void
 	{
 		$params = array_merge($params, [
 			'message' => $message,
@@ -126,7 +126,7 @@ class MessageBox
 		Context::Calls()->RenderTemplate('dialogPopup.html.twig', $params);
 	}
 
-	public static function ShowDocNotFound($file, $profile)
+	public static function ShowDocNotFound($file, $profile) : void
 	{
 		$profileUrl = $profile->Links()->ContentLink();
 		if ($profile->OnlyFiles())
@@ -144,7 +144,7 @@ class MessageBox
 		}
 	}
 
-	public static function ThrowInternalServerError($exception = null)
+	public static function ThrowInternalServerError($exception = null) : void
 	{
 		self::Set500InternalServerErrorHeaders();
 		if (Context::Settings()->Debug()->debug)
@@ -158,7 +158,7 @@ class MessageBox
 		MessageBox::ThrowMessage('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes.', Context::Settings()->GetMainServerPublicUrl());
 	}
 
-	public static function ThrowFileNotFound($extraInfo = '')
+	public static function ThrowFileNotFound($extraInfo = '') : void
 	{
 	self::Set404NotFoundHeaders();
 		Performance::SetController('cErrPageNotFound', 'Show');
@@ -170,7 +170,7 @@ class MessageBox
 		MessageBox::ThrowMessage('Página no encontrada.', Context::Settings()->GetMainServerPublicUrl());
 	}
 
-	public static function ThrowAccessDenied($extraInfo = '')
+	public static function ThrowAccessDenied($extraInfo = '') : void
 	{
 		self::Set403AccessDeniedHeaders();
 		Performance::SetController('cErrAccessDenied', 'Show');

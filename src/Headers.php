@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class Headers
 {
-	public static function AcceptAnyCOARS()
+	public static function AcceptAnyCOARS() : void
 	{
 		// Resuelve el COARS
 		if (array_key_exists('HTTP_ORIGIN', $_SERVER))

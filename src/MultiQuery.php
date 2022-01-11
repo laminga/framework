@@ -67,11 +67,11 @@ class MultiQuery
 			. ($orderBy != "" ? " ORDER BY " . $orderBy : "");
 	}
 
-	public function setMaxRows($max)
+	public function setMaxRows($max) : void
 	{
 		$this->sql .= " LIMIT 0, " . $max;
 	}
-	public function dump()
+	public function dump() : void
 	{
 		echo 'Template: <br>' . $this->sql;
 		echo '<br>&nbsp;<br>Params: <br>';

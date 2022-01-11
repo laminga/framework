@@ -23,7 +23,7 @@ class Mail
 		$this->from = Context::Settings()->Mail()->From;
 	}
 
-	public function Send($log = true, $skipNotification = false, $throwException = true)
+	public function Send($log = true, $skipNotification = false, $throwException = true) : void
 	{
 		if (Context::Settings()->Log()->LogEmailsToDisk)
 			$this->PutToLog();
@@ -79,7 +79,7 @@ class Mail
 		return Context::Settings()->Mail()->Provider;
 	}
 
-	public function SetProvider($mail, $recipient)
+	public function SetProvider($mail, $recipient) : void
 	{
 		$provider = $this->ResolveProvider($recipient);
 
@@ -107,7 +107,7 @@ class Mail
 		}
 	}
 
-	private function SetAddress($mail, $to, $caption)
+	private function SetAddress($mail, $to, $caption) : void
 	{
 		if(is_array($to))
 		{
@@ -118,7 +118,7 @@ class Mail
 			$mail->addAddress($to, $caption);
 	}
 
-	private function SetBCC($mail, $bcc)
+	private function SetBCC($mail, $bcc) : void
 	{
 		if(is_array($bcc))
 		{
@@ -129,7 +129,7 @@ class Mail
 			$mail->addBCC($bcc);
 	}
 
-	public function PutToLog()
+	public function PutToLog() : void
 	{
 		$to = '';
 		if(is_array($this->to))

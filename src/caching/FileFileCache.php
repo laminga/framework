@@ -15,7 +15,7 @@ class FileFileCache
 		$this->path = Context::Paths()->GetStorageCaches() . '/services/' . $path;
 	}
 
-	public function Clear($key1 = null)
+	public function Clear($key1 = null) : void
 	{
 		if ($key1 == null)
 		{
@@ -46,7 +46,7 @@ class FileFileCache
 			return false;
 
 	}
-	public function PutDataIfMissing($key1, $value)
+	public function PutDataIfMissing($key1, $value) : void
 	{
 		if ($this->HasData($key1))
 			return;

@@ -97,7 +97,7 @@ class Settings
 	// otras globales
 	public $section = '';
 
-	public function Initialize($rootPath)
+	public function Initialize($rootPath) : void
 	{
 		$this->catalog = 'mySql';
 		$this->rootPath = $rootPath;

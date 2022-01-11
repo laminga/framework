@@ -457,7 +457,7 @@ class Str
 		return "'" . Str::Replace($cad, "'", "\'") . "'";
 	}
 
-	public static function TwoSplit($text, $separator, &$first, &$last)
+	public static function TwoSplit($text, $separator, &$first, &$last) : void
 	{
 		$pos = strpos($text, $separator);
 		if ($pos === false)
@@ -472,7 +472,7 @@ class Str
 		}
 	}
 
-	public static function TwoSplitReverse($text, $separator, &$first, &$last)
+	public static function TwoSplitReverse($text, $separator, &$first, &$last) : void
 	{
 		$pos = strrpos($text, $separator);
 		if ($pos === false)

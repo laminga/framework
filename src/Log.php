@@ -281,14 +281,14 @@ class Log
 			. '=> Stack: ' . $stack . "\r\n";
 	}
 
-	public static function AppendExtraInfo($info)
+	public static function AppendExtraInfo($info) : void
 	{
 		if (self::$extraErrorInfo === null)
 			self::$extraErrorInfo = [];
 		self::$extraErrorInfo[] = $info;
 	}
 
-	private static function LogErrorSendMail($text)
+	private static function LogErrorSendMail($text) : void
 	{
 		if (self::$isLoggingMailError)
 			return;
@@ -327,7 +327,7 @@ class Log
 		return $text;
 	}
 
-	public static function HandleSilentException($e)
+	public static function HandleSilentException($e) : void
 	{
 		$textToShow = self::LogException($e, true);
 
@@ -384,7 +384,7 @@ class Log
 		self::PutToLog(self::ErrorsPath, $text);
 	}
 
-	public static function PutToLog(string $branch, string $text, bool $doNotSaveMonthly = false)
+	public static function PutToLog(string $branch, string $text, bool $doNotSaveMonthly = false) : void
 	{
 		// Lo graba en log
 		$logPath = Context::Paths()->GetLogLocalPath() . '/' . $branch;

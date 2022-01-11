@@ -12,7 +12,7 @@ class GlobalizeDebugSession
 	private static $currentCookieTime;
 	public const FILE = 'XDEBUG_SESSION.txt';
 
-	public static function GlobalizeDebug()
+	public static function GlobalizeDebug() : void
 	{
 		$ip = Params::SafeServer('REMOTE_ADDR') . '@' . Params::SafeServer('HTTP_X_FORWARDED_FOR');
 		// Lee archivo
@@ -35,7 +35,7 @@ class GlobalizeDebugSession
 		}
 	}
 
-	private static function readCookie()
+	private static function readCookie() : void
 	{
 		self::$currentCookie = Cookies::GetCookie('XDEBUG_SESSION');
 		self::$currentCookieTime = (int)(Cookies::GetCookie('XDEBUG_SESSION_TIME'));
@@ -59,7 +59,7 @@ class GlobalizeDebugSession
 
 			return [];
 	}
-	private static function readGlobalizedFileValue($ip)
+	private static function readGlobalizedFileValue($ip) : void
 	{
 		GlobalDebugLock::BeginRead();
 		$arr = self::readGlobalizedFile();
@@ -72,7 +72,7 @@ class GlobalizeDebugSession
 		self::$currentFileDate = (int)($val['date']);
 		GlobalDebugLock::EndRead();
 	}
-	private static function writeGlobalizedFile($ip, $value, $date)
+	private static function writeGlobalizedFile($ip, $value, $date) : void
 	{
 		GlobalDebugLock::BeginWrite();
 		$arr = self::readGlobalizedFile();

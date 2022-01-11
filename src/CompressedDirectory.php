@@ -15,7 +15,7 @@ class CompressedDirectory
 		$this->file = $file;
 	}
 
-	public function Release()
+	public function Release() : void
 	{
 		if ($this->expanded == false)
 			return;
@@ -60,7 +60,7 @@ class CompressedDirectory
 		return $ret;
 	}
 
-	public function Expand()
+	public function Expand() : void
 	{
 		if ($this->expanded)
 			return;

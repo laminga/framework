@@ -16,7 +16,7 @@ class OauthData
 	public $gender = '';
 	public $provider = '';
 
-	public function SetGoogleData($data)
+	public function SetGoogleData($data) : void
 	{
 		$this->provider = 'google';
 
@@ -41,7 +41,7 @@ class OauthData
 			$this->gender = $data['gender'];
 	}
 
-	public function SetFacebookData($data, $picture)
+	public function SetFacebookData($data, $picture) : void
 	{
 		$this->provider = 'facebook';
 
@@ -73,7 +73,7 @@ class OauthData
 			$this->picture = $picture['data']['url'];
 	}
 
-	public function SerializeToSession()
+	public function SerializeToSession() : void
 	{
 		$data = [
 			'provider' => $this->provider,
@@ -115,7 +115,7 @@ class OauthData
 		return $ret;
 	}
 
-	public static function ClearSession()
+	public static function ClearSession() : void
 	{
 		PhpSession::SetSessionValue('OauthTerms', '');
 		PhpSession::SetSessionValue('OauthData', '');

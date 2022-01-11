@@ -15,18 +15,18 @@ class TemplateMessage extends AttributeEntity
 	public $content = null;
 	public $skipNotify = false;
 
-	public function SetTo($name, $email)
+	public function SetTo($name, $email) : void
 	{
 		$this->to = $email;
 		$this->toCaption = $name; // mb_encode_mimeheader($name, 'UTF-8', 'Q') . ' <' . $email . '>';
 	}
 
-	public function UpdateViewActionUrl($url)
+	public function UpdateViewActionUrl($url) : void
 	{
 		$this->attributes['viewAction']['url'] = $url;
 	}
 
-	public function AddViewAction($url, $name, $description)
+	public function AddViewAction($url, $name, $description) : void
 	{
 		$viewAction = [];
 		$viewAction['description'] = $description;
@@ -39,7 +39,7 @@ class TemplateMessage extends AttributeEntity
 		$this->SetValue('viewAction', $viewAction);
 	}
 
-	public function Send($template = '')
+	public function Send($template = '') : void
 	{
 		if ($template != '')
 			$this->template = $template;
@@ -68,7 +68,7 @@ class TemplateMessage extends AttributeEntity
 		$mail->Send();
 	}
 
-	public function SetTitle($title)
+	public function SetTitle($title) : void
 	{
 		$this->SetValue('title', $title);
 	}

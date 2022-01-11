@@ -11,15 +11,15 @@ class NullLock
 	{
 	}
 
-	public function LockRead()
+	public function LockRead() : void
 	{
 	}
 
-	public function LockWrite()
+	public function LockWrite() : void
 	{
 	}
 
-	public function Release()
+	public function Release() : void
 	{
 	}
 

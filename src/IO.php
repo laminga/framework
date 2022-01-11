@@ -187,7 +187,7 @@ class IO
 		return $ret;
 	}
 
-	public static function WriteKeyValueCSVFile($path, $assocArr)
+	public static function WriteKeyValueCSVFile($path, $assocArr) : void
 	{
 		$fp = fopen($path, 'w');
 		foreach ($assocArr as $key => $value)
@@ -350,7 +350,7 @@ class IO
 		return substr($filename, 0, $n);
 	}
 
-	public static function EnsureExists($directory)
+	public static function EnsureExists($directory) : void
 	{
 		if (is_dir($directory) == false)
 		{
@@ -359,7 +359,7 @@ class IO
 		}
 	}
 
-	public static function CreateDirectory($directory)
+	public static function CreateDirectory($directory) : void
 	{
 		try
 		{
@@ -524,7 +524,7 @@ class IO
 		return $n;
 	}
 
-	public static function ClearFilesOlderThan($dir, $days, $ext = '')
+	public static function ClearFilesOlderThan($dir, $days, $ext = '') : void
 	{
 		$time = time();
 
@@ -539,7 +539,7 @@ class IO
 		$files->Close();
 	}
 
-	public static function ClearDirectoriesOlderThan($dir, $days, $ext = '')
+	public static function ClearDirectoriesOlderThan($dir, $days, $ext = '') : void
 	{
 		$time = time();
 
@@ -588,7 +588,7 @@ class IO
 		return false;
 	}
 
-	public static function MoveDirectory($dirSource, $dirDest, $dirName = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true)
+	public static function MoveDirectory($dirSource, $dirDest, $dirName = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true) : void
 	{
 		self::CopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders);
 		self::RemoveDirectory($dirSource);
@@ -826,7 +826,7 @@ class IO
 		return ['size' => $size, 'inodes' => $inodes];
 	}
 
-	public static function SendFilesToZip($zipFile, $files, $sourcefolder)
+	public static function SendFilesToZip($zipFile, $files, $sourcefolder) : void
 	{
 		self::Delete($zipFile);
 		$zip = new \ZipArchive();

@@ -33,7 +33,7 @@ class Arr
 		return count(array_keys($arr, $element));
 	}
 
-	public static function CastColumnAsFloat(&$arr, $column)
+	public static function CastColumnAsFloat(&$arr, $column) : void
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
@@ -113,23 +113,23 @@ class Arr
 		return $ret;
 	}
 
-	public static function Increment(&$arr, $itemName, $n = 1)
+	public static function Increment(&$arr, $itemName, $n = 1) : void
 	{
 		self::CheckSubZero($arr, $itemName);
 		$arr[$itemName] += $n;
 	}
 
-	public static function CheckSubArray(&$arr, $itemName)
+	public static function CheckSubArray(&$arr, $itemName) : void
 	{
 		self::CheckSubItem($arr, $itemName, []);
 	}
 
-	public static function CheckSubZero(&$arr, $itemName)
+	public static function CheckSubZero(&$arr, $itemName) : void
 	{
 		self::CheckSubItem($arr, $itemName, 0);
 	}
 
-	public static function CheckSubItem(&$arr, $itemName, $item)
+	public static function CheckSubItem(&$arr, $itemName, $item) : void
 	{
 		if (array_key_exists($itemName, $arr) == false)
 			$arr[$itemName] = $item;
@@ -481,7 +481,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function SortTwoLevelByTopic(&$items)
+	public static function SortTwoLevelByTopic(&$items) : void
 	{
 		self::SortFullNameArray($items);
 		foreach($items as &$root)
@@ -491,104 +491,104 @@ class Arr
 		}
 	}
 
-	public static function SortNativeKeyedArray(&$arr)
+	public static function SortNativeKeyedArray(&$arr) : void
 	{
 		ksort($arr);
 	}
 
-	public static function SortNativeKeyedArrayDesc(&$arr)
+	public static function SortNativeKeyedArrayDesc(&$arr) : void
 	{
 		krsort($arr);
 	}
 
 	// Sorter Wrappers
 
-	public static function SortByField(&$arr, $field)
+	public static function SortByField(&$arr, $field) : void
 	{
 		usort($arr, function($a, $b) use ($field) { return Sorter::ByField($a, $b, $field); });
 	}
 
-	public static function SortByGetter(&$arr, $getter)
+	public static function SortByGetter(&$arr, $getter) : void
 	{
 		usort($arr, function($a, $b) use ($getter) { return Sorter::ByGetter($a, $b, $getter); });
 	}
 
-	public static function SortByGetterDesc(&$arr, $getter)
+	public static function SortByGetterDesc(&$arr, $getter) : void
 	{
 		usort($arr, function($a, $b) use ($getter) { return Sorter::ByGetterDesc($a, $b, $getter); });
 	}
 
-	public static function SortAssocByKey(&$arr, $key)
+	public static function SortAssocByKey(&$arr, $key) : void
 	{
 		uasort($arr, function($a, $b) use ($key) { return Sorter::ByKey($a, $b, $key); });
 	}
 
-	public static function SortAssocByKeyDesc(&$arr, $key)
+	public static function SortAssocByKeyDesc(&$arr, $key) : void
 	{
 		uasort($arr, function($a, $b) use ($key) { return Sorter::ByKeyDesc($a, $b, $key); });
 	}
 
-	public static function SortAssocBySortKeys(&$arr)
+	public static function SortAssocBySortKeys(&$arr) : void
 	{
 		uasort($arr, function($a, $b) { return Sorter::BySortKeys($a, $b); });
 	}
 
-	public static function SortAssocByThreeKeysDesc(&$arr, $key1, $key2, $key3)
+	public static function SortAssocByThreeKeysDesc(&$arr, $key1, $key2, $key3) : void
 	{
 		uasort($arr, function($a, $b) use ($key1, $key2, $key3) { return Sorter::ByThreeKeysDesc($a, $b, $key1, $key2, $key3); });
 	}
 
-	public static function SortStringByKey(&$arr, $key)
+	public static function SortStringByKey(&$arr, $key) : void
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::StringByKey($a, $b, $key); });
 	}
 
-	public static function SortStringByKeyDesc(&$arr, $key)
+	public static function SortStringByKeyDesc(&$arr, $key) : void
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::StringByKeyDesc($a, $b, $key); });
 	}
 
-	public static function SortStringByTwoKeys(&$arr, $key1, $key2)
+	public static function SortStringByTwoKeys(&$arr, $key1, $key2) : void
 	{
 		usort($arr, function($a, $b) use ($key1, $key2) { return Sorter::StringByTwoKeys($a, $b, $key1, $key2); });
 	}
 
-	public static function SortFullNameArray(&$arr)
+	public static function SortFullNameArray(&$arr) : void
 	{
 		usort($arr, function($a, $b) { return Sorter::ByFullName($a, $b); });
 	}
 
-	public static function SortAttributeEntityArray(&$arr, $key)
+	public static function SortAttributeEntityArray(&$arr, $key) : void
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::ByAttribute($a, $b, $key); });
 	}
 
-	public static function SortByKey(&$arr, $key)
+	public static function SortByKey(&$arr, $key) : void
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::ByKey($a, $b, $key); });
 	}
 
-	public static function SortByKeyDesc(&$arr, $key)
+	public static function SortByKeyDesc(&$arr, $key) : void
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::ByKeyDesc($a, $b, $key); });
 	}
 
-	public static function SortByCleanString(&$arr, $key)
+	public static function SortByCleanString(&$arr, $key) : void
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::ByCleanString($a, $b, $key); });
 	}
 
-	public static function SortByKeysArray(&$arr, $key)
+	public static function SortByKeysArray(&$arr, $key) : void
 	{
 		usort($arr, function($a, $b) use ($key) { return Sorter::ByKeysArray($a, $b, $key); });
 	}
 
-	public static function SortByWordLengthDesc(&$arr)
+	public static function SortByWordLengthDesc(&$arr) : void
 	{
 		usort($arr, function($a, $b) { return Sorter::ByWordLengthDesc($a, $b); });
 	}
 
-	public static function SortWordCountDesc(&$arr)
+	public static function SortWordCountDesc(&$arr) : void
 	{
 		usort($arr, function($a, $b) { return Sorter::ByWordCountDesc($a, $b); });
 	}

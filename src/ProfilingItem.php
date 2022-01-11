@@ -38,7 +38,7 @@ class ProfilingItem
 		return $a['sec'] + ($a['usec'] * 0.000001);
 	}
 
-	public function CompleteTimer()
+	public function CompleteTimer() : void
 	{
 		$t2 = microtime(true);
 		$endPause = Performance::$pauseEllapsedSecs;
@@ -49,7 +49,7 @@ class ProfilingItem
 		$this->hits = 1;
 	}
 
-	public function SumChildren()
+	public function SumChildren() : void
 	{
 		$this->memory = 0;
 		$this->memoryPeak = 0;

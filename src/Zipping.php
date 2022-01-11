@@ -121,7 +121,7 @@ class Zipping
 		return $tmpfile . '/' . $file;
 	}
 
-	private static function ReleaseTempFile($tmpFilename)
+	private static function ReleaseTempFile($tmpFilename) : void
 	{
 		$path = dirname($tmpFilename);
 		IO::Delete($tmpFilename);
@@ -195,7 +195,7 @@ class Zipping
 
 	}
 
-	public static function AddOrUpdate($zipFile, $filename, $filesrc)
+	public static function AddOrUpdate($zipFile, $filename, $filesrc) : void
 	{
 		try
 		{
@@ -230,7 +230,7 @@ class Zipping
 		}
 	}
 
-	public static function Release()
+	public static function Release() : void
 	{
 		foreach(self::$allFiles as $key => $value)
 			$value->close();

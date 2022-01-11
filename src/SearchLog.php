@@ -8,12 +8,12 @@ class SearchLog
 {
 	private $timeStart = 0;
 
-	public function BeginSearch()
+	public function BeginSearch() : void
 	{
 		$this->timeStart = microtime(true);
 	}
 
-	public function RegisterSearch($text, $matches)
+	public function RegisterSearch($text, $matches) : void
 	{
 		try
 		{
@@ -32,7 +32,7 @@ class SearchLog
 		}
 	}
 
-	private function Save($text, $matches)
+	private function Save($text, $matches) : void
 	{
 		$lock = new SearchLogLock();
 
@@ -51,7 +51,7 @@ class SearchLog
 		return $path . '/' . $item . '.txt';
 	}
 
-	private static function SaveSearchHit($block, $text, $matches, $ellapsedMs)
+	private static function SaveSearchHit($block, $text, $matches, $ellapsedMs) : void
 	{
 		$file = self::ResolveFile($block);
 		$line = self::CreateKey($text, $matches, $ellapsedMs);

@@ -17,7 +17,7 @@ class CompressedInParentDirectory
 		$this->file = $file;
 	}
 
-	public function Release()
+	public function Release() : void
 	{
 		if ($this->expanded == false)
 			return;
@@ -92,7 +92,7 @@ class CompressedInParentDirectory
 		return $ret;
 	}
 
-	public function Expand()
+	public function Expand() : void
 	{
 		if ($this->expanded)
 			return;

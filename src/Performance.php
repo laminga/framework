@@ -36,7 +36,7 @@ class Performance
 
 	public static $allowLongRunningRequest = false;
 
-	public static function CacheMissed()
+	public static function CacheMissed() : void
 	{
 		self::$gotFromCache = false;
 	}
@@ -46,25 +46,25 @@ class Performance
 		return self::$gotFromCache === false;
 	}
 
-	public static function Begin()
+	public static function Begin() : void
 	{
 		self::$timeStart = microtime(true);
 	}
 
-	public static function BeginPause()
+	public static function BeginPause() : void
 	{
 		self::$timePausedStart = microtime(true);
 		Profiling::BeginTimer('Performance::Pause');
 	}
 
-	public static function EndPause()
+	public static function EndPause() : void
 	{
 		Profiling::EndTimer();
 		$ellapsed = microtime(true) - self::$timePausedStart;
 		self::$pauseEllapsedSecs += $ellapsed;
 	}
 
-	public static function End()
+	public static function End() : void
 	{
 		self::$timeEnd = microtime(true);
 		try
@@ -80,7 +80,7 @@ class Performance
 
 		self::CheckMemoryPeaks();
 	}
-	private static function CheckMemoryPeaks()
+	private static function CheckMemoryPeaks() : void
 	{
 		if (Context::Settings()->Log()->LogMemoryPeaks == false)
 			return;
@@ -104,18 +104,18 @@ class Performance
 		}
 	}
 
-	public static function BeginLockedWait($class)
+	public static function BeginLockedWait($class) : void
 	{
 		self::$lockedClass = $class;
 		self::$timeStartLocked = microtime(true);
 	}
 
-	public static function BeginDbWait()
+	public static function BeginDbWait() : void
 	{
 		self::$timeStartDb = microtime(true);
 	}
 
-	public static function EndDbWait()
+	public static function EndDbWait() : void
 	{
 		if (self::$timeStartDb == null)
 			return;
@@ -129,7 +129,7 @@ class Performance
 		self::$timeStartDb = null;
 	}
 
-	public static function EndLockedWait($hadToWait)
+	public static function EndLockedWait($hadToWait) : void
 	{
 		if (self::$timeStartLocked == null)
 			return;
@@ -149,7 +149,7 @@ class Performance
 		self::$timeStartLocked = null;
 	}
 
-	public static function ResolveControllerFromUri()
+	public static function ResolveControllerFromUri() : void
 	{
 		// Resuelve el methodName default de performance
 		$uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
@@ -164,11 +164,11 @@ class Performance
 			self::SetController($uri, strtolower($_SERVER['REQUEST_METHOD']));
 	}
 
-	public static function AppendControllerSuffix($suffix)
+	public static function AppendControllerSuffix($suffix) : void
 	{
 		self::$controller .= "#" . $suffix;
 	}
-	public static function SetController($controller, $method, $forceSet = false)
+	public static function SetController($controller, $method, $forceSet = false) : void
 	{
 		if (self::$controller == null || $forceSet)
 		{
@@ -183,12 +183,12 @@ class Performance
 		}
 	}
 
-	public static function SetMethod($method)
+	public static function SetMethod($method) : void
 	{
 		self::$method = $method;
 	}
 
-	public static function AddControllerSuffix($suffix)
+	public static function AddControllerSuffix($suffix) : void
 	{
 		if (self::$controller == null)
 			self::$controller = '';
@@ -196,7 +196,7 @@ class Performance
 		self::$controller .= $suffix;
 	}
 
-	private static function Save()
+	private static function Save() : void
 	{
 		if (self::$timeStart == null)
 			return;
@@ -270,7 +270,7 @@ class Performance
 		return self::$warnToday != null;
 	}
 
-	private static function SaveUserUsage($ellapsedMilliseconds, $month = '')
+	private static function SaveUserUsage($ellapsedMilliseconds, $month = '') : void
 	{
 		if (Context::Settings()->Performance()->PerformancePerUser == false)
 			return;
@@ -290,7 +290,7 @@ class Performance
 		IO::WriteIniFile($file, $vals);
 	}
 
-	private static function SaveControllerUsage($ellapsedMilliseconds, $month = '')
+	private static function SaveControllerUsage($ellapsedMilliseconds, $month = '') : void
 	{
 		$file = self::ResolveFilename($month);
 		$keyMs = self::$method;
@@ -302,7 +302,7 @@ class Performance
 		IO::WriteIniFile($file, $vals);
 	}
 
-	private static function CheckDaylyReset()
+	private static function CheckDaylyReset() : void
 	{
 		if(self::$daylyResetChecked)
 			return;
@@ -340,7 +340,7 @@ class Performance
 		PerformanceDaylyLocksLock::EndWrite();
 	}
 
-	private static function DayCompleted($newDay)
+	private static function DayCompleted($newDay) : void
 	{
 		$folder = self::ResolveFolder('dayly');
 		$path = $folder . '/today.txt';
@@ -397,12 +397,12 @@ class Performance
 		];
 	}
 
-	public static function SaveDaylyLocks()
+	public static function SaveDaylyLocks() : void
 	{
 		self::SaveLocks('dayly');
 	}
 
-	public static function SaveLocks($month = '')
+	public static function SaveLocks($month = '') : void
 	{
 		if (count(self::$locksByClass) > 0)
 		{
@@ -418,7 +418,7 @@ class Performance
 		}
 	}
 
-	private static function CheckLimits($days, $key, $prevHits, $prevDuration, $prevLocked, $ellapsedMilliseconds)
+	private static function CheckLimits($days, $key, $prevHits, $prevDuration, $prevLocked, $ellapsedMilliseconds) : void
 	{
 		self::ReadCurrentKeyValues($days, $key, $hits, $duration, $locked);
 
@@ -446,7 +446,7 @@ class Performance
 		}
 	}
 
-	public static function SendPerformanceWarning(string $metric, string $limit, string $value, string $ip = '', string $userAgent = '')
+	public static function SendPerformanceWarning(string $metric, string $limit, string $value, string $ip = '', string $userAgent = '') : void
 	{
 		if (empty(Context::Settings()->Mail()->NotifyAddress))
 			return;
@@ -480,7 +480,7 @@ class Performance
 		return [];
 	}
 
-	private static function ReadCurrentKeyValues($arr, $key, &$prevHits, &$prevDuration, &$locked, &$dbMs = 0, &$dbHits = 0)
+	private static function ReadCurrentKeyValues($arr, $key, &$prevHits, &$prevDuration, &$locked, &$dbMs = 0, &$dbHits = 0) : void
 	{
 		if (array_key_exists($key, $arr) == false)
 		{
@@ -494,7 +494,7 @@ class Performance
 			self::ParseHit($arr[$key], $prevHits, $prevDuration, $locked, $dbMs, $dbHits);
 	}
 
-	private static function IncrementKey(&$arr, $key, $value, $newHits, $newLocked, $newDbMs, $newDb_hitCount)
+	private static function IncrementKey(&$arr, $key, $value, $newHits, $newLocked, $newDbMs, $newDb_hitCount) : void
 	{
 		if (array_key_exists($key, $arr) == false)
 		{
@@ -517,7 +517,7 @@ class Performance
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $dbMs . ';' . $dbHitCount;
 	}
 
-	private static function IncrementLockKey(&$arr, $key, $value, $newHits, $newLocked)
+	private static function IncrementLockKey(&$arr, $key, $value, $newHits, $newLocked) : void
 	{
 		if (array_key_exists($key, $arr) == false)
 		{
@@ -536,7 +536,7 @@ class Performance
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked;
 	}
 
-	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = [])	{
+	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = []) : void	{
 		if (array_key_exists($key, $arr) == false)
 		{
 			$hits = $newHits;
@@ -568,7 +568,7 @@ class Performance
 	}
 
 	private static function ParseHit($value, &$hits, &$duration, &$locked,
-		&$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null, &$extra = null)
+		&$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null, &$extra = null) : void
 	{
 		$parts = explode(';', $value);
 		$hits = $parts[0];

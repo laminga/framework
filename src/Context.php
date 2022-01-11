@@ -36,12 +36,12 @@ class Context
 		return $ret . Params::SafeServer('HTTP_HOST') . Params::SafeServer('REQUEST_URI');
 	}
 
-	public static function InjectSettings($settings)
+	public static function InjectSettings($settings) : void
 	{
 		self::$settings = $settings;
 	}
 
-	public static function InjectCallbacks($calls)
+	public static function InjectCallbacks($calls) : void
 	{
 		self::$calls = $calls;
 	}
@@ -59,7 +59,7 @@ class Context
 		return PhpSession::GetSessionValue('user');
 	}
 
-	public static function EndRequest()
+	public static function EndRequest() : void
 	{
 		self::Calls()->EndRequest();
 	}

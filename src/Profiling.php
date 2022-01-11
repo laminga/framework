@@ -15,19 +15,19 @@ class Profiling
 	private static $profileData = null;
 	private static $localIsProfiling = null;
 
-	public static function BeginShowQueries($trimQueries = false, $progressOnly = false)
+	public static function BeginShowQueries($trimQueries = false, $progressOnly = false) : void
 	{
 		self::$showQueries = true;
 		self::$trimQueries = $trimQueries;
 		self::$progressOnly = $progressOnly;
 	}
 
-	public static function EndShowQueries()
+	public static function EndShowQueries() : void
 	{
 		self::$showQueries = false;
 	}
 
-	public static function ShowQuery($sql, $params, $types)
+	public static function ShowQuery($sql, $params, $types) : void
 	{
 		if (self::$showQueries === false)
 			return;
@@ -70,7 +70,7 @@ class Profiling
 		return Context::Settings()->Debug()->profiling;
 	}
 
-	public static function SetProfiling($value)
+	public static function SetProfiling($value) : void
 	{
 		if ($value)
 			PhpSession::SetSessionValue("profiling", "1");
@@ -79,7 +79,7 @@ class Profiling
 		self::$localIsProfiling = null;
 	}
 
-	public static function ShowResults()
+	public static function ShowResults() : void
 	{
 		$previous = PhpSession::GetSessionValue("lastProfiling");
 		if ($previous != "")
@@ -91,7 +91,7 @@ class Profiling
 		echo self::GetHtmlResults();
 	}
 
-	public static function SaveBeforeRedirect()
+	public static function SaveBeforeRedirect() : void
 	{
 		if (self::IsProfiling() == false)
 			return;
@@ -277,7 +277,7 @@ class Profiling
 		}
 	}
 
-	public static function BeginTimer($name = '', $isInternalFunction = false)
+	public static function BeginTimer($name = '', $isInternalFunction = false) : void
 	{
 		if (self::IsProfiling() == false)
 			return;
@@ -302,7 +302,7 @@ class Profiling
 		}
 	}
 
-	public static function EndTimer()
+	public static function EndTimer() : void
 	{
 		if (self::IsProfiling() == false)
 			return;
@@ -317,32 +317,32 @@ class Profiling
 		self::$stack = Arr::ShrinkArray(self::$stack, $index);
 	}
 
-	public static function RegisterDbHit()
+	public static function RegisterDbHit() : void
 	{
 		foreach(self::$stack as $item)
 			$item->dbHits++;
 	}
 
-	public static function AppendLockInfo($info)
+	public static function AppendLockInfo($info) : void
 	{
 		if (self::IsProfiling() == false)
 			return;
 		self::$lockStack .= $info . " <br>";
 	}
 
-	public static function FinishTimers()
+	public static function FinishTimers() : void
 	{
 		while(count(self::$stack) > 0)
 			self::EndTimer();
 	}
 
-	private static function MergeLastBrachValues()
+	private static function MergeLastBrachValues() : void
 	{
 		// lo suma en la rama correspondiente
 		self::RecursiveMerge(self::$profileData, 0);
 	}
 
-	private static function RecursiveMerge($profileData, $depth)
+	private static function RecursiveMerge($profileData, $depth) : void
 	{
 		$targetItem = $profileData->GetChildrenOrCreate(self::$stack[$depth]->name);
 		$item = self::$stack[$depth];

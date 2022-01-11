@@ -23,7 +23,7 @@ class WebClient
 		$this->throwErrors = $throwErrors;
 	}
 
-	public function Initialize($path = '')
+	public function Initialize($path = '') : void
 	{
 		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
 		$this->ch = curl_init();
@@ -43,7 +43,7 @@ class WebClient
 
 	}
 
-	public function ExtraLog()
+	public function ExtraLog() : void
 	{
 		$this->logFile2 = $this->logFile . '.extra.txt';
 
@@ -53,17 +53,17 @@ class WebClient
 		$this->cherr = $handle;
 	}
 
-	public function SetFollowRedirects($value)
+	public function SetFollowRedirects($value) : void
 	{
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, $value);
 	}
 
-	public function SetPort($port)
+	public function SetPort($port) : void
 	{
 		curl_setopt($this->ch, CURLOPT_PORT, $port);
 	}
 
-	public function SetReferer($referer)
+	public function SetReferer($referer) : void
 	{
 		curl_setopt($this->ch, CURLOPT_REFERER, $referer);
 	}
@@ -263,7 +263,7 @@ class WebClient
 			return $ret;
 	}
 
-	private function AddPostFields($args)
+	private function AddPostFields($args) : void
 	{
 		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
@@ -298,7 +298,7 @@ class WebClient
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 	}
 
-	private function ParseErrorCodes($ret)
+	private function ParseErrorCodes($ret) : void
 	{
 		$this->httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		$this->error = curl_error($this->ch);
@@ -310,7 +310,7 @@ class WebClient
 			$this->AppendLogData('Content-Length', curl_getinfo($this->ch,CURLINFO_CONTENT_LENGTH_DOWNLOAD));
 	}
 
-	public function printInfo()
+	public function printInfo() : void
 	{
 		echo '<p>';
 		$info = curl_getinfo($this->ch);
@@ -361,7 +361,7 @@ class WebClient
 		return Str::EatUntil($header_text, "\r\n\r\n");
 	}
 
-	public function Finalize()
+	public function Finalize() : void
 	{
 		if ($this->isClosed == false)
 		{
@@ -372,21 +372,21 @@ class WebClient
 		}
 	}
 
-	public function AppendLog($value)
+	public function AppendLog($value) : void
 	{
 		if ($this->logFile == null)
 			return;
 		IO::AppendLine($this->logFile, "\r\n" . $value . ' [' . Date::FormattedArNow() . ']');
 	}
 
-	private function AppendLogData($key, $value)
+	private function AppendLogData($key, $value) : void
 	{
 		if ($this->logFile == null)
 			return;
 		IO::AppendLine($this->logFile, '=> ' . $key . ': ' . $value);
 	}
 
-	public function ClearCookieFile()
+	public function ClearCookieFile() : void
 	{
 		if($this->cookieFile != '')
 			IO::Delete($this->cookieFile);

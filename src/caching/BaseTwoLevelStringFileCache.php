@@ -17,7 +17,7 @@ class BaseTwoLevelStringFileCache
 		IO::EnsureExists($this->path);
 	}
 
-	public function Clear($key1 = null, $key2 = null)
+	public function Clear($key1 = null, $key2 = null) : void
 	{
 		if ($key1 == null)
 		{
@@ -77,14 +77,14 @@ class BaseTwoLevelStringFileCache
 			return $this->path . "/" . $key1 . ".txt";
 	}
 
-	public function PutDataIfMissing($key1, $key2, $value)
+	public function PutDataIfMissing($key1, $key2, $value) : void
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled || $this->HasData($key1, $key2))
 			return;
 		$this->PutData($key1, $key2, $value);
 	}
 
-	public function PutData($key1, $key2, $value)
+	public function PutData($key1, $key2, $value) : void
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
 			return;

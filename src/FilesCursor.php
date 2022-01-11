@@ -15,7 +15,7 @@ class FilesCursor
 		$this->path = $path;
 		$this->ext = $ext;
 	}
-	public function Close()
+	public function Close() : void
 	{
 		if ($this->handle != null)
 		{

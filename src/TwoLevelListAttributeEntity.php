@@ -6,7 +6,7 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 {
 	protected $useInternalId = false;
 
-	public function AppendItem($section, $item)
+	public function AppendItem($section, $item) : void
 	{
 		$values = $this->SafeGetArray($section, 'items');
 		$id = null;
@@ -16,7 +16,7 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 		$values[] = json_encode($item);
 		$this->SafeSetArray($section, 'items', $values);
 	}
-	public function DeleteItem($section, $itemId)
+	public function DeleteItem($section, $itemId) : void
 	{
 		// Lo busca entre los decodificados
 		$items = $this->GetItems($section);

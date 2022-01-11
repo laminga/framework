@@ -17,13 +17,13 @@ abstract class SingleWriterLock extends Lock
 		return self::$writeLock != null;
 	}
 
-	public static function BeginRead()
+	public static function BeginRead() : void
 	{
 		self::$readLock = new static();
 		self::$readLock->LockRead();
 	}
 
-	public static function EndRead()
+	public static function EndRead() : void
 	{
 		$lock = self::$readLock;
 		self::$readLock = null;
@@ -35,7 +35,7 @@ abstract class SingleWriterLock extends Lock
 		$lock->Release();
 	}
 
-	public static function BeginWrite()
+	public static function BeginWrite() : void
 	{
 		if (self::$writeLock != null)
 			self::$refCount++;
@@ -47,7 +47,7 @@ abstract class SingleWriterLock extends Lock
 		}
 	}
 
-	public static function EndWrite()
+	public static function EndWrite() : void
 	{
 		if (self::$writeLock == null)
 		{

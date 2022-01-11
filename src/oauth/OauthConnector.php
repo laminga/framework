@@ -27,7 +27,7 @@ abstract class OauthConnector
 		$this->Setup();
 	}
 
-	public function Setup()
+	public function Setup() : void
 	{
 		$this->storage = new Memory();
 
@@ -93,7 +93,7 @@ abstract class OauthConnector
 		return $uri;
 	}
 
-	private function PutSessionToFile($uri, $sess)
+	private function PutSessionToFile($uri, $sess) : void
 	{
 		$query = [];
 		parse_str($uri->getQuery(), $query);
@@ -139,14 +139,14 @@ abstract class OauthConnector
 		$this->RedirectSession($state);
 	}
 
-	public function RedirectErrorNoEmail()
+	public function RedirectErrorNoEmail() : void
 	{
 		Log::HandleSilentException(new PublicException('No email from ' . $this->ProviderName()));
 
 		MessageBox::ShowDialogPopup('No se ha podido obtener una dirección de correo electrónico a través de ' . $this->ProviderName() . '. Intente otro método de registro para la identificación.', 'Atención');
 	}
 
-	public function RedirectError($error = null)
+	public function RedirectError($error = null) : void
 	{
 		if($error != null)
 			Log::HandleSilentException(new ErrorException($error));
@@ -154,7 +154,7 @@ abstract class OauthConnector
 		MessageBox::ShowDialogPopup('No se ha podido realizar la interacción con ' . $this->ProviderName() . ' para la identificación.', 'Atención');
 	}
 
-	private function RedirectSession(string $state)
+	private function RedirectSession(string $state) : void
 	{
 		$this->CleanOldFiles();
 
@@ -172,7 +172,7 @@ abstract class OauthConnector
 		return Str::Capitalize($c::Provider);
 	}
 
-	private function CloseAndRedirect($target)
+	private function CloseAndRedirect($target) : void
 	{
 		//TODO: validar el target.
 		//-Que sea de este dominio (que no redirija a otro sitio).

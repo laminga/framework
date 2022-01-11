@@ -28,7 +28,7 @@ class Zip
 		return $zip;
 	}
 
-	public function AppendFilesToZipRecursive($basePath, array $relativePathsToZip, $ext = '', $excludeEnd = '')
+	public function AppendFilesToZipRecursive($basePath, array $relativePathsToZip, $ext = '', $excludeEnd = '') : void
 	{
 		$zip = $this->OpenCreate();
 
@@ -66,7 +66,7 @@ class Zip
 		$zip->close();
 	}
 
-	public function AppendFilesToZip($basePath, $relativePathToZip, $ext = '')
+	public function AppendFilesToZip($basePath, $relativePathToZip, $ext = '') : void
 	{
 		$myfiles = IO::GetFiles($basePath . $relativePathToZip, $ext);
 		$myfiles = $this->AddFolderToPath($myfiles, $basePath . $relativePathToZip);
@@ -153,14 +153,14 @@ class Zip
 		return $ret;
 	}
 
-	public function AddToZipDeleting($sourcefolder, array $files)
+	public function AddToZipDeleting($sourcefolder, array $files) : void
 	{
 		$this->AddToZip($sourcefolder, $files);
 		foreach($files as $file)
 			IO::Delete($file);
 	}
 
-	public function AddToZip($sourcefolder, array $files)
+	public function AddToZip($sourcefolder, array $files) : void
 	{
 		$sourcefolder = str_replace("\\", '/', $sourcefolder);
 		if (Str::EndsWith($sourcefolder, '/') == false)
@@ -240,7 +240,7 @@ class Zip
 		return $ret;
 	}
 
-	public function DeleteFiles(array $files)
+	public function DeleteFiles(array $files) : void
 	{
 		$zip = new \ZipArchive();
 		if ($zip->open($this->targetFile) !== true)

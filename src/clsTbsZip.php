@@ -58,7 +58,7 @@ class clsTbsZip
 			self::CalculateTimeOffset();
 		return self::$timeOffset;
 	}
-	public static function CalculateTimeOffset()
+	public static function CalculateTimeOffset() : void
 	{
 		$tmpzip2 = IO::GetTempFilename();
 		$zip = new clsTbsZip();
@@ -78,7 +78,7 @@ class clsTbsZip
 		IO::Delete($tmpzip2);
 	}
 
-	public function CreateNew($ArchName = 'new.zip') {
+	public function CreateNew($ArchName = 'new.zip') : void {
 		// Create a new virtual empty archive, the name will be the default name when the archive is flushed.
 		if (!isset($this->Meth8Ok))
 			$this->__construct(); // for PHP 4 compatibility
@@ -113,7 +113,7 @@ class clsTbsZip
 		return $ok;
 	}
 
-	public function Close() {
+	public function Close() : void {
 		if (isset($this->ArchHnd) && ($this->ArchHnd !== false)) fclose($this->ArchHnd);
 		$this->ArchFile = '';
 		$this->ArchHnd = false;
@@ -125,7 +125,7 @@ class clsTbsZip
 		$this->ArchCancelModif();
 	}
 
-	public function ArchCancelModif() {
+	public function ArchCancelModif() : void {
 		// $this->LastReadComp = false; // compression of the last read file (1=compressed, 0=stored not compressed, -1= stored compressed but read uncompressed)
 		// $this->LastReadIdx = false; // index of the last file read
 		$this->ReplInfo = [];
@@ -248,7 +248,7 @@ class clsTbsZip
 		return false;
 	}
 
-	public function Debug($FileHeaders = false) {
+	public function Debug($FileHeaders = false) : void {
 
 		$this->DisplayError = true;
 
@@ -739,7 +739,7 @@ class clsTbsZip
 
 	}
 
-	public function OutputFromArch($pos, $pos_stop) {
+	public function OutputFromArch($pos, $pos_stop) : void {
 		$len = $pos_stop - $pos;
 		if ($len < 0)
 			return;
@@ -754,7 +754,7 @@ class clsTbsZip
 		unset($x);
 	}
 
-	public function OutputFromString($data) {
+	public function OutputFromString($data) : void {
 		if ($this->OutputMode === TBSZIP_DOWNLOAD) {
 			echo $data; // donwload
 		} elseif ($this->OutputMode === TBSZIP_STRING) {
@@ -771,7 +771,7 @@ class clsTbsZip
 		}
 	}
 
-	public function OutputClose() {
+	public function OutputClose() : void {
 		if (($this->OutputMode === TBSZIP_FILE) && ($this->OutputHandle !== false)) {
 			fclose($this->OutputHandle);
 			$this->OutputHandle = false;
@@ -782,7 +782,7 @@ class clsTbsZip
 	// Reading functions
 	// ----------------
 
-	public function _MoveTo($pos, $relative = SEEK_SET) {
+	public function _MoveTo($pos, $relative = SEEK_SET) : void {
 		fseek($this->ArchHnd, $pos, $relative);
 	}
 
@@ -833,7 +833,7 @@ class clsTbsZip
 	// Put info into binary data
 	// ----------------
 
-	public function _PutDec(&$txt, $val, $pos, $len) {
+	public function _PutDec(&$txt, $val, $pos, $len) : void {
 		$x = '';
 		for ($i = 0; $i < $len; $i++) {
 			if ($val == 0) {
@@ -1032,7 +1032,7 @@ class clsTbsZip
 
 	}
 
-	private function _DataPrepare(&$Ref)
+	private function _DataPrepare(&$Ref) : void
 	{
 		// returns the real size of data
 		if ($Ref['path'] !== false)
