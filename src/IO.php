@@ -139,7 +139,7 @@ class IO
 		Profiling::BeginTimer();
 		$text = self::ReadAllText($path);
 		$ret = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
-		if($ret === false)
+		if($ret === null && Str::ToLower($text) != 'null')
 			throw new \ErrorException('Error al leer json.');
 		Profiling::EndTimer();
 		return $ret;
