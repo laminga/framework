@@ -1066,7 +1066,7 @@ class Str
 
 	public static function RandomString($len = 12)
 	{
-		$chars = "abcdefghkmnopqrstuvwxyzabcdefghkmnopqrstuvwxyzABCDEFGHKMNOPQRSTUVWXYZ0123456789";
+		$chars = "abcdefghkmnopqrstuvwxyzABCDEFGHKMNOPQRSTUVWXYZ0123456789";
 		$rand = random_bytes($len);
 		$str = '';
 		for($i = 0; $i < $len; $i++)
