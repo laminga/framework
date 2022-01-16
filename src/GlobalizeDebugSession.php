@@ -55,11 +55,9 @@ class GlobalizeDebugSession
 	{
 		$path = self::resolveGlobalizedPath();
 		if (file_exists($path))
-		{
 			return IO::ReadJson($path);
-		}
 
-			return [];
+		return [];
 	}
 
 	private static function readGlobalizedFileValue($ip) : void

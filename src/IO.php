@@ -134,6 +134,20 @@ class IO
 		return fclose($handle);
 	}
 
+	public static function TryReadJson(string $path, &$ret) : bool
+	{
+		try
+		{
+			$ret = null;
+			$ret = self::ReadJson($path);
+			return true;
+		}
+		catch(\Exception $e)
+		{
+			return false;
+		}
+	}
+
 	public static function ReadJson(string $path)
 	{
 		Profiling::BeginTimer();
