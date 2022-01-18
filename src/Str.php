@@ -129,24 +129,6 @@ class Str
 		return $results;
 	}
 
-	public static function GenerateLink() : string
-	{
-		return 'l-' . self::GetRandomString(16);
-	}
-
-	public static function GetRandomString(int $length) : string
-	{
-		$text = "";
-		$possible = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-		for ($i = 0; $i < $length; $i++)
-		{
-			$pos = floor(rand(0, strlen($possible) - 1));
-			$text .= $possible[(int)$pos];
-		}
-		return $text;
-	}
-
 	public static function CultureCmp($a, $b)
 	{
 		$a2 = self::RemoveAccents($a);
@@ -1053,17 +1035,30 @@ class Str
 		return array_search(mb_strtolower($needle), array_map('mb_strtolower', $haystack));
 	}
 
-	public static function RandomString($len = 12)
+	public static function RandomString(int $length = 12,
+		string $keyspace = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') : string
 	{
-		$chars = "abcdefghkmnopqrstuvwxyzABCDEFGHKMNOPQRSTUVWXYZ0123456789";
-		$rand = random_bytes($len);
-		$str = '';
-		for($i = 0; $i < $len; $i++)
-		{
-			$index = ord($rand[$i]) % strlen($chars);
-			$str .= $chars[$index];
-		}
-		return $str;
+		$ret = '';
+		$max = mb_strlen($keyspace, '8bit') - 1;
+		for ($i = 0; $i < $length; $i++)
+			$ret .= $keyspace[random_int(0, $max)];
+
+		return $ret;
+	}
+
+	public static function RandomStringNoAmbiguous(int $length = 12) : string
+	{
+		return self::RandomString($length, "abcdefghkmnopqrstuvwxyzABCDEFGHKMNOPQRSTUVWXYZ0123456789");
+	}
+
+	public static function RandomStringLowerCase(int $length = 12) : string
+	{
+		return self::RandomString($length, "abcdefghijklmnopqrstuvwxyz0123456789");
+	}
+
+	public static function GenerateLink() : string
+	{
+		return 'l-' . self::RandomStringLowerCase(16);
 	}
 
 	public static function FormatLocaleNumber($value, $decimals = 0)
