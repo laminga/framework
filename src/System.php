@@ -99,7 +99,7 @@ class System
 
 	public static function IsCli() : bool
 	{
-		return php_sapi_name() == 'cli';
+		return PHP_SAPI == 'cli';
 	}
 
 	public static function IsTestingInWindows() : bool
