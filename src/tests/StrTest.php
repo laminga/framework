@@ -10,6 +10,7 @@ class StrTest extends TestCaseBase
 	{
 		$this->assertEquals('a', Str::DecodeEntities('a'));
 		$this->assertEquals("l'Écriture", Str::DecodeEntities('l&#39;Écriture'));
+		$this->assertEquals("'", Str::DecodeEntities("&amp;#39;"));
 	}
 
 	public function testStartsWithAlfabetic() : void

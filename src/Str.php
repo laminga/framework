@@ -1022,11 +1022,13 @@ class Str
 		return preg_match($regex, strtoupper($cad));
 	}
 
-	public static function DecodeEntities($string)
+	public static function DecodeEntities(string $str) : string
 	{
-		$p = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
-		$p = self::Replace($p, '\\"', '"');
-		return self::Replace($p, "\\'", "'");
+		//Algunos strings vienen dobleencodeados
+		$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
+		$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
+		$str = self::Replace($str, '\\"', '"');
+		return self::Replace($str, "\\'", "'");
 	}
 
 	//array_search case insensitve
