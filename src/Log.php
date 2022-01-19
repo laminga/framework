@@ -332,6 +332,11 @@ class Log
 
 		if(Context::Settings()->Debug()->debug && Str::StartsWith($e->getMessage(), 'Error running: "pdf') == false)
 		{
+			if(System::IsCli())
+			{
+				echo strip_tags($textToShow);
+				exit();
+			}
 			MessageBox::ThrowBackMessage($textToShow);
 			exit();
 		}

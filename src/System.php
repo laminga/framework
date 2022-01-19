@@ -63,7 +63,7 @@ class System
 		];
 	}
 
-	public static function GetDbInfo()
+	public static function GetDbInfo() : array
 	{
 		$settings = [];
 		$settings[] = ['name' => 'Host', 'value' => Context::Settings()->Db()->Host];
@@ -79,7 +79,7 @@ class System
 		return $db->fetchScalar('SELECT @@version;');
 	}
 
-	public static function GetArchitecture()
+	public static function GetArchitecture() : string
 	{
 		switch(PHP_INT_SIZE)
 		{
@@ -92,18 +92,23 @@ class System
 		}
 	}
 
-	public static function IsWindows()
+	public static function IsWindows() : bool
 	{
 		return Str::StartsWithI(PHP_OS, 'win');
 	}
 
-	public static function IsTestingInWindows()
+	public static function IsCli() : bool
+	{
+		return php_sapi_name() == 'cli';
+	}
+
+	public static function IsTestingInWindows() : bool
 	{
 		return Context::Settings()->isTesting
 			&& self::IsWindows();
 	}
 
-	public static function IsOnIIS()
+	public static function IsOnIIS() : bool
 	{
 		if(isset($_SERVER['SERVER_SOFTWARE']) == false)
 			return PHP_OS === "WINNT";
