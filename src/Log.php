@@ -280,7 +280,7 @@ class Log
 			. '=> Stack: ' . $stack . "\r\n";
 	}
 
-	public static function InternalExceptionToText($exception)
+	public static function InternalExceptionToText($exception): string
 	{
 		$message = $exception->getMessage();
 		if (is_a($exception, MingaException::class) && $exception->getInnerException())
@@ -407,6 +407,7 @@ class Log
 		$message = $exception->getMessage();
 		if ($silent)
 			$message .= ' (silently processed)';
+
 		if (is_a($exception, MingaException::class) && $exception->getInnerException())
 		{
 			$inner = $exception->getInnerException();
@@ -417,15 +418,17 @@ class Log
 					$inner->getCode(), $inner->getMessage(), $inner->getFile(),
 					$inner->getLine(), $inner->getTraceAsString());
 			}
-
-
+			else
+			{
 				return self::LogError($exception->getCode(), $message, $exception->getFile(),
 					$exception->getLine(), [], $exception->getTraceAsString(), $inner);
-
+			}
 		}
-
-		return self::LogError($exception->getCode(), $message, $exception->getFile(),
+		else 
+		{
+			return self::LogError($exception->getCode(), $message, $exception->getFile(),
 				$exception->getLine(), [], $exception->getTraceAsString());
+		}
 	}
 
 	public static function PutToFatalErrorLog(string $text) : void
