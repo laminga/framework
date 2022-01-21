@@ -4,11 +4,12 @@ namespace minga\framework;
 
 class Multipart
 {
-
 	/**
 	 * Split the zip archive.
+	 *
 	 * @param string $i The zip archive.
 	 * @param integer $s The max size for the parts.
+	 *
 	 * @return integer Return the number of parts created.
 	 */
 	public static function Split($i, $s)
@@ -33,9 +34,11 @@ class Multipart
 
 	/**
 	 * Decompact the zip archive.
+	 *
 	 * @param string $i The zip archive (*.zip).
 	 * @param string $o The directory name for extract.
 	 * @param integer $p Number of parts of the zip archive.
+	 *
 	 * @return boolean Return true for success or false for fail.
 	 */
 	public static function Unzip($i, $o, $p = 0)
@@ -56,14 +59,16 @@ class Multipart
 			IO::Delete($i);
 			return true;
 		}
-		else
+
 			return false;
 	}
 
 	/**
 	 * Merge the parts of zip archive.
+	 *
 	 * @param string $i The zip archive (*.zip).
 	 * @param integer $p Number of parts of the zip archive.
+	 *
 	 * @return boolean Return true for success or false for fail.
 	 */
 	public static function Merge($i, $p)

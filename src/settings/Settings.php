@@ -3,7 +3,6 @@
 namespace minga\framework\settings;
 
 use minga\framework\Context;
-use minga\framework\Str;
 
 class Settings
 {
@@ -98,7 +97,7 @@ class Settings
 	// otras globales
 	public $section = '';
 
-	public function Initialize($rootPath)
+	public function Initialize($rootPath) : void
 	{
 		$this->catalog = 'mySql';
 		$this->rootPath = $rootPath;
@@ -175,7 +174,6 @@ class Settings
 		return $this->log;
 	}
 
-
 	public function Notifications()
 	{
 		if ($this->notifications == null)
@@ -183,7 +181,6 @@ class Settings
 
 		return $this->notifications;
 	}
-
 
 	public function Debug()
 	{

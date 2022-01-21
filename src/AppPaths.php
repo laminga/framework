@@ -27,8 +27,7 @@ class AppPaths
 	public function GetQueuePath() : string
 	{
 		$path = $this->GetStorageRoot() . "/queue";
-		IO::EnsureExists($path . '/ran');
-		IO::EnsureExists($path . '/failed');
+		IO::EnsureExists($path);
 		return $path;
 	}
 
@@ -84,7 +83,6 @@ class AppPaths
 	{
 		return Context::Paths()->GetRoot() . "/compilation_cache";
 	}
-
 
 	public function GetTrafficLocalPath() : string
 	{
@@ -152,5 +150,4 @@ class AppPaths
 		IO::EnsureExists($ret);
 		return $ret;
 	}
-
 }

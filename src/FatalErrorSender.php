@@ -8,6 +8,7 @@ class FatalErrorSender
 	{
 		return Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
 	}
+
 	private static function ResolveFataLogSentPath()
 	{
 		$ret = self::GetFatalLogPath() . '/sent';
@@ -15,7 +16,7 @@ class FatalErrorSender
 		return $ret;
 	}
 
-	public static function SendErrorLog($silent = false)
+	public static function SendErrorLog($silent = false) : void
 	{
 		$path = self::GetFatalLogPath();
 		$file = $path . '/error_log';
@@ -31,7 +32,7 @@ class FatalErrorSender
 			echo "Procesado (error_log)\n";
 	}
 
-	public static function SendFatalErrors($silent = false)
+	public static function SendFatalErrors($silent = false) : void
 	{
 		$path = Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
 		$sentPath = self::ResolveFataLogSentPath();

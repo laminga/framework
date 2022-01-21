@@ -6,11 +6,12 @@ use minga\framework\settings\Settings;
 
 class Context
 {
+	/** @var Settings */
 	private static $settings = null;
 	private static $calls = null;
 	private static $paths = null;
 
-	public static function Settings()
+	public static function Settings() : Settings
 	{
 		if(self::$settings === null)
 			self::$settings = new Settings();
@@ -35,14 +36,14 @@ class Context
 		return $ret . Params::SafeServer('HTTP_HOST') . Params::SafeServer('REQUEST_URI');
 	}
 
-	public static function InjectSettings($settings)
+	public static function InjectSettings($settings) : void
 	{
 		self::$settings = $settings;
 	}
 
-	public static function InjectCallbacks($calls)
+	public static function InjectCallbacks($calls) : void
 	{
-		self::$calls= $calls;
+		self::$calls = $calls;
 	}
 
 	public static function Paths()
@@ -58,7 +59,7 @@ class Context
 		return PhpSession::GetSessionValue('user');
 	}
 
-	public static function EndRequest()
+	public static function EndRequest() : void
 	{
 		self::Calls()->EndRequest();
 	}

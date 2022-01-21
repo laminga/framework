@@ -51,10 +51,12 @@ class Params
 			$ret = trim($ret);
 		return $ret;
 	}
+
 	public static function Exists($key)
 	{
 		return isset($_GET[$key]);
 	}
+
 	//Método usado en mapas.
 	public static function Get($key, $default = null)
 	{
@@ -129,8 +131,8 @@ class Params
 	public static function GetInt($param, $default = null)
 	{
 		$value = self::Get($param, $default);
-		if ($value === null || $value === '')
-			return null;
+		if ($value === null || $value === '' || $value === $default)
+			return $default;
 		return self::CheckParseIntValue($value);
 	}
 
@@ -191,7 +193,7 @@ class Params
 		}
 		// Check MIME Type by yourself.
 		$finfo = new \finfo(FILEINFO_MIME_TYPE);
-		if (sizeof($validFileTypes) == 0 || !array_search(
+		if (count($validFileTypes) == 0 || !array_search(
 			$finfo->file($_FILES[$param]['tmp_name']),
 			$validFileTypes, true)) {
 			throw new \RuntimeException('Invalid file format.');
@@ -210,7 +212,7 @@ class Params
 		$parts = explode('/', $uri);
 		if (count($parts) <= $position)
 			return $default;
-		else
+
 			return $parts[$position];
 	}
 

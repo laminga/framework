@@ -7,7 +7,7 @@ class Reflection
 	public static function InstanciateClass($class, ...$constructorParams)
 	{
 		if(count($constructorParams) == 0)
-			return new $class;
+			return new $class();
 
 		$rc = new \ReflectionClass($class);
 		return $rc->newInstanceArgs($constructorParams);
@@ -50,7 +50,7 @@ class Reflection
 
 	public static function CallMethod($method, ...$params)
 	{
-		return call_user_func($method, ...$params);
+		return $method(...$params);
 	}
 
 	public static function CallPrivateStaticMethod($class, $function, ...$params)
@@ -93,6 +93,4 @@ class Reflection
 			Profiling::EndTimer();
 		}
 	}
-
-
 }

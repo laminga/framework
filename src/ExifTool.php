@@ -46,5 +46,4 @@ class ExifTool
 		}
 		return true;
 	}
-
 }

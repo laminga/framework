@@ -2,19 +2,18 @@
 
 namespace minga\framework;
 
-use minga\classes\fulltext\Catalog;
 use minga\framework\locking\SearchLogLock;
 
 class SearchLog
 {
 	private $timeStart = 0;
 
-	public function BeginSearch()
+	public function BeginSearch() : void
 	{
 		$this->timeStart = microtime(true);
 	}
 
-	public function RegisterSearch($text, $matches)
+	public function RegisterSearch($text, $matches) : void
 	{
 		try
 		{
@@ -33,7 +32,7 @@ class SearchLog
 		}
 	}
 
-	private function Save($text, $matches)
+	private function Save($text, $matches) : void
 	{
 		$lock = new SearchLogLock();
 
@@ -49,11 +48,10 @@ class SearchLog
 	{
 		$path = Context::Paths()->GetSearchLogLocalPath();
 		IO::EnsureExists($path);
-		$ret = $path . '/' . $item . '.txt';
-		return $ret;
+		return $path . '/' . $item . '.txt';
 	}
 
-	private static function SaveSearchHit($block, $text, $matches, $ellapsedMs)
+	private static function SaveSearchHit($block, $text, $matches, $ellapsedMs) : void
 	{
 		$file = self::ResolveFile($block);
 		$line = self::CreateKey($text, $matches, $ellapsedMs);
@@ -110,7 +108,8 @@ class SearchLog
 		$lock->Release();
 
 		$ret = [];
-		if ($includeHeaders) $ret[] = ['Fecha','Búsqueda','Resultados','Duración (ms)', 'Usuario o sesión'];
+		if ($includeHeaders)
+			$ret[] = ['Fecha', 'Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
 
 		$currentDay = Date::FormattedArDate();
 		for($n = count($rows) - 1; $n >= 0; $n--)

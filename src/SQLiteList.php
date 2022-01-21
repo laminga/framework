@@ -111,9 +111,9 @@ class SQLiteList
 			foreach($this->columns as $column)
 			{
 				if (!$this->blobColumns || !in_array($column, $this->blobColumns))
-					$sql .=	", " . $column . " TEXT ";
+					$sql .= ", " . $column . " TEXT ";
 				else
-					$sql .=	", " . $column . " BLOB ";
+					$sql .= ", " . $column . " BLOB ";
 
 				if ($this->uniqueColumns != null && in_array($column, $this->uniqueColumns))
 					$sql .= " UNIQUE";
@@ -123,10 +123,10 @@ class SQLiteList
 		if ($this->intColumns != null)
 		{
 			foreach($this->intColumns as $column)
-				$sql .=	", " . $column . " integer ";
+				$sql .= ", " . $column . " integer ";
 		}
 
-		$sql .=	")";
+		$sql .= ")";
 		return $sql;
 	}
 
@@ -175,14 +175,13 @@ class SQLiteList
 			$n = 1;
 			foreach($args as $arg)
 			{
+				$val = $arg;
+				if(is_bool($arg))
+					$val = (int)$arg;
 				if ($n - 1 === $blobIndex)
-				{
-					$statement->bindValue(':p' . ($n++), $arg, SQLITE3_BLOB);
-				}
+					$statement->bindValue(':p' . ($n++), $val, SQLITE3_BLOB);
 				else
-				{
-					$statement->bindValue(':p' . ($n++), $arg);
-				}
+					$statement->bindValue(':p' . ($n++), $val);
 			}
 			return $statement->execute();
 		}
@@ -206,7 +205,8 @@ class SQLiteList
 				$paramsAsText .= ', ';
 			$paramsAsText .= $arg;
 		}
-		if ($paramsAsText == '') $paramsAsText = 'Ninguno';
+		if ($paramsAsText == '')
+			$paramsAsText = 'Ninguno';
 		$text .= '. Parámetros: ' . $paramsAsText;
 		return $text;
 	}
@@ -224,12 +224,20 @@ class SQLiteList
 		$statement = $this->db->prepare($sql);
 		$n = 1;
 		foreach($args as $arg)
-			$statement->bindValue(':p' . ($n++), $arg);
+		{
+			$val = $arg;
+			if(is_bool($arg))
+				$val = (int)$arg;
+			$statement->bindValue(':p' . ($n++), $val);
+		}
 		$statement->execute();
 	}
 
 	public function Update($key, string $column, $value) : void
 	{
+		if(is_bool($value))
+			$value = (int)$value;
+
 		$sql = "UPDATE data SET " . $column . " = :p2 WHERE " . $this->keyColumn . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
@@ -241,6 +249,11 @@ class SQLiteList
 
 	public function Replace($key, string $column, $oldValue, $newValue) : void
 	{
+		if(is_bool($oldValue))
+			$oldValue = (int)$oldValue;
+		if(is_bool($newValue))
+			$newValue = (int)$newValue;
+
 		$sql = "UPDATE data SET " . $column . " = REPLACE(" . $column . ", :p2, :p3) WHERE " . $this->keyColumn . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
@@ -267,6 +280,7 @@ class SQLiteList
 			$this->Execute($sql);
 		}
 	}
+
 	public function DeleteAll() : void
 	{
 		$sql = "DELETE FROM data";
@@ -289,7 +303,6 @@ class SQLiteList
 		$this->Close();
 		unlink($this->path);
 	}
-
 
 	public function ReadBlobValue($key, string $column)
 	{
@@ -329,19 +342,22 @@ class SQLiteList
 	{
 		return self::$OpenStreams[$key];
 	}
+
 	public static function GetNamedStreamSize(string $key) : int
 	{
 		return self::$OpenStreamsSizes[$key];
 	}
+
 	public static function GetNamedStreamDateTime(string $key)
 	{
 		return self::$OpenStreamsTimes[$key];
 	}
+
 	public function ReadValue($key, string $column)
 	{
 		Profiling::BeginTimer();
-		$sql = "SELECT pID, ". $column .
-			" FROM data WHERE " . $this->keyColumn . " = :p1;";
+		$sql = "SELECT pID, " . $column
+			. " FROM data WHERE " . $this->keyColumn . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
 		$statement->bindValue(':p1', $key);
@@ -393,9 +409,9 @@ class SQLiteList
 		{
 			// update
 			$id = $res[0];
-			$n = intval($res[1]) + 1;
-			$sql = "UPDATE data SET ". $column . " = " . $n .
-				" WHERE pID = :p1;";
+			$n = (int)$res[1] + 1;
+			$sql = "UPDATE data SET " . $column . " = " . $n
+				. " WHERE pID = :p1;";
 			$statement = $this->db->prepare($sql);
 			$statement->bindValue(':p1', $id);
 
@@ -404,15 +420,12 @@ class SQLiteList
 		else
 		{
 			// insert
-			$n = 1;
-			$sql = "INSERT INTO data (" . $this->keyColumn . ", " . $column . ") VALUES (:p1, :p2);";
+			$sql = "INSERT INTO data (" . $this->keyColumn . ", " . $column . ") VALUES (:p1, 1);";
 			$statement = $this->db->prepare($sql);
 			$statement->bindValue(':p1', $key);
-			$statement->bindValue(':p2', $n);
 
 			$statement->execute();
 		}
 		Profiling::EndTimer();
 	}
-
 }

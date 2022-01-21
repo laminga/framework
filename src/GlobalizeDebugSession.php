@@ -2,10 +2,6 @@
 
 namespace minga\framework;
 
-use minga\framework\IO;
-use minga\framework\Context;
-use minga\framework\Cookies;
-use minga\framework\Params;
 use minga\framework\locking\GlobalDebugLock;
 
 class GlobalizeDebugSession
@@ -16,7 +12,7 @@ class GlobalizeDebugSession
 	private static $currentCookieTime;
 	public const FILE = 'XDEBUG_SESSION.txt';
 
-	public static function GlobalizeDebug()
+	public static function GlobalizeDebug() : void
 	{
 		$ip = Params::SafeServer('REMOTE_ADDR') . '@' . Params::SafeServer('HTTP_X_FORWARDED_FOR');
 		// Lee archivo
@@ -24,9 +20,9 @@ class GlobalizeDebugSession
 		// Lee Cookie
 		self::readCookie();
 		// Compara
-		if (self::$currentCookie !== '' &&
-				(self::$currentFileValue == '' ||
-				self::$currentCookieTime > self::$currentFileDate))
+		if (self::$currentCookie !== ''
+				&& (self::$currentFileValue == ''
+				|| self::$currentCookieTime > self::$currentFileDate))
 		{
 			// Respeta cookie
 			if (self::$currentCookie !== self::$currentFileValue)
@@ -39,31 +35,32 @@ class GlobalizeDebugSession
 		}
 	}
 
-	private static function readCookie()
+	private static function readCookie() : void
 	{
 		self::$currentCookie = Cookies::GetCookie('XDEBUG_SESSION');
-		self::$currentCookieTime = intval(Cookies::GetCookie('XDEBUG_SESSION_TIME'));
+		self::$currentCookieTime = (int)(Cookies::GetCookie('XDEBUG_SESSION_TIME'));
 		if (self::$currentCookie != '' && self::$currentCookieTime == 0)
 		{
 			self::$currentCookieTime = time();
 			Cookies::SetCookie('XDEBUG_SESSION_TIME', self::$currentCookieTime);
 		}
 	}
+
 	private static function resolveGlobalizedPath()
 	{
 		return Context::Paths()->GetTempPath() . '/' . self::FILE;
 	}
+
 	private static function readGlobalizedFile()
 	{
 		$path = self::resolveGlobalizedPath();
 		if (file_exists($path))
-		{
 			return IO::ReadJson($path);
-		}
-		else
-			return [];
+
+		return [];
 	}
-	private static function readGlobalizedFileValue($ip)
+
+	private static function readGlobalizedFileValue($ip) : void
 	{
 		GlobalDebugLock::BeginRead();
 		$arr = self::readGlobalizedFile();
@@ -73,10 +70,11 @@ class GlobalizeDebugSession
 			$val = ['value' => '', 'date' => null];
 		}
 		self::$currentFileValue = $val['value'];
-		self::$currentFileDate = intval($val['date']);
+		self::$currentFileDate = (int)($val['date']);
 		GlobalDebugLock::EndRead();
 	}
-	private static function writeGlobalizedFile($ip, $value, $date)
+
+	private static function writeGlobalizedFile($ip, $value, $date) : void
 	{
 		GlobalDebugLock::BeginWrite();
 		$arr = self::readGlobalizedFile();

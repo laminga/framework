@@ -17,7 +17,7 @@ class IO
 	{
 		IO::EnsureExists($target);
 		// limpia
-		$dirname = substr($dirsource,strrpos($dirsource,"/")+1);
+		$dirname = substr($dirsource, strrpos($dirsource, "/") + 1);
 		if (file_exists($target . "/" . $dirname))
 			IO::RemoveDirectory($target . "/" . $dirname);
 		// copia
@@ -43,10 +43,12 @@ class IO
 	{
 		return self::GetFilenameNoExtension(self::GetDirectory($file));
 	}
+
 	public static function GetFileExtension($file)
 	{
 		return pathinfo($file, PATHINFO_EXTENSION);
 	}
+
 	public static function GetFilenameNoExtension($file)
 	{
 		$pathParts = pathinfo($file);
@@ -72,7 +74,6 @@ class IO
 
 	public static function ReadText($path, $length)
 	{
-		//TODO: Agregar manejo de errores.
 		$handle = fopen($path, "r");
 		$contents = fread($handle, $length);
 		fclose($handle);
@@ -86,7 +87,6 @@ class IO
 
 	public static function ReadAllLines($path, $maxLines = null)
 	{
-		//TODO: Agregar manejo de errores.
 		$handle = fopen($path, 'r');
 		$ret = [];
 		$i = 0;
@@ -107,10 +107,14 @@ class IO
 
 	public static function WriteJson($path, $data, $pretty = false)
 	{
-		$flags = 0;
+		$flags = JSON_INVALID_UTF8_SUBSTITUTE;
 		if($pretty)
-			$flags = JSON_PRETTY_PRINT;
-		return self::WriteAllText($path, json_encode($data, $flags));
+			$flags |= JSON_PRETTY_PRINT;
+
+		$json = json_encode($data, $flags);
+		if($json === false)
+			throw new \ErrorException('Error al crear json.');
+		return self::WriteAllText($path, $json);
 	}
 
 	public static function ReadFileChunked($filepath) : bool
@@ -130,11 +134,27 @@ class IO
 		return fclose($handle);
 	}
 
-	public static function ReadJson($path)
+	public static function TryReadJson(string $path, &$ret) : bool
+	{
+		try
+		{
+			$ret = null;
+			$ret = self::ReadJson($path);
+			return true;
+		}
+		catch(\Exception $e)
+		{
+			return false;
+		}
+	}
+
+	public static function ReadJson(string $path)
 	{
 		Profiling::BeginTimer();
 		$text = self::ReadAllText($path);
-		$ret = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text), true);
+		$ret = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+		if($ret === null && Str::ToLower($text) != 'null')
+			throw new \ErrorException('Error al leer json.');
 		Profiling::EndTimer();
 		return $ret;
 	}
@@ -170,9 +190,8 @@ class IO
 		$text = $pStart . implode($pEnd . $pStart, $lines) . $pEnd;
 	}
 
-	public static function ReadKeyValueCSVFile($path) : array
+	public static function ReadKeyValueCSVFile(string $path) : array
 	{
-		//TODO: Agregar manejo de errores.
 		$fp = fopen($path, 'r');
 		$ret = [];
 		while (($data = fgetcsv($fp)) !== false)
@@ -184,9 +203,8 @@ class IO
 		return $ret;
 	}
 
-	public static function WriteKeyValueCSVFile($path, $assocArr)
+	public static function WriteKeyValueCSVFile($path, $assocArr) : void
 	{
-		//TODO: Agregar manejo de errores.
 		$fp = fopen($path, 'w');
 		foreach ($assocArr as $key => $value)
 			fputcsv($fp, [$key, $value]);
@@ -198,7 +216,7 @@ class IO
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
 
-		return (filesize($fileA) == filesize($fileB));
+		return filesize($fileA) == filesize($fileB);
 
 	}
 
@@ -209,7 +227,6 @@ class IO
 
 		if (filesize($fileA) == filesize($fileB))
 		{
-			//TODO: Agregar manejo de errores.
 			$fpA = fopen($fileA, 'rb');
 			$fpB = fopen($fileB, 'rb');
 
@@ -288,9 +305,9 @@ class IO
 
 	private static function AssocArraySectionToString(string $section, array $assocArr) : string
 	{
-		$content = "[" . $section. "]\r\n";
+		$content = "[" . $section . "]\r\n";
 		foreach($assocArr as $key => $value)
-			$content .= $key. "=" . urlencode($value) . "\r\n";
+			$content .= $key . "=" . urlencode($value) . "\r\n";
 		return $content;
 	}
 
@@ -349,7 +366,7 @@ class IO
 		return substr($filename, 0, $n);
 	}
 
-	public static function EnsureExists($directory)
+	public static function EnsureExists($directory) : void
 	{
 		if (is_dir($directory) == false)
 		{
@@ -358,7 +375,7 @@ class IO
 		}
 	}
 
-	public static function CreateDirectory($directory)
+	public static function CreateDirectory($directory) : void
 	{
 		try
 		{
@@ -424,9 +441,9 @@ class IO
 		}
 
 		if($recursive)
-			$ret = self::rglob($path . '/' . $start . '*'. $ext);
+			$ret = self::rglob($path . '/' . $start . '*' . $ext);
 		else
-			$ret = glob($path . '/' . $start . '*'. $ext);
+			$ret = glob($path . '/' . $start . '*' . $ext);
 
 		if($notAlpha)
 			$ret = preg_grep('/^' . preg_quote($path . '/', '/') . '[^a-zA-Z].*/', $ret);
@@ -458,8 +475,8 @@ class IO
 		{
 			while (false !== ($entry = readdir($handle)))
 			{
-				if (($ext == '' || Str::EndsWith($entry, $ext)) &&
-					$entry != '..' && $entry != '.' && is_file($path . '/'. $entry))
+				if (($ext == '' || Str::EndsWith($entry, $ext))
+					&& $entry != '..' && $entry != '.' && is_file($path . '/' . $entry))
 				{
 					closedir($handle);
 					return true;
@@ -523,7 +540,7 @@ class IO
 		return $n;
 	}
 
-	public static function ClearFilesOlderThan($dir, $days, $ext = '')
+	public static function ClearFilesOlderThan($dir, $days, $ext = '') : void
 	{
 		$time = time();
 
@@ -538,7 +555,7 @@ class IO
 		$files->Close();
 	}
 
-	public static function ClearDirectoriesOlderThan($dir, $days, $ext = '')
+	public static function ClearDirectoriesOlderThan($dir, $days, $ext = '') : void
 	{
 		$time = time();
 
@@ -562,7 +579,7 @@ class IO
 		foreach($files as $file)
 		{
 			if ($showOnly)
-				echo($dir . '/' . $file . '<br>');
+				echo $dir . '/' . $file . '<br>';
 			else
 				self::Delete($dir . '/' . $file);
 			$n++;
@@ -587,7 +604,7 @@ class IO
 		return false;
 	}
 
-	public static function MoveDirectory($dirSource, $dirDest, $dirName = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true)
+	public static function MoveDirectory($dirSource, $dirDest, $dirName = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true) : void
 	{
 		self::CopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders);
 		self::RemoveDirectory($dirSource);
@@ -632,7 +649,7 @@ class IO
 		return true;
 	}
 
-	private static function doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension ='') : bool
+	private static function doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension = '') : bool
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
@@ -825,7 +842,7 @@ class IO
 		return ['size' => $size, 'inodes' => $inodes];
 	}
 
-	public static function SendFilesToZip($zipFile, $files, $sourcefolder)
+	public static function SendFilesToZip($zipFile, $files, $sourcefolder) : void
 	{
 		self::Delete($zipFile);
 		$zip = new \ZipArchive();
@@ -877,6 +894,7 @@ class IO
 	 * @param string $prefix String with which to prefix created dirs.
 	 * @param int $maxAttempts Maximum attempts before giving up (to prevent
 	 * endless loops).
+	 *
 	 * @return string|bool Full path to newly-created dir, or false on failure.
 	 */
 	public static function GetTempDir($prefix = 'tmp_', $maxAttempts = 1000)
@@ -884,7 +902,7 @@ class IO
 		$dir = Context::Paths()->GetTempPath();
 		self::EnsureExists($dir);
 
-		/* Make sure characters in prefix are safe. */
+		// Make sure characters in prefix are safe.
 		if (strpbrk($prefix, '\\/:*?"<>|') !== false)
 			return false;
 
@@ -924,6 +942,21 @@ class IO
 				Log::HandleSilentException($e);
 		}
 		return false;
+	}
+	public static function GetUniqueNameNoReplaceFilename($filePath) : string
+	{
+		$ext = self::GetFileExtension($filePath);
+		$path = self::GetDirectory($filePath);
+		$file = self::GetFilenameNoExtension($filePath);
+		if (Str::Contains($file, ' ('))
+			$file = substr($file, 0, strpos($file, '(') - 1);
+
+		$n = 1;
+		while(file_exists($ret = $path . '/' . $file . ' (' . $n . ').' . $ext))
+		{
+			$n++;
+		}
+		return $ret;
 	}
 
 	public static function IsCompressedDirectory($path) : bool

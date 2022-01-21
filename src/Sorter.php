@@ -20,7 +20,7 @@ class Sorter
 			return 1;
 		elseif ($a->$getter() < $b->$getter())
 			return -1;
-		else
+
 			return 0;
 	}
 
@@ -35,7 +35,7 @@ class Sorter
 			return 1;
 		elseif ($a[$key] < $b[$key])
 			return -1;
-		else
+
 			return 0;
 	}
 
@@ -45,7 +45,7 @@ class Sorter
 			return 1;
 		elseif ($a->$field < $b->$field)
 			return -1;
-		else
+
 			return 0;
 	}
 
@@ -64,7 +64,6 @@ class Sorter
 		return -1 * self::StringByKey($a, $b, $key);
 	}
 
-
 	private static function StringBySortKeysArray($a, $b)
 	{
 		for ($i = 0; $i < count($a->sortKeys); $i++)
@@ -80,7 +79,7 @@ class Sorter
 	{
 		if ($a[$key1] == $b[$key1])
 			return self::StringByKey($a, $b, $key2);
-		else
+
 			return self::StringByKey($a, $b, $key1);
 	}
 
@@ -90,10 +89,10 @@ class Sorter
 		{
 			if ($a[$key2] == $b[$key2])
 				return self::ByKeyDesc($a, $b, $key3);
-			else
+
 				return self::ByKeyDesc($a, $b, $key2);
 		}
-		else
+
 			return self::ByKeyDesc($a, $b, $key1);
 	}
 
@@ -107,7 +106,7 @@ class Sorter
 		$diffWords = Str::CountWords($b) - Str::CountWords($a);
 		if($diffWords != 0)
 			return $diffWords;
-		else
+
 			return self::ByWordLengthDesc($a, $b);
 	}
 
@@ -192,5 +191,4 @@ class Sorter
 
 		return $mult * Str::CultureCmp($aFull, $bFull);
 	}
-
 }

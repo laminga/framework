@@ -6,7 +6,7 @@ class MingaException extends \Exception
 {
 	private $innerException;
 
-	function __construct($message = "", $innerException = null)
+	public function __construct($message = "", $innerException = null)
 	{
 		$this->innerException = $innerException;
 		parent::__construct($message);

@@ -2,8 +2,6 @@
 
 namespace minga\framework;
 
-use minga\framework\ErrorException;
-
 class CompressedInParentDirectory
 {
 	public $path;
@@ -19,17 +17,19 @@ class CompressedInParentDirectory
 		$this->file = $file;
 	}
 
-	public function Release()
+	public function Release() : void
 	{
 		if ($this->expanded == false)
 			return;
 		IO::RemoveDirectory($this->expandedPath);
 		$this->expanded = false;
 	}
+
 	public function GetFilename()
 	{
 		return dirname($this->path) . '/' . $this->file;
 	}
+
 	public function IsCompressed()
 	{
 		if (!file_exists($this->GetFilename()))
@@ -94,7 +94,7 @@ class CompressedInParentDirectory
 		return $ret;
 	}
 
-	public function Expand()
+	public function Expand() : void
 	{
 		if ($this->expanded)
 			return;

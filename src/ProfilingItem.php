@@ -22,7 +22,7 @@ class ProfilingItem
 	public function __construct($name)
 	{
 		$this->name = $name;
-		$this->startTime = 	microtime(true);
+		$this->startTime = microtime(true);
 		$this->startMemory = memory_get_usage();
 		$this->durationMs = 0;
 		$this->hits = 0;
@@ -38,7 +38,7 @@ class ProfilingItem
 		return $a['sec'] + ($a['usec'] * 0.000001);
 	}
 
-	public function CompleteTimer()
+	public function CompleteTimer() : void
 	{
 		$t2 = microtime(true);
 		$endPause = Performance::$pauseEllapsedSecs;
@@ -49,7 +49,7 @@ class ProfilingItem
 		$this->hits = 1;
 	}
 
-	public function SumChildren()
+	public function SumChildren() : void
 	{
 		$this->memory = 0;
 		$this->memoryPeak = 0;

@@ -20,7 +20,7 @@ class WebConnection
 	public $logFile2 = null;
 	public $contentType = '';
 	public $requestHeaders = [];
-	public $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8'; 
+	public $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8';
 	private $cookieFile = '';
 
 	public function __construct($throwErrors = false)
@@ -28,7 +28,7 @@ class WebConnection
 		$this->throwErrors = $throwErrors;
 	}
 
-	public function Initialize($path = '')
+	public function Initialize($path = '') : void
 	{
 		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
 		$this->ch = curl_init();
@@ -50,7 +50,7 @@ class WebConnection
 
 	}
 
-	public function EnableExtraLog()
+	public function EnableExtraLog() : void
 	{
 		if ($this->cherr == null)
 		{
@@ -62,22 +62,22 @@ class WebConnection
 		}
 	}
 
-	public function SetFollowRedirects($value)
+	public function SetFollowRedirects($value) : void
 	{
 		$this->followRedirects = $value;
 	}
 
-	public function SetPort($port)
+	public function SetPort($port) : void
 	{
 		curl_setopt($this->ch, CURLOPT_PORT, $port);
 	}
 
-	public function SetReferer($referer)
+	public function SetReferer($referer) : void
 	{
 		$this->lastLocation = $referer;
 	}
 
-	public function SetMaxFileSize($size)
+	public function SetMaxFileSize($size) : void
 	{
 		$this->maxFileSize = $size;
 	}
@@ -137,8 +137,7 @@ class WebConnection
 		if ($port != $lastPort)
 			return $url;
 		// perdió el https pero es el mismo server
-		$ret = 'https://' . substr($url, 7);
-		return $ret;
+		return 'https://' . substr($url, 7);
 	}
 
 	private function ResolveRelativeUrl($url)
@@ -304,7 +303,7 @@ class WebConnection
 		return $headers;
 	}
 
-	private function AddPostFields($args)
+	private function AddPostFields($args) : void
 	{
 		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
@@ -349,7 +348,7 @@ class WebConnection
 		return $ret;
 	}
 
-	private function ParseErrorCodes($ret, $file)
+	private function ParseErrorCodes($ret, $file) : void
 	{
 		$this->httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		$this->error = curl_error($this->ch);
@@ -361,7 +360,7 @@ class WebConnection
 			$this->AppendLogData('Length', filesize($file));
 	}
 
-	public function Finalize()
+	public function Finalize() : void
 	{
 		if ($this->isClosed == false)
 		{
@@ -377,21 +376,21 @@ class WebConnection
 		}
 	}
 
-	public function AppendLog($value)
+	public function AppendLog($value) : void
 	{
 		if ($this->logFile == null)
 			return;
 		IO::AppendLine($this->logFile, "\r\n" . $value . ' [' . Date::FormattedArNow() . ']');
 	}
 
-	private function AppendLogData($key, $value)
+	private function AppendLogData($key, $value) : void
 	{
 		if ($this->logFile == null)
 			return;
 		IO::AppendLine($this->logFile, '=> ' . $key . ': ' . $value);
 	}
 
-	public function ClearCookieFile()
+	public function ClearCookieFile() : void
 	{
 		if($this->cookieFile != '')
 			IO::Delete($this->cookieFile);

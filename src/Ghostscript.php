@@ -9,11 +9,11 @@ class Ghostscript
 	 *
 	 * origen: https://www.ghostscript.com/download/gsdnld.html
 	 */
-	const GHOSTSCRIPT = "/gs";
+	public const GHOSTSCRIPT = "/gs";
 
 	// Hace falta limitar por el encoding que usa gs para
 	// metadata que multiplica el tamaño del texto por mucho.
-	const MetadataMaxLen = 400;
+	public const MetadataMaxLen = 400;
 
 	public static function Merge(string $coverFile, string $originalFile, string $targetFile, string $title, string $authors) : bool
 	{
@@ -145,5 +145,4 @@ class Ghostscript
 		}
 		return true;
 	}
-
 }

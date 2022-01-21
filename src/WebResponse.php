@@ -12,14 +12,14 @@ class WebResponse
 	public $success;
 	public $headers = [];
 
-	public function dump()
+	public function dump() : void
 	{
 		$this->echoLine('http_code', $this->httpCode);
 		$this->echoLine('content_type', $this->contentType);
 		$this->echoLine('file', $this->file);
 		$this->echoLine('uri', $this->uri);
 		$this->echoLine('error', $this->error);
-		echo ('headers:');
+		echo 'headers:';
 		print_r($this->headers);
 	}
 
@@ -31,9 +31,9 @@ class WebResponse
 		return IO::ReadAllText($this->file);
 	}
 
-	private function echoLine($key, $value)
+	private function echoLine($key, $value) : void
 	{
-		echo($key . ': ' . $value . '<br>');
+		echo $key . ': ' . $value . '<br>';
 	}
 
 	public function HasLocationHeader()

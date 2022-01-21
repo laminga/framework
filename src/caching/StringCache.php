@@ -21,7 +21,7 @@ class StringCache
 		$this->cache->Clear($key);
 	}
 
-	public function HasData($key, & $out = null) : bool
+	public function HasData($key, &$out = null) : bool
 	{
 		return $this->cache->HasData($key, null, $out);
 	}

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace minga\framework\settings;
 
 class DbSettings
@@ -24,7 +23,7 @@ class DbSettings
 
 	public $SetTimeZone = true;
 
-	public function SetDatabase($host, $dbName, $user, $password, $port = 3306)
+	public function SetDatabase($host, $dbName, $user, $password, $port = 3306) : void
 	{
 		$this->Name = $dbName;
 		$this->User = $user;

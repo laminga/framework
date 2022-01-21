@@ -30,12 +30,12 @@ class FiledQueue
 		return $ret;
 	}
 
-	public static function Clear()
+	public static function Clear() : void
 	{
 		self::$allFiles = [];
 	}
 
-	public static function Commit()
+	public static function Commit() : void
 	{
 		Profiling::BeginTimer();
 		krsort(self::$allFiles);
@@ -46,7 +46,7 @@ class FiledQueue
 		Profiling::EndTimer();
 	}
 
-	private static function TryFlush($value)
+	private static function TryFlush($value) : void
 	{
 		try
 		{
@@ -58,12 +58,12 @@ class FiledQueue
 		}
 	}
 
-	public function Append($value)
+	public function Append($value) : void
 	{
 		$this->valuesToQueue[] = $value;
 	}
 
-	public function Flush()
+	public function Flush() : void
 	{
 		if (count($this->valuesToQueue) == 0)
 			return;

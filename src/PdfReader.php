@@ -2,31 +2,30 @@
 
 namespace minga\framework;
 
-use minga\classes\cache\PdfHtmlCache;
-use minga\classes\cache\PdfTextCache;
 use rodrigoq\pdftohtml\PdfToHtml;
 use rodrigoq\pdftoinfo\PdfInfo;
 use rodrigoq\pdftotext\PdfToText;
 
 class PdfReader
 {
+	public const MAX_LENGTH = 65534; // en bytes
 	/**
 	 * binarios
 	 */
-	const PDF_INFO = './pdfinfo';
-	const PDF_TO_HTML = './pdftohtml';
-	const PDF_TO_TEXT = './pdftotext';
+	public const PDF_INFO = './pdfinfo';
+	public const PDF_TO_HTML = './pdftohtml';
+	public const PDF_TO_TEXT = './pdftotext';
 
 	//sin caracter para saltos de página y utf-8
-	const PDF_TO_TEXT_ARGS = '-nopgbrk -enc UTF-8';
-	const PDF_INFO_ARGS = '-enc UTF-8';
-	const PDF_TO_HTML_ARGS_FIRST_PAGE = '-f 1 -l 1';
-	const PDF_TO_HTML_ARGS = '-nofonts';
+	public const PDF_TO_TEXT_ARGS = '-nopgbrk -enc UTF-8';
+	public const PDF_INFO_ARGS = '-enc UTF-8';
+	public const PDF_TO_HTML_ARGS_FIRST_PAGE = '-f 1 -l 1';
+	public const PDF_TO_HTML_ARGS = '-nofonts';
 
 	public static function Truncate64k(string $cad) : string
 	{
-		if (strlen($cad) > 65534)
-			return mb_strcut($cad, 0, 65534);
+		if (strlen($cad) > self::MAX_LENGTH)
+			return mb_strcut($cad, 0, self::MAX_LENGTH);
 
 		return $cad;
 	}
@@ -39,7 +38,7 @@ class PdfReader
 		if($removeSpaces)
 			$sep = ' ';
 
-		$text = implode($sep , self::RunPdfToText($file));
+		$text = implode($sep, self::RunPdfToText($file));
 		if($removeSpaces)
 			$text = preg_replace('/\s+/', ' ', $text);
 
@@ -86,8 +85,8 @@ class PdfReader
 				$ret['pages'] = (int)trim($data[1]);
 			else if(trim($data[0]) == 'Encrypted')
 			{
-				$ret['encrypted'] =
-					Str::StartsWith(trim($data[1]), 'yes');
+				$ret['encrypted']
+					= Str::StartsWith(trim($data[1]), 'yes');
 			}
 
 		}
@@ -186,7 +185,6 @@ class PdfReader
 			. ' ' . escapeshellarg($file) . ' -';
 	}
 
-
 	private static function GetPdfInfoCommand(string $file, string $args, ?string &$path) : string
 	{
 		$ext = '';
@@ -232,7 +230,6 @@ class PdfReader
 			. ' ' . escapeshellarg($file)
 			. ' ' . escapeshellarg($outPath);
 	}
-
 }
 
 

@@ -3,9 +3,9 @@
 namespace minga\framework\caching;
 
 use minga\framework\Context;
+use minga\framework\Log;
 use minga\framework\Profiling;
 use minga\framework\Serializator;
-use minga\framework\Log;
 
 class TwoLevelObjectCache
 {
@@ -15,11 +15,13 @@ class TwoLevelObjectCache
 	{
 		$this->cache = Context::Settings()->Cache()->CreateFileCache($path);
 	}
-	public function Clear($key1 = null, $key2 = null)
+
+	public function Clear($key1 = null, $key2 = null) : void
 	{
 		$this->cache->Clear($key1, $key2 = null);
 	}
-	public function HasData($key1, $key2, & $out = null) : bool
+
+	public function HasData($key1, $key2, &$out = null) : bool
 	{
 		try
 		{
@@ -31,12 +33,12 @@ class TwoLevelObjectCache
 				Profiling::EndTimer();
 				return true;
 			}
-			else
-			{
+
+
 				$out = null;
 				Profiling::EndTimer();
 				return false;
-			}
+
 		}
 		catch(\Exception $e)
 		{
@@ -45,14 +47,15 @@ class TwoLevelObjectCache
 			return false;
 		}
 	}
-	public function PutDataIfMissing($key1, $key2, $value)
+
+	public function PutDataIfMissing($key1, $key2, $value) : void
 	{
 		if ($this->HasData($key1, $key2))
 			return;
 		$this->PutData($key1, $key2, $value);
 	}
 
-	public function PutData($key1, $key2, $value)
+	public function PutData($key1, $key2, $value) : void
 	{
 		try
 		{

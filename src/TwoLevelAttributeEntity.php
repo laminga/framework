@@ -4,11 +4,11 @@ namespace minga\framework;
 
 class TwoLevelAttributeEntity
 {
-	//* @var string */
+	/** @var string */
 	public $path = '';
-	//* @var array */
+	/** @var array */
 	public $sections = [];
-	//* @var bool */
+	/** @var bool */
 	protected $keepSectionCreationDate = false;
 
 	public function SetLocation(string $path) : void
@@ -29,16 +29,16 @@ class TwoLevelAttributeEntity
 		return $this->SafeGet($section, 'created');
 	}
 
-	public function SafeGetSection(string $section, $default = [])
+	public function SafeGetSection(?string $section, $default = [])
 	{
-		if (isset($this->sections[$section]))
+		if ($section !== null && isset($this->sections[$section]))
 			return $this->sections[$section];
 		return $default;
 	}
 
-	public function SafeGet(string $section, string $key, $default = '')
+	public function SafeGet(?string $section, string $key, $default = '')
 	{
-		if (isset($this->sections[$section]))
+		if ($section !== null && isset($this->sections[$section]))
 		{
 			$sectionValues = $this->sections[$section];
 			if (isset($sectionValues[$key]))
@@ -59,9 +59,9 @@ class TwoLevelAttributeEntity
 		return $this->sections[$section];
 	}
 
-	public function SafeGetItem(string $section, $default = null)
+	public function SafeGetItem(?string $section, $default = null)
 	{
-		if(isset($this->sections[$section]))
+		if($section !== null && isset($this->sections[$section]))
 			return $this->sections[$section];
 		return $default;
 	}
@@ -114,7 +114,7 @@ class TwoLevelAttributeEntity
 		return count($this->sections);
 	}
 
-	public function SafeGetArray(string $section, string $key) : array
+	public function SafeGetArray(?string $section, string $key) : array
 	{
 		$sectionArray = $this->SafeGetSection($section);
 		// Lee los valores...
@@ -154,5 +154,4 @@ class TwoLevelAttributeEntity
 			$this->SaveAttributesOnly();
 		}
 	}
-
 }

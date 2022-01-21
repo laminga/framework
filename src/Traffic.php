@@ -2,12 +2,11 @@
 
 namespace minga\framework;
 
-use minga\framework\GeoIp;
 use minga\framework\locking\TrafficLock;
 
 class Traffic
 {
-	const C_FACTOR = 2;
+	public const C_FACTOR = 2;
 
 	public static function RegisterIP(string $ip, string $userAgent = '', bool $isMegaUser = false) : void
 	{
@@ -127,15 +126,14 @@ class Traffic
 	private static function Clean(string $str) : string
 	{
 		$str = str_replace('"', "'", $str);
-		$str = str_replace("\t", ";", $str);
-		return $str;
+		return str_replace("\t", ";", $str);
 	}
 
 	private static function ParseHit($value, &$hits, &$agent, &$url, &$device) : void
 	{
 		$parts = explode("\t", $value);
 
-		$hits = $parts[0] ;
+		$hits = $parts[0];
 		if(count($parts) > 3)
 			$device = $parts[3];
 
@@ -169,7 +167,7 @@ class Traffic
 	private static function IsMobileOrTablet() : bool
 	{
 		$detect = new \Mobile_Detect();
-		return ($detect->isMobile() || $detect->isTablet());
+		return $detect->isMobile() || $detect->isTablet();
 	}
 
 	private static function GetLimit() : int
@@ -203,7 +201,7 @@ class Traffic
 		$limit = self::GetLimit();
 		if ($hits == $limit)
 		{
-			$defensiveMode= '';
+			$defensiveMode = '';
 			if (self::IsInDefensiveMode())
 				$defensiveMode = ' en modo defensivo';
 
@@ -305,7 +303,7 @@ class Traffic
 		Arr::SortByKeyDesc($ret, 'hits');
 
 		$ret[] = Str::BuildTotalsRow($ret, 'ip', ['hits']);
-		$ret[count($ret)-1]['ip'] = 'Total (' . (count($ret) - 1) . ')';
+		$ret[count($ret) - 1]['ip'] = 'Total (' . (count($ret) - 1) . ')';
 
 		return $ret;
 	}
@@ -331,5 +329,4 @@ class Traffic
 	{
 		return Context::Paths()->GetTrafficLocalPath() . '/defensive.txt';
 	}
-
 }

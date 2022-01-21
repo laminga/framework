@@ -14,10 +14,9 @@ class Image
 	 *
 	 * Por default siempre grababa el resultado en png
 	 * se agregó parámetro opcional para que no lo haga.
-	 *
 	 */
 	public static function Resize($type, $sourceFile,
-		$maxWidth, $maxHeight, $targetFile, $useTypeForSave = false)
+		$maxWidth, $maxHeight, $targetFile, $useTypeForSave = false) : void
 	{
 
 		if($maxWidth == 0 && $maxHeight == 0)
@@ -37,7 +36,7 @@ class Image
 			$image = imagecreatefromgif($sourceFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: '. $type);
+			throw new \Exception('Unsupported type: ' . $type);
 		}
 		// Get current dimensions
 		$oldWidth = imagesx($image);
@@ -85,7 +84,7 @@ class Image
 			imagegif($new, $targetFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: '. $type);
+			throw new \Exception('Unsupported type: ' . $type);
 		}
 		imagedestroy($new);
 	}

@@ -48,7 +48,7 @@ class PhpSession
 		}
 	}
 
-	private static function CheckPhpSessionStarted()
+	private static function CheckPhpSessionStarted() : void
 	{
 		if (Context::Settings()->allowPHPsession)
 		{
@@ -94,5 +94,4 @@ class PhpSession
 		// 	//exit;
 		return session_start();
 	}
-
 }

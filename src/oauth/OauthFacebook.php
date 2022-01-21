@@ -4,7 +4,7 @@ namespace minga\framework\oauth;
 
 class OauthFacebook extends OauthConnector
 {
-	const Provider = 'facebook';
+	public const Provider = 'facebook';
 
 	// http://demos.idiotminds.com/social/
 	// &display=popup
@@ -29,7 +29,7 @@ class OauthFacebook extends OauthConnector
 			foreach($result['data'][0] as $data)
 			{
 				if(isset($data['permission']) && $data['permission'] == 'email')
-					return (isset($data['status']) && $data['status'] == 'granted');
+					return isset($data['status']) && $data['status'] == 'granted';
 			}
 		}
 		return false;

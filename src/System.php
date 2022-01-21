@@ -26,7 +26,7 @@ class System
 			$ret[] = ['name' => $flag['name'], 'value' => php_uname($flag['flag'])];
 
 		$ret[] = ['name' => 'Arquitectura', 'value' => self::GetArchitecture() . 'bits'];
-		$ret[] = ['name' => 'PHP', 'value' => phpversion()];
+		$ret[] = ['name' => 'PHP', 'value' => PHP_VERSION];
 		$ret[] = ['name' => 'php.ini', 'value' => php_ini_loaded_file()];
 
 		return $ret;
@@ -63,7 +63,7 @@ class System
 		];
 	}
 
-	public static function GetDbInfo()
+	public static function GetDbInfo() : array
 	{
 		$settings = [];
 		$settings[] = ['name' => 'Host', 'value' => Context::Settings()->Db()->Host];
@@ -79,7 +79,7 @@ class System
 		return $db->fetchScalar('SELECT @@version;');
 	}
 
-	public static function GetArchitecture()
+	public static function GetArchitecture() : string
 	{
 		switch(PHP_INT_SIZE)
 		{
@@ -88,27 +88,32 @@ class System
 			case 8:
 				return '64'; //64 bit version of PHP
 			default:
-				throw new ErrorException('PHP_INT_SIZE is '.PHP_INT_SIZE);
+				throw new ErrorException('PHP_INT_SIZE is ' . PHP_INT_SIZE);
 		}
 	}
 
-	public static function IsWindows()
+	public static function IsWindows() : bool
 	{
 		return Str::StartsWithI(PHP_OS, 'win');
 	}
 
-	public static function IsTestingInWindows()
+	public static function IsCli() : bool
+	{
+		return PHP_SAPI == 'cli';
+	}
+
+	public static function IsTestingInWindows() : bool
 	{
 		return Context::Settings()->isTesting
 			&& self::IsWindows();
 	}
 
-	public static function IsOnIIS()
+	public static function IsOnIIS() : bool
 	{
 		if(isset($_SERVER['SERVER_SOFTWARE']) == false)
-			return (PHP_OS === "WINNT");
+			return PHP_OS === "WINNT";
 		$software = Str::ToLower($_SERVER['SERVER_SOFTWARE']);
-		return (strpos($software, 'microsoft-iis') !== false);
+		return strpos($software, 'microsoft-iis') !== false;
 	}
 
 	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -169,7 +174,7 @@ class System
 	public static function RunCommandGS(string $command, string $args, &$returnCode = null, $returnFirstLineOnly = false, $checkFile = true)
 	{
 		if ($checkFile && file_exists($command) == false)
-			throw new ErrorException('No se encontró el binario: "' . $command. '".');
+			throw new ErrorException('No se encontró el binario: "' . $command . '".');
 
 		if (Str::StartsWith($args, ' ') == false)
 			$args = ' ' . $args;
@@ -200,8 +205,7 @@ class System
 			'command' => $command,
 			'output' => implode("\n", $output),
 			'lastLine' => $lastLine,
-			'return' => $return
+			'return' => $return,
 		];
 	}
-
 }

@@ -31,7 +31,7 @@ class Lock
 	{
 		$this->file = $file;
 		$this->folder = $folder;
-		$this->statsKey = get_class($this);
+		$this->statsKey = static::class;
 		$this->readWrite = $readWrite;
 	}
 
@@ -63,12 +63,12 @@ class Lock
 			self::$locks[$file] = [++$values[0], $values[1]];
 			return true;
 		}
-		else
-		{
+
+
 			// empieza él
 			self::$locks[$file] = [1, $write];
 			return false;
-		}
+
 	}
 
 	private function ReleaseUsed() : bool
@@ -84,13 +84,13 @@ class Lock
 				self::$locks[$file] = [--$values[0], $values[1]];
 				return true;
 			}
-			else
-			{
+
+
 				unset(self::$locks[$file]);
 				return false;
-			}
+
 		}
-		else
+
 			throw new ErrorException('The lock could not be released.');
 	}
 
@@ -193,5 +193,4 @@ class Lock
 		while (PerformanceMonthlyDayLock::IsWriting())
 			PerformanceMonthlyDayLock::EndWrite();
 	}
-
 }

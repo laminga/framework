@@ -4,7 +4,6 @@ namespace minga\framework;
 
 class Date
 {
-
 	public static function GetLogDayFolder()
 	{
 		return date("d");
@@ -105,6 +104,7 @@ class Date
 	{
 		return (int)$date->format('m');
 	}
+
 	public static function DateTimeGetYear($date) : int
 	{
 		return (int)$date->format('Y');
@@ -183,7 +183,7 @@ class Date
 
 	public static function DateTimeArNow()
 	{
-		$date = new \DateTime;
+		$date = new \DateTime();
 		$date->setTimestamp(self::ArNow());
 		return $date;
 	}
@@ -191,20 +191,19 @@ class Date
 	public static function DaysDiff($date1, $date2)
 	{
 		$interval = date_diff($date1, $date2);
-		return intval($interval->format('%a'));
+		return (int)($interval->format('%a'));
 	}
 
 	public static function DateTimeNow()
 	{
-		$date = new \DateTime;
+		$date = new \DateTime();
 		$date->setTimestamp(time());
 		return $date;
 	}
 
 	public static function DateTimeToday()
 	{
-		$date = date_create(self::Today());
-		return $date;
+		return date_create(self::Today());
 	}
 
 	public static function Today()
@@ -214,12 +213,12 @@ class Date
 
 	public static function CurrentDay()
 	{
-		return intval(date("j"));
+		return (int)(date("j"));
 	}
 
 	public static function CurrentMonth()
 	{
-		return intval(date("m"));
+		return (int)(date("m"));
 	}
 
 	public static function CurrentYear()
@@ -361,7 +360,7 @@ class Date
 			if ((string)$parts[$i] != $prev)
 				return false;
 		}
-		if (checkdate((int)$parts[1] , (int)$parts[0] , (int)$parts[2]) == false)
+		if (checkdate((int)$parts[1], (int)$parts[0], (int)$parts[2]) == false)
 			return false;
 		$day = $parts[0];
 		$month = $parts[1];
@@ -377,6 +376,6 @@ class Date
 		$bret = self::TryParseDate($date, $day, $month, $year);
 		if ($bret == false)
 			throw new ErrorException('Invalid date.');
-		return $year . '-' . $month .'-' . $day;
+		return $year . '-' . $month . '-' . $day;
 	}
 }

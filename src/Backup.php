@@ -6,7 +6,7 @@ use minga\framework\locking\BackupLock;
 
 class Backup
 {
-	const MAX_ZIP_SIZE = 5000000;
+	public const MAX_ZIP_SIZE = 5000000;
 	private static $blocks = ["file_modified", "file_deleted", "directory_created", "directory_deleted"];
 
 	public static $exclusions = [
@@ -21,30 +21,30 @@ class Backup
 		"/buckets",
 		"/backup",
 		"/tokens",
-		"/stats"
+		"/stats",
 	];
 
-	public static function AppendModified($file)
+	public static function AppendModified($file) : void
 	{
 		self::AppendEntry("file_modified", $file);
 	}
 
-	public static function AppendDeleted($file)
+	public static function AppendDeleted($file) : void
 	{
 		self::AppendEntry("file_deleted", $file);
 	}
 
-	public static function AppendDirectoryCreated($file)
+	public static function AppendDirectoryCreated($file) : void
 	{
 		self::AppendEntry("directory_created", $file);
 	}
 
-	public static function AppendDirectoryDeleted($file)
+	public static function AppendDirectoryDeleted($file) : void
 	{
 		self::AppendEntry("directory_deleted", $file);
 	}
 
-	public static function AppendEntry($set, $file)
+	public static function AppendEntry($set, $file) : void
 	{
 		if (self::GetState() == "")
 			return;
@@ -83,7 +83,7 @@ class Backup
 		return false;
 	}
 
-	public function CreateCheckpoint()
+	public function CreateCheckpoint() : void
 	{
 		self::CheckState("DOWNLOADED");
 
@@ -112,10 +112,11 @@ class Backup
 		self::SaveState("CHECKPOINTCREATED");
 	}
 
-	private function initializeFolder()
+	private function initializeFolder() : void
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
-		$backupFolderWorkingFolder = $backupFolder . "/backup";		$filename = $backupFolder . "/backup.zip";
+		$backupFolderWorkingFolder = $backupFolder . "/backup";
+		$filename = $backupFolder . "/backup.zip";
 		IO::Delete($filename);
 		// Copia todo lo modificado hasta la actualidad
 		IO::RemoveDirectory($backupFolderWorkingFolder . '/root');
@@ -124,23 +125,23 @@ class Backup
 		IO::EnsureExists($backupFolderWorkingFolder . '/storage');
 	}
 
-	public function CreateLocalCopyProfiles()
+	public function CreateLocalCopyProfiles() : void
 	{
 		throw new \Exception('No implementado.');
 	}
 
-	public function CreateLocalCopyEvents()
+	public function CreateLocalCopyEvents() : void
 	{
 		throw new \Exception('No implementado.');
 	}
 
-	public function CreateLocalCopySite()
+	public function CreateLocalCopySite() : void
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$backupFolderWorkingFolder = $backupFolder . "/backup";
 		self::CheckState("CHECKPOINTCREATED");
 		self::Log("Begin site backup");
-		//
+
 		$this->initializeFolder();
 		// Copia todo lo modificado hasta la actualidad
 
@@ -159,10 +160,10 @@ class Backup
 			copy($backupFolder . "/deleted_checkpoint.txt", $backupFolderWorkingFolder . "/deleted_checkpoint.txt");
 		// guarda el estado
 		self::SaveState("COPYSITEDONE");
-		return;
+
 	}
 
-	public function SplitLargeFiles()
+	public function SplitLargeFiles() : void
 	{
 		self::CheckState("COPYEVENTSDONE");
 		self::Log("Begin splitting", true);
@@ -179,10 +180,10 @@ class Backup
 		self::SaveState("SPLITDONE");
 		$zip->lock->Release();
 		self::Log("End splitting", true);
-		return;
+
 	}
 
-	private static function ScanAndSplitRecursive($dirsource, $maxSize)
+	private static function ScanAndSplitRecursive($dirsource, $maxSize) : void
 	{
 		$dir_handle = null;
 		if(is_dir($dirsource))
@@ -197,17 +198,17 @@ class Backup
 				if(!is_dir($filename))
 				{
 					if (filesize($filename) > $maxSize)
-						Multipart::Split($filename , $maxSize);
+						Multipart::Split($filename, $maxSize);
 				}
 				else
-					self::ScanAndSplitRecursive($dirsource.'/'.$file, $maxSize);
+					self::ScanAndSplitRecursive($dirsource . '/' . $file, $maxSize);
 			}
 		}
 		if($dir_handle != null)
 			closedir($dir_handle);
 	}
 
-	public function CreateZipChunk()
+	public function CreateZipChunk() : void
 	{
 		self::CheckState("ZIPPEDPARTIALLY", "SPLITDONE");
 
@@ -241,7 +242,7 @@ class Backup
 		self::Log("End backup", true);
 	}
 
-	public static function SaveState($state)
+	public static function SaveState($state) : void
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/state.txt";
@@ -254,11 +255,11 @@ class Backup
 		$ret = $backupFolder . "/state.txt";
 		if (file_exists($ret) == false)
 			return "";
-		else
+
 			return IO::ReadAllText($ret);
 	}
 
-	public static function CheckState($state1, $state2 = "ommited")
+	public static function CheckState($state1, $state2 = "ommited") : void
 	{
 		$text = self::GetState();
 		if ($text == $state1 || $text == $state2)
@@ -266,7 +267,7 @@ class Backup
 		throw new \Exception('Invalid backup state for request.');
 	}
 
-	public static function Log($text, $append = false)
+	public static function Log($text, $append = false) : void
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/log.txt";
@@ -302,7 +303,7 @@ class Backup
 		return $ret;
 	}
 
-	public function GetFiles()
+	public function GetFiles() : void
 	{
 		self::CheckState("ZIPPED", "ZIPPEDPARTIALLY");
 
@@ -314,7 +315,7 @@ class Backup
 		self::SendFile($zip, "application/zip");
 	}
 
-	private static function SendFile($filename, $contentType)
+	private static function SendFile($filename, $contentType) : void
 	{
 		$size = Zipping::Filesize($filename);
 
@@ -333,10 +334,10 @@ class Backup
 			ob_end_flush();
 
 		readfile($filename);
-		die;
+		exit;
 	}
 
-	public function NotifyGetFilesCompleted()
+	public function NotifyGetFilesCompleted() : void
 	{
 		self::CheckState("ZIPPED", "DOWNLOADED");
 

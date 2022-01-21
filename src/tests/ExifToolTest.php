@@ -9,7 +9,6 @@ use minga\framework\Str;
 
 class ExifToolTest extends TestCaseBase
 {
-
 	protected $testFile = '';
 
 	public function setUp() : void

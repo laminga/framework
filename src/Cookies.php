@@ -4,8 +4,7 @@ namespace minga\framework;
 
 class Cookies
 {
-
-	public static function SetCookie($name, $value, $expireDays = 30)
+	public static function SetCookie($name, $value, $expireDays = 30) : void
 	{
 		$expire = time() + 60 * 60 * 24 * $expireDays;
 
@@ -55,5 +54,4 @@ class Cookies
 		self::RenewCookie($name, -365);
 		unset($_COOKIE[$name]);
 	}
-
 }
