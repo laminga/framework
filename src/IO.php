@@ -842,6 +842,7 @@ class IO
 		return ['size' => $size, 'inodes' => $inodes];
 	}
 
+	//TODO: Sacar método de acá y usar los de la clase framework/Zip...
 	public static function SendFilesToZip($zipFile, $files, $sourcefolder) : void
 	{
 		self::Delete($zipFile);
@@ -865,9 +866,9 @@ class IO
 				throw new ErrorException('file not readable. Please contact your administrator or try again later.');
 
 			if($zip->addFromString($path, $file) == false)
-				throw new ErrorException("ERROR: Could not add file: ... </br> numFile:");
+				throw new ErrorException("ERROR: Could not add file: ... <br>\n numFile:");
 			if($zip->addFile(realpath($file), $path) == false)
-				throw new ErrorException("ERROR: Could not add file: ... </br> numFile:");
+				throw new ErrorException("ERROR: Could not add file: ... <br>\n numFile:");
 		}
 		// closes the archive
 		$zip->close();
