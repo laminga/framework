@@ -214,7 +214,7 @@ class Zip
 		return $ret;
 	}
 
-	public function GetFileNames() : array
+	public function GetFilenames() : array
 	{
 		$zip = new \ZipArchive();
 		if ($zip->open($this->targetFile) !== true)
