@@ -10,30 +10,35 @@ use minga\framework\Log;
 
 abstract class Queue
 {
-	protected $folder = null;
+	/** @var string */
+	protected $folder = '';
+	/** @var bool */
 	protected $discardSuccessfullLog;
+	/** @var int */
 	protected $maxToProcess;
+	/** @var int */
 	protected $clearLogOlderThanDays = 45;
 
-	protected $processorClass = null;
-	
-	public static function Enabled()
+	/** @var string */
+	protected $processorClass = '';
+
+	abstract public function __construct();
+
+	public static function Enabled() : bool
 	{
 		if(Context::Settings()->isTesting)
 			return false;
 		return Context::Settings()->Queue()->Enabled;
 	}
 
-	abstract public function __construct();
-
-	protected function Initialize($folder, $maxToProcess = 50, $discardSuccessfullLog = false)
+	protected function Initialize(string $folder, int $maxToProcess = 50, bool $discardSuccessfullLog = false) : void
 	{
 		$this->maxToProcess = $maxToProcess;
-	
+
 		$this->folder = $folder;
 		$this->discardSuccessfullLog = $discardSuccessfullLog;
 	}
-	
+
 	public static function AddToQueueDb(string $function, ...$args) : int
 	{
 		if (Context::Settings()->Db()->NoDb)
@@ -57,13 +62,14 @@ abstract class Queue
 			'debug' => Log::FormatTraceLog(debug_backtrace()),
 		]);
 	}
-	private function GetQueueFolder($subfolder) : string
+
+	private function GetQueueFolder(string $subfolder) : string
 	{
 		$ret = Context::Paths()->GetQueuePath() . '/' . $this->folder . '/' . $subfolder;
 		IO::EnsureExists($ret);
 		return $ret;
 	}
-	
+
 	protected function Call(string $className, string $function, array $params)
 	{
 		$method = [new $className(), $function];
@@ -87,7 +93,7 @@ abstract class Queue
 		return $params;
 	}
 
-	private function MoveToFolder($file, $folder) : string
+	private function MoveToFolder(string $file, string $folder) : string
 	{
 		$target = $this->GetQueueFolder($folder) . '/' . basename(basename($file));
 		if (file_exists($target))
@@ -96,7 +102,7 @@ abstract class Queue
 		return $target;
 	}
 
-	private function MoveToSuccess($file) : string
+	private function MoveToSuccess(string $file) : string
 	{
 		if ($this->discardSuccessfullLog)
 		{
@@ -107,12 +113,12 @@ abstract class Queue
 			return $this->MoveToFolder($file, 'success');
 	}
 
-	private function MoveToFailed($file): string
+	private function MoveToFailed(string $file): string
 	{
 		return $this->MoveToFolder($file, 'failed');
 	}
 
-	private function MoveToRunning($file): string
+	private function MoveToRunning(string $file): string
 	{
 		return $this->MoveToFolder($file, 'running');
 	}
@@ -123,28 +129,29 @@ abstract class Queue
 		$data = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
 		if(is_array($data) == false || isset($data['function']) == false)
 		{
-			$finalPlace = $this->MoveToFailed($file); 
-			$this->SaveException($finalPlace . '.error.txt', new \Exception('Archivo vacío o malformado.'));			
+			$finalPlace = $this->MoveToFailed($file);
+			$this->SaveException($finalPlace . '.error.txt', new \Exception('Archivo vacío o malformado.'));
 			return false;
 		}
 		try
 		{
 			$this->ProcessItem($data['function'], $data['params']);
-			$this->MoveToSuccess($file); 
+			$this->MoveToSuccess($file);
 			return true;
 		}
 		catch(\Exception $ex)
 		{
-			$finalPlace = $this->MoveToFailed($file); 
-			$this->SaveException($finalPlace . '.error.txt', $ex);	
+			$finalPlace = $this->MoveToFailed($file);
+			$this->SaveException($finalPlace . '.error.txt', $ex);
 			return false;
 		}
 	}
 
-	private function EnsureQueueFolder() : void 
+	private function EnsureQueueFolder() : void
 	{
 		$this->GetQueueFolder('queued');
 	}
+
 	public function Process() : array
 	{
 		$this->EnsureQueueFolder();
@@ -178,13 +185,13 @@ abstract class Queue
 				$failed++;
 			$done++;
 		}
-	
+
 		$lock->Release();
-		return ['success' => $sucess, 'done' => $done, 'failed' => $failed, 'total' => $total, 
+		return ['success' => $sucess, 'done' => $done, 'failed' => $failed, 'total' => $total,
 						'formatted' => $this->formatResults($done, $sucess, $failed, $total)];
 	}
 
-	private function formatResults($done, $success, $failed, $total)	
+	private function formatResults(int $done, int $success, int $failed, int $total) : string
 	{
 		if ($total === 0)
 			return 'Done 0 items.';
@@ -193,8 +200,8 @@ abstract class Queue
 			$ret .= " Success: " . $success . " items. Failed: " . $failed  . " items.";
 		return $ret;
 	}
-	
-	private function GetFirst(&$total) : string
+
+	private function GetFirst(?int &$total) : string
 	{
 		$lock = new QueueLock($this->folder);
 		try
@@ -204,9 +211,8 @@ abstract class Queue
 			$files = IO::GetFilesFullPath($folder, '.json');
 			$total = count($files);
 			if(isset($files[0]))
-				return $this->MoveToRunning($files[0]); 
-			else
-				return '';
+				return $this->MoveToRunning($files[0]);
+			return '';
 		}
 		finally
 		{
@@ -214,36 +220,22 @@ abstract class Queue
 		}
 	}
 
-	protected function ProcessItem($function, $params)
+	protected function ProcessItem(string $function, array $params)
 	{
-		if (!$this->processorClass)
+		if ($this->processorClass == '')
 			throw new \Exception("Debe indicar un ProcessorClass o implementarse un ProcessItem");
 
-		$this->Call($this->processorClass, $function, $params);
-	}
-
-	private function TryCall(array $data) : bool
-	{
-		try
-		{
-			$this->ProcessItem($data['function'], $data['params']);
-			return true;
-		}
-		catch(\Exception $ex)
-		{
-			Log::HandleSilentException($ex);
-			return false;
-		}
+		return $this->Call($this->processorClass, $function, $params);
 	}
 
 	private function CreateFile(array $data) : void
 	{
 		$this->EnsureQueueFolder();
-		
+
 		$lock = new QueueLock($this->folder);
-	
+
 		$lock->LockWrite();
-	
+
 		$file = $this->GetQueueFolder('queued') . '/' . microtime(true) . '.json';
 		//$json = Serializator::JsonSerialize($data);
 		$json = json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE);
@@ -252,17 +244,16 @@ abstract class Queue
 			Log::HandleSilentException(new \Exception("Error json_encode '" . json_last_error_msg() . "' en:\n\n" . print_r($data, true)));
 			return;
 		}
-		
+
 		file_put_contents($file, $json);
-	
+
 		$lock->Release();
 
 		if(self::Enabled() == false)
 			$this->Process();
 	}
 
-
-	private function SaveException($file, $exception)
+	private function SaveException(string $file, \Exception $exception) : void
 	{
 		$text = Log::InternalExceptionToText($exception);
 
