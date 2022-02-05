@@ -151,12 +151,12 @@ abstract class Queue
 	{
 		$this->GetQueueFolder('queued');
 	}
-
 	public function Process(bool $skipLocking = false) : array
 	{
 		$this->EnsureQueueFolder();
 
 		$lock = new QueueProcessLock($this->folder);
+
 		if (!$skipLocking)
 			$lock->LockWrite();
 
