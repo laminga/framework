@@ -6,27 +6,33 @@ use minga\framework\enums\MailFooter;
 
 class TemplateMessage extends AttributeEntity
 {
-	public $title;
-	public $to;
+	/** @var string */
+	public $title = '';
+	/** @var string */
+	public $to = '';
+	/** @var string */
 	public $toCaption = '';
+	/** @var string */
 	public $formattedTo = '';
 	public $footer = MailFooter::General;
-	public $template;
+	/** @var string */
+	public $template = '';
 	public $content = null;
+	/** @var bool */
 	public $skipNotify = false;
 
-	public function SetTo($name, $email) : void
+	public function SetTo(string $name, string $email) : void
 	{
 		$this->to = $email;
 		$this->toCaption = $name; // mb_encode_mimeheader($name, 'UTF-8', 'Q') . ' <' . $email . '>';
 	}
 
-	public function UpdateViewActionUrl($url) : void
+	public function UpdateViewActionUrl(string $url) : void
 	{
 		$this->attributes['viewAction']['url'] = $url;
 	}
 
-	public function AddViewAction($url, $name, $description) : void
+	public function AddViewAction(string $url, string $name, string $description) : void
 	{
 		$viewAction = [];
 		$viewAction['description'] = $description;
@@ -39,7 +45,7 @@ class TemplateMessage extends AttributeEntity
 		$this->SetValue('viewAction', $viewAction);
 	}
 
-	public function Send($template = '') : void
+	public function Send(string $template = '') : void
 	{
 		if ($template != '')
 			$this->template = $template;
@@ -68,7 +74,7 @@ class TemplateMessage extends AttributeEntity
 		$mail->Send();
 	}
 
-	public function SetTitle($title) : void
+	public function SetTitle(string $title) : void
 	{
 		$this->SetValue('title', $title);
 	}

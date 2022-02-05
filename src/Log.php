@@ -145,23 +145,23 @@ class Log
 		if(Str::Contains($errorMessage, 'function_bar'))
 			return true;
 
-		if(Str::Contains($errorMessage, "property 'localdata' of undefined")
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
-
-		if(Str::Contains($errorMessage, 'w.source._source is undefined')
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
-
-		if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
+		// if(Str::Contains($errorMessage, "property 'localdata' of undefined")
+		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
+		// {
+		// 	return true;
+		// }
+		//
+		// if(Str::Contains($errorMessage, 'w.source._source is undefined')
+		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
+		// {
+		// 	return true;
+		// }
+		//
+		// if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
+		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
+		// {
+		// 	return true;
+		// }
 
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
@@ -294,10 +294,10 @@ class Log
 					$inner->getLine(), $inner->getTraceAsString());
 			}
 			return self::InternalErrorToText($exception->getCode(), $message, $exception->getFile(),
-					$exception->getLine(), [], $exception->getTraceAsString(), $inner);
+				$exception->getLine(), [], $exception->getTraceAsString(), $inner);
 		}
 		return self::InternalErrorToText($exception->getCode(), $message, $exception->getFile(),
-				$exception->getLine(), [], $exception->getTraceAsString());
+			$exception->getLine(), [], $exception->getTraceAsString());
 	}
 
 	private static function InternalErrorToText($errorNumber, $errorMessage, $errorFile, $errorLine,
@@ -424,7 +424,7 @@ class Log
 					$exception->getLine(), [], $exception->getTraceAsString(), $inner);
 			}
 		}
-		else 
+		else
 		{
 			return self::LogError($exception->getCode(), $message, $exception->getFile(),
 				$exception->getLine(), [], $exception->getTraceAsString());

@@ -33,7 +33,7 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 
 	public function getNextId()
 	{
-		$id = (int)($this->SafeGet('__id_numbers__', 'id', 0)) + 1;
+		$id = (int)($this->SafeGet('__id_numbers__', 'id')) + 1;
 		$this->SetValue('__id_numbers__', 'id', $id);
 		return $id;
 	}

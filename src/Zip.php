@@ -201,7 +201,7 @@ class Zip
 		}
 	}
 
-	public function Extract($path, array $files = null)
+	public function Extract(string $path, array $files = null) : int
 	{
 		$zip = new \ZipArchive();
 
@@ -210,6 +210,22 @@ class Zip
 
 		$ret = $zip->numFiles;
 		$zip->extractTo($path, $files);
+		$zip->close();
+		return $ret;
+	}
+
+	public function GetFilenames() : array
+	{
+		$zip = new \ZipArchive();
+		if ($zip->open($this->targetFile) !== true)
+			throw new \Exception('Failed to extract files');
+
+		$ret = [];
+		for($i = 0; $i < $zip->numFiles; $i++)
+		{
+			$stat = $zip->statIndex($i);
+			$ret[] = $stat['name'];
+		}
 		$zip->close();
 		return $ret;
 	}

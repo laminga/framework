@@ -64,8 +64,8 @@ class GlobalizeDebugSession
 	{
 		GlobalDebugLock::BeginRead();
 		$arr = self::readGlobalizedFile();
-		$val = Arr::SafeGet($arr, $ip, null);
-		if ($val === null)
+		$val = Arr::SafeGet($arr, $ip);
+		if ($val == '')
 		{
 			$val = ['value' => '', 'date' => null];
 		}

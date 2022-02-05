@@ -36,6 +36,7 @@ class WebConnection
 		curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 10);
 		curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, false);
 		if ($path == '')
 		{
