@@ -155,7 +155,7 @@ class Performance
 	public static function ResolveControllerFromUri() : void
 	{
 		// Resuelve el methodName default de performance
-		$uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+		$uri = parse_url(Params::SafeServer("REQUEST_URI"), PHP_URL_PATH);
 		if (Str::StartsWith($uri, '/'))
 			$uri = substr($uri, 1);
 		if (Str::EndsWith($uri, '/'))
@@ -164,7 +164,7 @@ class Performance
 		if (Str::EndsWith($uri, 'Post'))
 			self::SetController(substr($uri, 0, strlen($uri) - 4), "post");
 		else
-			self::SetController($uri, strtolower($_SERVER['REQUEST_METHOD']));
+			self::SetController($uri, strtolower(Params::SafeServer('REQUEST_METHOD')));
 	}
 
 	public static function AppendControllerSuffix($suffix) : void
