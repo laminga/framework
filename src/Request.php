@@ -4,9 +4,10 @@ namespace minga\framework;
 
 class Request
 {
+	/** @var bool */
 	private static $isGoogle = null;
 
-	public static function IsGoogle()
+	public static function IsGoogle() : bool
 	{
 		if (self::$isGoogle == null)
 		{
@@ -16,24 +17,24 @@ class Request
 		return self::$isGoogle;
 	}
 
-	public static function Referer()
+	public static function Referer() : string
 	{
 		return Params::SafeServer('HTTP_REFERER');
 	}
 
-	public static function Host()
+	public static function Host() : string
 	{
 		return Params::SafeServer('HTTP_HOST');
 	}
 
-	public static function Subdomain()
+	public static function Subdomain() : string
 	{
 		$host = self::Host();
 		$parts = explode('.', $host);
 		return $parts[0];
 	}
 
-	public static function GetSecondUriPart()
+	public static function GetSecondUriPart() : ?string
 	{
 		$uri = self::GetRequestURI(true);
 		$parts = explode('/', $uri);
@@ -43,7 +44,7 @@ class Request
 		return $parts[1];
 	}
 
-	public static function GetThirdUriPart()
+	public static function GetThirdUriPart() : ?string
 	{
 		$uri = self::GetRequestURI(true);
 		$parts = explode('/', $uri);
@@ -53,26 +54,21 @@ class Request
 		return $parts[2];
 	}
 
-	public static function RequestURIStartsWith($arg1, $arg2 = null, $arg3 = null, $arg4 = null)
+	public static function RequestURIStartsWith(?string $arg1, ?string $arg2 = null, ?string $arg3 = null, ?string $arg4 = null) : bool
 	{
 		$uri = self::GetRequestURI();
-		if (Str::StartsWith($uri, $arg1))
-			return true;
-		if (Str::StartsWith($uri, $arg2))
-			return true;
-		if (Str::StartsWith($uri, $arg3))
-			return true;
-		if (Str::StartsWith($uri, $arg4))
-			return true;
-		return false;
+		return Str::StartsWith($uri, $arg1)
+			|| Str::StartsWith($uri, $arg2)
+			|| Str::StartsWith($uri, $arg3)
+			|| Str::StartsWith($uri, $arg4);
 	}
 
-	public static function GetQueryString()
+	public static function GetQueryString() : string
 	{
 		return Params::SafeServer('QUERY_STRING');
 	}
 
-	public static function GetRequestURI($noParameters = false)
+	public static function GetRequestURI(bool $noParameters = false) : string
 	{
 		if ($noParameters)
 		{

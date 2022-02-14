@@ -277,18 +277,18 @@ class Str
 		return number_format($bytes, $precision, ".", ",") . ' ' . $units[$pow];
 	}
 
-	public static function StartsWith($haystack, $needle)
+	public static function StartsWith($haystack, ?string $needle) : bool
 	{
 		if ($needle === null)
 			return false;
-		return !strncmp($haystack, $needle, strlen($needle));
+		return (bool)!strncmp($haystack, $needle, strlen($needle));
 	}
 
-	public static function StartsWithI($haystack, $needle)
+	public static function StartsWithI($haystack, ?string $needle) : bool
 	{
 		if ($needle === null)
 			return false;
-		return !strncasecmp($haystack, $needle, strlen($needle));
+		return (bool)!strncasecmp($haystack, $needle, strlen($needle));
 	}
 
 	public static function ReformatEndingNumber($text)
@@ -297,19 +297,19 @@ class Str
 	}
 
 	//Contains case insensitve
-	public static function ContainsI($haystack, $needle)
+	public static function ContainsI($haystack, $needle) : bool
 	{
 		$pos = stripos($haystack, $needle);
 		return $pos !== false;
 	}
 
-	public static function Contains($haystack, $needle)
+	public static function Contains($haystack, $needle) : bool
 	{
 		$pos = strpos($haystack, $needle);
 		return $pos !== false;
 	}
 
-	public static function ContainsAny($haystack, array $needles)
+	public static function ContainsAny($haystack, array $needles) : bool
 	{
 		foreach($needles as $needle)
 			if (self::Contains($haystack, $needle))
@@ -317,7 +317,7 @@ class Str
 		return false;
 	}
 
-	public static function ContainsAnyI($haystack, array $needles)
+	public static function ContainsAnyI($haystack, array $needles) : bool
 	{
 		foreach($needles as $needle)
 			if (self::ContainsI($haystack, $needle))
