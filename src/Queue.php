@@ -17,7 +17,7 @@ abstract class Queue
 	/** @var int */
 	protected $maxToProcess;
 	/** @var int */
-	protected $clearLogOlderThanDays = 45;
+	protected $clearLogOlderThanDays = 60;
 
 	/** @var string */
 	protected $processorClass = '';
@@ -43,8 +43,7 @@ abstract class Queue
 	{
 		if (Context::Settings()->Db()->NoDb)
 			return 0;
-		else
-			return self::AddToQueue($function, ...$args);
+		return self::AddToQueue($function, ...$args);
 	}
 
 	public static function AddToQueue(string $function, ...$args) : int
@@ -56,6 +55,12 @@ abstract class Queue
 
 	public function Add(string $function, ...$params) : void
 	{
+		if(self::Enabled() == false)
+		{
+			$this->ProcessItem($function, $params);
+			return;
+		}
+
 		$this->CreateFile([
 			'function' => $function,
 			'params' => $params,
@@ -109,8 +114,7 @@ abstract class Queue
 			IO::Delete($file);
 			return '';
 		}
-		else
-			return $this->MoveToFolder($file, 'success');
+		return $this->MoveToFolder($file, 'success');
 	}
 
 	private function MoveToFailed(string $file): string
@@ -151,14 +155,14 @@ abstract class Queue
 	{
 		$this->GetQueueFolder('queued');
 	}
-	public function Process(bool $skipLocking = false) : array
+
+	public function Process() : array
 	{
 		$this->EnsureQueueFolder();
 
 		$lock = new QueueProcessLock($this->folder);
 
-		if (!$skipLocking)
-			$lock->LockWrite();
+		$lock->LockWrite();
 
 		if ($this->clearLogOlderThanDays > 0 && rand(1, 100) === 1)
 		{
@@ -187,11 +191,15 @@ abstract class Queue
 			$done++;
 		}
 
-		if (!$skipLocking)
-			$lock->Release();
-		
-		return ['success' => $sucess, 'done' => $done, 'failed' => $failed, 'total' => $total,
-						'formatted' => $this->formatResults($done, $sucess, $failed, $total)];
+		$lock->Release();
+
+		return [
+			'success' => $sucess,
+			'done' => $done,
+			'failed' => $failed,
+			'total' => $total,
+			'formatted' => $this->formatResults($done, $sucess, $failed, $total),
+		];
 	}
 
 	private function formatResults(int $done, int $success, int $failed, int $total) : string
@@ -200,7 +208,7 @@ abstract class Queue
 			return 'Done 0 items.';
 		$ret = "Done " . $done . " items of " . $total . ".";
 		if ($failed > 0)
-			$ret .= " Success: " . $success . " items. Failed: " . $failed  . " items.";
+			$ret .= " Success: " . $success . " items. Failed: " . $failed . " items.";
 		return $ret;
 	}
 
@@ -251,9 +259,6 @@ abstract class Queue
 		file_put_contents($file, $json);
 
 		$lock->Release();
-
-		if(self::Enabled() == false)
-			$this->Process(true);
 	}
 
 	private function SaveException(string $file, \Exception $exception) : void
