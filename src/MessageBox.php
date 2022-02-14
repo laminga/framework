@@ -15,8 +15,8 @@ class MessageBox
 
 	public static function ThrowAndLogMessage($message, $action = '') : void
 	{
-			Log::HandleSilentException(new ErrorException($message));
-			self::ThrowMessage($message, $action);
+		Log::HandleSilentException(new ErrorException($message));
+		self::ThrowMessage($message, $action);
 	}
 
 	public static function ThrowMessage($message, $action = '', $title = 'Atención', $caption = 'Continuar') : void
@@ -160,7 +160,7 @@ class MessageBox
 
 	public static function ThrowFileNotFound($extraInfo = '') : void
 	{
-	self::Set404NotFoundHeaders();
+		self::Set404NotFoundHeaders();
 		Performance::SetController('cErrPageNotFound', 'Show');
 		if (Context::Settings()->Debug()->debug)
 		{
