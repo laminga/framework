@@ -280,7 +280,7 @@ class Log
 			. '=> Stack: ' . $stack . "\r\n";
 	}
 
-	public static function InternalExceptionToText($exception): string
+	public static function InternalExceptionToText($exception) : string
 	{
 		$message = $exception->getMessage();
 		if (is_a($exception, MingaException::class) && $exception->getInnerException())
@@ -324,9 +324,7 @@ class Log
 			$text .= "===========================================\r\n"
 				. '=> Info:        ' . print_r(self::$extraErrorInfo, true);
 		}
-		$text = self::FixLineEndings($text);
-
-		return $text;
+		return self::FixLineEndings($text);
 	}
 
 	public static function AppendExtraInfo($info) : void
@@ -418,17 +416,11 @@ class Log
 					$inner->getCode(), $inner->getMessage(), $inner->getFile(),
 					$inner->getLine(), $inner->getTraceAsString());
 			}
-			else
-			{
-				return self::LogError($exception->getCode(), $message, $exception->getFile(),
-					$exception->getLine(), [], $exception->getTraceAsString(), $inner);
-			}
-		}
-		else
-		{
 			return self::LogError($exception->getCode(), $message, $exception->getFile(),
-				$exception->getLine(), [], $exception->getTraceAsString());
+				$exception->getLine(), [], $exception->getTraceAsString(), $inner);
 		}
+		return self::LogError($exception->getCode(), $message, $exception->getFile(),
+			$exception->getLine(), [], $exception->getTraceAsString());
 	}
 
 	public static function PutToFatalErrorLog(string $text) : void

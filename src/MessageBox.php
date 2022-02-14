@@ -181,5 +181,4 @@ class MessageBox
 		}
 		MessageBox::ThrowMessage('Acceso denegado.', Context::Settings()->GetMainServerPublicUrl());
 	}
-
 }

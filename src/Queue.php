@@ -2,11 +2,8 @@
 
 namespace minga\framework;
 
-use minga\framework\Context;
-use minga\framework\IO;
 use minga\framework\locking\QueueLock;
 use minga\framework\locking\QueueProcessLock;
-use minga\framework\Log;
 
 abstract class Queue
 {
@@ -117,12 +114,12 @@ abstract class Queue
 		return $this->MoveToFolder($file, 'success');
 	}
 
-	private function MoveToFailed(string $file): string
+	private function MoveToFailed(string $file) : string
 	{
 		return $this->MoveToFolder($file, 'failed');
 	}
 
-	private function MoveToRunning(string $file): string
+	private function MoveToRunning(string $file) : string
 	{
 		return $this->MoveToFolder($file, 'running');
 	}

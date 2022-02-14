@@ -944,6 +944,7 @@ class IO
 		}
 		return false;
 	}
+
 	public static function GetUniqueNameNoReplaceFilename($filePath) : string
 	{
 		$ext = self::GetFileExtension($filePath);

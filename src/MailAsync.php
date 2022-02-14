@@ -2,10 +2,7 @@
 
 namespace minga\framework;
 
-use minga\framework\settings\MailSettings;
-use PHPMailer\PHPMailer\PHPMailerSendGrid;
-
-class MailAsync 
+class MailAsync
 {
 	public function Call($mail, $log = true, $skipNotification = false, $throwException = true) : void
 	{

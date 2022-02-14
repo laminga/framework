@@ -16,7 +16,6 @@ class Mail
 	public $message;
 	public $skipNotify = false;
 
-
 	public function __construct()
 	{
 		$this->fromCaption = Context::Settings()->applicationName;
