@@ -195,11 +195,11 @@ abstract class Queue
 			'done' => $done,
 			'failed' => $failed,
 			'total' => $total,
-			'formatted' => $this->formatResults($done, $sucess, $failed, $total),
+			'formatted' => $this->FormatResults($done, $sucess, $failed, $total),
 		];
 	}
 
-	private function formatResults(int $done, int $success, int $failed, int $total) : string
+	private function FormatResults(int $done, int $success, int $failed, int $total) : string
 	{
 		if ($total === 0)
 			return 'Done 0 items.';
