@@ -61,7 +61,7 @@ abstract class Queue
 		$this->CreateFile([
 			'function' => $function,
 			'params' => $params,
-			'debug' => Log::FormatTraceLog(debug_backtrace()),
+			// 'debug' => Log::FormatTraceLog(debug_backtrace()),
 		]);
 	}
 
