@@ -243,7 +243,7 @@ class Str
 		return self::Replace($cad, 'Ã¿', 'ÿ');
 	}
 
-	public static function UrldecodeFriendly($cad)
+	public static function UrldecodeFriendly($cad) : string
 	{
 		return urldecode(str_replace('@', '%40', $cad));
 	}
@@ -265,10 +265,10 @@ class Str
 		return urlencode($name);
 	}
 
-	public static function SizeToHumanReadable($bytes, $precision = 2)
+	public static function SizeToHumanReadable($bytes, int $precision = 2) : string
 	{
 		if ($bytes == "-")
-			return;
+			return '';
 		$units = ['b', 'KB', 'MB', 'GB', 'TB'];
 		$bytes = max($bytes, 0);
 		$pow = (int)floor(($bytes ? log($bytes) : 0) / log(1024));
@@ -434,7 +434,7 @@ class Str
 		return substr($haystack, $pos + strlen($needle));
 	}
 
-	public static function CheapSqlEscape($cad)
+	public static function CheapSqlEscape($cad) : string
 	{
 		if ($cad === null)
 			return 'null';
@@ -471,7 +471,7 @@ class Str
 		}
 	}
 
-	public static function AppendParam($url, $param, $value = "")
+	public static function AppendParam($url, $param, $value = "") : string
 	{
 		$n = strpos($url, "#");
 		$suffix = "";
@@ -501,14 +501,14 @@ class Str
 		return substr($haystack, 0, $pos);
 	}
 
-	public static function EnsureEndsWith($haystack, $needle)
+	public static function EnsureEndsWith($haystack, $needle) : string
 	{
 		if (self::EndsWith($haystack, $needle))
 			return $haystack;
 		return $haystack . $needle;
 	}
 
-	public static function EndsWith($haystack, $needle)
+	public static function EndsWith($haystack, $needle) : bool
 	{
 		$length = strlen($needle);
 		if ($length == 0)
@@ -516,17 +516,17 @@ class Str
 		return substr($haystack, -$length) === $needle;
 	}
 
-	private static function InsecureHash($cad)
+	private static function InsecureHash(string $cad) : string
 	{
 		return crypt($cad, 'universo');
 	}
 
-	public static function SecurePasswordHash($password)
+	public static function SecurePasswordHash(string $password) : string
 	{
 		return password_hash($password, PASSWORD_DEFAULT);
 	}
 
-	public static function ValidatePassword($password, $hash, &$needRehash)
+	public static function ValidatePassword(string $password, string $hash, ?bool &$needRehash) : bool
 	{
 		if ($hash === self::InsecureHash($password))
 		{
@@ -593,7 +593,7 @@ class Str
 		return preg_replace("/[^A-Za-z0-9 ]/", '', $cad);
 	}
 
-	public static function RemoveAccents($cad)
+	public static function RemoveAccents($cad) : string
 	{
 		return strtr(utf8_decode($cad),
 			utf8_decode(
@@ -658,7 +658,7 @@ class Str
 		return self::RemoveEnding($cad, ")");
 	}
 
-	public static function IsNullOrEmpty($cad)
+	public static function IsNullOrEmpty($cad) : bool
 	{
 		return $cad === '' || $cad === null;
 	}
@@ -669,7 +669,7 @@ class Str
 		return $parts[count($parts) - 1];
 	}
 
-	public static function Ellipsis(string $cad, int $maxSize = 50)
+	public static function Ellipsis(string $cad, int $maxSize = 50) : string
 	{
 		return mb_strimwidth($cad, 0, $maxSize, '…', 'UTF-8');
 	}
@@ -687,12 +687,12 @@ class Str
 		return $cad;
 	}
 
-	public static function Capitalize($cad)
+	public static function Capitalize($cad) : string
 	{
 		return mb_strtoupper(mb_substr($cad, 0, 1)) . mb_substr($cad, 1);
 	}
 
-	public static function StartsWithAlfabetic($cad)
+	public static function StartsWithAlfabetic($cad) : bool
 	{
 		return ctype_alpha(self::RemoveAccents(mb_substr($cad, 0, 1)));
 	}
@@ -713,7 +713,7 @@ class Str
 		return mb_substr($str, $start, $length, $encoding);
 	}
 
-	public static function Concat($a, $b, $separator)
+	public static function Concat($a, $b, $separator) : string
 	{
 		if (trim($a) == "" || trim($b) == "")
 			$separator = "";
@@ -845,14 +845,14 @@ class Str
 			array_slice($words, count($words) - $n, $n));
 	}
 
-	public static function FormatDateDMY($str)
+	public static function FormatDateDMY($str) : string
 	{
 		if ($str == "")
 			return "-";
 		return substr($str, 8, 2) . "/" . substr($str, 5, 2) . "/" . substr($str, 2, 2);
 	}
 
-	public static function FormatDateYYMD($str)
+	public static function FormatDateYYMD($str) : string
 	{
 		if ($str == "")
 			return "-";
@@ -969,7 +969,7 @@ class Str
 		throw new ErrorException('Invalid normalization argument.');
 	}
 
-	public static function Initials($cad)
+	public static function Initials($cad) : string
 	{
 		$ret = "";
 		$parts = explode(" ", $cad);
@@ -1005,7 +1005,7 @@ class Str
 		return self::EllipsisAnsi($title, 140, "(...)");
 	}
 
-	public static function IsAllLetters($cad)
+	public static function IsAllLetters($cad) : bool
 	{
 		$cad = self::RemoveAccents(self::ToLower($cad));
 		for($n = 0; $n < strlen($cad); $n++)
@@ -1063,12 +1063,12 @@ class Str
 		return 'l-' . self::RandomStringLowerCase(16);
 	}
 
-	public static function FormatLocaleNumber($value, $decimals = 0)
+	public static function FormatLocaleNumber($value, $decimals = 0) : string
 	{
 		return number_format($value, $decimals, ",", "");
 	}
 
-	public static function FormatNumber($value, $decimals = 0, $leadingZeros = 0)
+	public static function FormatNumber($value, $decimals = 0, $leadingZeros = 0) : string
 	{
 		$format = '%0';
 		if ($leadingZeros > 0)
@@ -1077,7 +1077,7 @@ class Str
 		return sprintf($format, $value);
 	}
 
-	public static function FormatPercentage($value, $total)
+	public static function FormatPercentage($value, $total) : string
 	{
 		if ($total == 0)
 			return "-";
