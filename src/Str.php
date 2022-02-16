@@ -29,7 +29,7 @@ class Str
 		return $ret;
 	}
 
-	public static function DetectEncoding(string $str)
+	public static function DetectEncoding(string $str) : ?string
 	{
 		$encodings = [
 			'UTF-8',
@@ -105,7 +105,7 @@ class Str
 	}
 
 	//TODO: mover a una clase mejor.
-	public static function BuildTotalsRow($list, $label, $columns)
+	public static function BuildTotalsRow(array $list, $label, array $columns) : array
 	{
 		$results = [];
 		if ($label != "")
@@ -121,7 +121,7 @@ class Str
 		{
 			foreach($columns as $column)
 			{
-				if (array_key_exists($column, $item))
+				if (isset($item[$column]))
 					$results[$column] += $item[$column];
 			}
 		}
@@ -129,7 +129,7 @@ class Str
 		return $results;
 	}
 
-	public static function CultureCmp($a, $b)
+	public static function CultureCmp($a, $b) : int
 	{
 		$a2 = self::RemoveAccents($a);
 		$b2 = self::RemoveAccents($b);
@@ -148,7 +148,7 @@ class Str
 			return $a - $b;
 	}
 
-	public static function UrlencodeFriendly($cad)
+	public static function UrlencodeFriendly($cad) : string
 	{
 		return str_replace('%40', '@', urlencode($cad));
 	}
@@ -248,7 +248,7 @@ class Str
 		return urldecode(str_replace('@', '%40', $cad));
 	}
 
-	public static function CrawlerUrlEncode($name)
+	public static function CrawlerUrlEncode($name) : string
 	{
 		$name = self::RemoveAccents(self::ToLower($name));
 		$name = self::Replace($name, " ", "_");
@@ -325,7 +325,7 @@ class Str
 		return false;
 	}
 
-	public static function EscapeJavascript($string)
+	public static function EscapeJavascript($string) : string
 	{
 		return str_replace("'", '\'', str_replace("\n", '\n', str_replace('"', '\"', addcslashes(str_replace("\r", '', (string)$string), "\0..\37'\\"))));
 	}
@@ -346,7 +346,7 @@ class Str
 		return $value;
 	}
 
-	private static function AssociateShortWords($words)
+	private static function AssociateShortWords($words) : array
 	{
 		$ret = [];
 		$min = Context::Settings()->Db()->FullTextMinWordLength;
@@ -356,7 +356,7 @@ class Str
 			$isBeforeLast = ($n === count($words) - 2);
 			// si es corta la asocia con la siguiente, o si es la anteúltima y
 			// la última es corta
-			if ((!$isLast && strlen($words[$n]) < $min)
+			if (($isLast == false && strlen($words[$n]) < $min)
 					|| ($isBeforeLast && strlen($words[$n + 1]) < $min))
 			{
 				$ret[] = '"' . $words[$n] . ' ' . $words[$n + 1] . '"';
@@ -368,7 +368,7 @@ class Str
 		return $ret;
 	}
 
-	private static function HasShortWord($arr)
+	private static function HasShortWord($arr) : bool
 	{
 		$min = Context::Settings()->Db()->FullTextMinWordLength;
 		foreach($arr as $str)
@@ -391,7 +391,7 @@ class Str
 		});
 	}
 
-	public static function ProcessQuotedBlock($originalQuery, $replacer)
+	public static function ProcessQuotedBlock($originalQuery, $replacer) : string
 	{
 		// Agrega + al inicio de todas las palabras para que el query funcione como 'todas las palabras'
 		$query = self::Replace($originalQuery, "'", '"');
@@ -542,7 +542,7 @@ class Str
 		return false;
 	}
 
-	public static function TextContainsWordList($list, $cad)
+	public static function TextContainsWordList($list, $cad) : array
 	{
 		$ret = [];
 		$cadSpaced = ' ' . $cad . ' ';
@@ -588,7 +588,7 @@ class Str
 		return $subject;
 	}
 
-	public static function RemoveNonAlphanumeric($cad)
+	public static function RemoveNonAlphanumeric($cad) : ?string
 	{
 		return preg_replace("/[^A-Za-z0-9 ]/", '', $cad);
 	}
@@ -697,18 +697,18 @@ class Str
 		return ctype_alpha(self::RemoveAccents(mb_substr($cad, 0, 1)));
 	}
 
-	public static function TextAreaTextToHtml($cad)
+	public static function TextAreaTextToHtml($cad) : string
 	{
 		$cad = htmlspecialchars($cad);
 		return nl2br($cad);
 	}
 
-	public static function Length($str, $encoding = 'UTF-8')
+	public static function Length($str, $encoding = 'UTF-8') : int
 	{
 		return mb_strlen($str, $encoding);
 	}
 
-	public static function Substr($str, $start, $length = null, $encoding = 'UTF-8')
+	public static function Substr($str, $start, $length = null, $encoding = 'UTF-8') : string
 	{
 		return mb_substr($str, $start, $length, $encoding);
 	}
@@ -720,27 +720,27 @@ class Str
 		return trim($a) . $separator . trim($b);
 	}
 
-	public static function ToLower($str)
+	public static function ToLower($str) : string
 	{
 		return mb_convert_case($str, MB_CASE_LOWER);
 	}
 
-	public static function ToUpper($str)
+	public static function ToUpper($str) : string
 	{
 		return mb_convert_case($str, MB_CASE_UPPER);
 	}
 
-	public static function Join($arr, $separator = ",")
+	public static function Join($arr, $separator = ",") : string
 	{
 		return implode($separator, $arr);
 	}
 
-	public static function JoinInts($arr, $separator = ",")
+	public static function JoinInts($arr, $separator = ",") : string
 	{
 		return implode($separator, array_map('intval', $arr));
 	}
 
-	public static function CountWords($str)
+	public static function CountWords($str) : int
 	{
 		$unicode = '';
 		if(self::IsUtf8($str))
@@ -762,12 +762,12 @@ class Str
 		return $cad2;
 	}
 
-	public static function IsUtf8($str)
+	public static function IsUtf8($str) : bool
 	{
 		return mb_check_encoding($str, 'UTF-8');
 	}
 
-	public static function GetNWords($str, $n)
+	public static function GetNWords($str, $n) : string
 	{
 		$unicode = '';
 		if(self::IsUtf8($str))
@@ -834,7 +834,7 @@ class Str
 		return $str;
 	}
 
-	public static function GetLastNWords($str, $n)
+	public static function GetLastNWords($str, $n) : string
 	{
 		$unicode = '';
 		if(self::IsUtf8($str))
@@ -859,12 +859,12 @@ class Str
 		return substr($str, 0, 4) . "-" . substr($str, 5, 2) . "-" . substr($str, 8, 2);
 	}
 
-	public static function IsNumber($cad)
+	public static function IsNumber($cad) : bool
 	{
 		return is_numeric($cad);
 	}
 
-	public static function IsNumberNotPlaceheld($cad)
+	public static function IsNumberNotPlaceheld($cad) : bool
 	{
 		if (strlen($cad) > 1 && $cad[0] === '0' && $cad[1] !== '.')
 			return false;
@@ -875,7 +875,7 @@ class Str
 	/**
 	 * Devuelve strings bien formados para XML.
 	 */
-	public static function CleanXmlString($str)
+	public static function CleanXmlString($str) : string
 	{
 		// Los caracteres ascii bajos (menores a 0x20 espacio)
 		// rompen los parsers de xml (pasa en chrome y firefox).
@@ -893,7 +893,7 @@ class Str
 			str_replace($replace, '', $str));
 	}
 
-	public static function SmartImplode($partsRaw, $trailingCad = "", $normalization = 0)
+	public static function SmartImplode($partsRaw, $trailingCad = "", $normalization = 0) : string
 	{
 		// $normalization = 0: Nada
 		// $normalization = 1: Convierte Perez, Carlos => Perez, C.
@@ -1016,10 +1016,10 @@ class Str
 		return true;
 	}
 
-	public static function IsRoman($cad)
+	public static function IsRoman($cad) : bool
 	{
 		$regex = '/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/';
-		return preg_match($regex, strtoupper($cad));
+		return (bool)preg_match($regex, strtoupper($cad));
 	}
 
 	public static function DecodeEntities(string $str) : string
