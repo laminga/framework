@@ -159,7 +159,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function IndexOfByNamedValue(array $arr, $itemName, $itemValue)
+	public static function IndexOfByNamedValue(array $arr, $itemName, $itemValue) : int
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
@@ -170,7 +170,7 @@ class Arr
 		return -1;
 	}
 
-	public static function IndexOfByProperty(array $arr, $itemProperty, $itemValue)
+	public static function IndexOfByProperty(array $arr, $itemProperty, $itemValue) : int
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
@@ -363,7 +363,7 @@ class Arr
 		return self::RemoveAt($array, $pos);
 	}
 
-	public static function Remove(array &$array, $value)
+	public static function Remove(array &$array, $value) : array
 	{
 		$n = self::IndexOf($array, $value);
 		return self::RemoveAt($array, $n);
