@@ -9,11 +9,13 @@ class Context
 	/** @var Settings */
 	private static $settings = null;
 	private static $calls = null;
-	private static $paths = null;
+
+	/** @var AppPaths */
+	private static $paths;
 
 	public static function Settings() : Settings
 	{
-		if(self::$settings === null)
+		if(self::$settings == null)
 			self::$settings = new Settings();
 
 		return self::$settings;
@@ -21,13 +23,13 @@ class Context
 
 	public static function Calls()
 	{
-		if(self::$calls === null)
+		if(self::$calls == null)
 			throw new ErrorException('Framework context Calls must be initialized.');
 
 		return self::$calls;
 	}
 
-	public static function CurrentUrl()
+	public static function CurrentUrl() : string
 	{
 		$ret = 'http://';
 		if(Params::SafeServer('HTTPS') == 'on')
@@ -46,7 +48,8 @@ class Context
 		self::$calls = $calls;
 	}
 
-	public static function Paths()
+	//TODO: tipo AppPaths o Paths
+	public static function Paths() : AppPaths
 	{
 		if(self::$paths === null)
 			self::$paths = new AppPaths();
@@ -54,7 +57,7 @@ class Context
 		return self::$paths;
 	}
 
-	public static function LoggedUser()
+	public static function LoggedUser() : string
 	{
 		return PhpSession::GetSessionValue('user');
 	}

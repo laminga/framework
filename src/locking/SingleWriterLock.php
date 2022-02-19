@@ -12,7 +12,7 @@ abstract class SingleWriterLock extends Lock
 
 	private static $refCount = 0;
 
-	public static function IsWriting()
+	public static function IsWriting() : bool
 	{
 		return self::$writeLock != null;
 	}

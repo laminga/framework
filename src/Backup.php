@@ -259,7 +259,7 @@ class Backup
 			return IO::ReadAllText($ret);
 	}
 
-	public static function CheckState($state1, $state2 = "ommited") : void
+	public static function CheckState($state1, $state2 = "omited") : void
 	{
 		$text = self::GetState();
 		if ($text == $state1 || $text == $state2)

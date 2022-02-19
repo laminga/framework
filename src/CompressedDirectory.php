@@ -4,12 +4,16 @@ namespace minga\framework;
 
 class CompressedDirectory
 {
+	/** @var string */
 	public $path;
-	public $expandedPath;
+	/** @var string */
+	public $expandedPath = '';
+	/** @var bool */
 	private $expanded = false;
+	/** @var string */
 	private $file;
 
-	public function __construct($path, $file = 'content.zip')
+	public function __construct(string $path, string $file = 'content.zip')
 	{
 		$this->path = $path;
 		$this->file = $file;
@@ -23,17 +27,17 @@ class CompressedDirectory
 		$this->expanded = false;
 	}
 
-	public function GetFilename()
+	public function GetFilename() : string
 	{
 		return $this->path . '/' . $this->file;
 	}
 
-	public function IsCompressed()
+	public function IsCompressed() : bool
 	{
 		return file_exists($this->GetFilename());
 	}
 
-	public function Compress()
+	public function Compress() : bool
 	{
 		if ($this->IsCompressed())
 			return false;

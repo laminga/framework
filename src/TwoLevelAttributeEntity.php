@@ -24,7 +24,7 @@ class TwoLevelAttributeEntity
 			$this->sections = IO::ReadEscapedIniFileWithSections($path);
 	}
 
-	public function GetCreateDate(string $section)
+	public function GetCreateDate(string $section) : string
 	{
 		return $this->SafeGet($section, 'created');
 	}
@@ -120,7 +120,7 @@ class TwoLevelAttributeEntity
 		// Lee los valores...
 		$n = 1;
 		$current = [];
-		while(array_key_exists($key . $n, $sectionArray))
+		while(isset($sectionArray[$key . $n]))
 		{
 			$value = $sectionArray[$key . $n];
 			$current[] = $value;
@@ -135,7 +135,7 @@ class TwoLevelAttributeEntity
 			$this->sections[$section] = [];
 		// Lee los valores...
 		$n = 1;
-		while(array_key_exists($key . $n, $this->sections[$section]))
+		while(isset($this->sections[$section][$key . $n]))
 		{
 			unset($this->sections[$section][$key . $n]);
 			$n++;

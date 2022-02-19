@@ -395,7 +395,7 @@ class Log
 		foreach ($trace as $i => $t)
 		{
 			$log .= $i . ' => <a href="repath://' . $t['file'] . '@' . $t['line'] . '">'
-				. $t['file'] . ' (' . $t['line'] . ')</a>: ' . (array_key_exists('class', $t) ? $t['class'] : '') . '::' . $t['function'] . '().<br>';
+				. $t['file'] . ' (' . $t['line'] . ')</a>: ' . Arr::SafeGet($t, 'class') . '::' . $t['function'] . '().<br>';
 		}
 		return $log . '</p>';
 	}

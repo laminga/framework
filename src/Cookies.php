@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class Cookies
 {
-	public static function SetCookie($name, $value, int $expireDays = 30) : void
+	public static function SetCookie(string $name, $value, int $expireDays = 30) : void
 	{
 		$expire = time() + 60 * 60 * 24 * $expireDays;
 
@@ -28,14 +28,14 @@ class Cookies
 			|| Params::SafeServer('HTTP_X_FORWARDED_SSL') == 'on';
 	}
 
-	public static function RenewCookie($name, int $expireDays = 30) : void
+	public static function RenewCookie(string $name, int $expireDays = 30) : void
 	{
 		$cookie = self::GetCookie($name);
 		if($cookie != '')
 			self::SetCookie($name, $cookie, $expireDays);
 	}
 
-	public static function GetCookie($name)
+	public static function GetCookie(string $name) : string
 	{
 		if(isset($_COOKIE[$name]))
 			return $_COOKIE[$name];
@@ -43,7 +43,7 @@ class Cookies
 		return '';
 	}
 
-	public static function DeleteCookie($name) : void
+	public static function DeleteCookie(string $name) : void
 	{
 		self::RenewCookie($name, -365);
 		unset($_COOKIE[$name]);

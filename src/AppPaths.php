@@ -24,6 +24,11 @@ class AppPaths
 		return $this->GetStorageRoot() . "/data";
 	}
 
+	public static function GetBackupLocalPath() : string
+	{
+		return Context::Paths()->GetStorageRoot() . '/backup';
+	}
+
 	public function GetQueuePath() : string
 	{
 		$path = $this->GetStorageRoot() . "/queue";

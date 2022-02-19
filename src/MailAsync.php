@@ -4,9 +4,9 @@ namespace minga\framework;
 
 class MailAsync
 {
-	public function Call($mail, $log = true, $skipNotification = false, $throwException = true) : void
+	public function Call(Mail $mail, bool $log = true, bool $skipNotification = false, bool $throwException = true) : void
 	{
 		// no hace nada por ahora
-		$mail->Send($log = true, $skipNotification = false, $throwException = true);
+		$mail->Send($log, $skipNotification, $throwException);
 	}
 }

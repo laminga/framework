@@ -6,16 +6,18 @@ use minga\framework\locking\ZipLock;
 
 class Zip
 {
+	// /** @var string */
 	public $targetFile;
+	/** @var ZipLock */
 	public $lock;
 
-	public function __construct($file)
+	public function __construct(string $file)
 	{
 		$this->targetFile = $file;
 		$this->lock = new ZipLock($file);
 	}
 
-	private function OpenCreate()
+	private function OpenCreate() : \ZipArchive
 	{
 		$zip = new \ZipArchive();
 		if (file_exists($this->targetFile) == false)
@@ -144,7 +146,7 @@ class Zip
 		return $currentBytes <= $bytesLimit;
 	}
 
-	private function AddFolderToPath(array $files, $path)
+	private function AddFolderToPath(array $files, $path) : array
 	{
 		$ret = [];
 		foreach($files as $file)
@@ -153,18 +155,18 @@ class Zip
 		return $ret;
 	}
 
-	public function AddToZipDeleting($sourcefolder, array $files) : void
+	public function AddToZipDeleting($sourcePath, array $files) : void
 	{
-		$this->AddToZip($sourcefolder, $files);
+		$this->AddToZip($sourcePath, $files);
 		foreach($files as $file)
 			IO::Delete($file);
 	}
 
-	public function AddToZip($sourcefolder, array $files) : void
+	public function AddToZip($sourcePath, array $files) : void
 	{
-		$sourcefolder = str_replace("\\", '/', $sourcefolder);
-		if (Str::EndsWith($sourcefolder, '/') == false)
-			$sourcefolder .= '/';
+		$sourcePath = str_replace("\\", '/', $sourcePath);
+		if (Str::EndsWith($sourcePath, '/') == false)
+			$sourcePath .= '/';
 
 		$zip = null;
 		try
@@ -180,7 +182,7 @@ class Zip
 
 				//remove the source path from the $key to return only the
 				//file-folder structure from the root of the source folder
-				$path = str_replace($sourcefolder, '', $fileFixed);
+				$path = str_replace($sourcePath, '', $fileFixed);
 
 				$file = realpath($file);
 
@@ -230,7 +232,7 @@ class Zip
 		return $ret;
 	}
 
-	public function ExtractWithDates($path)
+	public function ExtractWithDates($path) : int
 	{
 		$zip = new \ZipArchive();
 		if ($zip->open($this->targetFile) !== true)

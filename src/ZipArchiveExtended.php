@@ -4,12 +4,12 @@ namespace minga\framework;
 
 class ZipArchiveExtended extends \ZipArchive
 {
-	public function count()
+	public function count() : int
 	{
 		return $this->numFiles;
 	}
 
-	public function hasSubdir($subdir)
+	public function hasSubdir($subdir) : bool
 	{
 		$subdir = str_replace(["/", "\\"], "/", $subdir);
 		if (substr($subdir, -1) != "/")
@@ -23,7 +23,7 @@ class ZipArchiveExtended extends \ZipArchive
 		return false;
 	}
 
-	public function extractSubdirTo($destination, $subdir)
+	public function extractSubdirTo($destination, $subdir) : array
 	{
 		$errors = [];
 
@@ -74,7 +74,6 @@ class ZipArchiveExtended extends \ZipArchive
 				}
 			}
 		}
-
 		return $errors;
 	}
 }

@@ -264,7 +264,7 @@ class Profiling
 			else
 				$i = 2;
 			$bt = debug_backtrace();
-			if (!array_key_exists('class', $bt[$i]))
+			if (isset($bt[$i]['class']) == false)
 			{
 				$bt[$i]['class'] = basename($bt[$i]['file']);
 				$bt[$i]['type'] = '->';

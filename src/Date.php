@@ -4,18 +4,18 @@ namespace minga\framework;
 
 class Date
 {
-	public static function GetLogDayFolder()
+	public static function GetLogDayFolder() : string
 	{
 		return date("d");
 	}
 
-	public static function GetLogMonthFolder($offset = 0)
+	public static function GetLogMonthFolder(int $offset = 0) : string
 	{
 		$time = mktime(0, 0, 0, (int)date("m") + $offset, 1, (int)date("Y"));
 		return date("Y-m", $time);
 	}
 
-	public static function NowGMT($offset) : int
+	public static function NowGMT(int $offset) : int
 	{
 		if ($offset < -12 || $offset > 12)
 			throw new ErrorException("Time offset out of range: " . $offset);
@@ -30,7 +30,7 @@ class Date
 		return (int)$virtual;
 	}
 
-	public static function ChangeUniversalNow($time) : void
+	public static function ChangeUniversalNow(int $time) : void
 	{
 		PhpSession::SetSessionValue('now', $time);
 	}
@@ -65,12 +65,12 @@ class Date
 		return date("Y-m-d@H.i.s", $date);
 	}
 
-	public static function DbDate($date) : string
+	public static function DbDate(int $date) : string
 	{
 		return date("Y-m-d H:i:s", $date);
 	}
 
-	public static function ConvertFormattedDateDDMMYYYYHHMM($date) : string
+	public static function ConvertFormattedDateDDMMYYYYHHMM(string $date) : string
 	{
 		if ($date == "")
 			return "";
@@ -78,7 +78,7 @@ class Date
 			. substr($date, 0, 4) . ' ' . substr($date, 11, 2) . ':' . substr($date, 14, 2);
 	}
 
-	public static function ConvertFormattedDateDDMMYYYY($date) : string
+	public static function ConvertFormattedDateDDMMYYYY(string $date) : string
 	{
 		if ($date == "")
 			return "";
@@ -86,7 +86,7 @@ class Date
 			. '/' . substr($date, 0, 4);
 	}
 
-	public static function ConvertFromDDMMYYYYToYYYYMMDD($date) : string
+	public static function ConvertFromDDMMYYYYToYYYYMMDD(string $date) : string
 	{
 		if ($date == "")
 			return "";
@@ -176,7 +176,7 @@ class Date
 		return date("d/m/Y g:i:s (\G\M\T-3)", $date - 60 * 60 * 3);
 	}
 
-	public static function DbArNow()
+	public static function DbArNow() : string
 	{
 		return self::DbDate(self::ArNow());
 	}
@@ -201,12 +201,12 @@ class Date
 		return $date;
 	}
 
-	public static function DateTimeToday()
+	public static function DateTimeToday() : \DateTime
 	{
 		return date_create(self::Today());
 	}
 
-	public static function Today()
+	public static function Today() : string
 	{
 		return date("Y-m-d");
 	}
@@ -216,9 +216,9 @@ class Date
 		return (int)(date("j"));
 	}
 
-	public static function CurrentMonth()
+	public static function CurrentMonth() : int
 	{
-		return (int)(date("m"));
+		return (int)date("m");
 	}
 
 	public static function CurrentYear()
@@ -244,15 +244,15 @@ class Date
 		return substr($day, 5, 2);
 	}
 
-	public static function FormatDateText($Year, $Month, $Day) : string
+	public static function FormatDateText($year, $month, $day) : string
 	{
-		$ret = $Day . " de " . Str::ToLower(self::MonthToString($Month));
-		if ($Year != "")
-			$ret .= " de " . $Year;
+		$ret = $day . " de " . Str::ToLower(self::MonthToString((int)$month));
+		if ($year != "")
+			$ret .= " de " . $year;
 		return $ret;
 	}
 
-	public static function WeekDayToString($day) : string
+	public static function WeekDayToString(int $day) : string
 	{
 		switch((int)$day)
 		{
@@ -275,11 +275,9 @@ class Date
 		}
 	}
 
-	public static function MonthToString($prevMonth) : string
+	public static function MonthToString(int $month) : string
 	{
-		$prevMonth .= "";
-
-		switch((int)$prevMonth)
+		switch($month)
 		{
 			case 1:
 				return 'Enero';

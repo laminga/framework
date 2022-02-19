@@ -4,55 +4,54 @@ namespace minga\framework;
 
 class IO
 {
+	/** @var ?array */
 	private static $compressedDirectories;
 
-	public static function AppendAllBytes($filename, $bytes) : void
+	public static function AppendAllBytes(string $filename, $bytes) : void
 	{
 		$fp = fopen($filename, 'a');
 		fwrite($fp, $bytes);
 		fclose($fp);
 	}
 
-	public static function MoveDirectoryContents($dirsource, $target) : void
+	public static function MoveDirectoryContents($dirSource, $target) : void
 	{
 		IO::EnsureExists($target);
 		// limpia
-		$dirname = substr($dirsource, strrpos($dirsource, "/") + 1);
+		$dirname = substr($dirSource, strrpos($dirSource, "/") + 1);
 		if (file_exists($target . "/" . $dirname))
 			IO::RemoveDirectory($target . "/" . $dirname);
 		// copia
-		IO::CopyDirectory($dirsource, $target);
+		IO::CopyDirectory($dirSource, $target);
 		// borra
-		IO::ClearDirectory($dirsource, true);
+		IO::ClearDirectory($dirSource, true);
 	}
 
-	public static function ReadAllText($path, $maxLength = -1)
+	public static function ReadAllText(string $path, $maxLength = -1)
 	{
 		if ($maxLength == -1)
 			return file_get_contents($path);
 		return file_get_contents($path, false, null, 0, $maxLength);
 	}
 
-	public static function GetDirectory($file)
+	public static function GetDirectory(string $file) : string
 	{
-		$pathParts = pathinfo($file);
-		return $pathParts['dirname'];
+		return pathinfo($file, PATHINFO_DIRNAME);
 	}
 
-	public static function GetDirectoryName($file)
+	public static function GetDirectoryName(string $file) : string
 	{
 		return self::GetFilenameNoExtension(self::GetDirectory($file));
 	}
 
-	public static function GetFileExtension($file)
+	public static function GetFileExtension(string $file) : string
 	{
 		return pathinfo($file, PATHINFO_EXTENSION);
 	}
 
-	public static function GetFilenameNoExtension($file)
+	public static function GetFilenameNoExtension(string $file) : string
 	{
-		$pathParts = pathinfo($file);
-		return $pathParts['filename'];
+		return pathinfo($file, PATHINFO_FILENAME);
 	}
 
 	public static function GetUrlNoExtension($file)
@@ -64,15 +63,15 @@ class IO
 		return $file;
 	}
 
-	public static function GetRelativePath($folder)
+	public static function GetRelativePath($path)
 	{
 		$base = Context::Paths()->GetRoot();
-		if (Str::StartsWith($folder, $base))
-			return substr($folder, strlen($base));
-		return $folder;
+		if (Str::StartsWith($path, $base))
+			return substr($path, strlen($base));
+		return $path;
 	}
 
-	public static function ReadText($path, $length)
+	public static function ReadText(string $path, $length)
 	{
 		$handle = fopen($path, "r");
 		$contents = fread($handle, $length);
@@ -80,12 +79,12 @@ class IO
 		return $contents;
 	}
 
-	public static function ReadAllBytes($path)
+	public static function ReadAllBytes(string $path)
 	{
 		return file_get_contents($path);
 	}
 
-	public static function ReadAllLines($path, $maxLines = null)
+	public static function ReadAllLines(string $path, $maxLines = null)
 	{
 		$handle = fopen($path, 'r');
 		$ret = [];
@@ -100,12 +99,12 @@ class IO
 		return $ret;
 	}
 
-	public static function WriteAllText($path, $text)
+	public static function WriteAllText(string $path, $text)
 	{
 		return file_put_contents($path, $text);
 	}
 
-	public static function WriteJson($path, $data, $pretty = false)
+	public static function WriteJson(string $path, $data, bool $pretty = false)
 	{
 		$flags = JSON_INVALID_UTF8_SUBSTITUTE;
 		if($pretty)
@@ -117,9 +116,9 @@ class IO
 		return self::WriteAllText($path, $json);
 	}
 
-	public static function ReadFileChunked($filepath) : bool
+	public static function ReadFileChunked(string $file) : bool
 	{
-		$handle = fopen($filepath, 'rb');
+		$handle = fopen($file, 'rb');
 		if($handle === false)
 			return false;
 
@@ -159,7 +158,7 @@ class IO
 		return $ret;
 	}
 
-	public static function AppendLine($path, $line) : bool
+	public static function AppendLine(string $path, $line) : bool
 	{
 		$handle = fopen($path, 'a');
 		if ($handle === false)
@@ -173,7 +172,7 @@ class IO
 		return true;
 	}
 
-	public static function ReadTitleTextFile($file, &$title, &$text) : void
+	public static function ReadTitleTextFile(string $file, &$title, &$text) : void
 	{
 		// formato
 		$pStart = "<p style='margin: 6px 0px 6px 0px;'>";
@@ -203,7 +202,7 @@ class IO
 		return $ret;
 	}
 
-	public static function WriteKeyValueCSVFile($path, $assocArr) : void
+	public static function WriteKeyValueCSVFile(string $path, array $assocArr) : void
 	{
 		$fp = fopen($path, 'w');
 		foreach ($assocArr as $key => $value)
@@ -214,13 +213,13 @@ class IO
 	public static function CompareFileSize($fileA, $fileB) : bool
 	{
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
-			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
+			MessageBox::ThrowMessage("Archivo no encontrado para comparación de tamaños.");
 
 		return filesize($fileA) == filesize($fileB);
 
 	}
 
-	public static function CompareBinaryFile($fileA, $fileB) : bool
+	public static function CompareBinaryFile(string $fileA, string $fileB) : bool
 	{
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
@@ -249,12 +248,12 @@ class IO
 		return false;
 	}
 
-	public static function ReadIniFile($path)
+	public static function ReadIniFile(string $path)
 	{
 		return parse_ini_file($path);
 	}
 
-	public static function ReadEscapedIniFile($path)
+	public static function ReadEscapedIniFile(string $path) : array
 	{
 		$attributes = parse_ini_file($path);
 		foreach($attributes as $key => $value)
@@ -262,7 +261,7 @@ class IO
 		return $attributes;
 	}
 
-	public static function ReadEscapedIniFileWithSections($path)
+	public static function ReadEscapedIniFileWithSections(string $path) : array
 	{
 		$attributes = parse_ini_file($path, true);
 		foreach($attributes as &$values)
@@ -271,7 +270,7 @@ class IO
 		return $attributes;
 	}
 
-	public static function WriteEscapedIniFileWithSections($path, $assocArr) : bool
+	public static function WriteEscapedIniFileWithSections(string $path, array $assocArr) : bool
 	{
 		$content = "";
 		foreach($assocArr as $section => $values)
@@ -298,7 +297,7 @@ class IO
 	public static function GetSectionFromIniFile(string $path, string $section)
 	{
 		$sections = self::ReadEscapedIniFileWithSections($path);
-		if (array_key_exists($section, $sections))
+		if (isset($sections[$section]))
 			return $sections[$section];
 		return null;
 	}
@@ -311,7 +310,7 @@ class IO
 		return $content;
 	}
 
-	public static function WriteIniFile($path, $assocArr) : bool
+	public static function WriteIniFile(string $path, array $assocArr) : bool
 	{
 		$handle = fopen($path, 'w');
 		if ($handle === false)
@@ -330,7 +329,7 @@ class IO
 		return true;
 	}
 
-	public static function WriteEscapedIniFile($path, array $assocArr, bool $keepSections = false) : bool
+	public static function WriteEscapedIniFile(string $path, array $assocArr, bool $keepSections = false) : bool
 	{
 		$directory = dirname($path);
 
@@ -366,7 +365,7 @@ class IO
 		return substr($filename, 0, $n);
 	}
 
-	public static function EnsureExists($directory) : void
+	public static function EnsureExists(string $directory) : void
 	{
 		if (is_dir($directory) == false)
 		{
@@ -375,7 +374,7 @@ class IO
 		}
 	}
 
-	public static function CreateDirectory($directory) : void
+	public static function CreateDirectory(string $directory) : void
 	{
 		try
 		{
@@ -396,37 +395,37 @@ class IO
 		}
 	}
 
-	public static function GetFilesCursor($path, $ext = '')
+	public static function GetFilesCursor(string $path, string $ext = '') : FilesCursor
 	{
 		return new FilesCursor($path, $ext);
 	}
 
-	public static function GetDirectoriesCursor($path, $ext = '')
+	public static function GetDirectoriesCursor(string $path, string $ext = '') : DirectoriesCursor
 	{
 		return new DirectoriesCursor($path, $ext);
 	}
 
-	public static function GetFilesRecursive($path, $ext = '', $returnFullPath = false)
+	public static function GetFilesRecursive($path, $ext = '', bool $returnFullPath = false)
 	{
 		return self::GetFilesStartsWithAndExt($path, '', $ext, $returnFullPath, true);
 	}
 
-	public static function GetFilesFullPath($path, $ext = '')
+	public static function GetFilesFullPath($path, $ext = '') : array
 	{
 		return self::GetFiles($path, $ext, true);
 	}
 
-	public static function GetFiles($path, $ext = '', $returnFullPath = false)
+	public static function GetFiles($path, $ext = '', bool $returnFullPath = false) : array
 	{
 		return self::GetFilesStartsWithAndExt($path, '', $ext, $returnFullPath);
 	}
 
-	public static function GetFilesStartsWith($path, $start = '', $returnFullPath = false)
+	public static function GetFilesStartsWith($path, $start = '', bool $returnFullPath = false) : array
 	{
 		return self::GetFilesStartsWithAndExt($path, $start, '', $returnFullPath);
 	}
 
-	public static function GetFilesStartsWithAndExt($path, $start = '', $ext = '', $returnFullPath = false, $recursive = false)
+	public static function GetFilesStartsWithAndExt($path, $start = '', $ext = '', bool $returnFullPath = false, bool $recursive = false) : array
 	{
 		if($ext != '' && Str::StartsWith($ext, '.') == false)
 			$ext = '.' . $ext;
@@ -460,7 +459,7 @@ class IO
 	/**
 	 * como la función glob de php pero recursiva.
 	 */
-	private static function rglob($pattern, $flags = 0)
+	private static function rglob($pattern, int $flags = 0)
 	{
 		$files = glob($pattern, $flags);
 		foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir)
@@ -469,7 +468,7 @@ class IO
 		return $files;
 	}
 
-	public static function HasFiles($path, $ext = '') : bool
+	public static function HasFiles(string $path, $ext = '') : bool
 	{
 		if ($handle = self::OpenDirNoWarning($path))
 		{
@@ -492,7 +491,7 @@ class IO
 		return count(self::GetFilesFullPath($path, $ext));
 	}
 
-	public static function GetDirectories($path, $start = '', $returnFullPath = false)
+	public static function GetDirectories($path, $start = '', bool $returnFullPath = false)
 	{
 		$start = str_replace(['/', "\\"], '', $start);
 
@@ -514,7 +513,7 @@ class IO
 		return preg_replace('/^' . preg_quote($path . '/', '/') . '/', '', $ret);
 	}
 
-	public static function GetSequenceName($file, $index, $numLength = 5)
+	public static function GetSequenceName(string $file, $index, $numLength = 5) : string
 	{
 		$i = sprintf('%0' . (int)$numLength . 'd', $index);
 		$info = pathinfo($file);
@@ -540,7 +539,7 @@ class IO
 		return $n;
 	}
 
-	public static function ClearFilesOlderThan($dir, $days, $ext = '') : void
+	public static function ClearFilesOlderThan(string $dir, $days, string $ext = '') : void
 	{
 		$time = time();
 
@@ -555,7 +554,7 @@ class IO
 		$files->Close();
 	}
 
-	public static function ClearDirectoriesOlderThan($dir, $days, $ext = '') : void
+	public static function ClearDirectoriesOlderThan(string $dir, $days, string $ext = '') : void
 	{
 		$time = time();
 
@@ -570,7 +569,7 @@ class IO
 		$directories->Close();
 	}
 
-	public static function ClearFiles($dir, $extension, $recursive = false, $showOnly = false)
+	public static function ClearFiles($dir, $extension, bool $recursive = false, bool $showOnly = false) : int
 	{
 		if (file_exists($dir) == false)
 			return 0;
@@ -604,13 +603,14 @@ class IO
 		return false;
 	}
 
-	public static function MoveDirectory($dirSource, $dirDest, $dirName = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true) : void
+	public static function MoveDirectory(string $dirSource, string $dirDest, $dirName = "", ?array $exclusions = null, $timeFrom = null, bool $createEmptyFolders = true) : void
 	{
 		self::CopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders);
 		self::RemoveDirectory($dirSource);
 	}
 
-	public static function CopyDirectory($dirSource, $dirDest, $dirName = "", $exclusions = null, $timeFrom = null, $createEmptyFolders = true, $excludedExtension = '')
+	//TODO: no hace falta nullable en $exclusions
+	public static function CopyDirectory(string $dirSource, string $dirDest, $dirName = "", ?array $exclusions = null, $timeFrom = null, bool $createEmptyFolders = true, $excludedExtension = '') : bool
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
@@ -623,7 +623,7 @@ class IO
 		return self::doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
 	}
 
-	public static function CopyFiles($dirSource, $dirDest, $exclusions = null, $timeFrom = null) : bool
+	public static function CopyFiles(string $dirSource, $dirDest, ?array $exclusions = null, $timeFrom = null) : bool
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
@@ -649,7 +649,7 @@ class IO
 		return true;
 	}
 
-	private static function doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension = '') : bool
+	private static function doCopyDirectory(string $dirSource, string $dirDest, $dirName, ?array $exclusions, $timeFrom, bool $createEmptyFolders, $excludedExtension = '') : bool
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
@@ -706,7 +706,7 @@ class IO
 	 * Remueve directorio completo aunque
 	 * contenga archivos.
 	 */
-	public static function RemoveDirectory($dir)
+	public static function RemoveDirectory(string $dir) : int
 	{
 		if (file_exists($dir) == false)
 			return 0;
@@ -735,7 +735,7 @@ class IO
 	 * para evitar warnings.
 	 * Solo borra directorios vacíos.
 	 */
-	public static function RmDir($dir)
+	public static function RmDir(string $dir) : bool
 	{
 		try
 		{
@@ -750,7 +750,7 @@ class IO
 		return false;
 	}
 
-	public static function OpenDirNoWarning($dir)
+	public static function OpenDirNoWarning(string $dir)
 	{
 		try
 		{
@@ -790,7 +790,7 @@ class IO
 		}
 	}
 
-	public static function GetDirectorySize($dir, $sizeOnly = false)
+	public static function GetDirectorySize($dir, bool $sizeOnly = false)
 	{
 		try
 		{
@@ -810,7 +810,7 @@ class IO
 		}
 	}
 
-	private static function GetDirectorySizeWin($dir)
+	private static function GetDirectorySizeWin(string $dir) : array
 	{
 		if(($dh = self::OpenDirNoWarning($dir)) == false)
 			return ['size' => 0, 'inodes' => 0];
@@ -843,7 +843,7 @@ class IO
 	}
 
 	//TODO: Sacar método de acá y usar los de la clase framework/Zip...
-	public static function SendFilesToZip($zipFile, $files, $sourcefolder) : void
+	public static function SendFilesToZip(string $zipFile, array $files, string $sourcePath) : void
 	{
 		self::Delete($zipFile);
 		$zip = new \ZipArchive();
@@ -851,14 +851,14 @@ class IO
 			throw new ErrorException("Could not open archive");
 
 		// adds files to the file list
-		$sourcefolder = str_replace("\\", "/", $sourcefolder);
-		if (Str::EndsWith($sourcefolder, "/") == false)
-			$sourcefolder .= "/";
+		$sourcePath = str_replace("\\", "/", $sourcePath);
+		if (Str::EndsWith($sourcePath, "/") == false)
+			$sourcePath .= "/";
 		foreach ($files as $file)
 		{
 			//fix archive paths
 			$fileFixed = str_replace("\\", "/", $file);
-			$path = str_replace($sourcefolder, "", $fileFixed); //remove the source path from the $key to return only the file-folder structure from the root of the source folder
+			$path = str_replace($sourcePath, "", $fileFixed); //remove the source path from the $key to return only the file-folder structure from the root of the source folder
 
 			if (file_exists($file) == false)
 				throw new ErrorException('file does not exist. Please contact your administrator or try again later.');
@@ -874,11 +874,13 @@ class IO
 		$zip->close();
 	}
 
-	public static function GetTempFilename()
+	public static function GetTempFilename() : string
 	{
 		$path = Context::Paths()->GetTempPath();
 		self::EnsureExists($path);
 		$name = tempnam($path, "");
+		if($name === false)
+			throw new ErrorException('GetTempFilename failed');
 		self::Delete($name);
 		return $name;
 	}
@@ -922,7 +924,7 @@ class IO
 		return $path;
 	}
 
-	public static function Copy($source, $target) : bool
+	public static function Copy(string $source, string $target) : bool
 	{
 		Profiling::BeginTimer();
 		$ret = copy($source, $target);
@@ -945,7 +947,7 @@ class IO
 		return false;
 	}
 
-	public static function GetUniqueNameNoReplaceFilename($filePath) : string
+	public static function GetUniqueNameNoReplaceFilename(string $filePath) : string
 	{
 		$ext = self::GetFileExtension($filePath);
 		$path = self::GetDirectory($filePath);
@@ -961,7 +963,7 @@ class IO
 		return $ret;
 	}
 
-	public static function IsCompressedDirectory($path) : bool
+	public static function IsCompressedDirectory(string $path) : bool
 	{
 		$dir = new CompressedDirectory($path);
 		$simple = $dir->IsCompressed();
@@ -971,7 +973,7 @@ class IO
 		return $dir->IsCompressed();
 	}
 
-	public static function GetCompressedDirectory($path)
+	public static function GetCompressedDirectory(string $path)
 	{
 		if (self::$compressedDirectories != null)
 		{
@@ -1000,7 +1002,7 @@ class IO
 		}
 	}
 
-	public static function Delete($file) : bool
+	public static function Delete(string $file) : bool
 	{
 		try
 		{
@@ -1015,7 +1017,7 @@ class IO
 		return false;
 	}
 
-	public static function Exists($file) : bool
+	public static function Exists(string $file) : bool
 	{
 		return file_exists($file);
 	}

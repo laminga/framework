@@ -476,7 +476,7 @@ class GeoIp
 			'O1' => 'Otro',
 		];
 
-		if (array_key_exists(Str::ToUpper($cc), $countryNames))
+		if (isset($countryNames[Str::ToUpper($cc)]))
 			return $countryNames[Str::ToUpper($cc)];
 		return $cc;
 	}

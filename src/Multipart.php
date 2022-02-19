@@ -12,7 +12,7 @@ class Multipart
 	 *
 	 * @return integer Return the number of parts created.
 	 */
-	public static function Split($i, $s)
+	public static function Split(string $i, int $s) : int
 	{
 		$fs = filesize($i);
 		$p = 1;
@@ -41,7 +41,7 @@ class Multipart
 	 *
 	 * @return boolean Return true for success or false for fail.
 	 */
-	public static function Unzip($i, $o, $p = 0)
+	public static function Unzip(string $i, string $o, int $p = 0) : bool
 	{
 		$success = true;
 		if($p > 0)
@@ -71,7 +71,7 @@ class Multipart
 	 *
 	 * @return boolean Return true for success or false for fail.
 	 */
-	public static function Merge($i, $p)
+	public static function Merge(string $i, int $p) : bool
 	{
 		for($c = 1; $c <= $p; $c++)
 		{

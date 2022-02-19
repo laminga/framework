@@ -235,7 +235,7 @@ class Traffic
 		return 'hits-' . str_pad(strtoupper(dechex($number)), 2, '0', STR_PAD_LEFT);
 	}
 
-	public static function ResolveFilename($set) : string
+	public static function ResolveFilename(string $set) : string
 	{
 		$path = self::ResolveFolder();
 		return $path . '/' . $set . '.txt';

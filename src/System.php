@@ -32,7 +32,7 @@ class System
 		return $ret;
 	}
 
-	public static function GetVersion()
+	public static function GetVersion() : array
 	{
 		$file = Context::Paths()->GetRoot() . '/version';
 		if (file_exists($file))
@@ -52,7 +52,7 @@ class System
 		];
 	}
 
-	public static function GetHost()
+	public static function GetHost() : array
 	{
 		$host = gethostname();
 		$ip = gethostbyname($host);

@@ -4,28 +4,30 @@ namespace minga\framework;
 
 class FiledQueue
 {
+	/** @var array */
 	private $valuesToQueue = [];
 
+	/** @var FiledQueue[] */
 	private static $allFiles = [];
 
 	private $file;
-	private $folder;
+	private $path;
 	private $lock;
 
-	public function __construct($lock, $folder, $file)
+	public function __construct($lock, $path, $file)
 	{
 		$this->lock = $lock;
-		$this->folder = $folder;
+		$this->path = $path;
 		$this->file = $file;
 	}
 
-	public static function Create($lock, $folder, $file)
+	public static function Create($lock, $path, $file) : FiledQueue
 	{
-		$filename = $folder . "/" . $file;
-		if (array_key_exists($filename, self::$allFiles))
+		$filename = $path . "/" . $file;
+		if (isset(self::$allFiles[$filename]))
 			return self::$allFiles[$filename];
 
-		$ret = new FiledQueue($lock, $folder, $file);
+		$ret = new FiledQueue($lock, $path, $file);
 		self::$allFiles[$filename] = $ret;
 		return $ret;
 	}
@@ -69,7 +71,7 @@ class FiledQueue
 			return;
 		Profiling::BeginTimer();
 
-		$filename = $this->folder . "/" . $this->file;
+		$filename = $this->path . "/" . $this->file;
 		$this->lock->LockWrite();
 
 		$this->AppendLines($filename, $this->valuesToQueue);
@@ -78,7 +80,8 @@ class FiledQueue
 		Profiling::EndTimer();
 	}
 
-	private function AppendLines($file, $lines)
+	//TODO: esta funcion está en IO, confirmar
+	private function AppendLines(string $file, $lines) : bool
 	{
 		$handle = fopen($file, 'a');
 		if ($handle === false)

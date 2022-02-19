@@ -78,7 +78,7 @@ class ServersSettings
 			return $this->servers[$keys[0]];
 		}
 
-		if (array_key_exists($this->currentServer, $this->servers) == false)
+		if (isset($this->servers[$this->currentServer]) == false)
 		{
 			throw new ErrorException('"' . $this->currentServer
 				. '" is specified as current server but no server with such name is registered in the configuration settings .');

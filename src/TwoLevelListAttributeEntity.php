@@ -4,6 +4,7 @@ namespace minga\framework;
 
 class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 {
+	/** @var bool */
 	protected $useInternalId = false;
 
 	public function AppendItem($section, $item) : void
@@ -31,14 +32,15 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 		$this->SafeSetArray($section, 'items', $values);
 	}
 
-	public function getNextId()
+	//TODO: cambiar case
+	public function getNextId() : int
 	{
 		$id = (int)($this->SafeGet('__id_numbers__', 'id')) + 1;
 		$this->SetValue('__id_numbers__', 'id', $id);
 		return $id;
 	}
 
-	public function GetItems($section)
+	public function GetItems($section) : array
 	{
 		$values = $this->SafeGetArray($section, 'items');
 

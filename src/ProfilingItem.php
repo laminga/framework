@@ -7,6 +7,7 @@ class ProfilingItem
 	public $name;
 
 	private $startTime;
+	/** @var int */
 	private $startMemory;
 
 	public $memory;
@@ -17,6 +18,7 @@ class ProfilingItem
 	public $isInternal;
 	private $startPause;
 
+	/** @var ProfilingItem[] */
 	public $children = [];
 
 	public function __construct($name)
@@ -66,7 +68,7 @@ class ProfilingItem
 		}
 	}
 
-	public function GetChildrenOrCreate($name)
+	public function GetChildrenOrCreate($name) : ProfilingItem
 	{
 		foreach($this->children as $child)
 			if ($child->name == $name)

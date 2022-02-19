@@ -176,7 +176,7 @@ class Zipping
 
 		$file = 'content.zip';
 		$filename = $folder . '/' . $file;
-		if (array_key_exists($filename, self::$allFiles))
+		if (isset(self::$allFiles[$filename]))
 			return self::$allFiles[$filename];
 
 		if (file_exists($filename) == false)

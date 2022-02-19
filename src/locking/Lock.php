@@ -54,7 +54,7 @@ class Lock
 	{
 		$file = $this->ResolveFilename();
 
-		if (array_key_exists($file, self::$locks))
+		if (isset(self::$locks[$file]))
 		{
 			// ya está lockeado
 			$values = self::$locks[$file];
@@ -75,7 +75,7 @@ class Lock
 	{
 		$file = $this->ResolveFilename();
 
-		if (array_key_exists($file, self::$locks))
+		if (isset(self::$locks[$file]))
 		{
 			// ya está lockeado
 			$values = self::$locks[$file];

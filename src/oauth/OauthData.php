@@ -89,12 +89,12 @@ class OauthData
 		PhpSession::SetSessionValue('OauthData', json_encode($data));
 	}
 
-	public static function SessionHasTerms()
+	public static function SessionHasTerms() : bool
 	{
 		return PhpSession::GetSessionValue('OauthTerms') == 'on';
 	}
 
-	public static function DeserializeFromSession()
+	public static function DeserializeFromSession() : ?OauthData
 	{
 		$session = PhpSession::GetSessionValue('OauthData');
 		if($session == '')

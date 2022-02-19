@@ -141,7 +141,7 @@ class Performance
 		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
 
 		self::$lockedMs += $ellapsedMilliseconds;
-		if (array_key_exists(self::$lockedClass, self::$locksByClass))
+		if (isset(self::$locksByClass[self::$lockedClass]))
 		{
 			$current = self::$locksByClass[self::$lockedClass];
 			self::$locksByClass[self::$lockedClass] = [$current[0] + 1, $current[1] + $ellapsedMilliseconds, $current[2] + ($hadToWait ? 1 : 0)];
@@ -486,7 +486,7 @@ class Performance
 
 	private static function ReadCurrentKeyValues($arr, $key, &$prevHits, &$prevDuration, &$locked, &$dbMs = 0, &$dbHits = 0) : void
 	{
-		if (array_key_exists($key, $arr) == false)
+		if (isset($arr[$key]) == false)
 		{
 			$prevHits = 0;
 			$prevDuration = 0;
@@ -500,7 +500,7 @@ class Performance
 
 	private static function IncrementKey(&$arr, $key, $value, $newHits, $newLocked, $newDbMs, $newDb_hitCount) : void
 	{
-		if (array_key_exists($key, $arr) == false)
+		if (isset($arr[$key]) == false)
 		{
 			$hits = $newHits;
 			$duration = $value;
@@ -523,7 +523,7 @@ class Performance
 
 	private static function IncrementLockKey(&$arr, $key, $value, $newHits, $newLocked) : void
 	{
-		if (array_key_exists($key, $arr) == false)
+		if (isset($arr[$key]) == false)
 		{
 			$hits = $newHits;
 			$duration = $value;
@@ -541,7 +541,7 @@ class Performance
 	}
 
 	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = []) : void {
-		if (array_key_exists($key, $arr) == false)
+		if (isset($arr[$key]) == false)
 		{
 			$hits = $newHits;
 			$duration = $value;
@@ -856,7 +856,7 @@ class Performance
 			$dbControllerMs = 0;
 			foreach($methods as $method)
 			{
-				if (array_key_exists($method, $values))
+				if (isset($values[$method]))
 				{
 					self::ParseHit($values[$method], $hits, $duration, $_, $dbMs, $dbHits);
 					$controllerHits += $hits;

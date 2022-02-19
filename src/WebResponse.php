@@ -10,6 +10,7 @@ class WebResponse
 	public $contentType;
 	public $uri;
 	public $success;
+	/** @var array */
 	public $headers = [];
 
 	public function dump() : void
@@ -36,7 +37,7 @@ class WebResponse
 		echo $key . ': ' . $value . '<br>';
 	}
 
-	public function HasLocationHeader()
+	public function HasLocationHeader() : bool
 	{
 		return isset($this->headers['Location'])
 			|| isset($this->headers['location']);
