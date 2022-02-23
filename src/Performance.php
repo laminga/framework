@@ -16,7 +16,8 @@ class Performance
 	private static $timeEnd = null;
 
 	private static $timePausedStart = null;
-	private static $gotFromCache = null;
+	/** @var bool */
+	private static $gotFromCache = true;
 
 	private static $controller = null;
 	private static $method = null;
@@ -28,12 +29,14 @@ class Performance
 	private static $locksByClass = [];
 	private static $timeStartLocked = null;
 	private static $timeStartDb = null;
+	/** @var bool */
 	private static $daylyResetChecked = false;
 
 	public static $warnToday = null;
 	public static $warnYesterday = null;
 	public static $pauseEllapsedSecs = 0;
 
+	/** @var bool */
 	public static $allowLongRunningRequest = false;
 
 	public static $mailsSent = 0;
@@ -43,9 +46,9 @@ class Performance
 		self::$gotFromCache = false;
 	}
 
-	public static function IsCacheMissed()
+	public static function IsCacheMissed() : bool
 	{
-		return self::$gotFromCache === false;
+		return self::$gotFromCache == false;
 	}
 
 	public static function Begin() : void
@@ -103,11 +106,12 @@ class Performance
 			}
 			IO::AppendLine($file, $line);
 		}
-		catch (\Exception $e) {
+		catch (\Exception $e)
+		{
 		}
 	}
 
-	public static function BeginLockedWait($class) : void
+	public static function BeginLockedWait(string $class) : void
 	{
 		self::$lockedClass = $class;
 		self::$timeStartLocked = microtime(true);
@@ -132,7 +136,7 @@ class Performance
 		self::$timeStartDb = null;
 	}
 
-	public static function EndLockedWait($hadToWait) : void
+	public static function EndLockedWait(bool $hadToWait) : void
 	{
 		if (self::$timeStartLocked == null)
 			return;
@@ -167,12 +171,12 @@ class Performance
 			self::SetController($uri, strtolower(Params::SafeServer('REQUEST_METHOD')));
 	}
 
-	public static function AppendControllerSuffix($suffix) : void
+	public static function AppendControllerSuffix(string $suffix) : void
 	{
 		self::$controller .= "#" . $suffix;
 	}
 
-	public static function SetController($controller, $method, $forceSet = false) : void
+	public static function SetController(?string $controller, ?string $method, bool $forceSet = false) : void
 	{
 		if (self::$controller == null || $forceSet)
 		{
@@ -187,12 +191,12 @@ class Performance
 		}
 	}
 
-	public static function SetMethod($method) : void
+	public static function SetMethod(string $method) : void
 	{
 		self::$method = $method;
 	}
 
-	public static function AddControllerSuffix($suffix) : void
+	public static function AddControllerSuffix(string $suffix) : void
 	{
 		if (self::$controller == null)
 			self::$controller = '';
@@ -247,7 +251,7 @@ class Performance
 			$ellapsedMilliseconds);
 	}
 
-	private static function SaveMonthtly($ellapsedMilliseconds)
+	private static function SaveMonthtly($ellapsedMilliseconds) : array
 	{
 		PerformanceMonthlyUsageLock::BeginWrite();
 		self::SaveControllerUsage($ellapsedMilliseconds);
@@ -268,13 +272,13 @@ class Performance
 		return $limitArgs;
 	}
 
-	public static function IsNewDay()
+	public static function IsNewDay() : bool
 	{
 		self::CheckDaylyReset();
 		return self::$warnToday != null;
 	}
 
-	private static function SaveUserUsage($ellapsedMilliseconds, $month = '') : void
+	private static function SaveUserUsage($ellapsedMilliseconds, string $month = '') : void
 	{
 		if (Context::Settings()->Performance()->PerformancePerUser == false)
 			return;
@@ -294,7 +298,7 @@ class Performance
 		IO::WriteIniFile($file, $vals);
 	}
 
-	private static function SaveControllerUsage($ellapsedMilliseconds, $month = '') : void
+	private static function SaveControllerUsage($ellapsedMilliseconds, string $month = '') : void
 	{
 		$file = self::ResolveFilename($month);
 		$keyMs = self::$method;
@@ -362,7 +366,7 @@ class Performance
 		return self::ReadIfExists($daylyProcessor);
 	}
 
-	public static function ReadTodayExtraValues($key)
+	public static function ReadTodayExtraValues(string $key)
 	{
 		$extras = Context::ExtraHitsLabels();
 		$index = Arr::indexOf($extras, $key);
@@ -377,7 +381,7 @@ class Performance
 		return $extraHits[$index];
 	}
 
-	private static function SaveDaylyUsage($ellapsedMilliseconds)
+	private static function SaveDaylyUsage($ellapsedMilliseconds) : array
 	{
 		$days = self::ReadDaysValues();
 		$key = Date::GetLogDayFolder();
@@ -406,7 +410,7 @@ class Performance
 		self::SaveLocks('dayly');
 	}
 
-	public static function SaveLocks($month = '') : void
+	public static function SaveLocks(string $month = '') : void
 	{
 		if (count(self::$locksByClass) > 0)
 		{
@@ -438,7 +442,7 @@ class Performance
 		if ($prevLocked < $maxLockMs && $locked >= $maxLockMs)
 			self::SendPerformanceWarning('tiempo de locking', self::Format($maxLockMs, 1000 * 60, 'minutos'), self::Format($locked, 1000 * 60, 'minutos'));
 
-		if ($ellapsedMilliseconds >= $maxRequestSeconds * 1000 && !self::$allowLongRunningRequest)
+		if ($ellapsedMilliseconds >= $maxRequestSeconds * 1000 && self::$allowLongRunningRequest == false)
 			Log::HandleSilentException(new PublicException('El pedido ha excedido los ' . $maxRequestSeconds . ' segundos de ejecución. Tiempo transcurrido: ' . $ellapsedMilliseconds . ' ms.'));
 
 		// Se fija si tiene que pasar a 'defensive Mode'
@@ -540,7 +544,8 @@ class Performance
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked;
 	}
 
-	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = []) : void {
+	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = []) : void
+	{
 		if (isset($arr[$key]) == false)
 		{
 			$hits = $newHits;
@@ -602,16 +607,12 @@ class Performance
 			$p7 = 0;
 		}
 		if (count($parts) > 7)
-		{
 			$extra = explode(',', $parts[7]);
-		}
 		else
-		{
 			$extra = [];
-		}
 	}
 
-	private static function ResolveFolder($month = '')
+	private static function ResolveFolder(string $month = '') : string
 	{
 		$path = Context::Paths()->GetPerformanceLocalPath();
 		if ($month == '')
@@ -621,32 +622,32 @@ class Performance
 		return $ret;
 	}
 
-	public static function ResolveFilename($month = '')
+	public static function ResolveFilename(string $month = '') : string
 	{
 		$path = self::ResolveFolder($month);
 		return $path . '/' . self::$controller . '.txt';
 	}
 
-	public static function ResolveUserFilename($month = '')
+	public static function ResolveUserFilename(string $month = '') : string
 	{
 		$path = self::ResolveFolder($month);
 		$user = '@' . Str::UrlencodeFriendly(Context::LoggedUser());
 		return $path . '/' . $user . '.txt';
 	}
 
-	public static function ResolveFilenameDayly($month = '')
+	public static function ResolveFilenameDayly(string $month = '') : string
 	{
 		$path = self::ResolveFolder($month);
 		return $path . '/processor.txt';
 	}
 
-	public static function ResolveFilenameLocks($month = '')
+	public static function ResolveFilenameLocks(string $month = '') : string
 	{
 		$path = self::ResolveFolder($month);
 		return $path . '/locks.txt';
 	}
 
-	public static function GetDaylyTable($month, $appendTotals = false)
+	public static function GetDaylyTable($month, bool $appendTotals = false) : array
 	{
 		$lock = new PerformanceMonthlyDayLock();
 		$lock->LockRead();
@@ -757,13 +758,11 @@ class Performance
 		];
 
 		for($n = 0; $n < count($extras); $n++)
-		{
 			$ret[$extras[$n]] = $extraValues[$n];
-		}
 		return $ret;
 	}
 
-	private static function IsAdmin($controller)
+	private static function IsAdmin($controller) : bool
 	{
 		if ($controller == 'Services')
 			return true;
@@ -916,12 +915,10 @@ class Performance
 		return $share;
 	}
 
-	public static function GetLocksTable($month)
+	public static function GetLocksTable($month) : array
 	{
 		if ($month == '')
-		{
 			$month = 'dayly';
-		}
 
 		if ($month === 'dayly' || $month === 'yesterday')
 			$lock = new PerformanceDaylyLocksLock();
@@ -956,7 +953,7 @@ class Performance
 		return $ret;
 	}
 
-	public static function CalculateTotalDuration($controllers)
+	public static function CalculateTotalDuration(array $controllers) : int
 	{
 		$ret = 0;
 		foreach($controllers as $values)

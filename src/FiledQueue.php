@@ -21,7 +21,7 @@ class FiledQueue
 		$this->file = $file;
 	}
 
-	public static function Create($lock, $path, $file) : FiledQueue
+	public static function Create($lock, string $path, string $file) : FiledQueue
 	{
 		$filename = $path . "/" . $file;
 		if (isset(self::$allFiles[$filename]))

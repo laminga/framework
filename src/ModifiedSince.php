@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class ModifiedSince
 {
-	public static function AddCacheHeadersByFile($filename) : bool
+	public static function AddCacheHeadersByFile(string $filename) : bool
 	{
 		/*if (Request::IsGoogle())
 		{
@@ -25,9 +25,12 @@ class ModifiedSince
 		return self::AddCacheHeaders(Zipping::FileMTime($filename));
 	}
 
+	/**
+	 * @param int|false|null $timeStamp
+	 */
 	public static function AddCacheHeaders($timeStamp) : bool
 	{
-		if($timeStamp === false)
+		if($timeStamp === false || $timeStamp === null)
 			$timeStamp = time();
 
 		$tsHeader = gmdate('D, d M Y H:i:s ', $timeStamp) . 'GMT';
@@ -45,7 +48,7 @@ class ModifiedSince
 		return true;
 	}
 
-	public static function ProcessIfModified($file, $articleFile = null) : void
+	public static function ProcessIfModified(string $file, ?string $articleFile = null) : void
 	{
 		$date = self::CalculateIfModifiedDate($file, $articleFile);
 		if ($date != null)
@@ -58,7 +61,7 @@ class ModifiedSince
 		}
 	}
 
-	private static function CalculateIfModifiedDate($file1, $file2 = null)
+	private static function CalculateIfModifiedDate(string $file1, ?string $file2 = null) : ?int
 	{
 		$timeStamp1 = null;
 		$timeStamp2 = null;

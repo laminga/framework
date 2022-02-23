@@ -73,7 +73,7 @@ class System
 		return $settings;
 	}
 
-	public static function GetMySQLVersion()
+	public static function GetMySQLVersion() : string
 	{
 		$db = new Db();
 		return $db->fetchScalar('SELECT @@version;');
@@ -171,7 +171,7 @@ class System
 		return $val;
 	}
 
-	public static function RunCommandGS(string $command, string $args, &$returnCode = null, $returnFirstLineOnly = false, $checkFile = true)
+	public static function RunCommandGS(string $command, string $args, ?int &$returnCode = null, bool $returnFirstLineOnly = false, bool $checkFile = true) : string
 	{
 		if ($checkFile && file_exists($command) == false)
 			throw new ErrorException('No se encontró el binario: "' . $command . '".');

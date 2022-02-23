@@ -96,12 +96,12 @@ class Sorter
 		return self::ByKeyDesc($a, $b, $key1);
 	}
 
-	public static function ByWordLengthDesc($a, $b) : int
+	public static function ByWordLengthDesc(string $a, string $b) : int
 	{
 		return Str::Length($b) - Str::Length($a);
 	}
 
-	public static function ByWordCountDesc($a, $b) : int
+	public static function ByWordCountDesc(string $a, string $b) : int
 	{
 		$diffWords = Str::CountWords($b) - Str::CountWords($a);
 		if($diffWords != 0)
@@ -177,10 +177,6 @@ class Sorter
 		$bDescription = Arr::SafeGet($b, 'description');
 		if ($aName == $bName)
 			return $mult * strcmp($aDescription, $bDescription);
-
-		// se fija si termina en número...
-		$aName = Str::ReformatEndingNumber($aName);
-		$bName = Str::ReformatEndingNumber($bName);
 
 		$aFull = $aName . ($aName != "" ? "." : '') . $aDescription;
 		$bFull = $bName . ($bName != "" ? "." : '') . $bDescription;

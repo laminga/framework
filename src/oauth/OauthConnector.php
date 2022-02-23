@@ -143,7 +143,8 @@ abstract class OauthConnector
 	{
 		Log::HandleSilentException(new PublicException('No email from ' . $this->ProviderName()));
 
-		MessageBox::ShowDialogPopup('No se ha podido obtener una dirección de correo electrónico a través de ' . $this->ProviderName() . '. Intente otro método de registro para la identificación.', 'Atención');
+		MessageBox::ShowDialogPopup('No se ha podido obtener una dirección de correo electrónico a través de '
+			. $this->ProviderName() . '. Intente otro método de registro para la identificación.', 'Atención');
 	}
 
 	public function RedirectError($error = null) : void

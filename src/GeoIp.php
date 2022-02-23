@@ -3,11 +3,15 @@
 namespace minga\framework;
 
 use GeoIp2\Database\Reader;
+use GeoIp2\Record\City;
 use GeoIp2\Exception\AddressNotFoundException;
+use GeoIp2\Record\Country;
 
 class GeoIp
 {
+	/** @var Reader */
 	private static $geoDbCity = null;
+	/** @var Reader */
 	private static $geoDbCountry = null;
 
 	public static function GetCurrentLatLong() : ?array
@@ -39,7 +43,7 @@ class GeoIp
 		}
 	}
 
-	public static function GetCityDatabaseDatetime()
+	public static function GetCityDatabaseDatetime() : \DateTime
 	{
 		$c = self::GetGeoDbCity();
 		$ret = new \DateTime();
@@ -47,7 +51,7 @@ class GeoIp
 		return $ret;
 	}
 
-	public static function GetCountryDatabaseDatetime()
+	public static function GetCountryDatabaseDatetime() : \DateTime
 	{
 		$c = self::GetGeoDbCountry();
 		$ret = new \DateTime();
@@ -68,7 +72,7 @@ class GeoIp
 		return null;
 	}
 
-	private static function IpIsPrivate($ip)
+	private static function IpIsPrivate($ip) : bool
 	{
 		$pri_addrs = [
 			'10.0.0.0|10.255.255.255', // single class A network
@@ -124,7 +128,7 @@ class GeoIp
 		return self::$geoDbCity;
 	}
 
-	private static function GetCityLocation($ip) : ?array
+	private static function GetCityLocation(string $ip) : ?array
 	{
 		try
 		{
@@ -145,7 +149,7 @@ class GeoIp
 		}
 	}
 
-	public static function GetCity(string $ip)
+	public static function GetCity(string $ip) : ?City
 	{
 		if ($ip == '')
 			return null;
@@ -164,7 +168,7 @@ class GeoIp
 		}
 	}
 
-	public static function GetSubdivisions($ip)
+	public static function GetSubdivisions(string $ip)
 	{
 		try
 		{
@@ -181,7 +185,7 @@ class GeoIp
 		}
 	}
 
-	public static function GetCountry($ip)
+	public static function GetCountry(string $ip) : ?Country
 	{
 		try
 		{
@@ -200,7 +204,7 @@ class GeoIp
 		}
 	}
 
-	public static function GetCountryName($ip) : ?string
+	public static function GetCountryName(string $ip) : ?string
 	{
 		if ($ip == '')
 			return null;

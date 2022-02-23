@@ -323,7 +323,7 @@ class WebConnection
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 	}
 
-	public static function PreparePostValues(array $args, &$hasFile = false)
+	public static function PreparePostValues(array $args, ?bool &$hasFile = false) : string
 	{
 		$ret = '';
 		ksort($args);

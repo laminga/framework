@@ -14,17 +14,17 @@ class IO
 		fclose($fp);
 	}
 
-	public static function MoveDirectoryContents($dirSource, $target) : void
+	public static function MoveDirectoryContents(string $dirSource, string $target) : void
 	{
-		IO::EnsureExists($target);
+		self::EnsureExists($target);
 		// limpia
 		$dirname = substr($dirSource, strrpos($dirSource, "/") + 1);
 		if (file_exists($target . "/" . $dirname))
-			IO::RemoveDirectory($target . "/" . $dirname);
+			self::RemoveDirectory($target . "/" . $dirname);
 		// copia
-		IO::CopyDirectory($dirSource, $target);
+		self::CopyDirectory($dirSource, $target);
 		// borra
-		IO::ClearDirectory($dirSource, true);
+		self::ClearDirectory($dirSource, true);
 	}
 
 	public static function ReadAllText(string $path, $maxLength = -1)
@@ -54,7 +54,7 @@ class IO
 		return pathinfo($file, PATHINFO_FILENAME);
 	}
 
-	public static function GetUrlNoExtension($file)
+	public static function GetUrlNoExtension(string $file) : string
 	{
 		$n = strrpos($file, '.');
 		if ($n !== false && $n > 0)
@@ -71,10 +71,14 @@ class IO
 		return $path;
 	}
 
-	public static function ReadText(string $path, $length)
+	public static function ReadText(string $path, int $length) : string
 	{
 		$handle = fopen($path, "r");
+		if($handle === false)
+			throw new ErrorException('Error abriendo archivo');
 		$contents = fread($handle, $length);
+		if($contents === false)
+			throw new ErrorException('Error leyendo archivo');
 		fclose($handle);
 		return $contents;
 	}
@@ -172,7 +176,7 @@ class IO
 		return true;
 	}
 
-	public static function ReadTitleTextFile(string $file, &$title, &$text) : void
+	public static function ReadTitleTextFile(string $file, ?string &$title, ?string &$text) : void
 	{
 		// formato
 		$pStart = "<p style='margin: 6px 0px 6px 0px;'>";
@@ -210,7 +214,7 @@ class IO
 		fclose($fp);
 	}
 
-	public static function CompareFileSize($fileA, $fileB) : bool
+	public static function CompareFileSize(string $fileA, string $fileB) : bool
 	{
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			MessageBox::ThrowMessage("Archivo no encontrado para comparación de tamaños.");
@@ -468,7 +472,7 @@ class IO
 		return $files;
 	}
 
-	public static function HasFiles(string $path, $ext = '') : bool
+	public static function HasFiles(string $path, string $ext = '') : bool
 	{
 		if ($handle = self::OpenDirNoWarning($path))
 		{
@@ -539,37 +543,37 @@ class IO
 		return $n;
 	}
 
-	public static function ClearFilesOlderThan(string $dir, $days, string $ext = '') : void
+	public static function ClearFilesOlderThan(string $dir, int $days, string $ext = '') : void
 	{
 		$time = time();
 
-		$files = IO::GetFilesCursor($dir, $ext);
+		$files = self::GetFilesCursor($dir, $ext);
 		while($files->GetNext())
 		{
 			$fileOnly = $files->Current;
 			$file = $dir . "/" . $fileOnly;
-			if($time - IO::FileMTime($file) >= $days * 60 * 60 * 24)
-				IO::Delete($file);
+			if($time - self::FileMTime($file) >= $days * 60 * 60 * 24)
+				self::Delete($file);
 		}
 		$files->Close();
 	}
 
-	public static function ClearDirectoriesOlderThan(string $dir, $days, string $ext = '') : void
+	public static function ClearDirectoriesOlderThan(string $dir, int $days, string $ext = '') : void
 	{
 		$time = time();
 
-		$directories = IO::GetDirectoriesCursor($dir, $ext);
+		$directories = self::GetDirectoriesCursor($dir, $ext);
 		while($directories->GetNext())
 		{
 			$directoryOnly = $directories->Current;
 			$directory = $dir . "/" . $directoryOnly;
-			if($time - IO::FileMTime($directory . "/.") >= $days * 60 * 60 * 24)
-				IO::RemoveDirectory($directory);
+			if($time - self::FileMTime($directory . "/.") >= $days * 60 * 60 * 24)
+				self::RemoveDirectory($directory);
 		}
 		$directories->Close();
 	}
 
-	public static function ClearFiles($dir, $extension, bool $recursive = false, bool $showOnly = false) : int
+	public static function ClearFiles(string $dir, string $extension, bool $recursive = false, bool $showOnly = false) : int
 	{
 		if (file_exists($dir) == false)
 			return 0;
@@ -623,7 +627,7 @@ class IO
 		return self::doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
 	}
 
-	public static function CopyFiles(string $dirSource, $dirDest, ?array $exclusions = null, $timeFrom = null) : bool
+	public static function CopyFiles(string $dirSource, string $dirDest, ?array $exclusions = null, $timeFrom = null) : bool
 	{
 		// se fija si el source está excluido
 		if ($exclusions != null)
@@ -842,38 +846,6 @@ class IO
 		return ['size' => $size, 'inodes' => $inodes];
 	}
 
-	//TODO: Sacar método de acá y usar los de la clase framework/Zip...
-	public static function SendFilesToZip(string $zipFile, array $files, string $sourcePath) : void
-	{
-		self::Delete($zipFile);
-		$zip = new \ZipArchive();
-		if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true)
-			throw new ErrorException("Could not open archive");
-
-		// adds files to the file list
-		$sourcePath = str_replace("\\", "/", $sourcePath);
-		if (Str::EndsWith($sourcePath, "/") == false)
-			$sourcePath .= "/";
-		foreach ($files as $file)
-		{
-			//fix archive paths
-			$fileFixed = str_replace("\\", "/", $file);
-			$path = str_replace($sourcePath, "", $fileFixed); //remove the source path from the $key to return only the file-folder structure from the root of the source folder
-
-			if (file_exists($file) == false)
-				throw new ErrorException('file does not exist. Please contact your administrator or try again later.');
-			if (is_readable($file) == false)
-				throw new ErrorException('file not readable. Please contact your administrator or try again later.');
-
-			if($zip->addFromString($path, $file) == false)
-				throw new ErrorException("ERROR: Could not add file: ... <br>\n numFile:");
-			if($zip->addFile(realpath($file), $path) == false)
-				throw new ErrorException("ERROR: Could not add file: ... <br>\n numFile:");
-		}
-		// closes the archive
-		$zip->close();
-	}
-
 	public static function GetTempFilename() : string
 	{
 		$path = Context::Paths()->GetTempPath();
@@ -898,16 +870,16 @@ class IO
 	 * @param int $maxAttempts Maximum attempts before giving up (to prevent
 	 * endless loops).
 	 *
-	 * @return string|bool Full path to newly-created dir, or false on failure.
+	 * @return string Full path to newly-created dir, or trhows on failure.
 	 */
-	public static function GetTempDir($prefix = 'tmp_', $maxAttempts = 1000)
+	public static function GetTempDir(string $prefix = 'tmp_', int $maxAttempts = 1000) : string
 	{
 		$dir = Context::Paths()->GetTempPath();
 		self::EnsureExists($dir);
 
 		// Make sure characters in prefix are safe.
 		if (strpbrk($prefix, '\\/:*?"<>|') !== false)
-			return false;
+			throw new ErrorException('GetTempDir failed');
 
 		/* Attempt to create a random directory until it works. Abort if we reach
 		 * $maxAttempts. Something screwy could be happening with the filesystem
@@ -977,10 +949,10 @@ class IO
 	{
 		if (self::$compressedDirectories != null)
 		{
-			foreach(self::$compressedDirectories as $folder)
+			foreach(self::$compressedDirectories as $compressedDir)
 			{
-				if ($folder->path == $path)
-					return $folder;
+				if ($compressedDir->path == $path)
+					return $compressedDir;
 			}
 		}
 		$dir = new CompressedDirectory($path);
@@ -997,8 +969,8 @@ class IO
 	{
 		if (self::$compressedDirectories != null)
 		{
-			foreach(self::$compressedDirectories as $folder)
-				$folder->Release();
+			foreach(self::$compressedDirectories as $compressedDir)
+				$compressedDir->Release();
 		}
 	}
 

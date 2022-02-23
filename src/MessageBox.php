@@ -4,9 +4,10 @@ namespace minga\framework;
 
 class MessageBox
 {
+	/** @var bool */
 	public static $IsThrowingMessage = false;
 
-	public static function ThrowInternalError($message) : void
+	public static function ThrowInternalError(string $message) : void
 	{
 		if(Context::Settings()->isTesting)
 			echo 'ERROR. ' . $message . '<br>';
@@ -44,7 +45,7 @@ class MessageBox
 		self::Render($params);
 	}
 
-	public static function ThrowWaitMessage($message, $action = '', $title = 'Atención') : void
+	public static function ThrowWaitMessage(string $message, string $action = '', string $title = 'Atención') : void
 	{
 		$action = "document.location='" . $action . "';";
 
@@ -106,7 +107,7 @@ class MessageBox
 		Context::Settings()->section = 'notFound';
 	}
 
-	public static function ShowMessagePopup($message, $title = 'Enviar mensaje') : void
+	public static function ShowMessagePopup(string $message, string $title = 'Enviar mensaje') : void
 	{
 		$params = [
 			'message' => $message,
@@ -116,7 +117,7 @@ class MessageBox
 		Context::Calls()->RenderTemplate('messagePopup.html.twig', $params);
 	}
 
-	public static function ShowDialogPopup($message, $title = 'Enviar mensaje', $params = []) : void
+	public static function ShowDialogPopup(string $message, string $title = 'Enviar mensaje', array $params = []) : void
 	{
 		$params = array_merge($params, [
 			'message' => $message,
@@ -126,25 +127,25 @@ class MessageBox
 		Context::Calls()->RenderTemplate('dialogPopup.html.twig', $params);
 	}
 
-	public static function ShowDocNotFound($file, $profile) : void
+	public static function ShowDocNotFound($file, $content) : void
 	{
-		$profileUrl = $profile->Links()->ContentLink();
-		if ($profile->OnlyFiles())
+		$contentUrl = $content->Links()->ContentLink();
+		if ($content->OnlyFiles())
 			self::ThrowFileNotFound($file);
 		else
 		{
 			self::Set404NotFoundHeaders();
 			Performance::SetController('cErrDocNotFound', 'Show');
 			self::ThrowMessage('El documento <b>' . $file . '</b> no está disponible.<p>'
-				. "Sin embargo, si así lo desea, lo invitamos a visitar el perfil de <a href='" . $profileUrl
-				. "'>" . $profile->GetFullName() . '</a> para consultar otros documentos relacionados.',
-				$profileUrl,
-				$profile->GetFullName() . ' - ' . $profile->GetLocation()
+				. "Sin embargo, si así lo desea, lo invitamos a visitar el perfil de <a href='" . $contentUrl
+				. "'>" . $content->GetFullName() . '</a> para consultar otros documentos relacionados.',
+				$contentUrl,
+				$content->GetFullName() . ' - ' . $content->GetLocation()
 			);
 		}
 	}
 
-	public static function ThrowInternalServerError($exception = null) : void
+	public static function ThrowInternalServerError(?\Exception $exception = null) : void
 	{
 		self::Set500InternalServerErrorHeaders();
 		if (Context::Settings()->Debug()->debug)
@@ -170,7 +171,7 @@ class MessageBox
 		MessageBox::ThrowMessage('Página no encontrada.', Context::Settings()->GetMainServerPublicUrl());
 	}
 
-	public static function ThrowAccessDenied($extraInfo = '') : void
+	public static function ThrowAccessDenied(string $extraInfo = '') : void
 	{
 		self::Set403AccessDeniedHeaders();
 		Performance::SetController('cErrAccessDenied', 'Show');

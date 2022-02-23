@@ -6,17 +6,19 @@ use minga\framework\locking\ZipLock;
 
 class Zipping
 {
+	/** @var \ZipArchive[] */
 	private static $allFiles = [];
+	/** @var ZipLock[] */
 	private static $allLocks = [];
 
-	public static function GetStream($filename)
+	public static function GetStream(string $filename) : string
 	{
 		$path = dirname($filename);
 		$file = basename($filename);
 		return 'zip://' . $path . '/content.zip#' . $file;
 	}
 
-	public static function UnStream($filename, &$outFile = '')
+	public static function UnStream(string $filename, ?string &$outFile = '') : string
 	{
 		$filename = substr($filename, 6);
 		$parts = explode('#', $filename);
@@ -24,7 +26,7 @@ class Zipping
 		return $parts[0];
 	}
 
-	public static function GetFiles($filesPath, $pattern)
+	public static function GetFiles($filesPath, $pattern) : array
 	{
 		Profiling::BeginTimer();
 		try
@@ -76,7 +78,7 @@ class Zipping
 		return (int)$stat['size'];
 	}
 
-	public static function GetStat($filename)
+	public static function GetStat($filename) : ?array
 	{
 		Profiling::BeginTimer();
 		try
@@ -91,7 +93,10 @@ class Zipping
 			$index = $container->locateName($file);
 			if ($index === false)
 				return null;
-			return $container->statIndex($index);
+			$ret = $container->statIndex($index);
+			if ($ret === false)
+				return null;
+			return $ret;
 		}
 		finally
 		{
@@ -99,7 +104,7 @@ class Zipping
 		}
 	}
 
-	public static function FileExists($filename)
+	public static function FileExists(string $filename) : bool
 	{
 		if (self::IsZipped($filename) == false)
 			return file_exists($filename);
@@ -107,7 +112,7 @@ class Zipping
 		return self::CompressedFileExists($filename);
 	}
 
-	private static function ExtractToGetTempFile($filename)
+	private static function ExtractToGetTempFile($filename) : string
 	{
 		$path = dirname($filename);
 		$file = Str::EatUntil(basename($filename), '#');
@@ -131,20 +136,19 @@ class Zipping
 	public static function ReadEscapedIniFileWithSections($filename)
 	{
 		Profiling::BeginTimer();
+		$ret = '';
 		$tmpFile = self::ExtractToGetTempFile($filename);
 		if ($tmpFile != '')
 		{
 			$ret = IO::ReadEscapedIniFileWithSections($tmpFile);
 			self::ReleaseTempFile($tmpFile);
 		}
-		else
-			$ret = '';
 		Profiling::EndTimer();
 		return $ret;
 
 	}
 
-	public static function CompressedFileExists($filename)
+	public static function CompressedFileExists(string $filename) : bool
 	{
 		try
 		{
@@ -164,12 +168,12 @@ class Zipping
 		}
 	}
 
-	public static function IsZipped($file)
+	public static function IsZipped($file) : bool
 	{
 		return Str::StartsWith($file, 'zip://');
 	}
 
-	private static function GetContainer($folder)
+	private static function GetContainer($folder) : ?\ZipArchive
 	{
 		if (self::IsZipped($folder))
 			$folder = substr($folder, 6);
@@ -195,7 +199,11 @@ class Zipping
 
 	}
 
-	public static function AddOrUpdate($zipFile, $filename, $filesrc) : void
+	/**
+	 * @param array|string $filename
+	 * @param array|string $filesrc
+	 */
+	public static function AddOrUpdate(string $zipFile, $filename, $filesrc) : void
 	{
 		try
 		{

@@ -104,31 +104,6 @@ class Str
 		return array_values(array_filter(explode($delimiter, $str)));
 	}
 
-	//TODO: mover a una clase mejor.
-	public static function BuildTotalsRow(array $list, $label, array $columns) : array
-	{
-		$results = [];
-		if ($label != "")
-		{
-			$results[$label] = 'Total';
-			$results['isTotal'] = true;
-		}
-		// inicializa
-		foreach($columns as $column)
-			$results[$column] = 0;
-		// suma
-		foreach($list as $item)
-		{
-			foreach($columns as $column)
-			{
-				if (isset($item[$column]))
-					$results[$column] += $item[$column];
-			}
-		}
-		// listo
-		return $results;
-	}
-
 	public static function CultureCmp($a, $b) : int
 	{
 		$a2 = self::RemoveAccents($a);
@@ -243,7 +218,7 @@ class Str
 		return self::Replace($cad, 'Ã¿', 'ÿ');
 	}
 
-	public static function UrldecodeFriendly($cad) : string
+	public static function UrlDecodeFriendly(string $cad) : string
 	{
 		return urldecode(str_replace('@', '%40', $cad));
 	}
@@ -291,11 +266,6 @@ class Str
 		return (bool)!strncasecmp($haystack, $needle, strlen($needle));
 	}
 
-	public static function ReformatEndingNumber($text)
-	{
-		return $text;
-	}
-
 	//Contains case insensitve
 	public static function ContainsI($haystack, $needle) : bool
 	{
@@ -309,7 +279,7 @@ class Str
 		return $pos !== false;
 	}
 
-	public static function ContainsAny($haystack, array $needles) : bool
+	public static function ContainsAny(string $haystack, array $needles) : bool
 	{
 		foreach($needles as $needle)
 			if (self::Contains($haystack, $needle))
@@ -325,7 +295,7 @@ class Str
 		return false;
 	}
 
-	public static function EscapeJavascript($string) : string
+	public static function EscapeJavascript(string $string) : string
 	{
 		return str_replace("'", '\'', str_replace("\n", '\n', str_replace('"', '\"', addcslashes(str_replace("\r", '', (string)$string), "\0..\37'\\"))));
 	}
@@ -368,7 +338,7 @@ class Str
 		return $ret;
 	}
 
-	private static function HasShortWord($arr) : bool
+	private static function HasShortWord(array $arr) : bool
 	{
 		$min = Context::Settings()->Db()->FullTextMinWordLength;
 		foreach($arr as $str)
@@ -377,21 +347,21 @@ class Str
 		return false;
 	}
 
-	public static function AppendFulltextEndsWithAndRequiredSigns($originalQuery)
+	public static function AppendFulltextEndsWithAndRequiredSigns(string $originalQuery) : string
 	{
-		return self::ProcessQuotedBlock($originalQuery, function($keywords) {
-			$keywords_filtered = array_filter($keywords, function($word) {
+		return self::ProcessQuotedBlock($originalQuery, function(array $keywords) : string {
+			$keywordsFiltered = array_filter($keywords, function(string $word) : bool {
 				return strlen($word) >= Context::Settings()->Db()->FullTextMinWordLength;
 			});
 
-			$subQuery = implode("* +", $keywords_filtered);
+			$subQuery = implode("* +", $keywordsFiltered);
 			if ($subQuery != '')
 				$subQuery = '+' . $subQuery . '*';
 			return $subQuery;
 		});
 	}
 
-	public static function ProcessQuotedBlock($originalQuery, $replacer) : string
+	public static function ProcessQuotedBlock(string $originalQuery, callable $replacer) : string
 	{
 		// Agrega + al inicio de todas las palabras para que el query funcione como 'todas las palabras'
 		$query = self::Replace($originalQuery, "'", '"');
@@ -421,11 +391,10 @@ class Str
 			}
 			$even = !$even;
 		}
-		// Listo
 		return trim($ret);
 	}
 
-	public static function EatUntil($haystack, $needle)
+	public static function EatUntil(string $haystack, string $needle) : string
 	{
 		$pos = mb_strpos($haystack, $needle);
 		if ($pos === false)
@@ -601,25 +570,25 @@ class Str
 			'uAAAAAAACEEEEIIIIDNOOOOOOOOUUUUSYYZaaaaaaaceeeeiiiinooooooooouuuusyyz');
 	}
 
-	public static function RemoveDot($cad)
+	public static function RemoveDot(string $cad) : string
 	{
 		if (self::EndsWith($cad, "."))
 			return substr($cad, 0, strlen($cad) - 1);
 		return $cad;
 	}
 
-	public static function RemoveWordHiddenFormat($cad)
+	public static function RemoveWordHiddenFormat(string $cad) : string
 	{
 		$cad = self::RemoveBlock($cad, "<xml>", "</xml>");
 		return self::RemoveBlock($cad, "<!--[if ", "<![endif]-->");
 	}
 
-	public static function RemoveHtmlFormat($cad)
+	public static function RemoveHtmlFormat(string $cad) : string
 	{
 		return self::RemoveBlock($cad, "<", ">");
 	}
 
-	public static function RemoveBlock($cad, $startTag, $endTag)
+	public static function RemoveBlock(string $cad, string $startTag, string $endTag) : string
 	{
 		// le saca los tags de html
 		while(false !== ($n = strpos($cad, $startTag)))
@@ -652,7 +621,7 @@ class Str
 		return $cad;
 	}
 
-	public static function RemoveParenthesis($cad)
+	public static function RemoveParenthesis(string $cad) : string
 	{
 		$cad = self::RemoveBegining($cad, "(");
 		return self::RemoveEnding($cad, ")");
@@ -663,18 +632,12 @@ class Str
 		return $cad === '' || $cad === null;
 	}
 
-	public static function GetEndingPart($name, $separator)
-	{
-		$parts = explode($separator, $name);
-		return $parts[count($parts) - 1];
-	}
-
 	public static function Ellipsis(string $cad, int $maxSize = 50) : string
 	{
 		return mb_strimwidth($cad, 0, $maxSize, '…', 'UTF-8');
 	}
 
-	public static function EllipsisAnsi($cad, $maxSize = 40, $signal = '..')
+	public static function EllipsisAnsi(string $cad, int $maxSize = 40, string $signal = '...')
 	{
 		if (strlen($cad) > $maxSize)
 		{
@@ -697,7 +660,7 @@ class Str
 		return ctype_alpha(self::RemoveAccents(mb_substr($cad, 0, 1)));
 	}
 
-	public static function TextAreaTextToHtml($cad) : string
+	public static function TextAreaTextToHtml(string $cad) : string
 	{
 		$cad = htmlspecialchars($cad);
 		return nl2br($cad);
@@ -713,7 +676,7 @@ class Str
 		return mb_substr($str, $start, $length, $encoding);
 	}
 
-	public static function Concat($a, $b, $separator) : string
+	public static function Concat(string $a, string $b, string $separator) : string
 	{
 		if (trim($a) == "" || trim($b) == "")
 			$separator = "";
@@ -730,55 +693,51 @@ class Str
 		return mb_convert_case($str, MB_CASE_UPPER);
 	}
 
-	public static function Join($arr, $separator = ",") : string
-	{
-		return implode($separator, $arr);
-	}
-
-	public static function JoinInts($arr, $separator = ",") : string
+	public static function JoinInts(array $arr, string $separator = ",") : string
 	{
 		return implode($separator, array_map('intval', $arr));
 	}
 
-	public static function CountWords($str) : int
+	public static function CountWords(string $str) : int
 	{
 		$unicode = '';
 		if(self::IsUtf8($str))
 			$unicode = 'u';
 		return count(preg_split('/\s+/i' . $unicode, $str,
-			null, PREG_SPLIT_NO_EMPTY));
+			0, PREG_SPLIT_NO_EMPTY));
 	}
 
-	public static function ToUnicode($cad)
+	public static function TryConvertUtf8(string $str) : string
 	{
-		$cad2 = $cad;
 		try
 		{
-			$cad2 = @iconv('Windows-1252', 'UTF-8', $cad);
+			return self::Convert($str);
 		}
 		catch (\Exception $e)
 		{
 		}
-		return $cad2;
+		return $str;
 	}
 
-	public static function IsUtf8($str) : bool
+	public static function IsUtf8(string $str) : bool
 	{
 		return mb_check_encoding($str, 'UTF-8');
 	}
 
-	public static function GetNWords($str, $n) : string
+	public static function GetNWords(string $str, int $n) : string
 	{
 		$unicode = '';
 		if(self::IsUtf8($str))
 			$unicode = 'u';
 		$words = preg_split('/\s+/i' . $unicode, $str,
-			null, PREG_SPLIT_NO_EMPTY);
+			0, PREG_SPLIT_NO_EMPTY);
 		return implode(' ', array_slice($words, 0, $n));
 	}
 
-	public static function RemoveResumenWord($newAbstract)
+	public static function RemoveResumenWord(string $newAbstract) : string
 	{
+		//TODO: reemplazar por regex
+		//Algo así: /^resumen|abstract[:\.]/iu
 		$newAbstract = self::RemoveBegining($newAbstract, 'resumen:');
 		$newAbstract = self::RemoveBegining($newAbstract, 'RESUMEN:');
 		$newAbstract = self::RemoveBegining($newAbstract, 'Resumen:');
@@ -794,7 +753,7 @@ class Str
 		return self::RemoveBegining($newAbstract, 'Abstract.');
 	}
 
-	public static function RemoveWordFormats($str)
+	public static function RemoveWordFormats(string $str) : string
 	{
 		$str = trim($str);
 		$l = 0;
@@ -819,7 +778,7 @@ class Str
 		return $str;
 	}
 
-	public static function RemoveDelimited($str, $from, $end, $repl = '')
+	public static function RemoveDelimited(string $str, string $from, string $end, string $repl = '') : string
 	{
 		$p1 = strpos($str, $from);
 		if ($p1 !== false)
@@ -834,29 +793,15 @@ class Str
 		return $str;
 	}
 
-	public static function GetLastNWords($str, $n) : string
+	public static function GetLastNWords(string $str, int $n) : string
 	{
 		$unicode = '';
 		if(self::IsUtf8($str))
 			$unicode = 'u';
 		$words = preg_split('/\s+/i' . $unicode, $str,
-			null, PREG_SPLIT_NO_EMPTY);
+			0, PREG_SPLIT_NO_EMPTY);
 		return implode(' ',
 			array_slice($words, count($words) - $n, $n));
-	}
-
-	public static function FormatDateDMY($str) : string
-	{
-		if ($str == "")
-			return "-";
-		return substr($str, 8, 2) . "/" . substr($str, 5, 2) . "/" . substr($str, 2, 2);
-	}
-
-	public static function FormatDateYYMD($str) : string
-	{
-		if ($str == "")
-			return "-";
-		return substr($str, 0, 4) . "-" . substr($str, 5, 2) . "-" . substr($str, 8, 2);
 	}
 
 	public static function IsNumber($cad) : bool
@@ -875,7 +820,7 @@ class Str
 	/**
 	 * Devuelve strings bien formados para XML.
 	 */
-	public static function CleanXmlString($str) : string
+	public static function CleanXmlString(string $str) : string
 	{
 		// Los caracteres ascii bajos (menores a 0x20 espacio)
 		// rompen los parsers de xml (pasa en chrome y firefox).
@@ -893,7 +838,7 @@ class Str
 			str_replace($replace, '', $str));
 	}
 
-	public static function SmartImplode($partsRaw, $trailingCad = "", $normalization = 0) : string
+	public static function SmartImplode($partsRaw, string $trailingCad = "", int $normalization = 0) : string
 	{
 		// $normalization = 0: Nada
 		// $normalization = 1: Convierte Perez, Carlos => Perez, C.
@@ -939,7 +884,7 @@ class Str
 		return $text;
 	}
 
-	public static function NormalizeName($cad, $normalization)
+	public static function NormalizeName(string $cad, int $normalization) : string
 	{
 		if (Context::Settings()->normalizeNames == false)
 			return $cad;
@@ -969,7 +914,7 @@ class Str
 		throw new ErrorException('Invalid normalization argument.');
 	}
 
-	public static function Initials($cad) : string
+	public static function Initials(string $cad) : string
 	{
 		$ret = "";
 		$parts = explode(" ", $cad);
@@ -996,7 +941,7 @@ class Str
 		return $ret;
 	}
 
-	public static function SanitizeFilename($title)
+	public static function SanitizeFilename(string $title) : string
 	{
 		$title = trim($title);
 		//remueve caracteres no válidos en nombres de archivo, windows y mac.
@@ -1005,7 +950,7 @@ class Str
 		return self::EllipsisAnsi($title, 140, "(...)");
 	}
 
-	public static function IsAllLetters($cad) : bool
+	public static function IsAllLetters(string $cad) : bool
 	{
 		$cad = self::RemoveAccents(self::ToLower($cad));
 		for($n = 0; $n < strlen($cad); $n++)
@@ -1016,7 +961,7 @@ class Str
 		return true;
 	}
 
-	public static function IsRoman($cad) : bool
+	public static function IsRoman(string $cad) : bool
 	{
 		$regex = '/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/';
 		return (bool)preg_match($regex, strtoupper($cad));
@@ -1029,12 +974,6 @@ class Str
 		$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
 		$str = self::Replace($str, '\\"', '"');
 		return self::Replace($str, "\\'", "'");
-	}
-
-	//array_search case insensitve
-	public static function ArraySearchI($needle, $haystack)
-	{
-		return array_search(mb_strtolower($needle), array_map('mb_strtolower', $haystack));
 	}
 
 	public static function RandomString(int $length = 12,
@@ -1077,11 +1016,5 @@ class Str
 		return sprintf($format, $value);
 	}
 
-	public static function FormatPercentage($value, $total) : string
-	{
-		if ($total == 0)
-			return "-";
-		return number_format($value * 100 / $total, 1, ".", "") . "%";
-	}
 }
 

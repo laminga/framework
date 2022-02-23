@@ -269,4 +269,35 @@ class Zip
 
 		$zip->close();
 	}
+
+	public static function SendFilesToZip(string $zipFile, array $files, string $sourcePath) : void
+	{
+		IO::Delete($zipFile);
+		$zip = new \ZipArchive();
+		if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true)
+			throw new ErrorException("Could not open archive");
+
+		// adds files to the file list
+		$sourcePath = str_replace("\\", "/", $sourcePath);
+		if (Str::EndsWith($sourcePath, "/") == false)
+			$sourcePath .= "/";
+		foreach ($files as $file)
+		{
+			//fix archive paths
+			$fileFixed = str_replace("\\", "/", $file);
+			$path = str_replace($sourcePath, "", $fileFixed); //remove the source path from the $key to return only the file-folder structure from the root of the source folder
+
+			if (file_exists($file) == false)
+				throw new ErrorException('file does not exist. Please contact your administrator or try again later.');
+			if (is_readable($file) == false)
+				throw new ErrorException('file not readable. Please contact your administrator or try again later.');
+
+			if($zip->addFromString($path, $file) == false)
+				throw new ErrorException("ERROR: Could not add file: ... <br>\n numFile:");
+			if($zip->addFile(realpath($file), $path) == false)
+				throw new ErrorException("ERROR: Could not add file: ... <br>\n numFile:");
+		}
+		$zip->close();
+	}
+
 }

@@ -50,9 +50,23 @@ class Date
 		return self::FormattedDate(self::ArNow());
 	}
 
+	public static function FormatDateDMY(string $str) : string
+	{
+		if ($str == "")
+			return "-";
+		return substr($str, 8, 2) . "/" . substr($str, 5, 2) . "/" . substr($str, 2, 2);
+	}
+
 	public static function FormattedDateOnly($date) : string
 	{
 		return date("Y-m-d", $date);
+	}
+
+	public static function FormatDateYYMD(string $str) : string
+	{
+		if ($str == "")
+			return "-";
+		return substr($str, 0, 4) . "-" . substr($str, 5, 2) . "-" . substr($str, 8, 2);
 	}
 
 	public static function DateToDDMMYYYY($date) : string
@@ -344,7 +358,7 @@ class Date
 		return $dt > $now;
 	}
 
-	public static function TryParseDate($date, &$day, &$month, &$year) : bool
+	public static function TryParseDate(string $date, &$day, &$month, &$year) : bool
 	{
 		$date = str_replace("-", "/", $date);
 		$date = str_replace(" ", "", $date);
@@ -366,7 +380,7 @@ class Date
 		return true;
 	}
 
-	public static function ParseDate($date) : string
+	public static function ParseDate(string $date) : string
 	{
 		$day = null;
 		$month = null;
