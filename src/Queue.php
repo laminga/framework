@@ -8,7 +8,7 @@ use minga\framework\locking\QueueProcessLock;
 abstract class Queue
 {
 	/** @var string */
-	protected $folder = '';
+	protected $path = '';
 	/** @var bool */
 	protected $discardSuccessfullLog;
 	/** @var int */
@@ -28,11 +28,11 @@ abstract class Queue
 		return Context::Settings()->Queue()->Enabled;
 	}
 
-	protected function Initialize(string $folder, int $maxToProcess = 50, bool $discardSuccessfullLog = false) : void
+	protected function Initialize(string $path, int $maxToProcess = 50, bool $discardSuccessfullLog = false) : void
 	{
 		$this->maxToProcess = $maxToProcess;
 
-		$this->folder = $folder;
+		$this->path = $path;
 		$this->discardSuccessfullLog = $discardSuccessfullLog;
 	}
 
@@ -65,9 +65,9 @@ abstract class Queue
 		]);
 	}
 
-	private function GetQueueFolder(string $subfolder) : string
+	private function GetQueuePath(string $subPath) : string
 	{
-		$ret = Context::Paths()->GetQueuePath() . '/' . $this->folder . '/' . $subfolder;
+		$ret = Context::Paths()->GetQueuePath() . '/' . $this->path . '/' . $subPath;
 		IO::EnsureExists($ret);
 		return $ret;
 	}
@@ -95,9 +95,9 @@ abstract class Queue
 		return $params;
 	}
 
-	private function MoveToFolder(string $file, string $folder) : string
+	private function MoveToPath(string $file, string $path) : string
 	{
-		$target = $this->GetQueueFolder($folder) . '/' . basename(basename($file));
+		$target = $this->GetQueuePath($path) . '/' . basename(basename($file));
 		if (file_exists($target))
 			$target = IO::GetUniqueNameNoReplaceFilename($target);
 		IO::Move($file, $target);
@@ -111,17 +111,17 @@ abstract class Queue
 			IO::Delete($file);
 			return '';
 		}
-		return $this->MoveToFolder($file, 'success');
+		return $this->MoveToPath($file, 'success');
 	}
 
 	private function MoveToFailed(string $file) : string
 	{
-		return $this->MoveToFolder($file, 'failed');
+		return $this->MoveToPath($file, 'failed');
 	}
 
 	private function MoveToRunning(string $file) : string
 	{
-		return $this->MoveToFolder($file, 'running');
+		return $this->MoveToPath($file, 'running');
 	}
 
 	private function doProcess(string $file) : bool
@@ -148,22 +148,22 @@ abstract class Queue
 		}
 	}
 
-	private function EnsureQueueFolder() : void
+	private function EnsureQueuePath() : void
 	{
-		$this->GetQueueFolder('queued');
+		$this->GetQueuePath('queued');
 	}
 
 	public function Process() : array
 	{
-		$this->EnsureQueueFolder();
+		$this->EnsureQueuePath();
 
-		$lock = new QueueProcessLock($this->folder);
+		$lock = new QueueProcessLock($this->path);
 
 		$lock->LockWrite();
 
 		if ($this->clearLogOlderThanDays > 0 && rand(1, 100) === 1)
 		{
-			$clean = $this->GetQueueFolder('success');
+			$clean = $this->GetQueuePath('success');
 			IO::ClearFilesOlderThan($clean, $this->clearLogOlderThanDays);
 		}
 
@@ -211,12 +211,12 @@ abstract class Queue
 
 	private function GetFirst(?int &$total) : string
 	{
-		$lock = new QueueLock($this->folder);
+		$lock = new QueueLock($this->path);
 		try
 		{
 			$lock->LockWrite();
-			$folder = $this->GetQueueFolder('queued');
-			$files = IO::GetFilesFullPath($folder, '.json');
+			$path = $this->GetQueuePath('queued');
+			$files = IO::GetFilesFullPath($path, '.json');
 			$total = count($files);
 			if(isset($files[0]))
 				return $this->MoveToRunning($files[0]);
@@ -238,13 +238,13 @@ abstract class Queue
 
 	private function CreateFile(array $data) : void
 	{
-		$this->EnsureQueueFolder();
+		$this->EnsureQueuePath();
 
-		$lock = new QueueLock($this->folder);
+		$lock = new QueueLock($this->path);
 
 		$lock->LockWrite();
 
-		$file = $this->GetQueueFolder('queued') . '/' . microtime(true) . '.json';
+		$file = $this->GetQueuePath('queued') . '/' . microtime(true) . '.json';
 		//$json = Serializator::JsonSerialize($data);
 		$json = json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE);
 		if($json === false)
