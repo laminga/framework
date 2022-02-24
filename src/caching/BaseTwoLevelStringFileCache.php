@@ -62,7 +62,7 @@ class BaseTwoLevelStringFileCache
 			return false;
 	}
 
-	private function ResolveFilename($key1, $key2, $create = false)
+	private function ResolveFilename($key1, $key2, bool $create = false)
 	{
 		$key1 = (string)$key1;
 		$key2 = (string)$key2;

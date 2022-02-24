@@ -10,10 +10,12 @@ class Mail
 	public $to;
 	public $bcc = null;
 	public $toCaption = "";
+	/** @var ?string */
 	public $from = "";
 	public $fromCaption = '';
 	public $subject;
 	public $message;
+	/** @var bool */
 	public $skipNotify = false;
 
 	public function __construct()
@@ -22,7 +24,7 @@ class Mail
 		$this->from = Context::Settings()->Mail()->From;
 	}
 
-	public function Send($log = true, $skipNotification = false, $throwException = true) : void
+	public function Send(bool $log = true, bool $skipNotification = false, bool $throwException = true) : void
 	{
 		if (Context::Settings()->Log()->LogEmailsToDisk)
 			$this->PutToLog();
@@ -54,14 +56,14 @@ class Mail
 		Performance::$mailsSent += 1;
 	}
 
-	private function IsForcedMailProviderDomain($recipient)
+	private function IsForcedMailProviderDomain($recipient) : bool
 	{
 		return Str::ContainsI($recipient, '@hotmail.')
 			|| Str::ContainsI($recipient, '@live.')
 			|| Str::ContainsI($recipient, '@outlook.');
 	}
 
-	private function ResolveProvider($recipient)
+	private function ResolveProvider($recipient) : int
 	{
 		if(Context::Settings()->entorno == 'desa')
 			return Context::Settings()->Mail()->Provider;

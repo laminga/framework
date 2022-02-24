@@ -20,7 +20,7 @@ class BaseTwoLevelStringSQLiteCache
 		$this->db = new SQLiteList('k', ['v']);
 	}
 
-	private function OpenRead($key = null, $throwLockErrors = true)
+	private function OpenRead($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
 		{
@@ -39,7 +39,7 @@ class BaseTwoLevelStringSQLiteCache
 		}
 	}
 
-	private function OpenWrite($key = null, $throwLockErrors = true)
+	private function OpenWrite($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
 		{
@@ -121,10 +121,10 @@ class BaseTwoLevelStringSQLiteCache
 			return true;
 		}
 
-			return false;
+		return false;
 	}
 
-	private function ResolveFilename($key1)
+	private function ResolveFilename($key1) : string
 	{
 		if ($key1 === null)
 			$key1 = 'cache';

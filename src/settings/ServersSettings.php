@@ -8,19 +8,27 @@ class ServersSettings
 {
 	/** @var ServerItem[] */
 	private $servers = [];
+	/** @var ?string */
 	private $currentServer = null;
 
+	/** @var ServerItem */
 	private $currentServerObj = null;
+	/** @var ServerItem */
 	private $mainServerObj = null;
 
 	public $RemoteLoginWhiteList = [];
 
+	/** @var ?string */
 	public $Python27 = null;
+	/** @var ?string */
 	public $Python3 = null;
+	/** @var string */
 	public $PhpCli = 'php';
 
 	public $LoopLocalPort = null;
+	/** @var string */
 	public $LoopLocalHost = 'localhost';
+	/** @var string */
 	public $LoopLocalScheme = 'http';
 
 	public function RegisterServer(string $name, string $url, bool $isCDN = false) : void
@@ -89,7 +97,7 @@ class ServersSettings
 
 	public function OnlyCDNs() : bool
 	{
-		foreach($this->servers as $key => $value)
+		foreach($this->servers as $value)
 		{
 			if ($value->type != 'cdns')
 				return false;
@@ -118,7 +126,7 @@ class ServersSettings
 		// Trae el
 		$cdns = $this->GetCDNServers();
 		$servers = [];
-		foreach($cdns as $key => $value)
+		foreach($cdns as $value)
 			$servers[] = $value->publicUrl;
 		if (count($servers) == 0)
 			$servers = $this->Current()->publicUrl;
@@ -134,7 +142,7 @@ class ServersSettings
 
 	public function Home() : ServerItem
 	{
-		foreach($this->servers as $key => $value)
+		foreach($this->servers as $value)
 		{
 			if ($value->name == 'home')
 				return $value;

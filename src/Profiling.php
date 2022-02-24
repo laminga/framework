@@ -72,9 +72,6 @@ class Profiling
 
 		if ($ses != "")
 			return $ses == "1";
-		if (isset(Context::Settings()->Debug()->profiling) == false)
-			return false;
-
 		return Context::Settings()->Debug()->profiling;
 	}
 

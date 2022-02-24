@@ -14,15 +14,17 @@ class CacheSettings
 	public const FILE = 0;
 	public const SQLITE3 = 1;
 
+	/** @var int */
 	public $Enabled = self::Enabled;
 
+	/** @var int */
 	public $FileSystemMode = self::SQLITE3;
 
 	public function CreateFileCache($path)
 	{
-		if ($this->FileSystemMode === self::SQLITE3)
+		if ($this->FileSystemMode == self::SQLITE3)
 			return new BaseTwoLevelStringSQLiteCache($path);
 
-			return new BaseTwoLevelStringFileCache($path);
+		return new BaseTwoLevelStringFileCache($path);
 	}
 }

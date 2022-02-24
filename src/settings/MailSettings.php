@@ -12,20 +12,32 @@ class MailSettings
 	public $NotifyAddress = "";
 	public $NotifyAddressErrors = "";
 
+	/** @var bool */
 	public $NoMail = false;
 
+	/** @var int */
 	public $Provider = self::SMTP;
 
 	// File Settings
 	public $EmailFilePath = "";
 
 	// SMTP Settings
+	/** @var string */
 	public $SMTPSecure = ""; // Opciones: "" | "tls"
+	/** @var string */
 	public $SMTPHost = "";
+	/** @var int */
 	public $SMTPPort = 25;
+	/** @var string */
 	public $SMTPUsername = "";
+	/** @var string */
 	public $SMTPPassword = "";
+	/** @var bool */
 	public $SMTPAuth = false;
 
+	/** @var string[] */
 	public $ExcludedAddresses = [];
+
+	/** @var ?string */
+	public $From = '';
 }
