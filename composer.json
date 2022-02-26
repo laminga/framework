@@ -2,7 +2,7 @@
 	"type": "library",
 	"config": {
 		"platform": {
-			"php": "7.3"
+			"php": "7.4" 
 		}
 	},
 	"autoload": {
@@ -14,6 +14,7 @@
 		}
 	},
 	"require": {
+		"php": ">=7.4.0",
 		"defuse/php-encryption": "^2.2",
 		"geoip2/geoip2": "^2.9",
 		"lusitanian/oauth": "^0.8.11",
