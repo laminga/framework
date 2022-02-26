@@ -4,7 +4,6 @@ namespace minga\framework;
 
 class HtmlFilter
 {
-
 	public static function DefaultConfig() : \HTMLPurifier_Config
 	{
 		$config = \HTMLPurifier_Config::createDefault();
@@ -14,13 +13,12 @@ class HtmlFilter
 	}
 
 	/**
-	 * Permite sólo links y formato básico.
+	 * Permite solo links y formato básico.
 	 * Filtra todo lo demás, está relacionado
 	 * a la función setupMinimal del ckeditor.
 	 * Permite lo mismo que los botones visibles
 	 * del editor.
 	 * También remueve líneas vacías.
-	 *
 	 */
 	public static function BasicFormat(string $html) : string
 	{
@@ -52,7 +50,6 @@ class HtmlFilter
 	 * El filtro es muy permisivo para ser
 	 * compatible hacia atrás con los eventos
 	 * existentes debería restringirse un poco más.
-	 *
 	 */
 	public static function BasicSecurity(string $html) : string
 	{
@@ -154,5 +151,4 @@ class HtmlFilter
 
 		return [$width, $height];
 	}
-
 }

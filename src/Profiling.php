@@ -4,30 +4,38 @@ namespace minga\framework;
 
 class Profiling
 {
+	/** @var bool */
 	public static $IsJson = false;
 
+	/** @var bool */
 	private static $showQueries = false;
+	/** @var bool */
 	private static $trimQueries = false;
+	/** @var bool */
 	private static $progressOnly = false;
 
+	/** @var array */
 	private static $stack = null;
+
+	/** @var string */
 	private static $lockStack = "";
+	/** @var ?ProfilingItem */
 	private static $profileData = null;
 	private static $localIsProfiling = null;
 
-	public static function BeginShowQueries($trimQueries = false, $progressOnly = false)
+	public static function BeginShowQueries(bool $trimQueries = false, bool $progressOnly = false) : void
 	{
 		self::$showQueries = true;
 		self::$trimQueries = $trimQueries;
 		self::$progressOnly = $progressOnly;
 	}
 
-	public static function EndShowQueries()
+	public static function EndShowQueries() : void
 	{
 		self::$showQueries = false;
 	}
 
-	public static function ShowQuery($sql, $params, $types)
+	public static function ShowQuery($sql, $params, $types) : void
 	{
 		if (self::$showQueries === false)
 			return;
@@ -55,7 +63,7 @@ class Profiling
 		echo " <br>\n";
 	}
 
-	public static function IsProfiling()
+	public static function IsProfiling() : bool
 	{
 		if (self::$localIsProfiling === null)
 			self::$localIsProfiling = PhpSession::GetSessionValue("profiling");
@@ -63,23 +71,20 @@ class Profiling
 		$ses = self::$localIsProfiling;
 
 		if ($ses != "")
-			return ($ses == "1");
-		if (isset(Context::Settings()->Debug()->profiling) == false)
-			return false;
-
+			return $ses == "1";
 		return Context::Settings()->Debug()->profiling;
 	}
 
-	public static function SetProfiling($value)
+	public static function SetProfiling(bool $value) : void
 	{
 		if ($value)
-			PhpSession::SetSessionValue("profiling", "1");
+			PhpSession::SetSessionValue("profiling", (int)$value);
 		else
-			PhpSession::SetSessionValue("profiling", "0");
+			PhpSession::SetSessionValue("profiling", (int)$value);
 		self::$localIsProfiling = null;
 	}
 
-	public static function ShowResults()
+	public static function ShowResults() : void
 	{
 		$previous = PhpSession::GetSessionValue("lastProfiling");
 		if ($previous != "")
@@ -91,7 +96,7 @@ class Profiling
 		echo self::GetHtmlResults();
 	}
 
-	public static function SaveBeforeRedirect()
+	public static function SaveBeforeRedirect() : void
 	{
 		if (self::IsProfiling() == false)
 			return;
@@ -99,7 +104,7 @@ class Profiling
 		PhpSession::SetSessionValue("lastProfiling", self::GetHtmlResults(true));
 	}
 
-	public static function GetHtmlResults($saveForLaterFormat = false)
+	public static function GetHtmlResults(bool $saveForLaterFormat = false) : string
 	{
 		self::FinishTimers();
 		$ret = "";
@@ -123,48 +128,42 @@ class Profiling
 		return $ret;
 	}
 
-	public static function RecursiveShow($profileData, $depth, $totalMs, $parentMs, $isTotal = false, $isUserCode = false)
+	public static function RecursiveShow(ProfilingItem $profileData, int $depth, $totalMs, $parentMs, bool $isTotal = false, bool $isUserCode = false)
 	{
+		$cellFormat = "";
+		$cellFormatClose = "";
 		if($isUserCode)
 		{
-			$cellFormat ="<i>";
-			$cellFormatClose ="</i>";
-		}
-		else
-		{
-			$cellFormat ="";
-			$cellFormatClose ="";
+			$cellFormat = "<i>";
+			$cellFormatClose = "</i>";
 		}
 
-		if ($isTotal)
-			$tdStyle = "style='background-color: #a0a0a0;'";
-		else
+		$tdStyle = "style='background-color: #a0a0a0;'";
+		if ($isTotal == false)
 		{
 			$colorn = min(160 + 32 * $depth, 255);
-			$tdStyle = "style='background-color: #" . dechex($colorn).dechex($colorn).dechex($colorn). ";'";
+			$tdStyle = "style='background-color: #" . dechex($colorn) . dechex($colorn) . dechex($colorn) . ";'";
 		}
+
+		$duravg = "-";
+		$memavg = "-";
+		// $memPeakavg = "-";
 		if ($profileData->hits > 0)
 		{
 			$duravg = round($profileData->durationMs / $profileData->hits, 0);
 			$memavg = round($profileData->memory / $profileData->hits, 0);
-			$memPeakavg = round($profileData->memoryPeak / $profileData->hits, 0);
-		}
-		else
-		{
-			$duravg = "-";
-			$memavg = "-";
-			$memPeakavg = "-";
+			// $memPeakavg = round($profileData->memoryPeak / $profileData->hits, 0);
 		}
 
-		$ret = self::CreateRow($tdStyle, $cellFormat , $cellFormatClose, $depth,
+		$ret = self::CreateRow($tdStyle, $cellFormat, $cellFormatClose, $depth,
 			$profileData->name,
 			$profileData->hits,
 			$profileData->dbHits,
-			round($profileData->durationMs,0),
-			Str::FormatPercentage($profileData->durationMs, $parentMs),
-			Str::FormatPercentage($profileData->durationMs, $totalMs),
+			round($profileData->durationMs, 0),
+			self::FormatPercentage($profileData->durationMs, $parentMs),
+			self::FormatPercentage($profileData->durationMs, $totalMs),
 			$duravg,
-			Str::SizeToHumanReadable($profileData->memory, 1) ,
+			Str::SizeToHumanReadable($profileData->memory, 1),
 			Str::SizeToHumanReadable($memavg, 1)
 		);
 
@@ -176,7 +175,7 @@ class Profiling
 		$residual->hits = "-";
 		foreach($profileData->children as $child)
 		{
-			$ret .= self::RecursiveShow($child, $depth+1, $totalMs, $profileData->durationMs);
+			$ret .= self::RecursiveShow($child, $depth + 1, $totalMs, $profileData->durationMs);
 			// suma el total para hacer después el residual de user-code
 			$residual->durationMs -= $child->durationMs;
 			$residual->memory -= $child->memory;
@@ -184,20 +183,26 @@ class Profiling
 			$residual->memoryPeak -= $child->memoryPeak;
 		}
 		if (count($profileData->children) > 0 && ($residual->durationMs >= 1 || $residual->dbHits >= 1))
-		{
-			$ret .= self::RecursiveShow($residual, $depth+1, $totalMs, $profileData->durationMs, false, true);
-		}
+			$ret .= self::RecursiveShow($residual, $depth + 1, $totalMs, $profileData->durationMs, false, true);
+
 		return $ret;
 	}
 
-	private static function CreateRow($tdStyle, $cellFormat , $cellFormatClose, $depth,
-		$v1, $v2, $v3, $v4, $v5, $v6, $v7, $v8, $v9)
+	private static function FormatPercentage($value, $total) : string
+	{
+		if ($total == 0)
+			return "-";
+		return number_format($value * 100 / $total, 1, ".", "") . "%";
+	}
+
+	private static function CreateRow(string $tdStyle, string $cellFormat , string $cellFormatClose, int $depth,
+		$v1, $v2, $v3, $v4, $v5, $v6, $v7, $v8, $v9) : string
 	{
 		$v1Parts = explode('\\', $v1);
 		$v1 = $v1Parts[count($v1Parts) - 1];
 		if (self::$IsJson == false)
 		{
-			return "<tr><td " . $tdStyle . "><div style='padding-left: " .($depth * 12) . "px'>" . $cellFormat . $v1 . $cellFormatClose . "</div></td>"
+			return "<tr><td " . $tdStyle . "><div style='padding-left: " . ($depth * 12) . "px'>" . $cellFormat . $v1 . $cellFormatClose . "</div></td>"
 				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v2 . $cellFormatClose . "</td>"
 				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v3 . $cellFormatClose . "</td>"
 				. "<td " . $tdStyle . " align='center'>" . $cellFormat . $v4 . $cellFormatClose . "</td>"
@@ -208,30 +213,29 @@ class Profiling
 				. "<td " . $tdStyle . " align='right'>" . $cellFormat . $v9 . $cellFormatClose . "</td>"
 				. "</tr>";
 		}
-		else
-		{
-			return self::FixColWidth(str_repeat("_", $depth * 2) . $v1, 71, true)
-				. self::FixColWidth($v2, 7)
-				. self::FixColWidth($v3, 7)
-				. self::FixColWidth($v4, 7)
-				. self::FixColWidth($v5, 8)
-				. self::FixColWidth($v6, 8)
-				. self::FixColWidth($v7, 11)
-				. self::FixColWidth($v8, 11)
-				. self::FixColWidth($v9, 11)
-			  	. " \n";
-		}
+
+
+		return self::FixColWidth(str_repeat("_", $depth * 2) . $v1, 71, true)
+			. self::FixColWidth($v2, 7)
+			. self::FixColWidth($v3, 7)
+			. self::FixColWidth($v4, 7)
+			. self::FixColWidth($v5, 8)
+			. self::FixColWidth($v6, 8)
+			. self::FixColWidth($v7, 11)
+			. self::FixColWidth($v8, 11)
+			. self::FixColWidth($v9, 11)
+			. " \n";
 	}
 
-	private static function FixColWidth($val, $width, $textAlignLeft = false)
+	private static function FixColWidth(string $val, int $width, bool $textAlignLeft = false) : string
 	{
 		$val = trim($val);
 		if (strlen($val) >= $width)
-			$val = substr($val, 0, $width-1);
+			$val = substr($val, 0, $width - 1);
 		return str_pad($val, $width, "_", ($textAlignLeft ? STR_PAD_RIGHT : STR_PAD_BOTH));
 	}
 
-	private static function EchoTableHeader($colorHeader)
+	private static function EchoTableHeader(string $colorHeader) : string
 	{
 		// headers
 		$ret = "";
@@ -241,7 +245,7 @@ class Profiling
 		$cellFormat = "<b>";
 		$cellFormatClose = "</b>";
 
-		$ret .= self::CreateRow($tdStyle, $cellFormat , $cellFormatClose, 0,
+		$ret .= self::CreateRow($tdStyle, $cellFormat, $cellFormatClose, 0,
 			'Profiling items',
 			'Hits',
 			'DbHits',
@@ -255,21 +259,20 @@ class Profiling
 		return $ret;
 	}
 
-	private static function GetMethodName($isInternalFunction)
+	private static function GetMethodName(bool $isInternalFunction) : string
 	{
 		try
 		{
+			$i = 2;
 			if($isInternalFunction)
 				$i = 3;
-			else
-				$i = 2;
 			$bt = debug_backtrace();
-			if (!array_key_exists('class', $bt[$i]))
+			if (isset($bt[$i]['class']) == false)
 			{
 				$bt[$i]['class'] = basename($bt[$i]['file']);
 				$bt[$i]['type'] = '->';
 			}
-			return $bt[$i]['class'].$bt[$i]['type'].$bt[$i]['function'];
+			return $bt[$i]['class'] . $bt[$i]['type'] . $bt[$i]['function'];
 		}
 		catch(\Exception $e)
 		{
@@ -277,7 +280,7 @@ class Profiling
 		}
 	}
 
-	public static function BeginTimer($name = '', $isInternalFunction = false)
+	public static function BeginTimer($name = '', bool $isInternalFunction = false) : void
 	{
 		if (self::IsProfiling() == false)
 			return;
@@ -290,7 +293,7 @@ class Profiling
 		}
 		$newItem = new ProfilingItem($name);
 		$newItem->isInternal = $isInternalFunction;
-		self::$stack [] = $newItem;
+		self::$stack[] = $newItem;
 
 		// integridad
 		if (count(self::$stack) > 128)
@@ -302,7 +305,7 @@ class Profiling
 		}
 	}
 
-	public static function EndTimer()
+	public static function EndTimer() : void
 	{
 		if (self::IsProfiling() == false)
 			return;
@@ -317,32 +320,32 @@ class Profiling
 		self::$stack = Arr::ShrinkArray(self::$stack, $index);
 	}
 
-	public static function RegisterDbHit()
+	public static function RegisterDbHit() : void
 	{
 		foreach(self::$stack as $item)
 			$item->dbHits++;
 	}
 
-	public static function AppendLockInfo($info)
+	public static function AppendLockInfo($info) : void
 	{
 		if (self::IsProfiling() == false)
 			return;
 		self::$lockStack .= $info . " <br>";
 	}
 
-	public static function FinishTimers()
+	public static function FinishTimers() : void
 	{
 		while(count(self::$stack) > 0)
 			self::EndTimer();
 	}
 
-	private static function MergeLastBrachValues()
+	private static function MergeLastBrachValues() : void
 	{
 		// lo suma en la rama correspondiente
 		self::RecursiveMerge(self::$profileData, 0);
 	}
 
-	private static function RecursiveMerge($profileData, $depth)
+	private static function RecursiveMerge($profileData, int $depth) : void
 	{
 		$targetItem = $profileData->GetChildrenOrCreate(self::$stack[$depth]->name);
 		$item = self::$stack[$depth];
@@ -359,5 +362,4 @@ class Profiling
 		else
 			self::RecursiveMerge($targetItem, $depth + 1);
 	}
-
 }

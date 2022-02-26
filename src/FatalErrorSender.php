@@ -4,21 +4,22 @@ namespace minga\framework;
 
 class FatalErrorSender
 {
-	private static function GetFatalLogPath()
+	private static function GetFatalLogPath() : string
 	{
 		return Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
 	}
-	private static function ResolveFataLogSentPath()
+
+	private static function ResolveFataLogSentPath() : string
 	{
 		$ret = self::GetFatalLogPath() . '/sent';
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
-	public static function SendErrorLog($silent = false)
+	public static function SendErrorLog(bool $silent = false) : void
 	{
 		$path = self::GetFatalLogPath();
-		$file = $path  . '/error_log';
+		$file = $path . '/error_log';
 		$found = false;
 		if (file_exists($file))
 		{
@@ -31,7 +32,7 @@ class FatalErrorSender
 			echo "Procesado (error_log)\n";
 	}
 
-	public static function SendFatalErrors($silent = false)
+	public static function SendFatalErrors(bool $silent = false) : void
 	{
 		$path = Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
 		$sentPath = self::ResolveFataLogSentPath();

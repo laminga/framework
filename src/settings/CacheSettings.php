@@ -7,22 +7,24 @@ use minga\framework\caching\BaseTwoLevelStringSQLiteCache;
 
 class CacheSettings
 {
-	const Disabled = 0;
-	const Enabled = 1;
-	const DisabledWrite = 2;
+	public const Disabled = 0;
+	public const Enabled = 1;
+	public const DisabledWrite = 2;
 
-	const FILE = 0;
-	const SQLITE3 = 1;
+	public const FILE = 0;
+	public const SQLITE3 = 1;
 
+	/** @var int */
 	public $Enabled = self::Enabled;
 
+	/** @var int */
 	public $FileSystemMode = self::SQLITE3;
 
 	public function CreateFileCache($path)
 	{
-		if ($this->FileSystemMode === self::SQLITE3)
+		if ($this->FileSystemMode == self::SQLITE3)
 			return new BaseTwoLevelStringSQLiteCache($path);
-		else
-			return new BaseTwoLevelStringFileCache($path);
+
+		return new BaseTwoLevelStringFileCache($path);
 	}
 }

@@ -33,18 +33,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /**
  * @author   "Sebastián Grignoli" <grignoli@gmail.com>
+ *
  * @package  Encoding
+ *
  * @version  2.0
+ *
  * @link     https://github.com/neitanod/forceutf8
+ *
  * @example  https://github.com/neitanod/forceutf8
+ *
  * @license  Revised BSD
  */
 class EncodingUtf8
 {
-
-	const ICONV_TRANSLIT = "TRANSLIT";
-	const ICONV_IGNORE = "IGNORE";
-	const WITHOUT_ICONV = "";
+	public const ICONV_TRANSLIT = "TRANSLIT";
+	public const ICONV_IGNORE = "IGNORE";
+	public const WITHOUT_ICONV = "";
 
 	protected static $win1252ToUtf8 = [
 		128 => "\xe2\x82\xac",
@@ -78,7 +82,7 @@ class EncodingUtf8
 		156 => "\xc5\x93",
 
 		158 => "\xc5\xbe",
-		159 => "\xc5\xb8"
+		159 => "\xc5\xb8",
 	];
 
 	protected static $brokenUtf8ToUtf8 = [
@@ -113,25 +117,25 @@ class EncodingUtf8
 		"\xc2\x9c" => "\xc5\x93",
 
 		"\xc2\x9e" => "\xc5\xbe",
-		"\xc2\x9f" => "\xc5\xb8"
+		"\xc2\x9f" => "\xc5\xb8",
 	];
 
 	protected static $utf8ToWin1252 = [
 		"\xe2\x82\xac" => "\x80",
 
 		"\xe2\x80\x9a" => "\x82",
-		"\xc6\x92"     => "\x83",
+		"\xc6\x92" => "\x83",
 		"\xe2\x80\x9e" => "\x84",
 		"\xe2\x80\xa6" => "\x85",
 		"\xe2\x80\xa0" => "\x86",
 		"\xe2\x80\xa1" => "\x87",
-		"\xcb\x86"     => "\x88",
+		"\xcb\x86" => "\x88",
 		"\xe2\x80\xb0" => "\x89",
-		"\xc5\xa0"     => "\x8a",
+		"\xc5\xa0" => "\x8a",
 		"\xe2\x80\xb9" => "\x8b",
-		"\xc5\x92"     => "\x8c",
+		"\xc5\x92" => "\x8c",
 
-		"\xc5\xbd"     => "\x8e",
+		"\xc5\xbd" => "\x8e",
 
 
 		"\xe2\x80\x98" => "\x91",
@@ -141,14 +145,14 @@ class EncodingUtf8
 		"\xe2\x80\xa2" => "\x95",
 		"\xe2\x80\x93" => "\x96",
 		"\xe2\x80\x94" => "\x97",
-		"\xcb\x9c"     => "\x98",
+		"\xcb\x9c" => "\x98",
 		"\xe2\x84\xa2" => "\x99",
-		"\xc5\xa1"     => "\x9a",
+		"\xc5\xa1" => "\x9a",
 		"\xe2\x80\xba" => "\x9b",
-		"\xc5\x93"     => "\x9c",
+		"\xc5\x93" => "\x9c",
 
-		"\xc5\xbe"     => "\x9e",
-		"\xc5\xb8"     => "\x9f"
+		"\xc5\xbe" => "\x9e",
+		"\xc5\xb8" => "\x9f",
 	];
 
 	/**
@@ -171,9 +175,10 @@ class EncodingUtf8
 	 * 3) when any of these: ðñòó  are followed by THREE chars from group B.
 	 *
 	 * @name ToUTF8
-	 * @param array|string $text  Any string.
-	 * @return array|string  The same string, UTF8 encoded
 	 *
+	 * @param array|string $text  Any string.
+	 *
+	 * @return array|string  The same string, UTF8 encoded
 	 */
 	public static function ToUTF8($text)
 	{
@@ -194,11 +199,11 @@ class EncodingUtf8
 		for($i = 0; $i < $max; $i++)
 		{
 			$c1 = $text[$i];
-			if($c1>="\xc0")
+			if($c1 >= "\xc0")
 			{ //Should be converted to UTF8, if it's not UTF8 already
-				$c2 = $i+1 >= $max? "\x00" : $text[$i+1];
-				$c3 = $i+2 >= $max? "\x00" : $text[$i+2];
-				$c4 = $i+3 >= $max? "\x00" : $text[$i+3];
+				$c2 = $i + 1 >= $max ? "\x00" : $text[$i + 1];
+				$c3 = $i + 2 >= $max ? "\x00" : $text[$i + 2];
+				$c4 = $i + 3 >= $max ? "\x00" : $text[$i + 3];
 				if($c1 >= "\xc0" & $c1 <= "\xdf")
 				{ //looks like 2 bytes UTF8
 					if($c2 >= "\x80" && $c2 <= "\xbf")
@@ -208,7 +213,7 @@ class EncodingUtf8
 					}
 					else
 					{ //not valid UTF8.  Convert it.
-						$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
+						$cc1 = (chr((int)(ord($c1) / 64)) | "\xc0");
 						$cc2 = ($c1 & "\x3f") | "\x80";
 						$buf .= $cc1 . $cc2;
 					}
@@ -222,7 +227,7 @@ class EncodingUtf8
 					}
 					else
 					{ //not valid UTF8.  Convert it.
-						$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
+						$cc1 = (chr((int)(ord($c1) / 64)) | "\xc0");
 						$cc2 = ($c1 & "\x3f") | "\x80";
 						$buf .= $cc1 . $cc2;
 					}
@@ -236,14 +241,14 @@ class EncodingUtf8
 					}
 					else
 					{ //not valid UTF8.  Convert it.
-						$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
+						$cc1 = (chr((int)(ord($c1) / 64)) | "\xc0");
 						$cc2 = ($c1 & "\x3f") | "\x80";
 						$buf .= $cc1 . $cc2;
 					}
 				}
 				else
 				{ //doesn't look like UTF8, but should be converted
-					$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
+					$cc1 = (chr((int)(ord($c1) / 64)) | "\xc0");
 					$cc2 = (($c1 & "\x3f") | "\x80");
 					$buf .= $cc1 . $cc2;
 				}
@@ -256,7 +261,7 @@ class EncodingUtf8
 				}
 				else
 				{
-					$cc1 = (chr(intval(ord($c1) / 64)) | "\xc0");
+					$cc1 = (chr((int)(ord($c1) / 64)) | "\xc0");
 					$cc2 = (($c1 & "\x3f") | "\x80");
 					$buf .= $cc1 . $cc2;
 				}
@@ -280,7 +285,7 @@ class EncodingUtf8
 		}
 		elseif(is_string($text))
 			return static::Utf8Decode($text, $option);
-		else
+
 			return $text;
 	}
 
@@ -305,7 +310,7 @@ class EncodingUtf8
 		}
 
 		$last = "";
-		while($last <> $text)
+		while($last != $text)
 		{
 			$last = $text;
 			$text = self::ToUTF8(static::Utf8Decode($text, $option));
@@ -325,7 +330,7 @@ class EncodingUtf8
 
 	public static function RemoveBOM($str = "")
 	{
-		if(substr($str, 0, 3) == pack("CCC", 0xef, 0xbb, 0xbf))
+		if(substr($str, 0, 3) == pack("CCC", 0xEF, 0xBB, 0xBF))
 			$str = substr($str, 3);
 
 		return $str;
@@ -333,8 +338,8 @@ class EncodingUtf8
 
 	protected static function Strlen($text)
 	{
-		return (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload')) & 2) ?
-			mb_strlen($text,'8bit') : strlen($text);
+		return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload')) & 2)
+			? mb_strlen($text, '8bit') : strlen($text);
 	}
 
 	public static function NormalizeEncoding($encodingLabel)
@@ -343,14 +348,14 @@ class EncodingUtf8
 		$encoding = preg_replace('/[^a-zA-Z0-9\s]/', '', $encoding);
 		$equivalences = [
 			'ISO88591' => 'ISO-8859-1',
-			'ISO8859'  => 'ISO-8859-1',
-			'ISO'      => 'ISO-8859-1',
-			'LATIN1'   => 'ISO-8859-1',
-			'LATIN'    => 'ISO-8859-1',
-			'UTF8'     => 'UTF-8',
-			'UTF'      => 'UTF-8',
-			'WIN1252'  => 'ISO-8859-1',
-			'WINDOWS1252' => 'ISO-8859-1'
+			'ISO8859' => 'ISO-8859-1',
+			'ISO' => 'ISO-8859-1',
+			'LATIN1' => 'ISO-8859-1',
+			'LATIN' => 'ISO-8859-1',
+			'UTF8' => 'UTF-8',
+			'UTF' => 'UTF-8',
+			'WIN1252' => 'ISO-8859-1',
+			'WINDOWS1252' => 'ISO-8859-1',
 		];
 
 		if(empty($equivalences[$encoding]))

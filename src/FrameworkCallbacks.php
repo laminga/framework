@@ -17,7 +17,8 @@ abstract class FrameworkCallbacks
 	{
 	}
 
-	public function Db()
+	public function Db() : Db
 	{
+		throw new \Exception('Inherit');
 	}
 }

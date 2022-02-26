@@ -24,11 +24,15 @@ class AppPaths
 		return $this->GetStorageRoot() . "/data";
 	}
 
+	public static function GetBackupLocalPath() : string
+	{
+		return Context::Paths()->GetStorageRoot() . '/backup';
+	}
+
 	public function GetQueuePath() : string
 	{
 		$path = $this->GetStorageRoot() . "/queue";
-		IO::EnsureExists($path . '/ran');
-		IO::EnsureExists($path . '/failed');
+		IO::EnsureExists($path);
 		return $path;
 	}
 
@@ -84,7 +88,6 @@ class AppPaths
 	{
 		return Context::Paths()->GetRoot() . "/compilation_cache";
 	}
-
 
 	public function GetTrafficLocalPath() : string
 	{
@@ -152,5 +155,4 @@ class AppPaths
 		IO::EnsureExists($ret);
 		return $ret;
 	}
-
 }

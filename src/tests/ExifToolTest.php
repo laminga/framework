@@ -9,7 +9,6 @@ use minga\framework\Str;
 
 class ExifToolTest extends TestCaseBase
 {
-
 	protected $testFile = '';
 
 	public function setUp() : void
@@ -28,7 +27,7 @@ class ExifToolTest extends TestCaseBase
 
 	public function testUpdateMetadata() : void
 	{
-		$ret = ExifTool::UpdateMetadata($this->testFile, '"a"' . "\n" . "\\", 'a');
+		$ret = ExifTool::UpdateMetadata($this->testFile, '"a"' . "\n" . "\\" . "`x/b" , 'a');
 		$this->assertTrue($ret);
 	}
 }

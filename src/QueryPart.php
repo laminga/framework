@@ -22,6 +22,5 @@ class QueryPart
 		$this->Select = $select;
 		$this->MaxRows = $maxRows;
 	}
-
 }
 

@@ -7,6 +7,7 @@ class ProfilingItem
 	public $name;
 
 	private $startTime;
+	/** @var int */
 	private $startMemory;
 
 	public $memory;
@@ -17,12 +18,13 @@ class ProfilingItem
 	public $isInternal;
 	private $startPause;
 
+	/** @var ProfilingItem[] */
 	public $children = [];
 
 	public function __construct($name)
 	{
 		$this->name = $name;
-		$this->startTime = 	microtime(true);
+		$this->startTime = microtime(true);
 		$this->startMemory = memory_get_usage();
 		$this->durationMs = 0;
 		$this->hits = 0;
@@ -38,7 +40,7 @@ class ProfilingItem
 		return $a['sec'] + ($a['usec'] * 0.000001);
 	}
 
-	public function CompleteTimer()
+	public function CompleteTimer() : void
 	{
 		$t2 = microtime(true);
 		$endPause = Performance::$pauseEllapsedSecs;
@@ -49,7 +51,7 @@ class ProfilingItem
 		$this->hits = 1;
 	}
 
-	public function SumChildren()
+	public function SumChildren() : void
 	{
 		$this->memory = 0;
 		$this->memoryPeak = 0;
@@ -66,7 +68,7 @@ class ProfilingItem
 		}
 	}
 
-	public function GetChildrenOrCreate($name)
+	public function GetChildrenOrCreate($name) : ProfilingItem
 	{
 		foreach($this->children as $child)
 			if ($child->name == $name)

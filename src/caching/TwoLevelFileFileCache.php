@@ -15,7 +15,7 @@ class TwoLevelFileFileCache
 		$this->path = Context::Paths()->GetStorageCaches() . '/services/' . $path;
 	}
 
-	public function Clear($key1 = null, $key2 = null)
+	public function Clear($key1 = null, $key2 = null) : void
 	{
 		if ($key1 == null)
 		{
@@ -53,13 +53,14 @@ class TwoLevelFileFileCache
 			$out = $file;
 			return true;
 		}
-		else
-		{
+
+
 			$out = null;
 			return false;
-		}
+
 	}
-	public function PutDataIfMissing($key1, $key2, $value)
+
+	public function PutDataIfMissing($key1, $key2, $value) : void
 	{
 		if ($this->HasData($key1, $key2))
 			return;
@@ -83,7 +84,6 @@ class TwoLevelFileFileCache
 			IO::EnsureExists($folder);
 		return $folder . "/" . $key2 . ".dat";
 	}
-
 }
 
 

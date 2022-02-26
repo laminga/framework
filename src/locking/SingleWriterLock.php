@@ -12,18 +12,18 @@ abstract class SingleWriterLock extends Lock
 
 	private static $refCount = 0;
 
-	public static function IsWriting()
+	public static function IsWriting() : bool
 	{
-		return (self::$writeLock != null);
+		return self::$writeLock != null;
 	}
 
-	public static function BeginRead()
+	public static function BeginRead() : void
 	{
 		self::$readLock = new static();
 		self::$readLock->LockRead();
 	}
 
-	public static function EndRead()
+	public static function EndRead() : void
 	{
 		$lock = self::$readLock;
 		self::$readLock = null;
@@ -35,7 +35,7 @@ abstract class SingleWriterLock extends Lock
 		$lock->Release();
 	}
 
-	public static function BeginWrite()
+	public static function BeginWrite() : void
 	{
 		if (self::$writeLock != null)
 			self::$refCount++;
@@ -47,11 +47,11 @@ abstract class SingleWriterLock extends Lock
 		}
 	}
 
-	public static function EndWrite()
+	public static function EndWrite() : void
 	{
 		if (self::$writeLock == null)
 		{
-			$e = new ErrorException("Se ha intentado finalizar un " . get_called_class() . " sin una inicialización asociada.");
+			$e = new ErrorException("Se ha intentado finalizar un " . static::class . " sin una inicialización asociada.");
 			Log::HandleSilentException($e);
 			return;
 		}
@@ -65,10 +65,7 @@ abstract class SingleWriterLock extends Lock
 			{
 				$lock->Release();
 			}
-			catch (\Exception $e)
-			{
-				;
-			}
+			catch (\Exception $e) { }
 		}
 	}
 }

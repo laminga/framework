@@ -4,15 +4,14 @@ namespace minga\framework;
 
 class Cookies
 {
-
-	public static function SetCookie($name, $value, $expireDays = 30)
+	public static function SetCookie(string $name, $value, int $expireDays = 30) : void
 	{
 		$expire = time() + 60 * 60 * 24 * $expireDays;
 
 		//Si tiene https no importa el entorno, es segura.
 		$secure = self::IsSecure();
 		$secure = true;
-		$host = $_SERVER['HTTP_HOST'];
+		$host = Params::SafeServer('HTTP_HOST');
 		if ($host == false)
 			$host = parse_url(Context::Settings()->GetPublicUrl(), PHP_URL_HOST);
 
@@ -22,27 +21,21 @@ class Cookies
 			Log::HandleSilentException(new ErrorException('SetCookie'));
 	}
 
-	public static function IsSecure()
+	public static function IsSecure() : bool
 	{
-		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
-			return true;
-		elseif (empty($_SERVER['HTTP_X_FORWARDED_PROTO']) == false
-			&& $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || empty($_SERVER['HTTP_X_FORWARDED_SSL']) == false
-			&& $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on')
-		{
-			return true;
-		}
-		return false;
+		return Params::SafeServer('HTTPS') == 'on'
+			|| Params::SafeServer('HTTP_X_FORWARDED_PROTO') == 'https'
+			|| Params::SafeServer('HTTP_X_FORWARDED_SSL') == 'on';
 	}
 
-	public static function RenewCookie($name, $expireDays = 30) : void
+	public static function RenewCookie(string $name, int $expireDays = 30) : void
 	{
 		$cookie = self::GetCookie($name);
 		if($cookie != '')
 			self::SetCookie($name, $cookie, $expireDays);
 	}
 
-	public static function GetCookie($name)
+	public static function GetCookie(string $name) : string
 	{
 		if(isset($_COOKIE[$name]))
 			return $_COOKIE[$name];
@@ -50,10 +43,9 @@ class Cookies
 		return '';
 	}
 
-	public static function DeleteCookie($name) : void
+	public static function DeleteCookie(string $name) : void
 	{
 		self::RenewCookie($name, -365);
 		unset($_COOKIE[$name]);
 	}
-
 }

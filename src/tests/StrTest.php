@@ -6,6 +6,13 @@ use minga\framework\Str;
 
 class StrTest extends TestCaseBase
 {
+	public function testDecodeEntities() : void
+	{
+		$this->assertEquals('a', Str::DecodeEntities('a'));
+		$this->assertEquals("l'Écriture", Str::DecodeEntities('l&#39;Écriture'));
+		$this->assertEquals("'", Str::DecodeEntities("&amp;#39;"));
+	}
+
 	public function testStartsWithAlfabetic() : void
 	{
 		$this->assertFalse(Str::StartsWithAlfabetic(null));
@@ -32,11 +39,11 @@ class StrTest extends TestCaseBase
 		$this->assertFalse(Str::IsEmail('sindominio@.com'));
 		$this->assertFalse(Str::IsEmail('@sindireccion.com'));
 		$this->assertFalse(Str::IsEmail('direccionsuperlarga'
-		. 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-		. 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-		. 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-		. 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-		. '@dominio.com'));
+			. 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+			. 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+			. 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+			. 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+			. '@dominio.com'));
 	}
 
 	public function testEllipsis()

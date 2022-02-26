@@ -2,26 +2,26 @@
 
 namespace minga\framework;
 
-use minga\framework\Params;
-
 class FileBucket
 {
-	public $path;
-	public $id;
+	/** @var string */
+	public $path = '';
+	/** @var string */
+	public $id = '';
 
-	private static function CleanUp()
+	private static function CleanUp() : void
 	{
 		$folder = Context::Paths()->GetBucketsPath();
 		IO::EnsureExists($folder);
 		IO::ClearDirectoriesOlderThan($folder, 7);
 	}
 
-	public function GetBucketFolder()
+	public function GetBucketFolder() : string
 	{
 		return $this->path;
 	}
 
-	public static function Create($defaultBucketId = null)
+	public static function Create(?string $defaultBucketId = null)
 	{
 		self::CleanUp();
 		if ($defaultBucketId === null)
@@ -29,26 +29,26 @@ class FileBucket
 			$defaultBucketId = self::CreateId();
 			while(self::Exists($defaultBucketId))
 			{
-				usleep(1000);
+				usleep(500);
 				$defaultBucketId = self::CreateId();
 			}
 		}
 		return self::Load($defaultBucketId);
 	}
 
-	public static function CreateId()
+	public static function CreateId() : string
 	{
 		return uniqid();
 	}
 
-	public static function Exists($id)
+	public static function Exists(string $id) : bool
 	{
 		$ret = new FileBucket();
 		$ret->ResolvePath($id);
 		return file_exists($ret->path);
 	}
 
-	public static function ResolveFromParam($forceCreate = false)
+	public static function ResolveFromParam(bool $forceCreate = false) : string
 	{
 		$ret = Params::SafeGet("b");
 		if ($ret == "" && $forceCreate)
@@ -56,7 +56,7 @@ class FileBucket
 		return $ret;
 	}
 
-	public static function Load($id)
+	public static function Load(string $id) : FileBucket
 	{
 		$ret = new FileBucket();
 		$ret->ResolvePath($id);
@@ -69,9 +69,9 @@ class FileBucket
 		IO::RemoveDirectory($this->path);
 	}
 
-	private function ResolvePath($id)
+	private function ResolvePath(string $id) : void
 	{
-		if ($id === null || trim($id) === '' || ctype_alnum($id) === false || Str::Length($id) > 40)
+		if (trim($id) === '' || ctype_alnum($id) === false || Str::Length($id) > 40)
 		{	// verifica este parámetro para evitar saltos en el filesystem fuera de tmp
 			throw new ErrorException('Invalid bucket Id');
 		}
@@ -79,8 +79,7 @@ class FileBucket
 		$email = Context::LoggedUser();
 		if ($email == '')
 			$email = "global";
-		$this->path = Context::Paths()->GetBucketsPath() . "/" .
-			Str::UrlencodeFriendly($email) . "-" . $id;
+		$this->path = Context::Paths()->GetBucketsPath() . "/"
+			. Str::UrlencodeFriendly($email) . "-" . $id;
 	}
-
 }

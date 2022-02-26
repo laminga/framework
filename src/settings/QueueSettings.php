@@ -4,8 +4,6 @@ namespace minga\framework\settings;
 
 class QueueSettings
 {
+	/** @var bool */
 	public $Enabled = false;
-	public $MaxRetries = 3;
-	//Revisar si hace falta bajar el número...
-	public $MaxToProcess = 1000;
 }

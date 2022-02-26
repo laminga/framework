@@ -3,11 +3,15 @@
 namespace minga\framework;
 
 use GeoIp2\Database\Reader;
+use GeoIp2\Record\City;
 use GeoIp2\Exception\AddressNotFoundException;
+use GeoIp2\Record\Country;
 
 class GeoIp
 {
+	/** @var Reader */
 	private static $geoDbCity = null;
+	/** @var Reader */
 	private static $geoDbCountry = null;
 
 	public static function GetCurrentLatLong() : ?array
@@ -39,18 +43,18 @@ class GeoIp
 		}
 	}
 
-	public static function GetCityDatabaseDatetime()
+	public static function GetCityDatabaseDatetime() : \DateTime
 	{
 		$c = self::GetGeoDbCity();
-		$ret = new \DateTime;
+		$ret = new \DateTime();
 		$ret->setTimestamp($c->metadata()->buildEpoch);
 		return $ret;
 	}
 
-	public static function GetCountryDatabaseDatetime()
+	public static function GetCountryDatabaseDatetime() : \DateTime
 	{
 		$c = self::GetGeoDbCountry();
-		$ret = new \DateTime;
+		$ret = new \DateTime();
 		$ret->setTimestamp($c->metadata()->buildEpoch);
 		return $ret;
 	}
@@ -68,22 +72,22 @@ class GeoIp
 		return null;
 	}
 
-	private static function IpIsPrivate($ip)
+	private static function IpIsPrivate($ip) : bool
 	{
 		$pri_addrs = [
 			'10.0.0.0|10.255.255.255', // single class A network
 			'172.16.0.0|172.31.255.255', // 16 contiguous class B network
 			'192.168.0.0|192.168.255.255', // 256 contiguous class C network
 			'169.254.0.0|169.254.255.255', // Link-local address also refered to as Automatic Private IP Addressing
-			'127.0.0.0|127.255.255.255' // localhost
+			'127.0.0.0|127.255.255.255', // localhost
 		];
 
 		$long_ip = ip2long($ip);
 		if ($long_ip != -1)
 		{
-			foreach ($pri_addrs AS $pri_addr)
+			foreach ($pri_addrs as $pri_addr)
 			{
-				list($start, $end) = explode('|', $pri_addr);
+				[$start, $end] = explode('|', $pri_addr);
 
 				// IF IS PRIVATE
 				if ($long_ip >= ip2long($start) && $long_ip <= ip2long($end))
@@ -124,7 +128,7 @@ class GeoIp
 		return self::$geoDbCity;
 	}
 
-	private static function GetCityLocation($ip) : ?array
+	private static function GetCityLocation(string $ip) : ?array
 	{
 		try
 		{
@@ -145,7 +149,7 @@ class GeoIp
 		}
 	}
 
-	public static function GetCity(string $ip)
+	public static function GetCity(string $ip) : ?City
 	{
 		if ($ip == '')
 			return null;
@@ -164,7 +168,7 @@ class GeoIp
 		}
 	}
 
-	public static function GetSubdivisions($ip)
+	public static function GetSubdivisions(string $ip)
 	{
 		try
 		{
@@ -181,7 +185,7 @@ class GeoIp
 		}
 	}
 
-	public static function GetCountry($ip)
+	public static function GetCountry(string $ip) : ?Country
 	{
 		try
 		{
@@ -200,13 +204,12 @@ class GeoIp
 		}
 	}
 
-
-	public static function GetCountryName($ip) : ?string
+	public static function GetCountryName(string $ip) : ?string
 	{
 		if ($ip == '')
 			return null;
 		if ($ip == '127.0.0.1')
-			$ip ='190.55.175.193';
+			$ip = '190.55.175.193';
 
 		$country = self::GetCountry($ip);
 
@@ -477,7 +480,7 @@ class GeoIp
 			'O1' => 'Otro',
 		];
 
-		if (array_key_exists(Str::ToUpper($cc), $countryNames))
+		if (isset($countryNames[Str::ToUpper($cc)]))
 			return $countryNames[Str::ToUpper($cc)];
 		return $cc;
 	}

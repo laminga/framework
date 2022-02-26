@@ -26,13 +26,13 @@ class System
 			$ret[] = ['name' => $flag['name'], 'value' => php_uname($flag['flag'])];
 
 		$ret[] = ['name' => 'Arquitectura', 'value' => self::GetArchitecture() . 'bits'];
-		$ret[] = ['name' => 'PHP', 'value' => phpversion()];
+		$ret[] = ['name' => 'PHP', 'value' => PHP_VERSION];
 		$ret[] = ['name' => 'php.ini', 'value' => php_ini_loaded_file()];
 
 		return $ret;
 	}
 
-	public static function GetVersion()
+	public static function GetVersion() : array
 	{
 		$file = Context::Paths()->GetRoot() . '/version';
 		if (file_exists($file))
@@ -52,7 +52,7 @@ class System
 		];
 	}
 
-	public static function GetHost()
+	public static function GetHost() : array
 	{
 		$host = gethostname();
 		$ip = gethostbyname($host);
@@ -63,7 +63,7 @@ class System
 		];
 	}
 
-	public static function GetDbInfo()
+	public static function GetDbInfo() : array
 	{
 		$settings = [];
 		$settings[] = ['name' => 'Host', 'value' => Context::Settings()->Db()->Host];
@@ -73,13 +73,13 @@ class System
 		return $settings;
 	}
 
-	public static function GetMySQLVersion()
+	public static function GetMySQLVersion() : string
 	{
 		$db = new Db();
 		return $db->fetchScalar('SELECT @@version;');
 	}
 
-	public static function GetArchitecture()
+	public static function GetArchitecture() : string
 	{
 		switch(PHP_INT_SIZE)
 		{
@@ -88,27 +88,32 @@ class System
 			case 8:
 				return '64'; //64 bit version of PHP
 			default:
-				throw new ErrorException('PHP_INT_SIZE is '.PHP_INT_SIZE);
+				throw new ErrorException('PHP_INT_SIZE is ' . PHP_INT_SIZE);
 		}
 	}
 
-	public static function IsWindows()
+	public static function IsWindows() : bool
 	{
 		return Str::StartsWithI(PHP_OS, 'win');
 	}
 
-	public static function IsTestingInWindows()
+	public static function IsCli() : bool
+	{
+		return PHP_SAPI == 'cli';
+	}
+
+	public static function IsTestingInWindows() : bool
 	{
 		return Context::Settings()->isTesting
 			&& self::IsWindows();
 	}
 
-	public static function IsOnIIS()
+	public static function IsOnIIS() : bool
 	{
 		if(isset($_SERVER['SERVER_SOFTWARE']) == false)
-			return (PHP_OS === "WINNT");
+			return PHP_OS === "WINNT";
 		$software = Str::ToLower($_SERVER['SERVER_SOFTWARE']);
-		return (strpos($software, 'microsoft-iis') !== false);
+		return strpos($software, 'microsoft-iis') !== false;
 	}
 
 	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -142,7 +147,7 @@ class System
 				throw new ErrorException('Error de permisos: "' . $command . '".');
 			else
 				throw new ErrorException('Error RunCommandOnPath: "' . $command
-				.  '", retval: ' . $return .  ', last line: "' . $lastLine . '"');
+				. '", retval: ' . $return . ', last line: "' . $lastLine . '"');
 		}
 		chdir($prevDir);
 		return $output;
@@ -166,13 +171,13 @@ class System
 		return $val;
 	}
 
-	public static function RunCommandGS(string $command, string $args, &$returnCode = null, $returnFirstLineOnly = false, $checkFile = true)
+	public static function RunCommandGS(string $command, string $args, ?int &$returnCode = null, bool $returnFirstLineOnly = false, bool $checkFile = true) : string
 	{
 		if ($checkFile && file_exists($command) == false)
-			throw new ErrorException('No se encontró el binario: "' . $command. '".');
+			throw new ErrorException('No se encontró el binario: "' . $command . '".');
 
 		if (Str::StartsWith($args, ' ') == false)
-		  	$args = ' ' . $args;
+			$args = ' ' . $args;
 
 		exec($command . $args, $out, $returnCode);
 
@@ -198,10 +203,9 @@ class System
 
 		return [
 			'command' => $command,
-		  	'output' => implode("\n", $output),
-		  	'lastLine' => $lastLine,
-			'return' => $return
+			'output' => implode("\n", $output),
+			'lastLine' => $lastLine,
+			'return' => $return,
 		];
 	}
-
 }

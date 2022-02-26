@@ -4,6 +4,7 @@ namespace minga\framework;
 
 class Response
 {
+	/** @var bool */
 	private static $isJson = false;
 
 	public static function SetJson() : void

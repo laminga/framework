@@ -51,10 +51,7 @@ class Params
 			$ret = trim($ret);
 		return $ret;
 	}
-	public static function Exists($key)
-	{
-		return isset($_GET[$key]);
-	}
+
 	//Método usado en mapas.
 	public static function Get($key, $default = null)
 	{
@@ -129,8 +126,8 @@ class Params
 	public static function GetInt($param, $default = null)
 	{
 		$value = self::Get($param, $default);
-		if ($value === null || $value === '')
-			return null;
+		if ($value === null || $value === '' || $value === $default)
+			return $default;
 		return self::CheckParseIntValue($value);
 	}
 
@@ -177,29 +174,30 @@ class Params
 
 	public static function GetUploadedImage($param, $maxFileSize = -1)
 	{
-		return self::GetUploadedFile($param, $maxFileSize,
-            ['jpg' => 'image/jpeg',
-            'png' => 'image/png']);
+		return self::GetUploadedFile($param, $maxFileSize, [
+			'jpg' => 'image/jpeg',
+			'png' => 'image/png',
+		]);
 	}
 
 	public static function GetUploadedFile($param, $maxFileSize = -1, $validFileTypes = [])
 	{
 		// You should also check filesize here.
-    if ($maxFileSize === -1 || $_FILES[$param]['size'] > $maxFileSize) {
+		if ($maxFileSize === -1 || $_FILES[$param]['size'] > $maxFileSize) {
 			throw new \RuntimeException('Exceeded filesize limit.');
-    }
-    // Check MIME Type by yourself.
-    $finfo = new \finfo(FILEINFO_MIME_TYPE);
-    if (sizeof($validFileTypes) == 0 ||  !array_search(
-        $finfo->file($_FILES[$param]['tmp_name']),
-        $validFileTypes, true)) {
+		}
+		// Check MIME Type by yourself.
+		$finfo = new \finfo(FILEINFO_MIME_TYPE);
+		if (count($validFileTypes) == 0 || !array_search(
+			$finfo->file($_FILES[$param]['tmp_name']),
+			$validFileTypes, true)) {
 			throw new \RuntimeException('Invalid file format.');
-    }
+		}
 		$tmpFile = IO::GetTempFilename();
-    // On this example, obtain safe unique name from its binary data.
-    if (!move_uploaded_file($_FILES[$param]['tmp_name'], $tmpFile)) {
-        throw new \RuntimeException('Failed to move uploaded file.');
-    }
+		// On this example, obtain safe unique name from its binary data.
+		if (!move_uploaded_file($_FILES[$param]['tmp_name'], $tmpFile)) {
+			throw new \RuntimeException('Failed to move uploaded file.');
+		}
 		return $tmpFile;
 	}
 
@@ -209,7 +207,7 @@ class Params
 		$parts = explode('/', $uri);
 		if (count($parts) <= $position)
 			return $default;
-		else
+
 			return $parts[$position];
 	}
 

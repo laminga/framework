@@ -36,6 +36,7 @@ class MonitorLimits
 
 	public $WarningRequestSeconds = 30;
 	/** @var array */
-	public $ExcludeIps = ['127.0.0.1'];}
+	public $ExcludeIps = ['127.0.0.1'];
+}
 
 

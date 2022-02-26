@@ -5,7 +5,7 @@ namespace minga\framework;
 class Image
 {
 	/**
-	 * Cambia el tamaño de una imagen, pero sólo reduce,
+	 * Cambia el tamaño de una imagen, pero solo reduce,
 	 * no agranda. Siempre proporcional, tomando a escala
 	 * el menor valor pasado.
 	 * Si ambas medidas son cero, sale.
@@ -14,10 +14,9 @@ class Image
 	 *
 	 * Por default siempre grababa el resultado en png
 	 * se agregó parámetro opcional para que no lo haga.
-	 *
 	 */
 	public static function Resize($type, $sourceFile,
-		$maxWidth, $maxHeight, $targetFile, $useTypeForSave = false)
+		$maxWidth, $maxHeight, $targetFile, $useTypeForSave = false) : void
 	{
 
 		if($maxWidth == 0 && $maxHeight == 0)
@@ -37,7 +36,7 @@ class Image
 			$image = imagecreatefromgif($sourceFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: '. $type);
+			throw new \Exception('Unsupported type: ' . $type);
 		}
 		// Get current dimensions
 		$oldWidth = imagesx($image);
@@ -85,8 +84,39 @@ class Image
 			imagegif($new, $targetFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: '. $type);
+			throw new \Exception('Unsupported type: ' . $type);
 		}
 		imagedestroy($new);
 	}
+
+	public static function IsTransparentPng(string $file) : bool
+	{
+		//32-bit pngs
+		//4 checks for greyscale + alpha and RGB + alpha
+		if ((ord(file_get_contents($file, false, null, 25, 1)) & 4) > 0)
+			return true;
+
+		//8 bit pngs
+		$fd = fopen($file, 'r');
+		$continue = true;
+		$plte = false;
+		$trns = false;
+		$idat = false;
+		while($continue === true)
+		{
+			$continue = false;
+			$line = fread($fd, 1024);
+			if ($plte == false)
+				$plte = (stripos($line, 'PLTE') !== false);
+			if ($trns == false)
+				$trns = (stripos($line, 'tRNS') !== false);
+			if ($idat == false)
+				$idat = (stripos($line, 'IDAT') !== false);
+			if ($idat == false && !($plte && $trns))
+				$continue = true;
+		}
+		fclose($fd);
+		return $plte && $trns;
+	}
+
 }

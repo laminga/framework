@@ -4,15 +4,13 @@ namespace minga\framework;
 
 class Headers
 {
-	public static function AcceptAnyCOARS()
+	//TODO: renombrar a CORS
+	public static function AcceptAnyCOARS() : void
 	{
-		// Resuelve el COARS
-		if (array_key_exists('HTTP_ORIGIN', $_SERVER))
-			$http_origin = $_SERVER['HTTP_ORIGIN'];
-		else
-			$http_origin = '*';
+		// Resuelve el CORS
+		$origin = Params::SafeServer('HTTP_ORIGIN', '*');
 		header("Access-Control-Allow-Credentials: true");
-		header("Access-Control-Allow-Origin: $http_origin");
+		header("Access-Control-Allow-Origin: $origin");
 		header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 		header("Access-Control-Allow-Headers: Origin,X-Requested-With,Content-Type,Accept,Full-Url,Access-Link");
 	}

@@ -10,11 +10,10 @@ class Log
 	public static $extraErrorTarget = null;
 	public static $extraErrorInfo = null;
 
-	const FatalErrorsPath = 'fatalErrors';
-	const JsErrorsPath = 'jsErrors';
-	const ErrorsPath = 'errors';
-	const MailsPath = 'mails';
-
+	public const FatalErrorsPath = 'fatalErrors';
+	public const JsErrorsPath = 'jsErrors';
+	public const ErrorsPath = 'errors';
+	public const MailsPath = 'mails';
 
 	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine,
 		$context = [], $trace = null,
@@ -146,23 +145,23 @@ class Log
 		if(Str::Contains($errorMessage, 'function_bar'))
 			return true;
 
-		if(Str::Contains($errorMessage,  "property 'localdata' of undefined")
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
-
-		if(Str::Contains($errorMessage, 'w.source._source is undefined')
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
-
-		if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
+		// if(Str::Contains($errorMessage, "property 'localdata' of undefined")
+		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
+		// {
+		// 	return true;
+		// }
+		//
+		// if(Str::Contains($errorMessage, 'w.source._source is undefined')
+		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
+		// {
+		// 	return true;
+		// }
+		//
+		// if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
+		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
+		// {
+		// 	return true;
+		// }
 
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
@@ -207,11 +206,10 @@ class Log
 		// Corrige problemas de new line de las diferentes fuentes.
 		$text = str_replace(["<br>", "<br/>", "<br />"], "", $text);
 		$text = str_replace("\r\n", "\n", $text);
-		$text = str_replace("\n", "<br>\r\n", $text);
-		return $text;
+		return str_replace("\n", "<br>\r\n", $text);
 	}
 
-	private static function TrimMessage(?string $text) : ?string
+	public static function TrimMessage(?string $text) : ?string
 	{
 		if ($text != null && strlen($text) > 15000)
 			$text = substr($text, 0, 10240) . " (trimmed at 10240 bytes) " . substr($text, strlen($text) - 1024);
@@ -278,18 +276,65 @@ class Log
 			. $errorType . "\r\n"
 			. '=> Description: ' . $errorMessage . "\r\n"
 			. "=> File:        <a href='repath://" . $errorFile . '@' . $errorLine . "'>" . $errorFile . ':' . $errorLine . "</a>\r\n"
-			. '=> Level: ' . $level. "\r\n"
+			. '=> Level: ' . $level . "\r\n"
 			. '=> Stack: ' . $stack . "\r\n";
 	}
 
-	public static function AppendExtraInfo($info)
+	public static function InternalExceptionToText($exception) : string
+	{
+		$message = $exception->getMessage();
+		if (is_a($exception, MingaException::class) && $exception->getInnerException())
+		{
+			$inner = $exception->getInnerException();
+			if (is_a($inner, \Exception::class))
+			{
+				return self::InternalErrorToText($exception->getCode(), $message, $exception->getFile(),
+					$exception->getLine(), [], $exception->getTraceAsString(),
+					$inner->getCode(), $inner->getMessage(), $inner->getFile(),
+					$inner->getLine(), $inner->getTraceAsString());
+			}
+			return self::InternalErrorToText($exception->getCode(), $message, $exception->getFile(),
+				$exception->getLine(), [], $exception->getTraceAsString(), $inner);
+		}
+		return self::InternalErrorToText($exception->getCode(), $message, $exception->getFile(),
+			$exception->getLine(), [], $exception->getTraceAsString());
+	}
+
+	private static function InternalErrorToText($errorNumber, $errorMessage, $errorFile, $errorLine,
+		$context = [], $trace = null,
+		$innerErrorNumber = null, $innerErrorMessage = null,
+		$innerErrorFile = null, $innerErrorLine = null,
+		$innerTrace = null)
+	{
+		$errorMessage = self::TrimMessage($errorMessage);
+		$innerErrorMessage = self::TrimMessage($innerErrorMessage);
+		$error = self::FormatError($errorMessage, $errorNumber, $errorFile,
+			$errorLine, $trace);
+		$innerError = '';
+		if ($innerErrorMessage)
+		{
+			$innerError = self::FormatError($innerErrorMessage, $innerErrorNumber, $innerErrorFile,
+				$innerErrorLine, $innerTrace, "INNER EXCEPTION");
+		}
+		$text = $error . $innerError;
+		$text .= "===========================================\r\n"
+			. "=> Context:\r\n" . print_r($context, true);
+		if (self::$extraErrorInfo !== null)
+		{
+			$text .= "===========================================\r\n"
+				. '=> Info:        ' . print_r(self::$extraErrorInfo, true);
+		}
+		return self::FixLineEndings($text);
+	}
+
+	public static function AppendExtraInfo($info) : void
 	{
 		if (self::$extraErrorInfo === null)
 			self::$extraErrorInfo = [];
 		self::$extraErrorInfo[] = $info;
 	}
 
-	private static function LogErrorSendMail($text)
+	private static function LogErrorSendMail($text) : void
 	{
 		if (self::$isLoggingMailError)
 			return;
@@ -328,15 +373,31 @@ class Log
 		return $text;
 	}
 
-	public static function HandleSilentException($e)
+	public static function HandleSilentException($e) : void
 	{
 		$textToShow = self::LogException($e, true);
 
 		if(Context::Settings()->Debug()->debug && Str::StartsWith($e->getMessage(), 'Error running: "pdf') == false)
 		{
+			if(System::IsCli())
+			{
+				echo strip_tags($textToShow);
+				exit();
+			}
 			MessageBox::ThrowBackMessage($textToShow);
 			exit();
 		}
+	}
+
+	public static function FormatTraceLog($trace)
+	{
+		$log = '<p>';
+		foreach ($trace as $i => $t)
+		{
+			$log .= $i . ' => <a href="repath://' . $t['file'] . '@' . $t['line'] . '">'
+				. $t['file'] . ' (' . $t['line'] . ')</a>: ' . Arr::SafeGet($t, 'class') . '::' . $t['function'] . '().<br>';
+		}
+		return $log . '</p>';
 	}
 
 	public static function LogException($exception, $silent = false)
@@ -344,6 +405,7 @@ class Log
 		$message = $exception->getMessage();
 		if ($silent)
 			$message .= ' (silently processed)';
+
 		if (is_a($exception, MingaException::class) && $exception->getInnerException())
 		{
 			$inner = $exception->getInnerException();
@@ -354,17 +416,11 @@ class Log
 					$inner->getCode(), $inner->getMessage(), $inner->getFile(),
 					$inner->getLine(), $inner->getTraceAsString());
 			}
-			else
-			{
-				return self::LogError($exception->getCode(), $message, $exception->getFile(),
-					$exception->getLine(), [], $exception->getTraceAsString(), $inner);
-			}
-		}
-		else
-		{
 			return self::LogError($exception->getCode(), $message, $exception->getFile(),
-				$exception->getLine(), [], $exception->getTraceAsString());
+				$exception->getLine(), [], $exception->getTraceAsString(), $inner);
 		}
+		return self::LogError($exception->getCode(), $message, $exception->getFile(),
+			$exception->getLine(), [], $exception->getTraceAsString());
 	}
 
 	public static function PutToFatalErrorLog(string $text) : void
@@ -385,7 +441,7 @@ class Log
 		self::PutToLog(self::ErrorsPath, $text);
 	}
 
-	public static function PutToLog(string $branch, string $text, bool $doNotSaveMonthly = false)
+	public static function PutToLog(string $branch, string $text, bool $doNotSaveMonthly = false) : void
 	{
 		// Lo graba en log
 		$logPath = Context::Paths()->GetLogLocalPath() . '/' . $branch;

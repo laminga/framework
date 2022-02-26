@@ -6,19 +6,18 @@ class MingaException extends \Exception
 {
 	private $innerException;
 
-	function __construct($message = "", $innerException = null)
+	public function __construct(string $message = "", $innerException = null)
 	{
 		$this->innerException = $innerException;
 		parent::__construct($message);
 	}
 
-	// custom string representation of object
-	public function __toString()
+	public function __toString() : string
 	{
 		return __CLASS__ . ': [' . $this->code . ']: ' . $this->message . "\n";
 	}
 
-	public function getPublicMessage()
+	public function getPublicMessage() : string
 	{
 		return '[ME-E]: ' . $this->getMessage();
 	}

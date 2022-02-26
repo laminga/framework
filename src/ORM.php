@@ -2,13 +2,12 @@
 
 namespace minga\framework;
 
+//TODO: borrar
 class ORM
 {
-  // avance
+	// avance
 
 	// más mejoras
-
-
 
 }
 

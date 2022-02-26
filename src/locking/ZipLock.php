@@ -6,7 +6,7 @@ use minga\framework\Str;
 
 class ZipLock extends Lock
 {
-	public function __construct($filename)
+	public function __construct(string $filename)
 	{
 		$path = dirname($filename);
 		$file = Str::EatFrom(basename($filename), ".");

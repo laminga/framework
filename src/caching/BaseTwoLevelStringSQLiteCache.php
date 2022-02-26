@@ -4,10 +4,9 @@ namespace minga\framework\caching;
 
 use minga\framework\Context;
 use minga\framework\IO;
-use minga\framework\Profiling;
+use minga\framework\settings\CacheSettings;
 use minga\framework\SQLiteList;
 use minga\framework\Str;
-use minga\framework\settings\CacheSettings;
 
 class BaseTwoLevelStringSQLiteCache
 {
@@ -21,7 +20,7 @@ class BaseTwoLevelStringSQLiteCache
 		$this->db = new SQLiteList('k', ['v']);
 	}
 
-	private function OpenRead($key = null, $throwLockErrors = true)
+	private function OpenRead($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
 		{
@@ -40,7 +39,7 @@ class BaseTwoLevelStringSQLiteCache
 		}
 	}
 
-	private function OpenWrite($key = null, $throwLockErrors = true)
+	private function OpenWrite($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
 		{
@@ -55,12 +54,12 @@ class BaseTwoLevelStringSQLiteCache
 		}
 	}
 
-	private function Close()
+	private function Close() : void
 	{
 		$this->db->Close();
 	}
 
-	public function Clear($key1 = null, $key2 = null)
+	public function Clear($key1 = null, $key2 = null) : void
 	{
 		if ($key1 == null)
 		{
@@ -121,27 +120,26 @@ class BaseTwoLevelStringSQLiteCache
 			$value = $value[1];
 			return true;
 		}
-		else
-			return false;
+
+		return false;
 	}
 
-	private function ResolveFilename($key1)
+	private function ResolveFilename($key1) : string
 	{
 		if ($key1 === null)
 			$key1 = 'cache';
 
-		$file = $this->path . "/" . $key1 . ".db";
-		return $file;
+		return $this->path . "/" . $key1 . ".db";
 	}
 
-	public function PutDataIfMissing($key1, $key2, $value)
+	public function PutDataIfMissing($key1, $key2, $value) : void
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled || $this->HasData($key1, $key2))
 			return;
 		$this->PutData($key1, $key2, $value);
 	}
 
-	public function PutData($key1, $key2, $value)
+	public function PutData($key1, $key2, $value) : void
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
 		{
@@ -172,6 +170,5 @@ class BaseTwoLevelStringSQLiteCache
 		}
 		$this->Close();
 	}
-
 }
 

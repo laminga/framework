@@ -2,20 +2,21 @@
 
 namespace minga\framework;
 
-use PHPMailer\PHPMailer\PHPMailerSendGrid;
 use minga\framework\settings\MailSettings;
+use PHPMailer\PHPMailer\PHPMailerSendGrid;
 
 class Mail
 {
 	public $to;
 	public $bcc = null;
 	public $toCaption = "";
+	/** @var ?string */
 	public $from = "";
 	public $fromCaption = '';
 	public $subject;
 	public $message;
+	/** @var bool */
 	public $skipNotify = false;
-	public static $MailsSent = 0;
 
 	public function __construct()
 	{
@@ -23,12 +24,12 @@ class Mail
 		$this->from = Context::Settings()->Mail()->From;
 	}
 
-	public function Send($log = true, $skipNotification = false, $throwException = true)
+	public function Send(bool $log = true, bool $skipNotification = false, bool $throwException = true) : void
 	{
 		if (Context::Settings()->Log()->LogEmailsToDisk)
 			$this->PutToLog();
 
-		if (Context::Settings()->Mail()->NoMail) 
+		if (Context::Settings()->Mail()->NoMail)
 			return;
 
 		$mail = new PHPMailerSendGrid($throwException);
@@ -39,7 +40,7 @@ class Mail
 
 		$this->SetAddress($mail, $this->to, $this->toCaption);
 
-		if (! empty(Context::Settings()->Mail()->NotifyAddress) && ! $skipNotification && ! $this->skipNotify)
+		if (!empty(Context::Settings()->Mail()->NotifyAddress) && !$skipNotification && !$this->skipNotify)
 			$this->SetBCC($mail, Context::Settings()->Mail()->NotifyAddress);
 
 		if(empty($this->bcc) == false)
@@ -52,17 +53,17 @@ class Mail
 
 		$mail->isHTML(true);
 		$mail->send();
-		self::$MailsSent += 1;
+		Performance::$mailsSent += 1;
 	}
 
-	private function IsForcedMailProviderDomain($recipient)
+	private function IsForcedMailProviderDomain($recipient) : bool
 	{
 		return Str::ContainsI($recipient, '@hotmail.')
 			|| Str::ContainsI($recipient, '@live.')
 			|| Str::ContainsI($recipient, '@outlook.');
 	}
 
-	private function ResolveProvider($recipient)
+	private function ResolveProvider($recipient) : int
 	{
 		if(Context::Settings()->entorno == 'desa')
 			return Context::Settings()->Mail()->Provider;
@@ -79,7 +80,7 @@ class Mail
 		return Context::Settings()->Mail()->Provider;
 	}
 
-	public function SetProvider($mail, $recipient)
+	public function SetProvider($mail, $recipient) : void
 	{
 		$provider = $this->ResolveProvider($recipient);
 
@@ -107,7 +108,7 @@ class Mail
 		}
 	}
 
-	private function SetAddress($mail, $to, $caption)
+	private function SetAddress($mail, $to, $caption) : void
 	{
 		if(is_array($to))
 		{
@@ -118,7 +119,7 @@ class Mail
 			$mail->addAddress($to, $caption);
 	}
 
-	private function SetBCC($mail, $bcc)
+	private function SetBCC($mail, $bcc) : void
 	{
 		if(is_array($bcc))
 		{
@@ -129,7 +130,7 @@ class Mail
 			$mail->addBCC($bcc);
 	}
 
-	public function PutToLog()
+	public function PutToLog() : void
 	{
 		$to = '';
 		if(is_array($this->to))
@@ -141,10 +142,10 @@ class Mail
 		else
 			$to = $this->to;
 
-		$text = "From: " . $this->from . "\r\n" .
-			"To: " . $to . "\r\n" .
-			"Subject: " . $this->subject . "\r\n".
-			$this->message;
+		$text = "From: " . $this->from . "\r\n"
+			. "To: " . $to . "\r\n"
+			. "Subject: " . $this->subject . "\r\n"
+			. $this->message;
 		Log::PutToLog(Log::MailsPath, $text);
 	}
 }

@@ -4,18 +4,21 @@ namespace minga\framework;
 
 class DirectoriesCursor
 {
+	/** @var string */
 	private $path;
+	/** @var string */
 	private $ext;
 	private $handle = null;
 
 	public $Current;
 
-	public function __construct($path, $ext = "")
+	public function __construct(string $path, string $ext = "")
 	{
 		$this->path = $path;
 		$this->ext = $ext;
 	}
-	public function Close()
+
+	public function Close() : void
 	{
 		if ($this->handle != null)
 		{
@@ -23,7 +26,8 @@ class DirectoriesCursor
 			$this->handle = null;
 		}
 	}
-	public function GetNext()
+
+	public function GetNext() : bool
 	{
 		if ($this->handle == null)
 		{
@@ -37,8 +41,8 @@ class DirectoriesCursor
 				$this->Close();
 				return false;
 			}
-			if (($this->ext == '' || Str::EndsWith($entry, $this->ext)) &&
-				$entry != '..' && $entry != '.' && is_dir($this->path . '/'. $entry))
+			if (($this->ext == '' || Str::EndsWith($entry, $this->ext))
+				&& $entry != '..' && $entry != '.' && is_dir($this->path . '/' . $entry))
 			{
 				$this->Current = $entry;
 				return true;

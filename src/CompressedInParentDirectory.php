@@ -2,40 +2,44 @@
 
 namespace minga\framework;
 
-use minga\framework\ErrorException;
-
 class CompressedInParentDirectory
 {
+	/** @var string */
 	public $path;
+	/** @var string */
 	public $expandedPath;
+	/** @var bool */
 	private $expanded = false;
+	/** @var string */
 	private $dirName;
+	/** @var string */
 	private $file;
 
-	public function __construct($path, $file = 'content.zip')
+	public function __construct(string $path, string $file = 'content.zip')
 	{
 		$this->path = $path;
 		$this->dirName = IO::GetFilenameNoExtension($path);
 		$this->file = $file;
 	}
 
-	public function Release()
+	public function Release() : void
 	{
 		if ($this->expanded == false)
 			return;
 		IO::RemoveDirectory($this->expandedPath);
 		$this->expanded = false;
 	}
-	public function GetFilename()
+
+	public function GetFilename() : string
 	{
 		return dirname($this->path) . '/' . $this->file;
 	}
-	public function IsCompressed()
+
+	public function IsCompressed() : bool
 	{
-		if (!file_exists($this->GetFilename()))
-		{
+		if (file_exists($this->GetFilename()) == false)
 			return false;
-		}
+
 		Profiling::BeginTimer();
 		$zip = new ZipArchiveExtended();
 		$res = $zip->open($this->GetFilename());
@@ -53,7 +57,7 @@ class CompressedInParentDirectory
 		return $hasSubdir;
 	}
 
-	public function Compress()
+	public function Compress() : bool
 	{
 		if ($this->IsCompressed())
 			return false;
@@ -67,7 +71,7 @@ class CompressedInParentDirectory
 			else
 				$tmp = $this->GetFilename();
 
-			$_ = new Zip($tmp);
+			new Zip($tmp);
 			$files = [];
 			$sources = [];
 			foreach(IO::GetFiles($this->path) as $file)
@@ -94,7 +98,7 @@ class CompressedInParentDirectory
 		return $ret;
 	}
 
-	public function Expand()
+	public function Expand() : void
 	{
 		if ($this->expanded)
 			return;

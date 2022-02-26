@@ -12,12 +12,12 @@ class Db
 	public $Port = 3306;
 	public $Charset = 'utf8';
 
-	//@var mixed PDO|\Doctrine\DBAL\Connection
+	/** @var mixed PDO|\Doctrine\DBAL\Connection */
 	public $db = null;
 	private $isInTransaction = false;
 	private $lastRows = -1;
 
-	public function __construct($db = null, $profiler =  null)
+	public function __construct($db = null, $profiler = null)
 	{
 		if($db === null)
 		{
@@ -106,6 +106,7 @@ class Db
 	private function doExecute(string $query, array $data = []) : int
 	{
 		$stmt = $this->db->prepare($query);
+		$data = $this->fixBoolParams($data);
 		$stmt->execute($data);
 		return $stmt->rowCount();
 	}
@@ -115,9 +116,10 @@ class Db
 	 *
 	 * @param string $sql The SQL query.
 	 * @param array $params The query parameters.
+	 *
 	 * @return array
 	 */
-	public function fetchAll($sql, array $params = array())
+	public function fetchAll($sql, array $params = [])
 	{
 		try
 		{
@@ -125,8 +127,8 @@ class Db
 			Performance::BeginDbWait();
 			if (method_exists($this->db, 'fetchAll'))
 				return $this->db->fetchAll($sql, $params);
-			else
-			{
+
+
 				$query = $this->parseArrayParams($sql, $params);
 				$stmt = $this->db->prepare($query);
 				if(key($params) === 0)
@@ -138,7 +140,7 @@ class Db
 					$stmt->execute();
 				}
 				return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-			}
+
 		}
 		finally
 		{
@@ -147,7 +149,7 @@ class Db
 		}
 	}
 
-	public function fetchAllByPos($sql, array $params = array())
+	public function fetchAllByPos($sql, array $params = [])
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
@@ -159,7 +161,6 @@ class Db
 		return $ret;
 	}
 
-
 	/**
 	 * Prepares and executes a multi SQL query and returns the
 	 * results sets as an array of associative arrays.
@@ -167,6 +168,7 @@ class Db
 	 * @param string $query The multi SQL query (FACET in sphinx).
 	 * @param array $params The query parameters.
 	 * @paran int $fetchStyle Fetch style PDO Constant
+	 *
 	 * @return array
 	 */
 	public function fetchAllMultipleResults(string $query, array $params = [], int $fetchStyle = \PDO::FETCH_ASSOC) : array
@@ -280,6 +282,7 @@ class Db
 	 * @param string $query sql query to be executed
 	 * @param array $params prepared statement params
 	 * @param int $colnum 0-indexed column number to retrieve
+	 *
 	 * @return mixed
 	 */
 	public function fetchColumn(string $query, array $params = [], int $colnum = 0)
@@ -320,10 +323,9 @@ class Db
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
-
 		$query = $command . ' INTO ' . self::QuoteTable($tableName)
 			. ' (' . implode(', ', self::QuoteColumn(array_keys($data))) . ')'
-			. ' VALUES (' . rtrim(str_repeat('?,', count($data)),',') . ')';
+			. ' VALUES (' . rtrim(str_repeat('?,', count($data)), ',') . ')';
 
 		$ret = $this->doExecute($query, array_values($data));
 		Performance::EndDbWait();
@@ -336,6 +338,7 @@ class Db
 	 *
 	 * @param string $tableName The name of the table to insert data into.
 	 * @param array $data An associative array containing column-value pairs.
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function insert(string $tableName, array $data) : int
@@ -348,6 +351,7 @@ class Db
 	 *
 	 * @param string $tableName The name of the table to replace data into.
 	 * @param array $data An associative array containing column-value pairs.
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function replace(string $tableName, array $data) : int
@@ -360,6 +364,7 @@ class Db
 	 *
 	 * @param string $tableName The name of the table on which to delete.
 	 * @param array $identifier The deletion criteria. An associative array containing column-value pairs.
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function delete(string $tableName, array $identifier) : int
@@ -401,6 +406,7 @@ class Db
 	 *
 	 * @param string $statement The SQL query.
 	 * @param array $params The query parameters.
+	 *
 	 * @return array|false
 	 */
 	public function fetchAssoc(string $statement, array $params = [])
@@ -418,6 +424,7 @@ class Db
 	 * Non array parameters are returned as-is.
 	 *
 	 * @param array $params The parameters.
+	 *
 	 * @return string
 	 */
 	private function parseArrayParams(string $query, array &$params) : string
@@ -437,6 +444,7 @@ class Db
 	 * Convert an array into a \PDO quoted comma separated list, based on variable type.
 	 *
 	 * @param array $arr
+	 *
 	 * @return string
 	 */
 	private function arrayToList(array $arr) : string
@@ -444,14 +452,10 @@ class Db
 		$ret = '';
 		foreach($arr as $v)
 		{
-			if($this->getParamType($v) == \PDO::PARAM_INT)
-				$ret .= (int)$v . ', ';
-			elseif($this->getParamType($v) == \PDO::PARAM_BOOL)
+			if($this->getParamType($v) == \PDO::PARAM_INT
+				|| $this->getParamType($v) == \PDO::PARAM_BOOL)
 			{
-				if($v)
-					$ret .= '1, ';
-				else
-					$ret .= '0, ';
+				$ret .= (int)$v . ', ';
 			}
 			else
 				$ret .= $this->db->quote($v, $this->getParamType($v)) . ', ';
@@ -464,6 +468,7 @@ class Db
 	 * Get the PDO param constant based on variable type.
 	 *
 	 * @param mixed $var
+	 *
 	 * @return integer PDO::PARAM constant.
 	 */
 	private function getParamType($var) : int
@@ -474,7 +479,7 @@ class Db
 			return \PDO::PARAM_BOOL;
 		elseif(is_int($var))
 			return \PDO::PARAM_INT;
-		else
+
 			return \PDO::PARAM_STR;
 	}
 
@@ -482,8 +487,9 @@ class Db
 	 * Prepares and executes an SQL query and returns the first row of the result
 	 * as a numerically indexed array.
 	 *
-	 * @param string $statement         sql query to be executed
-	 * @param array $params             prepared statement params
+	 * @param string $statement query to be executed
+	 * @param array $params statement params
+	 *
 	 * @return array
 	 */
 	public function fetchArray(string $statement, array $params = []) : array
@@ -495,7 +501,6 @@ class Db
 		Profiling::EndTimer();
 		return $ret;
 	}
-
 
 	/**
 	 * Truncate table.
@@ -519,6 +524,7 @@ class Db
 	 * @param string $tableName The name of the table to update.
 	 * @param array $data The data to update. An associative array containing column-value pairs.
 	 * @param array $identifier The update criteria. An associative array containing column-value pairs.
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function update(string $tableName, array $data, array $identifier) : int
@@ -560,8 +566,8 @@ class Db
 	 * MySql no toma bien los bools, es mejor cambiarlos por 1 o 0.
 	 *
 	 * @param mixed $value El valor a convertir (si es bool).
-	 * @return mixed El valor convertido.
 	 *
+	 * @return mixed El valor convertido.
 	 */
 	private static function ConvertType($value)
 	{
@@ -829,5 +835,14 @@ class Db
 		return $ret;
 	}
 
+	private function fixBoolParams(array $data) : array
+	{
+		foreach($data as $k => $v)
+		{
+			if(is_bool($v))
+				$data[$k] = (int)$v;
+		}
+		return $data;
+	}
 }
 

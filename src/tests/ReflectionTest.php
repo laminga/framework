@@ -6,7 +6,6 @@ use minga\framework\Reflection;
 
 final class ReflectionTest extends TestCaseBase
 {
-
 	public function testGetMethod()
 	{
 		$call = [__CLASS__, 'ForTesting'];
@@ -112,7 +111,7 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals($ret, $function . '0');
 	}
 
-	const CANT_PARAMS = 6;
+	public const CANT_PARAMS = 6;
 	private function ForTesting(string $a0, int $a1, float $a2, bool $a3, array $a4, ReflectionTest $a5) { }
 
 	private function ForTestingNoParams() { }

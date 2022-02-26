@@ -32,7 +32,7 @@ class MultiQuery
 		if ($query10 != null)
 			$queries[] = $query10;
 
-		$select =  "";
+		$select = "";
 		$from = "";
 		$where = "";
 		$groupBy = "";
@@ -61,17 +61,18 @@ class MultiQuery
 			$where = substr($where, 5);
 
 		$this->params = $params;
-		$this->sql = "SELECT " . $select . " FROM " . $from .
-			($where != "" ? " WHERE " . $where : "") .
-			($groupBy != "" ? " GROUP BY " . $groupBy : "").
-			($orderBy != "" ? " ORDER BY " . $orderBy : "");
+		$this->sql = "SELECT " . $select . " FROM " . $from
+			. ($where != "" ? " WHERE " . $where : "")
+			. ($groupBy != "" ? " GROUP BY " . $groupBy : "")
+			. ($orderBy != "" ? " ORDER BY " . $orderBy : "");
 	}
 
-	public function setMaxRows($max)
+	public function setMaxRows($max) : void
 	{
 		$this->sql .= " LIMIT 0, " . $max;
 	}
-	public function dump()
+
+	public function dump() : void
 	{
 		echo 'Template: <br>' . $this->sql;
 		echo '<br>&nbsp;<br>Params: <br>';
@@ -80,6 +81,7 @@ class MultiQuery
 
 		exit();
 	}
+
 	public function fetchAll()
 	{
 		return Context::Calls()->Db()->fetchAll($this->sql, $this->params);
@@ -89,11 +91,12 @@ class MultiQuery
 	{
 		return Context::Calls()->Db()->fetchAllByPos($this->sql, $this->params);
 	}
+
 	private function includeParams($str, $params)
 	{
 		$n = strpos($str, '?');
 		$i = 0;
-		while($n !== FALSE)
+		while($n !== false)
 		{
 			$str = substr($str, 0, $n) . Str::CheapSqlEscape($params[$i++]) . substr($str, $n + 1);
 			$n = strpos($str, '?');

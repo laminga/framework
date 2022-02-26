@@ -18,7 +18,7 @@ class Arr
 			$ret[Str::ToLower($k)] = $v;
 		return $ret;
 	}	
-	public static function GetItemByNamedValue($arr, $itemName, $itemValue, $default = null)
+	public static function GetItemByNamedValue(array $arr, $itemName, $itemValue, $default = null)
 	{
 		$index = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
 		if ($index == -1)
@@ -26,7 +26,7 @@ class Arr
 		return $arr[$index];
 	}
 
-	public static function GetItemByProperty($arr, $itemProperty, $itemValue, $default = null)
+	public static function GetItemByProperty(array $arr, $itemProperty, $itemValue, $default = null)
 	{
 		$index = self::IndexOfByProperty($arr, $itemProperty, $itemValue);
 		if ($index == -1)
@@ -34,22 +34,22 @@ class Arr
 		return $arr[$index];
 	}
 
-	public static function InArrayCount($arr, $element)
+	public static function InArrayCount(array $arr, $element) : int
 	{
 		return count(array_keys($arr, $element));
 	}
 
-	public static function CastColumnAsFloat(&$arr, $column)
+	public static function CastColumnAsFloat(array &$arr, $column) : void
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
 			$value = $arr[$n][$column];
 			if ($value !== null)
-				$arr[$n][$column] = floatval($value);
+				$arr[$n][$column] = (float)$value;
 		}
 	}
 
-	public static function IntToBoolean(&$arr, $fields)
+	public static function IntToBoolean(array &$arr, $fields) : array
 	{
 		foreach($arr as &$item)
 		{
@@ -59,6 +59,18 @@ class Arr
 		return $arr;
 	}
 
+	/**
+	 * array_search case insensitve
+	 */
+	public static function ArraySearchI(string $needle, array $haystack) : string
+	{
+		$ret = array_search(mb_strtolower($needle), array_map('mb_strtolower', $haystack));
+		if($ret === false)
+			return '';
+		return (string)$ret;
+	}
+
+
 	public static function IndexOf(array $array, $element)
 	{
 		$ret = array_search($element, $array);
@@ -67,7 +79,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function TwoElementsToKeyValue(array $array)
+	public static function TwoElementsToKeyValue(array $array) : array
 	{
 		$ret = [];
 		foreach($array as $val)
@@ -75,24 +87,24 @@ class Arr
 		return $ret;
 	}
 
-	public static function AddRange(&$arr1, $arr2)
+	public static function AddRange(array &$arr1, array $arr2) : array
 	{
 		$arr1 = array_merge($arr1, $arr2);
 		return $arr1;
 	}
 
-	public static function InsertAt(&$arr1, $element, $pos)
+	public static function InsertAt(array &$arr1, array $element, int $pos) : array
 	{
 		array_splice($arr1, $pos, 0, [$element]);
 		return $arr1;
 	}
 
-	public static function AssocToString($arr, $includeKeys = true, $ommitEmpty = false)
+	public static function AssocToString(array $arr, bool $includeKeys = true, bool $omitEmpty = false) : string
 	{
 		$ret = '';
 		foreach($arr as $key => $value)
 		{
-			if ($ommitEmpty == false || $value)
+			if ($omitEmpty == false || $value)
 			{
 				if ($ret !== '')
 					$ret .= ",";
@@ -104,12 +116,12 @@ class Arr
 		return $ret;
 	}
 
-	public static function ToString($arr, $ommitEmpty = false)
+	public static function ToString(array $arr, bool $omitEmpty = false) : string
 	{
 		$ret = '';
 		foreach($arr as $key => $value)
 		{
-			if ($ommitEmpty == false || $value)
+			if ($omitEmpty == false || $value)
 			{
 				if ($ret !== '')
 					$ret .= ",";
@@ -119,29 +131,24 @@ class Arr
 		return $ret;
 	}
 
-	public static function Increment(&$arr, $itemName, $n = 1)
+	public static function Increment(array &$arr, string $itemName, int $n = 1) : void
 	{
-		self::CheckSubZero($arr, $itemName);
+		self::EnsureSetted($arr, $itemName, 0);
 		$arr[$itemName] += $n;
 	}
 
-	public static function CheckSubArray(&$arr, $itemName)
+	public static function EnsureSettedArray(array &$arr, string $itemName) : void
 	{
-		self::CheckSubItem($arr, $itemName, []);
+		self::EnsureSetted($arr, $itemName, []);
 	}
 
-	public static function CheckSubZero(&$arr, $itemName)
+	public static function EnsureSetted(array &$arr, string $itemName, $item) : void
 	{
-		self::CheckSubItem($arr, $itemName, 0);
-	}
-
-	public static function CheckSubItem(&$arr, $itemName, $item)
-	{
-		if (array_key_exists($itemName, $arr) == false)
+		if (isset($arr[$itemName]) == false)
 			$arr[$itemName] = $item;
 	}
 
-	public static function FilterByNamedValue($arr, $itemName, $itemValue, $default = "")
+	public static function FilterByNamedValue(array $arr, string $itemName, string $itemValue, string $default = "") : array
 	{
 		$ret = [];
 		foreach($arr as $item)
@@ -152,7 +159,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function RemoveDuplicatesByNamedKey($arr, $itemName)
+	public static function RemoveDuplicatesByNamedKey(array $arr, $itemName) : array
 	{
 		$ret = [];
 
@@ -165,18 +172,18 @@ class Arr
 		return $ret;
 	}
 
-	public static function IndexOfByNamedValue($arr, $itemName, $itemValue)
+	public static function IndexOfByNamedValue(array $arr, $itemName, $itemValue) : int
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
 			$current = $arr[$n];
-			if (array_key_exists($itemName, $current) && $current[$itemName] == $itemValue)
+			if (isset($current[$itemName]) && $current[$itemName] == $itemValue)
 				return $n;
 		}
 		return -1;
 	}
 
-	public static function IndexOfByProperty($arr, $itemProperty, $itemValue)
+	public static function IndexOfByProperty(array $arr, $itemProperty, $itemValue) : int
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
@@ -187,23 +194,23 @@ class Arr
 		return -1;
 	}
 
-	public static function SystematicSample($items, $size)
+	public static function SystematicSample(array $items, $size) : array
 	{
 		$ret = [];
 		$interval = count($items) / $size;
-		$first = rand(0, intval($interval) - 1);
+		$first = rand(0, (int)$interval - 1);
 		$pos = $first;
 		$count = 0;
 		while($count < $size)
 		{
-			$ret[] = $items[intval($pos)];
+			$ret[] = $items[(int)$pos];
 			$pos += $interval;
 			$count++;
 		}
 		return $ret;
 	}
 
-	public static function EatFrom($items, $delimiter)
+	public static function EatFrom(array $items, string $delimiter) : array
 	{
 		$ret = [];
 		foreach($items as $item)
@@ -211,7 +218,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function ExplodeItems($delimiter, $items)
+	public static function ExplodeItems(string $delimiter, array $items) : array
 	{
 		$ret = [];
 		foreach($items as $item)
@@ -219,13 +226,13 @@ class Arr
 		return $ret;
 	}
 
-	public static function TreeFromTwoLevel($items)
+	public static function TreeFromTwoLevel(array $items) : array
 	{
 		$roots = [];
 		foreach($items as $item)
 		{
 			$key = $item[0];
-			if (array_key_exists($key, $roots) == false)
+			if (isset($roots[$key]) == false)
 				$roots[$key] = [];
 
 			$roots[$key][] = $item[1];
@@ -233,14 +240,14 @@ class Arr
 		return $roots;
 	}
 
-	public static function SafeGet($arr, $item, $default = "")
+	public static function SafeGet(array $arr, $item, $default = "")
 	{
-		if (array_key_exists($item, $arr))
+		if (isset($arr[$item]))
 			return $arr[$item];
 		return $default;
 	}
 
-	public static function RemoveByField($key, $arrayTotal, $arrayItemsToRemove)
+	public static function RemoveByField($key, $arrayTotal, array $arrayItemsToRemove) : array
 	{
 		$ret = [];
 		foreach($arrayItemsToRemove as $item)
@@ -248,12 +255,12 @@ class Arr
 		return $ret;
 	}
 
-	public static function SummarizeField($array, $field)
+	public static function SummarizeField(array $array, $field) : int
 	{
 		$ret = 0;
 		foreach($array as $item)
 		{
-			if (array_key_exists($field, $item))
+			if (isset($item[$field]))
 			{
 				$value = $item[$field];
 				if ($value)
@@ -263,18 +270,18 @@ class Arr
 		return $ret;
 	}
 
-	public static function SummarizeValues($array)
+	public static function SummarizeValues(array $array) : int
 	{
 		$ret = 0;
 		foreach($array as $value)
 		{
-			if ($value && $value !== '-')
+			if ($value && $value != '-')
 				$ret += $value;
 		}
 		return $ret;
 	}
 
-	public static function MeanValues($array, $weights = null)
+	public static function MeanValues(array $array, $weights = null)
 	{
 		$sum = 0;
 		$count = 0;
@@ -305,7 +312,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function UniqueByField($key, $arrayTotal)
+	public static function UniqueByField($key, array $arrayTotal) : array
 	{
 		$ret = [];
 		$keys = [];
@@ -320,14 +327,14 @@ class Arr
 		return $ret;
 	}
 
-	public static function RemoveItem(&$array, $item)
+	public static function RemoveItem(array &$array, $item) : array
 	{
 		foreach (array_keys($array, $item) as $key)
 			unset($array[$key]);
 		return $array;
 	}
 
-	public static function ToKeyArr($arr)
+	public static function ToKeyArr(array $arr) : array
 	{
 		$ret = [];
 		foreach($arr as $arrItem)
@@ -338,33 +345,29 @@ class Arr
 		return $ret;
 	}
 
-	public static function ToKeyByNamedValue($arr, $namedKey, $namedValue)
+	public static function ToKeyByNamedValue(array $arr, $namedKey, $namedValue) : array
 	{
 		$ret = [];
 		foreach($arr as $arrItem)
-		{
 			$ret[$arrItem[$namedKey]] = $arrItem[$namedValue];
-		}
 		return $ret;
 	}
 
-	public static function ToArrFromKeyArr($arr)
+	public static function ToArrFromKeyArr(array $arr) : array
 	{
 		$ret = [];
 		foreach($arr as $key => $values)
-		{
 			$ret[] = array_merge(['Id' => $key], $values);
-		}
 		return $ret;
 	}
 
-	public static function RemoveAt(&$arr, $pos)
+	public static function RemoveAt(array &$arr, $pos) : array
 	{
 		array_splice($arr, $pos, 1);
 		return $arr;
 	}
 
-	public static function RemoveItemByNamedKey($array, $name, $key)
+	public static function RemoveItemByNamedKey(array $array, $name, $key)
 	{
 		$pos = self::IndexOfByNamedValue($array, $name, $key);
 		if ($pos == -1)
@@ -373,72 +376,75 @@ class Arr
 		return self::RemoveAt($array, $pos);
 	}
 
-	public static function Remove(&$array, $value)
+	public static function Remove(array &$array, $value) : array
 	{
 		$n = self::IndexOf($array, $value);
 		return self::RemoveAt($array, $n);
 	}
 
-	public static function RemoveByValue($array, $value)
+	public static function RemoveByValue(array $array, $value) : array
 	{
-		if (array_key_exists($value, $array))
+		if (isset($array[$value]))
 			unset($array[$value]);
 		return $array;
 	}
 
-	public static function RemoveItemByKeyValue($array, $key, $value)
+	public static function RemoveItemByKeyValue(array $array, $key, $value) : array
 	{
 		$ret = [];
 		foreach($array as $item)
 		{
-			if (array_key_exists($key, $item) == false
-				|| $item[$key] != $value)
-				$ret [] = $item;
+			if (isset($item[$key]) == false || $item[$key] != $value)
+				$ret[] = $item;
 		}
 		return $ret;
 	}
 
-	public static function AppendKeyArray($arr, $appendArray)
+	public static function AppendKeyArray(array $arr, array $appendArray) : array
 	{
 		foreach ($appendArray as $key => $value)
 			$arr[$key] = $value;
 		return $arr;
 	}
 
-	public static function GrowArray($arr, $size)
+	public static function GrowArray($arr, int $size) : array
 	{
 		if (is_array($arr) == false)
-			$arr = [];
+			return [];
 		for ($i = count($arr); $i < $size; $i++)
 			$arr[$i] = '';
 		return $arr;
 	}
 
-	public static function AddArrayKeys($arr1, $arr2)
+	public static function AddArrayKeys(array $arr1, array $arr2) : array
 	{
 		$ret = [];
 		foreach([$arr1, $arr2] as $arr)
+		{
 			foreach($arr as $key => $value)
-				if (array_key_exists($key, $ret))
+			{
+				if (isset($ret[$key]))
 					$ret[$key] += $value;
 				else
 					$ret[$key] = $value;
+			}
+		}
 
 		return $ret;
 	}
 
-	public static function RemoveMissingKeys($arr, $dictionary)
+	public static function RemoveMissingKeys(array $arr, array $dictionary) : array
 	{
 		$ret = [];
 		foreach($arr as $key => $item)
 		{
-			if (array_key_exists($key, $dictionary))
+			if (isset($dictionary[$key]))
 				$ret[$key] = $item;
 		}
 		return $ret;
 	}
 
-	public static function ReplaceKeys($arr, $dictionary)
+	public static function ReplaceKeys(array $arr, array $dictionary) : array
 	{
 		$ret = [];
 		foreach($arr as $key => $item)
@@ -449,7 +455,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function FromSortedToKeyed($arr, $field)
+	public static function FromSortedToKeyed(array $arr, $field) : array
 	{
 		$ret = [];
 		$group = [];
@@ -471,7 +477,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function SanitizeIds($arr, $ommitZeros = true)
+	public static function SanitizeIds(array $arr, bool $omitZeros = true) : array
 	{
 		$ret = [];
 		foreach($arr as $a)
@@ -479,135 +485,135 @@ class Arr
 			$a = trim($a);
 			if ($a !== "")
 			{
-				$i = intval($a);
-				if ($i > 0 || !$ommitZeros)
+				$i = (int)$a;
+				if ($i > 0 || $omitZeros == false)
 					$ret[] = $i;
 			}
 		}
 		return $ret;
 	}
 
-	public static function SortTwoLevelByTopic(&$items)
+	public static function SortTwoLevelByTopic(array &$items) : void
 	{
 		self::SortFullNameArray($items);
 		foreach($items as &$root)
 		{
-			if (array_key_exists('groups', $root))
+			if (isset($root['groups']))
 				self::SortFullNameArray($root['groups']);
 		}
 	}
 
-	public static function SortNativeKeyedArray(&$arr)
+	public static function SortNativeKeyedArray(array &$arr) : void
 	{
 		ksort($arr);
 	}
 
-	public static function SortNativeKeyedArrayDesc(&$arr)
+	public static function SortNativeKeyedArrayDesc(array &$arr) : void
 	{
 		krsort($arr);
 	}
 
-	/*** Sorter Wrappers ***/
+	// Sorter Wrappers
 
-	public static function SortByField(&$arr, $field)
+	public static function SortByField(array &$arr, $field) : void
 	{
-		usort($arr, function($a, $b) use ($field) { return Sorter::ByField($a, $b, $field); });
+		usort($arr, function($a, $b) use ($field) : int { return Sorter::ByField($a, $b, $field); });
 	}
 
-	public static function SortByGetter(&$arr, $getter)
+	public static function SortByGetter(array &$arr, $getter) : void
 	{
-		usort($arr, function($a, $b) use ($getter) { return Sorter::ByGetter($a, $b, $getter); });
+		usort($arr, function($a, $b) use ($getter) : int { return Sorter::ByGetter($a, $b, $getter); });
 	}
 
-	public static function SortByGetterDesc(&$arr, $getter)
+	public static function SortByGetterDesc(array &$arr, $getter) : void
 	{
-		usort($arr, function($a, $b) use ($getter) { return Sorter::ByGetterDesc($a, $b, $getter); });
+		usort($arr, function($a, $b) use ($getter) : int { return Sorter::ByGetterDesc($a, $b, $getter); });
 	}
 
-	public static function SortAssocByKey(&$arr, $key)
+	public static function SortAssocByKey(array &$arr, string $key) : void
 	{
-		uasort($arr, function($a, $b) use ($key) { return Sorter::ByKey($a, $b, $key); });
+		uasort($arr, function($a, $b) use ($key) : int { return Sorter::ByKey($a, $b, $key); });
 	}
 
-	public static function SortAssocByKeyDesc(&$arr, $key)
+	public static function SortAssocByKeyDesc(array &$arr, string $key) : void
 	{
-		uasort($arr, function($a, $b) use ($key) { return Sorter::ByKeyDesc($a, $b, $key); });
+		uasort($arr, function($a, $b) use ($key) : int { return Sorter::ByKeyDesc($a, $b, $key); });
 	}
 
-	public static function SortAssocBySortKeys(&$arr)
+	public static function SortAssocBySortKeys(array &$arr) : void
 	{
-		uasort($arr, function($a, $b) { return Sorter::BySortKeys($a, $b); });
+		uasort($arr, function($a, $b) : int { return Sorter::BySortKeys($a, $b); });
 	}
 
-	public static function SortAssocByThreeKeysDesc(&$arr, $key1, $key2, $key3)
+	public static function SortAssocByThreeKeysDesc(array &$arr, int $key1, int $key2, int $key3) : void
 	{
-		uasort($arr, function($a, $b) use ($key1, $key2, $key3) { return Sorter::ByThreeKeysDesc($a, $b, $key1, $key2, $key3); });
+		uasort($arr, function($a, $b) use ($key1, $key2, $key3) : int { return Sorter::ByThreeKeysDesc($a, $b, $key1, $key2, $key3); });
 	}
 
-	public static function SortStringByKey(&$arr, $key)
+	public static function SortStringByKey(array &$arr, string $key) : void
 	{
-		usort($arr, function($a, $b) use ($key) { return Sorter::StringByKey($a, $b, $key); });
+		usort($arr, function($a, $b) use ($key) : int { return Sorter::StringByKey($a, $b, $key); });
 	}
 
-	public static function SortStringByKeyDesc(&$arr, $key)
+	public static function SortStringByKeyDesc(array &$arr, string $key) : void
 	{
-		usort($arr, function($a, $b) use ($key) { return Sorter::StringByKeyDesc($a, $b, $key); });
+		usort($arr, function($a, $b) use ($key) : int { return Sorter::StringByKeyDesc($a, $b, $key); });
 	}
 
-	public static function SortStringByTwoKeys(&$arr, $key1, $key2)
+	public static function SortStringByTwoKeys(array &$arr, string $key1, string $key2) : void
 	{
-		usort($arr, function($a, $b) use ($key1, $key2) { return Sorter::StringByTwoKeys($a, $b, $key1, $key2); });
+		usort($arr, function($a, $b) use ($key1, $key2) : int { return Sorter::StringByTwoKeys($a, $b, $key1, $key2); });
 	}
 
-	public static function SortFullNameArray(&$arr)
+	public static function SortFullNameArray(array &$arr) : void
 	{
-		usort($arr, function($a, $b) { return Sorter::ByFullName($a, $b); });
+		usort($arr, function($a, $b) : int { return Sorter::ByFullName($a, $b); });
 	}
 
-	public static function SortAttributeEntityArray(&$arr, $key)
+	public static function SortAttributeEntityArray(array &$arr, string $key) : void
 	{
-		usort($arr, function($a, $b) use ($key) { return Sorter::ByAttribute($a, $b, $key); });
+		usort($arr, function($a, $b) use ($key) : int { return Sorter::ByAttribute($a, $b, $key); });
 	}
 
-	public static function SortByKey(&$arr, $key)
+	public static function SortByKey(array &$arr, $key) : void
 	{
-		usort($arr, function($a, $b) use ($key) { return Sorter::ByKey($a, $b, $key); });
+		usort($arr, function($a, $b) use ($key) : int { return Sorter::ByKey($a, $b, $key); });
 	}
 
-	public static function SortByKeyDesc(&$arr, $key)
+	public static function SortByKeyDesc(array &$arr, $key) : void
 	{
-		usort($arr, function($a, $b) use ($key) { return Sorter::ByKeyDesc($a, $b, $key); });
+		usort($arr, function($a, $b) use ($key) : int { return Sorter::ByKeyDesc($a, $b, $key); });
 	}
 
-	public static function SortByCleanString(&$arr, $key)
+	public static function SortByCleanString(array &$arr, string $key) : void
 	{
-		usort($arr, function($a, $b) use ($key) { return Sorter::ByCleanString($a, $b, $key); });
+		usort($arr, function($a, $b) use ($key) : int { return Sorter::ByCleanString($a, $b, $key); });
 	}
 
-	public static function SortByKeysArray(&$arr, $key)
+	public static function SortByKeysArray(array &$arr, string $key) : void
 	{
-		usort($arr, function($a, $b) use ($key) { return Sorter::ByKeysArray($a, $b, $key); });
+		usort($arr, function($a, $b) use ($key) : int { return Sorter::ByKeysArray($a, $b, $key); });
 	}
 
-	public static function SortByWordLengthDesc(&$arr)
+	public static function SortByWordLengthDesc(array &$arr) : void
 	{
-		usort($arr, function($a, $b) { return Sorter::ByWordLengthDesc($a, $b); });
+		usort($arr, function(string $a, string $b) : int { return Sorter::ByWordLengthDesc($a, $b); });
 	}
 
-	public static function SortWordCountDesc(&$arr)
+	public static function SortWordCountDesc(array &$arr) : void
 	{
-		usort($arr, function($a, $b) { return Sorter::ByWordCountDesc($a, $b); });
+		usort($arr, function(string $a, string $b) : int { return Sorter::ByWordCountDesc($a, $b); });
 	}
 
-	public static function ShrinkArray($arr, $size)
+	public static function ShrinkArray(array $arr, int $size) : array
 	{
 		$ret = [];
 		for ($i = 0; $i < $size; $i++)
-			$ret[] = $arr[$i] ;
+			$ret[] = $arr[$i];
 		return $ret;
 	}
 
-	public static function ConvertToTwoLevelByTopic($items)
+	public static function ConvertToTwoLevelByTopic(array $items) : array
 	{
 		$ret = [];
 		$target = null;
@@ -616,7 +622,7 @@ class Arr
 			if (self::SafeGet($group, 'isTopic'))
 			{
 				if ($target != null)
-					$ret[] =$target;
+					$ret[] = $target;
 				$target = $group;
 				$target['groups'] = [];
 			}
@@ -629,17 +635,17 @@ class Arr
 			}
 		}
 		if ($target != null)
-			$ret[] =$target;
+			$ret[] = $target;
 		return $ret;
 	}
 
-	public static function ConvertToFlatByTopic($items)
+	public static function ConvertToFlatByTopic(array $items) : array
 	{
 		$ret = [];
 		foreach($items as $group)
 		{
 			$ret[] = $group;
-			if (array_key_exists('groups', $group))
+			if (isset($group['groups']))
 			{
 				foreach($group['groups'] as $subgroup)
 					$ret[] = $subgroup;
@@ -648,48 +654,10 @@ class Arr
 		return $ret;
 	}
 
-	public static function CutArrayAndSummarize($arr, $newSize)
-	{
-		$total = 0;
-		if (count($arr) <= $newSize)
-			return $arr;
-		$keys = array_keys($arr);
-		$ret = [];
-		for($i = 0; $i < $newSize; $i++)
-			$ret[$keys[$i]] = $arr[$keys[$i]];
-		for($i = $newSize; $i < count($arr); $i++)
-			$total = intval($total + $arr[$keys[$i]]);
-		$ret['Otros'] = $total;
-		return $ret;
-	}
-
-	public static function AddAt($arr, $n, $element)
+	public static function AddAt(array $arr, $n, $element) : array
 	{
 		array_splice($arr, $n, 0, [$element]);
 		return $arr;
-	}
-
-	public static function AddShare($arr, $unit = "")
-	{
-		$total = 0;
-		$keys = array_keys($arr);
-		for($i = 0; $i < count($arr); $i++)
-			$total = intval(($total + $arr[$keys[$i]]));
-		$ret = [];
-		for($i = 0; $i < count($arr); $i++)
-		{
-			if ($total != 0)
-			{
-				$pc = round($arr[$keys[$i]] / $total * 100);
-				if ($pc==0)
-					$pc = "<1";
-			}
-			else
-				$pc = 0;
-			//$ret[$keys[$i] . " (" . $pc . "%)"] = $arr[$keys[$i]];
-			$ret[$keys[$i] ] = $arr[$keys[$i]] . $unit . " (" . $pc . "%)";
-		}
-		return $ret;
 	}
 
 }

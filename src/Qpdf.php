@@ -44,5 +44,4 @@ class Qpdf
 		}
 		return true;
 	}
-
 }

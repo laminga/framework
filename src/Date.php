@@ -4,75 +4,87 @@ namespace minga\framework;
 
 class Date
 {
-
-	public static function GetLogDayFolder()
+	public static function GetLogDayFolder() : string
 	{
 		return date("d");
 	}
 
-	public static function GetLogMonthFolder($offset = 0)
+	public static function GetLogMonthFolder(int $offset = 0) : string
 	{
 		$time = mktime(0, 0, 0, (int)date("m") + $offset, 1, (int)date("Y"));
 		return date("Y-m", $time);
 	}
 
-	public static function NowGMT($offset)
+	public static function NowGMT(int $offset) : int
 	{
 		if ($offset < -12 || $offset > 12)
 			throw new ErrorException("Time offset out of range: " . $offset);
 		return self::UniversalNow() + 60 * 60 * $offset;
 	}
 
-	public static function UniversalNow()
+	public static function UniversalNow() : int
 	{
 		$virtual = PhpSession::GetSessionValue('now');
 		if ($virtual == '')
 			return time();
-		else
-			return intval($virtual);
+		return (int)$virtual;
 	}
 
-	public static function ChangeUniversalNow($time)
+	public static function ChangeUniversalNow(int $time) : void
 	{
 		PhpSession::SetSessionValue('now', $time);
 	}
 
-	public static function ArNow()
+	public static function ArNow() : int
 	{
 		return self::NowGMT(-3);
 	}
 
-	public static function FormattedArDate()
+	public static function FormattedArDate() : string
 	{
 		return self::FormattedDateOnly(self::ArNow());
 	}
 
-	public static function FormattedArNow()
+	public static function FormattedArNow() : string
 	{
 		return self::FormattedDate(self::ArNow());
 	}
 
-	public static function FormattedDateOnly($date)
+	public static function FormatDateDMY(string $str) : string
+	{
+		if ($str == "")
+			return "-";
+		return substr($str, 8, 2) . "/" . substr($str, 5, 2) . "/" . substr($str, 2, 2);
+	}
+
+	public static function FormattedDateOnly($date) : string
 	{
 		return date("Y-m-d", $date);
 	}
 
-	public static function DateToDDMMYYYY($date)
+	public static function FormatDateYYMD(string $str) : string
+	{
+		if ($str == "")
+			return "-";
+		return substr($str, 0, 4) . "-" . substr($str, 5, 2) . "-" . substr($str, 8, 2);
+	}
+
+	public static function DateToDDMMYYYY($date) : string
 	{
 		return date("d/m/Y", $date);
 	}
 
-	public static function FormattedDate($date)
+	public static function FormattedDate($date) : string
 	{
 		return date("Y-m-d@H.i.s", $date);
 	}
 
-	public static function DbDate($date)
+	public static function DbDate(int $date) : string
 	{
 		return date("Y-m-d H:i:s", $date);
 	}
 
-	public static function ConvertFormattedDateDDMMYYYYHHMM($date)
+	public static function ConvertFormattedDateDDMMYYYYHHMM(string $date) : string
 	{
 		if ($date == "")
 			return "";
@@ -80,7 +92,7 @@ class Date
 			. substr($date, 0, 4) . ' ' . substr($date, 11, 2) . ':' . substr($date, 14, 2);
 	}
 
-	public static function ConvertFormattedDateDDMMYYYY($date)
+	public static function ConvertFormattedDateDDMMYYYY(string $date) : string
 	{
 		if ($date == "")
 			return "";
@@ -88,7 +100,7 @@ class Date
 			. '/' . substr($date, 0, 4);
 	}
 
-	public static function ConvertFromDDMMYYYYToYYYYMMDD($date)
+	public static function ConvertFromDDMMYYYYToYYYYMMDD(string $date) : string
 	{
 		if ($date == "")
 			return "";
@@ -97,18 +109,19 @@ class Date
 		return substr($date, 6, 4) . '-' . substr($date, 3, 2) . '-' . substr($date, 0, 2);
 	}
 
-	public static function AbsoluteMonth($date)
+	public static function AbsoluteMonth($date) : int
 	{
 		return self::DateTimeGetYear($date) * 12 + self::DateTimeGetMonth($date) - 1;
 	}
 
-	public static function DateTimeGetMonth($date)
+	public static function DateTimeGetMonth($date) : int
 	{
-		return intval($date->format('m'));
+		return (int)$date->format('m');
 	}
-	public static function DateTimeGetYear($date)
+
+	public static function DateTimeGetYear($date) : int
 	{
-		return intval($date->format('Y'));
+		return (int)$date->format('Y');
 	}
 
 	public static function ParseTime($span)
@@ -177,14 +190,14 @@ class Date
 		return date("d/m/Y g:i:s (\G\M\T-3)", $date - 60 * 60 * 3);
 	}
 
-	public static function DbArNow()
+	public static function DbArNow() : string
 	{
 		return self::DbDate(self::ArNow());
 	}
 
 	public static function DateTimeArNow()
 	{
-		$date = new \DateTime;
+		$date = new \DateTime();
 		$date->setTimestamp(self::ArNow());
 		return $date;
 	}
@@ -192,35 +205,34 @@ class Date
 	public static function DaysDiff($date1, $date2)
 	{
 		$interval = date_diff($date1, $date2);
-		return intval($interval->format('%a'));
+		return (int)($interval->format('%a'));
 	}
 
 	public static function DateTimeNow()
 	{
-		$date = new \DateTime;
+		$date = new \DateTime();
 		$date->setTimestamp(time());
 		return $date;
 	}
 
-	public static function DateTimeToday()
+	public static function DateTimeToday() : \DateTime
 	{
-		$date = date_create(self::Today());
-		return $date;
+		return date_create(self::Today());
 	}
 
-	public static function Today()
+	public static function Today() : string
 	{
 		return date("Y-m-d");
 	}
 
 	public static function CurrentDay()
 	{
-		return intval(date("j"));
+		return (int)(date("j"));
 	}
 
-	public static function CurrentMonth()
+	public static function CurrentMonth() : int
 	{
-		return intval(date("m"));
+		return (int)date("m");
 	}
 
 	public static function CurrentYear()
@@ -228,33 +240,33 @@ class Date
 		return self::GetYearFromDay(date("Y-m-d"));
 	}
 
-	public static function GetYearMonthFromDay($day)
+	public static function GetYearMonthFromDay($day) : string
 	{
 		// formato: 2015-02-29
 		return substr($day, 0, 7);
 	}
 
-	public static function GetYearFromDay($day)
+	public static function GetYearFromDay($day) : string
 	{
 		// formato: 2015-02-29
 		return substr($day, 0, 4);
 	}
 
-	public static function GetMonthFromDay($day)
+	public static function GetMonthFromDay($day) : string
 	{
 		// formato: 2015-02-29
 		return substr($day, 5, 2);
 	}
 
-	public static function FormatDateText($Year, $Month, $Day)
+	public static function FormatDateText($year, $month, $day) : string
 	{
-		$ret = $Day . " de " . Str::ToLower(self::MonthToString($Month));
-		if ($Year != "")
-			$ret .=  " de " . $Year;
+		$ret = $day . " de " . Str::ToLower(self::MonthToString((int)$month));
+		if ($year != "")
+			$ret .= " de " . $year;
 		return $ret;
 	}
 
-	public static function WeekDayToString($day)
+	public static function WeekDayToString(int $day) : string
 	{
 		switch((int)$day)
 		{
@@ -277,11 +289,9 @@ class Date
 		}
 	}
 
-	public static function MonthToString($prevMonth)
+	public static function MonthToString(int $month) : string
 	{
-		$prevMonth .= "";
-
-		switch((int)$prevMonth)
+		switch($month)
 		{
 			case 1:
 				return 'Enero';
@@ -340,7 +350,7 @@ class Date
 
 		$dt = self::FormattedDateToDateTime($date);
 		if($dt === false)
-			throw new ErrorException('Invalid Date');
+			throw new ErrorException('Invalid Format');
 
 		$dt->add(new \DateInterval('P' . $days . 'D'));
 		$now = new \DateTime('now');
@@ -348,7 +358,7 @@ class Date
 		return $dt > $now;
 	}
 
-	public static function TryParseDate($date, &$day, &$month, &$year)
+	public static function TryParseDate(string $date, &$day, &$month, &$year) : bool
 	{
 		$date = str_replace("-", "/", $date);
 		$date = str_replace(" ", "", $date);
@@ -362,7 +372,7 @@ class Date
 			if ((string)$parts[$i] != $prev)
 				return false;
 		}
-		if (checkdate((int)$parts[1] , (int)$parts[0] , (int)$parts[2]) == false)
+		if (checkdate((int)$parts[1], (int)$parts[0], (int)$parts[2]) == false)
 			return false;
 		$day = $parts[0];
 		$month = $parts[1];
@@ -370,7 +380,7 @@ class Date
 		return true;
 	}
 
-	public static function ParseDate($date)
+	public static function ParseDate(string $date) : string
 	{
 		$day = null;
 		$month = null;
@@ -378,6 +388,6 @@ class Date
 		$bret = self::TryParseDate($date, $day, $month, $year);
 		if ($bret == false)
 			throw new ErrorException('Invalid date.');
-		return $year . '-' . $month .'-' . $day;
+		return $year . '-' . $month . '-' . $day;
 	}
 }

@@ -2,22 +2,22 @@
 
 namespace minga\framework\oauth;
 
-use OAuth\Common\Consumer\Credentials;
-use OAuth\Common\Storage\Memory;
 use minga\framework\Context;
 use minga\framework\ErrorException;
 use minga\framework\IO;
 use minga\framework\Log;
 use minga\framework\MessageBox;
-use minga\framework\PublicException;
 use minga\framework\PhpSession;
 use minga\framework\Profiling;
+use minga\framework\PublicException;
 use minga\framework\Str;
+use OAuth\Common\Consumer\Credentials;
+use OAuth\Common\Storage\Memory;
 
 abstract class OauthConnector
 {
 	//los hijos deben declarar el provider de este modo.
-	const Provider = '';
+	public const Provider = '';
 
 	protected $storage;
 	protected $service;
@@ -27,7 +27,7 @@ abstract class OauthConnector
 		$this->Setup();
 	}
 
-	public function Setup()
+	public function Setup() : void
 	{
 		$this->storage = new Memory();
 
@@ -50,7 +50,7 @@ abstract class OauthConnector
 	{
 		try
 		{
-			//Sólo acá el provider es con mayúscula.
+			//Solo acá el provider es con mayúscula.
 			$provider = Str::Capitalize(static::Provider);
 
 			$this->storage->storeAuthorizationState($provider, $state);
@@ -93,7 +93,7 @@ abstract class OauthConnector
 		return $uri;
 	}
 
-	private function PutSessionToFile($uri, $sess)
+	private function PutSessionToFile($uri, $sess) : void
 	{
 		$query = [];
 		parse_str($uri->getQuery(), $query);
@@ -139,14 +139,15 @@ abstract class OauthConnector
 		$this->RedirectSession($state);
 	}
 
-	public function RedirectErrorNoEmail()
+	public function RedirectErrorNoEmail() : void
 	{
 		Log::HandleSilentException(new PublicException('No email from ' . $this->ProviderName()));
 
-		MessageBox::ShowDialogPopup('No se ha podido obtener una dirección de correo electrónico a través de ' . $this->ProviderName() . '. Intente otro método de registro para la identificación.', 'Atención');
+		MessageBox::ShowDialogPopup('No se ha podido obtener una dirección de correo electrónico a través de '
+			. $this->ProviderName() . '. Intente otro método de registro para la identificación.', 'Atención');
 	}
 
-	public function RedirectError($error = null)
+	public function RedirectError($error = null) : void
 	{
 		if($error != null)
 			Log::HandleSilentException(new ErrorException($error));
@@ -154,7 +155,7 @@ abstract class OauthConnector
 		MessageBox::ShowDialogPopup('No se ha podido realizar la interacción con ' . $this->ProviderName() . ' para la identificación.', 'Atención');
 	}
 
-	private function RedirectSession(string $state)
+	private function RedirectSession(string $state) : void
 	{
 		$this->CleanOldFiles();
 
@@ -168,11 +169,11 @@ abstract class OauthConnector
 
 	public function ProviderName()
 	{
-		$c = get_called_class();
+		$c = static::class;
 		return Str::Capitalize($c::Provider);
 	}
 
-	private function CloseAndRedirect($target)
+	private function CloseAndRedirect($target) : void
 	{
 		//TODO: validar el target.
 		//-Que sea de este dominio (que no redirija a otro sitio).

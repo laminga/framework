@@ -2,9 +2,8 @@
 
 namespace minga\framework\caching;
 
-use minga\framework\Context;
-use minga\framework\Serializator;
 use minga\framework\Profiling;
+use minga\framework\Serializator;
 
 class ObjectCache
 {
@@ -15,12 +14,12 @@ class ObjectCache
 		$this->cache = new StringCache($path, $forceFileSystem);
 	}
 
-	public function Clear($key = null)
+	public function Clear($key = null) : void
 	{
 		$this->cache->Clear($key);
 	}
 
-	public function HasData($key, & $out = null) : bool
+	public function HasData($key, &$out = null) : bool
 	{
 		Profiling::BeginTimer();
 		$stringValue = null;
@@ -30,21 +29,22 @@ class ObjectCache
 			Profiling::EndTimer();
 			return true;
 		}
-		else
-		{
+
+
 			$out = null;
 			Profiling::EndTimer();
 			return false;
-		}
+
 	}
-	public function PutDataIfMissing($key, $value)
+
+	public function PutDataIfMissing($key, $value) : void
 	{
 		if ($this->HasData($key))
 			return;
 		$this->PutData($key, $value);
 	}
 
-	public function PutData($key, $value)
+	public function PutData($key, $value) : void
 	{
 		$this->cache->PutData($key, Serializator::Serialize($value));
 	}

@@ -23,7 +23,7 @@ class WebClient
 		$this->throwErrors = $throwErrors;
 	}
 
-	public function Initialize($path = '')
+	public function Initialize($path = '') : void
 	{
 		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
 		$this->ch = curl_init();
@@ -32,18 +32,19 @@ class WebClient
 
 		curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 		if ($path != '')
 		{
-			curl_setopt($this->ch, CURLOPT_COOKIEJAR, $path. '/cookie.txt');
-			curl_setopt($this->ch, CURLOPT_COOKIEFILE, $path. '/cookie.txt');
-			$this->logFile = $path. '/log.txt';
+			curl_setopt($this->ch, CURLOPT_COOKIEJAR, $path . '/cookie.txt');
+			curl_setopt($this->ch, CURLOPT_COOKIEFILE, $path . '/cookie.txt');
+			$this->logFile = $path . '/log.txt';
 		}
 		$this->isClosed = false;
 
 	}
 
-	public function ExtraLog()
+	public function ExtraLog() : void
 	{
 		$this->logFile2 = $this->logFile . '.extra.txt';
 
@@ -53,17 +54,17 @@ class WebClient
 		$this->cherr = $handle;
 	}
 
-	public function SetFollowRedirects($value)
+	public function SetFollowRedirects($value) : void
 	{
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, $value);
 	}
 
-	public function SetPort($port)
+	public function SetPort($port) : void
 	{
 		curl_setopt($this->ch, CURLOPT_PORT, $port);
 	}
 
-	public function SetReferer($referer)
+	public function SetReferer($referer) : void
 	{
 		curl_setopt($this->ch, CURLOPT_REFERER, $referer);
 	}
@@ -98,8 +99,7 @@ class WebClient
 					}
 				}
 			}
-			$ret = $this->doExecute($url, $file, $args, false);
-			return $ret;
+			return $this->doExecute($url, $file, $args, false);
 		}
 		finally
 		{
@@ -207,7 +207,7 @@ class WebClient
 			}
 			return '';
 		}
-		else
+
 			return $ret;
 	}
 
@@ -232,7 +232,8 @@ class WebClient
 		curl_setopt($this->ch, CURLOPT_NOBODY, 0);
 
 		// indica el archivo
-		$fh = null;		if ($file != '')
+		$fh = null;
+		if ($file != '')
 		{
 			$fh = fopen($file, 'w');
 			curl_setopt($this->ch, CURLOPT_FILE, $fh);
@@ -259,11 +260,11 @@ class WebClient
 			}
 			return '';
 		}
-		else
+
 			return $ret;
 	}
 
-	private function AddPostFields($args)
+	private function AddPostFields($args) : void
 	{
 		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
@@ -298,7 +299,7 @@ class WebClient
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 	}
 
-	private function ParseErrorCodes($ret)
+	private function ParseErrorCodes($ret) : void
 	{
 		$this->httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		$this->error = curl_error($this->ch);
@@ -307,15 +308,15 @@ class WebClient
 		if ($ret == false)
 			$this->AppendLogData('Error', $this->error);
 		else
-			$this->AppendLogData('Content-Length', curl_getinfo($this->ch,CURLINFO_CONTENT_LENGTH_DOWNLOAD));
+			$this->AppendLogData('Content-Length', curl_getinfo($this->ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD));
 	}
 
-	public function printInfo()
+	public function printInfo() : void
 	{
-		echo('<p>');
+		echo '<p>';
 		$info = curl_getinfo($this->ch);
 		print_r($info);
-		echo('</p>');
+		echo '</p>';
 	}
 
 	private function get_headers_from_curl_response(&$response)
@@ -330,7 +331,7 @@ class WebClient
 				$headers['http_code'] = $line;
 			else
 			{
-				list ($key, $value) = explode(': ', $line);
+				 [$key, $value] = explode(': ', $line);
 
 				$headers[$key] = $value;
 			}
@@ -348,7 +349,7 @@ class WebClient
 			{
 				if ($line != '' && Str::Contains($line, ': '))
 				{
-					list ($key, $value) = explode(': ', $line);
+					 [$key, $value] = explode(': ', $line);
 					$headers[$key] = $value;
 				}
 			}
@@ -361,7 +362,7 @@ class WebClient
 		return Str::EatUntil($header_text, "\r\n\r\n");
 	}
 
-	public function Finalize()
+	public function Finalize() : void
 	{
 		if ($this->isClosed == false)
 		{
@@ -372,21 +373,21 @@ class WebClient
 		}
 	}
 
-	public function AppendLog($value)
+	public function AppendLog($value) : void
 	{
 		if ($this->logFile == null)
 			return;
 		IO::AppendLine($this->logFile, "\r\n" . $value . ' [' . Date::FormattedArNow() . ']');
 	}
 
-	private function AppendLogData($key, $value)
+	private function AppendLogData($key, $value) : void
 	{
 		if ($this->logFile == null)
 			return;
 		IO::AppendLine($this->logFile, '=> ' . $key . ': ' . $value);
 	}
 
-	public function ClearCookieFile()
+	public function ClearCookieFile() : void
 	{
 		if($this->cookieFile != '')
 			IO::Delete($this->cookieFile);
@@ -444,6 +445,5 @@ class WebClient
 
 		return $ret;
 	}
-
 }
 
