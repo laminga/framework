@@ -1015,6 +1015,5 @@ class Str
 		$format .= "." . $decimals . "f";
 		return sprintf($format, $value);
 	}
-
 }
 

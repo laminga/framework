@@ -118,5 +118,4 @@ class Image
 		fclose($fd);
 		return $plte && $trns;
 	}
-
 }

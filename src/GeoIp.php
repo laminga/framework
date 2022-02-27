@@ -3,8 +3,8 @@
 namespace minga\framework;
 
 use GeoIp2\Database\Reader;
-use GeoIp2\Record\City;
 use GeoIp2\Exception\AddressNotFoundException;
+use GeoIp2\Record\City;
 use GeoIp2\Record\Country;
 
 class GeoIp
