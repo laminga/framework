@@ -4,8 +4,7 @@ namespace minga\framework\settings;
 
 class OauthSettings
 {
-	/** @var array */
-	public $Credentials = [
+	public array $Credentials = [
 		'facebook' => ['key' => '', 'secret' => '', 'callback' => ''],
 		'google' => ['key' => '', 'secret' => '', 'callback' => ''],
 	];

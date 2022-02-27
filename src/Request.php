@@ -4,12 +4,11 @@ namespace minga\framework;
 
 class Request
 {
-	/** @var bool */
-	private static $isGoogle = null;
+	private static bool $isGoogle;
 
 	public static function IsGoogle() : bool
 	{
-		if (self::$isGoogle == null)
+		if (isset(self::$isGoogle) == false)
 		{
 			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
 			self::$isGoogle = Str::Contains($agent, "Googlebot");

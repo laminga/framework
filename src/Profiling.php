@@ -4,23 +4,16 @@ namespace minga\framework;
 
 class Profiling
 {
-	/** @var bool */
-	public static $IsJson = false;
+	public static bool $IsJson = false;
 
-	/** @var bool */
-	private static $showQueries = false;
-	/** @var bool */
-	private static $trimQueries = false;
-	/** @var bool */
-	private static $progressOnly = false;
+	private static bool $showQueries = false;
+	private static bool $trimQueries = false;
+	private static bool $progressOnly = false;
 
-	/** @var array */
-	private static $stack = null;
+	private static ?array $stack = null;
 
-	/** @var string */
-	private static $lockStack = "";
-	/** @var ?ProfilingItem */
-	private static $profileData = null;
+	private static string $lockStack = "";
+	private static ?ProfilingItem $profileData = null;
 	private static $localIsProfiling = null;
 
 	public static function BeginShowQueries(bool $trimQueries = false, bool $progressOnly = false) : void

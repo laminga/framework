@@ -7,17 +7,12 @@ use minga\framework\locking\QueueProcessLock;
 
 abstract class Queue
 {
-	/** @var string */
-	protected $path = '';
-	/** @var bool */
-	protected $discardSuccessfullLog;
-	/** @var int */
-	protected $maxToProcess;
-	/** @var int */
-	protected $clearLogOlderThanDays = 60;
+	protected string $path = '';
+	protected bool $discardSuccessfullLog;
+	protected int $maxToProcess;
+	protected int $clearLogOlderThanDays = 60;
 
-	/** @var string */
-	protected $processorClass = '';
+	protected string $processorClass = '';
 
 	abstract public function __construct();
 

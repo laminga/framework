@@ -5,29 +5,23 @@ namespace minga\framework\settings;
 class DbSettings
 {
 	//Datos DB
-	/** @var bool */
-	public $NoDb = false;
+	public bool $NoDb = false;
 	public $Name = '';
 	public $User = '';
 	public $Password = '';
 	public $Host = '';
 	public $Port = 3306;
 	public $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
-	/** @var ?string */
-	public $RemoteUrl = null;
+	public ?string $RemoteUrl = null;
 
-	/** @var int */
-	public $FullTextMinWordLength = 4;
+	public int $FullTextMinWordLength = 4;
 
 	public $SpecialWords = [];
 
-	/** @var bool */
-	public $ForceStrictTables = false;
-	/** @var bool */
-	public $ForceOnlyFullGroupBy = false;
+	public bool $ForceStrictTables = false;
+	public bool $ForceOnlyFullGroupBy = false;
 
-	/** @var bool */
-	public $SetTimeZone = true;
+	public bool $SetTimeZone = true;
 
 	public function SetDatabase($host, $dbName, $user, $password, $port = 3306) : void
 	{

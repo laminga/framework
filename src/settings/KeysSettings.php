@@ -9,34 +9,24 @@ use minga\framework\ErrorException;
 class KeysSettings
 {
 	// Internas para firmado y hashing
-	/** @var string */
-	public $HashKeyedKey = '';
-	/** @var string */
-	public $ExportNavigationKey = '';
+	public string $HashKeyedKey = '';
+	public string $ExportNavigationKey = '';
 	// Utiliza esta key en forma predeterminada.
-	/** @var string */
-	public $RememberKey = '3vAAAGS4lKNFO7PKg1vWAy4SnnalgRatxknIrQJhWDvTqe7QTJV4gZD2w+n3EQdzyfi6gBhq3Xo/eUSp7M92ymMeYuo=';
+	public string $RememberKey = '3vAAAGS4lKNFO7PKg1vWAy4SnnalgRatxknIrQJhWDvTqe7QTJV4gZD2w+n3EQdzyfi6gBhq3Xo/eUSp7M92ymMeYuo=';
 
 	// Obtenidas de terceros
-	/** @var string */
-	public $RecaptchaSiteKey = '';
-	/** @var string */
-	public $RecaptchaSecretKey = '';
+	public string $RecaptchaSiteKey = '';
+	public string $RecaptchaSecretKey = '';
 
-	/** @var string */
-	public $GoogleAnalyticsKey = '';
+	public string $GoogleAnalyticsKey = '';
 	/** @var array|string|null */
 	public $GoogleMapsKey = '';
-	/** @var string */
-	public $GoogleGeocodingKey = '';
-	/** @var string */
-	public $AddThisKey = '';
-	/** @var string */
-	public $SendGridApiKey = '';
+	public string $GoogleGeocodingKey = '';
+	public string $AddThisKey = '';
+	public string $SendGridApiKey = '';
 
 	// Interna simple para ingresar a test
-	/** @var string */
-	public $TestEnvironmentKey = '';
+	public string $TestEnvironmentKey = '';
 
 	public function GetHashKeyedKey() : string
 	{

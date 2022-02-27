@@ -14,11 +14,9 @@ class CacheSettings
 	public const FILE = 0;
 	public const SQLITE3 = 1;
 
-	/** @var int */
-	public $Enabled = self::Enabled;
+	public int $Enabled = self::Enabled;
 
-	/** @var int */
-	public $FileSystemMode = self::SQLITE3;
+	public int $FileSystemMode = self::SQLITE3;
 
 	public function CreateFileCache($path)
 	{

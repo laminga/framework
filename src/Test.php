@@ -5,8 +5,7 @@ namespace minga\framework;
 //TODO: qué es esta clase?
 class Test
 {
-	/** @var string */
-	private static $server = '';
+	private static string $server = '';
 
 	public static function SetServer($host) : void
 	{

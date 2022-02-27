@@ -10,13 +10,11 @@ class Mail
 	public $to;
 	public $bcc = null;
 	public $toCaption = "";
-	/** @var ?string */
-	public $from = "";
+	public ?string $from = "";
 	public $fromCaption = '';
 	public $subject;
 	public $message;
-	/** @var bool */
-	public $skipNotify = false;
+	public bool $skipNotify = false;
 
 	public function __construct()
 	{

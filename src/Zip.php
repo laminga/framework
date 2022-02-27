@@ -7,8 +7,7 @@ use minga\framework\locking\ZipLock;
 class Zip
 {
 	public $targetFile;
-	/** @var ZipLock */
-	public $lock;
+	public ZipLock $lock;
 
 	public function __construct(string $file)
 	{

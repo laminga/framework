@@ -4,8 +4,7 @@ namespace minga\framework;
 
 class IO
 {
-	/** @var ?array */
-	private static $compressedDirectories;
+	private static ?array $compressedDirectories;
 
 	public static function AppendAllBytes(string $filename, $bytes) : void
 	{

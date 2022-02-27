@@ -10,22 +10,15 @@ use minga\framework\Profiling;
 class Lock
 {
 	protected $handle;
-	/** @var string */
-	protected $folder;
-	/** @var string */
-	private $file;
-	/** @var bool */
-	private $readWrite;
-	/** @var bool */
-	public $isLocked = false;
-	/** @var bool */
-	public $isWriteLocked = false;
+	protected string $folder;
+	private string $file;
+	private bool $readWrite;
+	public bool $isLocked = false;
+	public bool $isWriteLocked = false;
 
-	/** @var string */
-	protected $statsKey = 'default';
+	protected string $statsKey = 'default';
 
-	/** @var array */
-	private static $locks = [];
+	private static array $locks = [];
 
 	public function __construct(string $folder, string $file = 'lock', bool $readWrite = false)
 	{

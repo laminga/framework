@@ -4,11 +4,10 @@ namespace minga\framework;
 
 class FiledQueue
 {
-	/** @var array */
-	private $valuesToQueue = [];
+	private array $valuesToQueue = [];
 
 	/** @var FiledQueue[] */
-	private static $allFiles = [];
+	private static array $allFiles = [];
 
 	private $file;
 	private $path;

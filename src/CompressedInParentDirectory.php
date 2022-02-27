@@ -4,16 +4,11 @@ namespace minga\framework;
 
 class CompressedInParentDirectory
 {
-	/** @var string */
-	public $path;
-	/** @var string */
-	public $expandedPath;
-	/** @var bool */
-	private $expanded = false;
-	/** @var string */
-	private $dirName;
-	/** @var string */
-	private $file;
+	public string $path;
+	public string $expandedPath;
+	private bool $expanded = false;
+	private string $dirName;
+	private string $file;
 
 	public function __construct(string $path, string $file = 'content.zip')
 	{

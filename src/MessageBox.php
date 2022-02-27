@@ -4,8 +4,7 @@ namespace minga\framework;
 
 class MessageBox
 {
-	/** @var bool */
-	public static $IsThrowingMessage = false;
+	public static bool $IsThrowingMessage = false;
 
 	public static function ThrowInternalError(string $message) : void
 	{

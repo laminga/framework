@@ -6,16 +6,14 @@ use minga\framework\settings\Settings;
 
 class Context
 {
-	/** @var Settings */
-	private static $settings = null;
+	private static Settings $settings;
 	private static $calls = null;
 
-	/** @var AppPaths */
-	private static $paths;
+	private static AppPaths $paths;
 
 	public static function Settings() : Settings
 	{
-		if(self::$settings == null)
+		if(isset(self::$settings) == false)
 			self::$settings = new Settings();
 
 		return self::$settings;
@@ -23,7 +21,7 @@ class Context
 
 	public static function Calls()
 	{
-		if(self::$calls == null)
+		if(isset(self::$calls) == false)
 			throw new ErrorException('Framework context Calls must be initialized.');
 
 		return self::$calls;
@@ -48,10 +46,9 @@ class Context
 		self::$calls = $calls;
 	}
 
-	//TODO: tipo AppPaths o Paths
 	public static function Paths() : AppPaths
 	{
-		if(self::$paths === null)
+		if(isset(self::$paths) == false)
 			self::$paths = new AppPaths();
 
 		return self::$paths;

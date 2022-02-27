@@ -7,8 +7,7 @@ class ProfilingItem
 	public $name;
 
 	private $startTime;
-	/** @var int */
-	private $startMemory;
+	private int $startMemory;
 
 	public $memory;
 	public $memoryPeak;
@@ -19,7 +18,7 @@ class ProfilingItem
 	private $startPause;
 
 	/** @var ProfilingItem[] */
-	public $children = [];
+	public array $children = [];
 
 	public function __construct($name)
 	{

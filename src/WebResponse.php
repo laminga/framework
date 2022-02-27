@@ -10,8 +10,7 @@ class WebResponse
 	public $contentType;
 	public $uri;
 	public $success;
-	/** @var array */
-	public $headers = [];
+	public array $headers = [];
 
 	public function dump() : void
 	{

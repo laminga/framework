@@ -4,10 +4,7 @@ namespace minga\framework\settings;
 
 class DebugSettings
 {
-	/** @var bool */
-	public $debug = false;
-	/** @var bool */
-	public $showErrors = false;
-	/** @var bool */
-	public $profiling = false;
+	public bool $debug = false;
+	public bool $showErrors = false;
+	public bool $profiling = false;
 }
