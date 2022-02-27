@@ -19,7 +19,7 @@ class ExifTool
 		$authors = self::PrepareText($authors);
 
 		$args = '-overwrite_original -L -Producer="AAcademica.org" -Author='
-			. $authors . ' -Title=' . $title . ' ' . $file;
+			. $authors . ' -Title=' . $title . ' "' . $file . '"';
 
 		$ret = self::Run($args);
 		Profiling::EndTimer();
