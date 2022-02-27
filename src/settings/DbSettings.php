@@ -13,6 +13,7 @@ class DbSettings
 	public $Host = '';
 	public $Port = 3306;
 	public $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
+	/** @var ?string */
 	public $RemoteUrl = null;
 
 	/** @var int */
