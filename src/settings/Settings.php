@@ -126,6 +126,7 @@ class Settings
 	/** @var bool */
 	public $isBoxValid = false;
 
+	/** @var ?string */
 	public $boxingContent;
 	/** @var bool */
 	public $isFramed = false;
