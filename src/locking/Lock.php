@@ -109,7 +109,7 @@ class Lock
 		$sleepTime = 100; // milliseconds
 		$wait = 10; // seconds
 
-		$max_cycles = $wait * 1000 / $sleepTime;
+		$maxCycles = $wait * 1000 / $sleepTime;
 		$hadToWait = false;
 		$loops = 0;
 		while (flock($this->handle, $type | LOCK_NB) === false)
@@ -118,7 +118,7 @@ class Lock
 			// pausa por 100 ms
 			usleep($sleepTime * 1000);
 			$loops++;
-			if ($loops == $max_cycles)
+			if ($loops == $maxCycles)
 			{
 				fclose($this->handle);
 				$this->handle = null;

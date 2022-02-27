@@ -502,7 +502,7 @@ class Performance
 			self::ParseHit($arr[$key], $prevHits, $prevDuration, $locked, $dbMs, $dbHits);
 	}
 
-	private static function IncrementKey(&$arr, $key, $value, $newHits, $newLocked, $newDbMs, $newDb_hitCount) : void
+	private static function IncrementKey(&$arr, $key, $value, $newHits, $newLocked, $newDbMs, $newDbHitCount) : void
 	{
 		if (isset($arr[$key]) == false)
 		{
@@ -510,7 +510,7 @@ class Performance
 			$duration = $value;
 			$locked = $newLocked;
 			$dbMs = $newDbMs;
-			$dbHitCount = $newDb_hitCount;
+			$dbHitCount = $newDbHitCount;
 		}
 		else
 		{
@@ -520,7 +520,7 @@ class Performance
 			$duration += $value;
 			$locked += $newLocked;
 			$dbMs += $newDbMs;
-			$dbHitCount += $newDb_hitCount;
+			$dbHitCount += $newDbHitCount;
 		}
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $dbMs . ';' . $dbHitCount;
 	}
