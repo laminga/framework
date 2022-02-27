@@ -185,12 +185,12 @@ class Backup
 
 	private static function ScanAndSplitRecursive($dirsource, $maxSize) : void
 	{
-		$dir_handle = null;
+		$dirHandle = null;
 		if(is_dir($dirsource))
-			$dir_handle = IO::OpenDirNoWarning($dirsource);
-		if($dir_handle === false)
+			$dirHandle = IO::OpenDirNoWarning($dirsource);
+		if($dirHandle === false)
 			return;
-		while($file = readdir($dir_handle))
+		while($file = readdir($dirHandle))
 		{
 			if($file != '.' && $file != '..')
 			{
@@ -204,8 +204,8 @@ class Backup
 					self::ScanAndSplitRecursive($dirsource . '/' . $file, $maxSize);
 			}
 		}
-		if($dir_handle != null)
-			closedir($dir_handle);
+		if($dirHandle != null)
+			closedir($dirHandle);
 	}
 
 	public function CreateZipChunk() : void

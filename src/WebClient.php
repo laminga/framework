@@ -323,10 +323,10 @@ class WebClient
 	{
 		$headers = [];
 		$sep = strpos($response, "\r\n\r\n");
-		$header_text = substr($response, 0, $sep);
+		$headerText = substr($response, 0, $sep);
 		$response = substr($response, $sep + 4);
 
-		foreach (explode("\r\n", $header_text) as $i => $line)
+		foreach (explode("\r\n", $headerText) as $i => $line)
 			if ($i === 0)
 				$headers['http_code'] = $line;
 			else
@@ -339,10 +339,10 @@ class WebClient
 		return $headers;
 	}
 
-	private function get_headers_from_curl_response2($header_text)
+	private function get_headers_from_curl_response2($headerText)
 	{
 		$headers = [];
-		foreach (explode("\r\n", $header_text) as $line)
+		foreach (explode("\r\n", $headerText) as $line)
 			if (Str::StartsWith($line, 'HTTP/'))
 				$headers['http_code'] = $line;
 			else
@@ -357,9 +357,9 @@ class WebClient
 		return $headers;
 	}
 
-	private function get_content_from_curl_response2($header_text)
+	private function get_content_from_curl_response2($headerText)
 	{
-		return Str::EatUntil($header_text, "\r\n\r\n");
+		return Str::EatUntil($headerText, "\r\n\r\n");
 	}
 
 	public function Finalize() : void
