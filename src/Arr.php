@@ -11,7 +11,13 @@ class Arr
 			$ret[$k] = clone $v;
 		return $ret;
 	}
-
+	public static function KeysToLower(array $arr) : array
+	{
+		$ret = [];
+		foreach($arr as $k => $v)
+			$ret[Str::ToLower($k)] = $v;
+		return $ret;
+	}	
 	public static function GetItemByNamedValue(array $arr, $itemName, $itemValue, $default = null)
 	{
 		$index = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
