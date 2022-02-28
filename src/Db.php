@@ -14,7 +14,7 @@ class Db
 
 	// comentado esto por ahora: \PDO|\Doctrine\DBAL\Connection
 	public $db = null;
-	private $isInTransaction = false;
+	private bool $isInTransaction = false;
 	private $lastRows = -1;
 
 	public function __construct($db = null, $profiler = null)
