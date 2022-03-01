@@ -11,9 +11,9 @@ use minga\framework\Str;
 class BaseTwoLevelBlobSQLiteCache
 {
 	private $path;
-	private $db;
+	private SQLiteList $db;
 
-	public function __construct($path, $isAbsolutePath = false)
+	public function __construct($path, bool $isAbsolutePath = false)
 	{
 		if ($isAbsolutePath)
 			$this->path = $path;
@@ -23,7 +23,7 @@ class BaseTwoLevelBlobSQLiteCache
 		$this->db = new SQLiteList('k', ['v', 'time'], ['length'], null, ['v']);
 	}
 
-	private function OpenRead($key = null, $throwLockErrors = true)
+	private function OpenRead($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
 		{
@@ -42,7 +42,7 @@ class BaseTwoLevelBlobSQLiteCache
 		}
 	}
 
-	private function OpenWrite($key = null, $throwLockErrors = true)
+	private function OpenWrite($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
 		{
@@ -77,35 +77,33 @@ class BaseTwoLevelBlobSQLiteCache
 			$this->OpenWrite($levelKey);
 			$this->db->Delete($valueKey);
 			$this->db->Close();
+			return;
+		}
+
+		$file = $this->ResolveFilename(null);
+		if (file_exists($file))
+		{
+			// Es de 1 nivel y pide borrar el key
+			$this->OpenWrite(null);
+			$this->db->Delete($valueKey);
+			$this->db->Close();
 		}
 		else
 		{
-			$file = $this->ResolveFilename(null);
-			if (file_exists($file))
-			{
-				// Es de 1 nivel y pide borrar el key
-				$this->OpenWrite(null);
-				$this->db->Delete($valueKey);
-				$this->db->Close();
-			}
-			else
-			{
-				// Es de 2 niveles y pide borrar todo
-				$this->OpenWrite($key1);
-				$this->db->DeleteAll();
-				$this->db->Close();
-				$file = $this->ResolveFilename($key1);
-				IO::Delete($file);
-			}
+			// Es de 2 niveles y pide borrar todo
+			$this->OpenWrite($key1);
+			$this->db->DeleteAll();
+			$this->db->Close();
+			$file = $this->ResolveFilename($key1);
+			IO::Delete($file);
 		}
 	}
 
 	public function HasData($key1, $key2, &$value = null) : bool
 	{
 		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled)
-		{
 			return false;
-		}
+
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
 
@@ -116,17 +114,15 @@ class BaseTwoLevelBlobSQLiteCache
 				return false;
 		}
 		$value = $this->db->ReadBlobValue($valueKey, 'v');
-	//	$this->Close();
 		if ($value !== null)
 		{
 			$value = $value;
 			return true;
 		}
-
-			return false;
+		return false;
 	}
 
-	private function ResolveFilename($key1)
+	private function ResolveFilename($key1) : string
 	{
 		if ($key1 === null)
 			$key1 = 'cache';

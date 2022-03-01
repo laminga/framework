@@ -8,7 +8,7 @@ class StringCache
 {
 	private $cache;
 
-	public function __construct($path, $forceFileSystem = false)
+	public function __construct($path, bool $forceFileSystem = false)
 	{
 		if ($forceFileSystem)
 			$this->cache = new BaseTwoLevelStringFileCache($path);

@@ -33,11 +33,9 @@ class TwoLevelObjectCache
 				Profiling::EndTimer();
 				return true;
 			}
-
-
-				$out = null;
-				Profiling::EndTimer();
-				return false;
+			$out = null;
+			Profiling::EndTimer();
+			return false;
 
 		}
 		catch(\Exception $e)

@@ -7,9 +7,9 @@ use minga\framework\Serializator;
 
 class ObjectCache
 {
-	private $cache;
+	private StringCache $cache;
 
-	public function __construct($path, $forceFileSystem = false)
+	public function __construct($path, bool $forceFileSystem = false)
 	{
 		$this->cache = new StringCache($path, $forceFileSystem);
 	}
@@ -31,9 +31,9 @@ class ObjectCache
 		}
 
 
-			$out = null;
-			Profiling::EndTimer();
-			return false;
+		$out = null;
+		Profiling::EndTimer();
+		return false;
 
 	}
 

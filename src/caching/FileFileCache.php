@@ -28,7 +28,7 @@ class FileFileCache
 		IO::Delete($file);
 	}
 
-	public function HasData($key1, &$out = null, $overriteTwoState = false) : bool
+	public function HasData($key1, &$out = null, bool $overriteTwoState = false) : bool
 	{
 		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled && $overriteTwoState == false)
 			return false;
@@ -42,8 +42,8 @@ class FileFileCache
 		}
 
 
-			$out = null;
-			return false;
+		$out = null;
+		return false;
 
 	}
 
@@ -64,7 +64,7 @@ class FileFileCache
 		return $file;
 	}
 
-	private function ResolveFilename($key1, $create = false)
+	private function ResolveFilename($key1, bool $create = false)
 	{
 		$folder = $this->path;
 		if($create)
