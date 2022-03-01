@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
@@ -46,7 +48,7 @@ class StrTest extends TestCaseBase
 			. '@dominio.com'));
 	}
 
-	public function testEllipsis()
+	public function testEllipsis() : void
 	{
 		$val = '0123456789';
 		$this->assertEquals(Str::Ellipsis($val, 10), $val);

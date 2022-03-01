@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
@@ -27,7 +29,7 @@ class ExifToolTest extends TestCaseBase
 
 	public function testUpdateMetadata() : void
 	{
-		$ret = ExifTool::UpdateMetadata($this->testFile, '"a"' . "\n" . "\\" . "`x/b" , 'a');
+		$ret = ExifTool::UpdateMetadata($this->testFile, '"a"' . "\n" . "\\" . "`x/b", 'a');
 		$this->assertTrue($ret);
 	}
 }

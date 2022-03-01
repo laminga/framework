@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
@@ -6,7 +8,7 @@ use minga\framework\Reflection;
 
 final class ReflectionTest extends TestCaseBase
 {
-	public function testGetMethod()
+	public function testGetMethod() : void
 	{
 		$call = [__CLASS__, 'ForTesting'];
 		$method = Reflection::GetMethod($call);
@@ -14,7 +16,7 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals($method->name, $call[1]);
 	}
 
-	public function testCallArray()
+	public function testCallArray() : void
 	{
 		$this->expectException(\Exception::class);
 		$method = [
@@ -23,7 +25,7 @@ final class ReflectionTest extends TestCaseBase
 		Reflection::CallArray($method, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 	}
 
-	public function testGetParams()
+	public function testGetParams() : void
 	{
 		$params = Reflection::GetParams([__CLASS__, 'ForTesting']);
 		$this->assertEquals(count($params), self::CANT_PARAMS, 'Count GetParams(ForTesting)');
@@ -31,7 +33,7 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals(count($params), 0, 'Count GetParams(ForTestingNoParams)');
 	}
 
-	public function testGetParamNames()
+	public function testGetParamNames() : void
 	{
 		$params = Reflection::GetParamNames([__CLASS__, 'ForTesting']);
 		$this->assertEquals(count($params), self::CANT_PARAMS, 'Count GetParamNames(ForTesting)');
@@ -42,7 +44,7 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals(count($params), 0, 'Count GetParamNames(ForTestingNoParams)');
 	}
 
-	public function testGetParamType()
+	public function testGetParamType() : void
 	{
 		for($i = 0; $i < self::CANT_PARAMS; $i++)
 		{
@@ -54,7 +56,7 @@ final class ReflectionTest extends TestCaseBase
 		}
 	}
 
-	public function testInstanciateClass()
+	public function testInstanciateClass() : void
 	{
 		$class = __NAMESPACE__ . '\\ForTesting';
 		$instance = Reflection::InstanciateClass($class);
@@ -65,7 +67,7 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertInstanceOf($class, $instance);
 	}
 
-	public function testCallMethod()
+	public function testCallMethod() : void
 	{
 		$class = __NAMESPACE__ . '\\ForTesting';
 		$instance = Reflection::InstanciateClass($class);
@@ -77,7 +79,7 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals($ret, 'Method20a');
 	}
 
-	public function testCallPrivateStaticMethod()
+	public function testCallPrivateStaticMethod() : void
 	{
 		$function = 'Method6';
 		$class = ForTesting::class;
@@ -89,7 +91,7 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals($ret, $function . '0a');
 	}
 
-	public function testCallPrivateMethod()
+	public function testCallPrivateMethod() : void
 	{
 		$function = 'Method3';
 		$instance = new ForTesting();
@@ -101,7 +103,7 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals($ret, $function . '0a');
 	}
 
-	public function testCallPrivateMethodRef()
+	public function testCallPrivateMethodRef() : void
 	{
 		$function = 'Method5';
 		$instance = new ForTesting();
@@ -112,9 +114,10 @@ final class ReflectionTest extends TestCaseBase
 	}
 
 	public const CANT_PARAMS = 6;
-	private function ForTesting(string $a0, int $a1, float $a2, bool $a3, array $a4, ReflectionTest $a5) { }
 
-	private function ForTestingNoParams() { }
+	private function ForTesting(string $a0, int $a1, float $a2, bool $a3, array $a4, ReflectionTest $a5) : void { }
+
+	private function ForTestingNoParams() : void { }
 }
 
 class ForTesting
