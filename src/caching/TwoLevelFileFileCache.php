@@ -67,7 +67,7 @@ class TwoLevelFileFileCache
 	public function PutData($key1, $key2, $filename) : string
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
-			return;
+			return '';
 
 		$file = $this->ResolveFilename($key1, $key2, true);
 		copy($filename, $file);
