@@ -380,6 +380,8 @@ class Arr
 	public static function Remove(array &$array, $value) : array
 	{
 		$n = self::IndexOf($array, $value);
+		if($n == -1)
+			return $array;
 		return self::RemoveAt($array, $n);
 	}
 
