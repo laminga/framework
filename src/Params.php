@@ -4,8 +4,6 @@ namespace minga\framework;
 
 class Params
 {
-	//TODO: revisar y unificar los métodos de get.
-
 	//Método usado en aacademica.
 	public static function SafeGetCheckbox($param, $default = '0')
 	{
@@ -93,7 +91,7 @@ class Params
 	{
 		$value = self::GetMandatory($param);
 		$value = self::CheckParseIntValue($value);
-		return self::processRange($value, $min, $max);
+		return self::ProcessRange($value, $min, $max);
 	}
 
 	public static function GetIntMandatory($param)
@@ -153,26 +151,26 @@ class Params
 		return $arr;
 	}
 
-	private static function processRange($value, $min, $max)
+	private static function ProcessRange($value, $min, $max)
 	{
 		if ($value < $min || $value > $max)
 			throw new ErrorException('Parameter value of "' . $value . '" is out of range.');
 		return $value;
 	}
 
-	public static function GetUploadedImageMemory($param, $maxFileSize = -1)
+	public static function GetUploadedImageMemory(string $param, int $maxFileSize = -1)
 	{
 		$file = self::GetUploadedImage($param, $maxFileSize);
 		return IO::ReadAllBytes($file);
 	}
 
-	public static function GetUploadedFileMemory($param, $maxFileSize = -1, $validFileTypes = [])
+	public static function GetUploadedFileMemory(string $param, int $maxFileSize = -1, array $validFileTypes = [])
 	{
 		$file = self::GetUploadedFile($param, $maxFileSize, $validFileTypes);
 		return IO::ReadAllBytes($file);
 	}
 
-	public static function GetUploadedImage($param, $maxFileSize = -1)
+	public static function GetUploadedImage(string $param, int $maxFileSize = -1) : string
 	{
 		return self::GetUploadedFile($param, $maxFileSize, [
 			'jpg' => 'image/jpeg',
@@ -180,24 +178,22 @@ class Params
 		]);
 	}
 
-	public static function GetUploadedFile($param, $maxFileSize = -1, $validFileTypes = [])
+	public static function GetUploadedFile(string $param, int $maxFileSize = -1, array $validFileTypes = []) : string
 	{
-		// You should also check filesize here.
-		if ($maxFileSize === -1 || $_FILES[$param]['size'] > $maxFileSize) {
-			throw new \RuntimeException('Exceeded filesize limit.');
-		}
-		// Check MIME Type by yourself.
+		if ($maxFileSize === -1 || $_FILES[$param]['size'] > $maxFileSize)
+			throw new \Exception('El archivo excede el tamaño máximo.');
+
 		$finfo = new \finfo(FILEINFO_MIME_TYPE);
-		if (count($validFileTypes) == 0 || !array_search(
+		if (count($validFileTypes) == 0 || array_search(
 			$finfo->file($_FILES[$param]['tmp_name']),
-			$validFileTypes, true)) {
-			throw new \RuntimeException('Invalid file format.');
+			$validFileTypes, true) == false)
+		{
+			throw new \Exception('Formato de archivo inválido.');
 		}
 		$tmpFile = IO::GetTempFilename();
-		// On this example, obtain safe unique name from its binary data.
-		if (!move_uploaded_file($_FILES[$param]['tmp_name'], $tmpFile)) {
-			throw new \RuntimeException('Failed to move uploaded file.');
-		}
+
+		if (move_uploaded_file($_FILES[$param]['tmp_name'], $tmpFile) == false)
+			throw new \Exception('Error al guardar archivo.');
 		return $tmpFile;
 	}
 
@@ -230,13 +226,13 @@ class Params
 		return $value;
 	}
 
-	public static function GetJsonMandatory($param, $assoc = false)
+	public static function GetJsonMandatory($param, bool $assoc = false)
 	{
 		$value = self::GetMandatory($param);
 		return json_decode($value, $assoc);
 	}
 
-	public static function GetJson($param, $assoc = false)
+	public static function GetJson($param, bool $assoc = false)
 	{
 		$value = Params::Get($param);
 		if ($value === null)
