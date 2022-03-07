@@ -129,7 +129,7 @@ class ServersSettings
 		foreach($cdns as $value)
 			$servers[] = $value->publicUrl;
 		if (count($servers) == 0)
-			$servers = $this->Current()->publicUrl;
+			$servers = [$this->Current()->publicUrl];
 		return $servers;
 	}
 

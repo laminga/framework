@@ -227,7 +227,7 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 			$ret = $this->fetchAssoc($query, $params);
-			if($ret === false)
+			if($ret === false || $ret === null)
 				return null;
 
 			return current($ret);
@@ -414,6 +414,8 @@ class Db
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
 		$ret = $this->fetch($statement, $params, \PDO::FETCH_ASSOC);
+		if ($ret === false)
+			$ret = null;
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
