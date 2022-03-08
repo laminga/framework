@@ -360,7 +360,7 @@ class IO
 		return true;
 	}
 
-	public static function RemoveExtension($filename)
+	public static function RemoveExtension($filename) : string
 	{
 		$n = strrpos($filename, '.');
 		if ($n === false || $n <= 0)
