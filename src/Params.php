@@ -158,42 +158,44 @@ class Params
 		return $value;
 	}
 
-	public static function GetUploadedImageMemory(string $param, int $maxFileSize = -1)
+	public static function GetUploadedImageMemory(string $field, int $maxFileSize = -1)
 	{
-		$file = self::GetUploadedImage($param, $maxFileSize);
+		$file = self::GetUploadedImage($field, $maxFileSize);
 		return IO::ReadAllBytes($file);
 	}
 
-	public static function GetUploadedFileMemory(string $param, int $maxFileSize = -1, array $validFileTypes = [])
+	public static function GetUploadedFileMemory(string $field, array $validExtensions, int $maxFileSize = -1)
 	{
-		$file = self::GetUploadedFile($param, $maxFileSize, $validFileTypes);
+		$file = self::GetUploadedFile($field, $validExtensions, $maxFileSize);
 		return IO::ReadAllBytes($file);
 	}
 
-	public static function GetUploadedImage(string $param, int $maxFileSize = -1) : string
+	public static function GetUploadedImage(string $field, int $maxFileSize = -1) : string
 	{
-		return self::GetUploadedFile($param, $maxFileSize, [
-			'jpg' => 'image/jpeg',
-			'png' => 'image/png',
-		]);
+		return self::GetUploadedFile($field, Extensions::Images, $maxFileSize);
 	}
 
-	public static function GetUploadedFile(string $param, int $maxFileSize = -1, array $validFileTypes = []) : string
+	public static function GetUploadedFile(string $field, array $validExtensions, int $maxFileSize = -1) : string
 	{
-		if ($maxFileSize === -1 || $_FILES[$param]['size'] > $maxFileSize)
-			throw new \Exception('El archivo excede el tamaño máximo.');
+		//No hay archivo...
+		if (isset($_FILES[$field]) == false || $_FILES[$field]['size'] == 0)
+			return '';
 
-		$finfo = new \finfo(FILEINFO_MIME_TYPE);
-		if (count($validFileTypes) == 0 || array_search(
-			$finfo->file($_FILES[$param]['tmp_name']),
-			$validFileTypes, true) == false)
-		{
-			throw new \Exception('Formato de archivo inválido.');
-		}
-		$tmpFile = IO::GetTempFilename();
+		if ($_FILES[$field]['error'] != 0)
+			throw new ErrorException('Error al subir el archivo.');
 
-		if (move_uploaded_file($_FILES[$param]['tmp_name'], $tmpFile) == false)
-			throw new \Exception('Error al guardar archivo.');
+		if ($maxFileSize != -1 && $_FILES[$field]['size'] > $maxFileSize)
+			throw new ErrorException('El archivo excede el tamaño máximo.');
+
+		$ext = Extensions::GetExtensionFromMimeType($_FILES[$field]['type']);
+		if(in_array($ext, $validExtensions) == false)
+			throw new ErrorException('El formato del archivo no es válido.');
+
+		$tmpFile = IO::GetTempFilename() . '.' . $ext;
+
+		if (move_uploaded_file($_FILES[$field]['tmp_name'], $tmpFile) == false)
+			throw new ErrorException('Error al guardar el archivo.');
+
 		return $tmpFile;
 	}
 
