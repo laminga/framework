@@ -2,10 +2,7 @@
 
 namespace minga\framework;
 
-//El nombre de esta clase no es el mejor y no es recomendable usarla en general
-//pero era peor que estas funciones estén en clases que si tienen un nombre y
-//funciones coherentes con él.
-class Misc
+class Aggregate
 {
 	public static function BuildTotalsRow(array $list, string $label, array $columns) : array
 	{
