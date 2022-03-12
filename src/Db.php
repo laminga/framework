@@ -227,7 +227,7 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 			$ret = $this->fetchAssoc($query, $params);
-			if($ret === false || $ret === null)
+			if($ret === null)
 				return null;
 
 			return current($ret);
@@ -407,7 +407,7 @@ class Db
 	 * @param string $statement The SQL query.
 	 * @param array $params The query parameters.
 	 *
-	 * @return array|false
+	 * @return ? array
 	 */
 	public function fetchAssoc(string $statement, array $params = [])
 	{
