@@ -302,7 +302,7 @@ class Traffic
 
 		Arr::SortByKeyDesc($ret, 'hits');
 
-		$ret[] = Misc::BuildTotalsRow($ret, 'ip', ['hits']);
+		$ret[] = Aggregate::BuildTotalsRow($ret, 'ip', ['hits']);
 		$ret[count($ret) - 1]['ip'] = 'Total (' . (count($ret) - 1) . ')';
 
 		return $ret;
