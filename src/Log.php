@@ -185,6 +185,9 @@ class Log
 		if($errorSource == '' && $errorLine == 0 && $errorColumn == 0 && $trace == '')
 			return true;
 
+		if(Str::ContainsI($errorMessage, 'loadTipy') && Str::ContainsI($trace, 'Failed to fetch'))
+			return true;
+
 		//No funciona...
 		// if(Str::ContainsI($errorMessage, 'redefine non-configurable property "userAgent"'))
 		//A ver si por separado funciona

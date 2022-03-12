@@ -7,29 +7,21 @@ use minga\framework\ErrorException;
 class ServersSettings
 {
 	/** @var ServerItem[] */
-	private $servers = [];
-	/** @var ?string */
-	private $currentServer = null;
+	private array $servers = [];
+	private ?string $currentServer = null;
 
-	/** @var ServerItem */
-	private $currentServerObj = null;
-	/** @var ServerItem */
-	private $mainServerObj = null;
+	private ServerItem $currentServerObj;
+	private ServerItem $mainServerObj;
 
 	public $RemoteLoginWhiteList = [];
 
-	/** @var ?string */
-	public $Python27 = null;
-	/** @var ?string */
-	public $Python3 = null;
-	/** @var string */
-	public $PhpCli = 'php';
+	public ?string $Python27 = null;
+	public ?string $Python3 = null;
+	public string $PhpCli = 'php';
 
 	public $LoopLocalPort = null;
-	/** @var string */
-	public $LoopLocalHost = 'localhost';
-	/** @var string */
-	public $LoopLocalScheme = 'http';
+	public string $LoopLocalHost = 'localhost';
+	public string $LoopLocalScheme = 'http';
 
 	public function RegisterServer(string $name, string $url, bool $isCDN = false) : void
 	{
@@ -59,7 +51,7 @@ class ServersSettings
 
 	public function Current() : ServerItem
 	{
-		if ($this->currentServerObj == null)
+		if (isset($this->currentServerObj) == false)
 			$this->currentServerObj = $this->ResolveCurrentServer();
 
 		return $this->currentServerObj;
@@ -76,7 +68,7 @@ class ServersSettings
 
 	private function ResolveCurrentServer() : ServerItem
 	{
-		if ($this->currentServer == null)
+		if (isset($this->currentServer) == false)
 		{
 			if (count($this->servers) > 1)
 				throw new ErrorException('Many servers are set in configuration but no current server is specificied. Call Context::Settings()->Servers()->SetCurrentServer(name) to set one.');
@@ -152,7 +144,7 @@ class ServersSettings
 
 	public function Main() : ServerItem
 	{
-		if ($this->mainServerObj == null)
+		if (isset($this->mainServerObj) == false)
 			return $this->Current();
 			//throw new ErrorException('No main server is set in configuration settings.');
 		return $this->mainServerObj;

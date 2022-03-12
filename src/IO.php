@@ -4,8 +4,7 @@ namespace minga\framework;
 
 class IO
 {
-	/** @var ?array */
-	private static $compressedDirectories;
+	private static array $compressedDirectories;
 
 	public static function AppendAllBytes(string $filename, $bytes) : void
 	{
@@ -361,7 +360,7 @@ class IO
 		return true;
 	}
 
-	public static function RemoveExtension($filename)
+	public static function RemoveExtension($filename) : string
 	{
 		$n = strrpos($filename, '.');
 		if ($n === false || $n <= 0)
@@ -947,7 +946,7 @@ class IO
 
 	public static function GetCompressedDirectory(string $path)
 	{
-		if (self::$compressedDirectories != null)
+		if (isset(self::$compressedDirectories))
 		{
 			foreach(self::$compressedDirectories as $compressedDir)
 			{
@@ -959,7 +958,7 @@ class IO
 		if ($dir->IsCompressed() == false)
 			$dir = new CompressedInParentDirectory($path);
 
-		if (self::$compressedDirectories == null)
+		if (isset(self::$compressedDirectories) == false)
 			self::$compressedDirectories = [];
 		self::$compressedDirectories[] = $dir;
 		return $dir;
@@ -967,7 +966,7 @@ class IO
 
 	public static function ReleaseCompressedDirectories() : void
 	{
-		if (self::$compressedDirectories != null)
+		if (isset(self::$compressedDirectories))
 		{
 			foreach(self::$compressedDirectories as $compressedDir)
 				$compressedDir->Release();

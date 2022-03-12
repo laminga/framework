@@ -4,10 +4,8 @@ namespace minga\framework;
 
 class FilesCursor
 {
-	/** @var string */
-	private $path;
-	/** @var string */
-	private $ext;
+	private string $path;
+	private string $ext;
 	private $handle = null;
 
 	public $Current;

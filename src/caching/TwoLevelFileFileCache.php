@@ -41,7 +41,7 @@ class TwoLevelFileFileCache
 		IO::Delete($file);
 	}
 
-	public function HasData($key1, $key2, &$out = null, $overriteTwoState = false) : bool
+	public function HasData($key1, $key2, &$out = null, bool $overriteTwoState = false) : bool
 	{
 		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled && $overriteTwoState == false)
 			return false;
@@ -53,11 +53,8 @@ class TwoLevelFileFileCache
 			$out = $file;
 			return true;
 		}
-
-
-			$out = null;
-			return false;
-
+		$out = null;
+		return false;
 	}
 
 	public function PutDataIfMissing($key1, $key2, $value) : void
@@ -67,17 +64,17 @@ class TwoLevelFileFileCache
 		$this->PutData($key1, $key2, $value);
 	}
 
-	public function PutData($key1, $key2, $filename)
+	public function PutData($key1, $key2, $filename) : string
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
-			return;
+			return '';
 
 		$file = $this->ResolveFilename($key1, $key2, true);
 		copy($filename, $file);
 		return $file;
 	}
 
-	private function ResolveFilename($key1, $key2, $create = false)
+	private function ResolveFilename($key1, $key2, bool $create = false) : string
 	{
 		$folder = $this->path . "/" . $key1;
 		if($create)

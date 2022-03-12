@@ -6,20 +6,14 @@ use minga\framework\enums\MailFooter;
 
 class TemplateMessage extends AttributeEntity
 {
-	/** @var string */
-	public $title = '';
-	/** @var string */
-	public $to = '';
-	/** @var string */
-	public $toCaption = '';
-	/** @var string */
-	public $formattedTo = '';
+	public string $title = '';
+	public string $to = '';
+	public string $toCaption = '';
+	public string $formattedTo = '';
 	public $footer = MailFooter::General;
-	/** @var string */
-	public $template = '';
+	public string $template = '';
 	public $content = null;
-	/** @var bool */
-	public $skipNotify = false;
+	public bool $skipNotify = false;
 
 	public function SetTo(string $name, string $email) : void
 	{

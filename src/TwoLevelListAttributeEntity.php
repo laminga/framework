@@ -4,8 +4,7 @@ namespace minga\framework;
 
 class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 {
-	/** @var bool */
-	protected $useInternalId = false;
+	protected bool $useInternalId = false;
 
 	public function AppendItem($section, $item) : void
 	{

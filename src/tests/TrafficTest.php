@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
@@ -7,7 +9,7 @@ use minga\framework\Traffic;
 
 class TrafficTest extends TestCaseBase
 {
-	public function testGetDevice()
+	public function testGetDevice() : void
 	{
 		$instance = new Traffic();
 		$ret = Reflection::CallPrivateMethod($instance, 'GetDevice');

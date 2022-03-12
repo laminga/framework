@@ -4,6 +4,5 @@ namespace minga\framework\settings;
 
 class QueueSettings
 {
-	/** @var bool */
-	public $Enabled = false;
+	public bool $Enabled = false;
 }

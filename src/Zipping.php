@@ -7,9 +7,9 @@ use minga\framework\locking\ZipLock;
 class Zipping
 {
 	/** @var \ZipArchive[] */
-	private static $allFiles = [];
+	private static array $allFiles = [];
 	/** @var ZipLock[] */
-	private static $allLocks = [];
+	private static array $allLocks = [];
 
 	public static function GetStream(string $filename) : string
 	{

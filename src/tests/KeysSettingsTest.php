@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
@@ -7,14 +9,14 @@ use minga\framework\settings\KeysSettings;
 
 class KeysSettingsTest extends TestCaseBase
 {
-	public function testCreateNewRememberKey()
+	public function testCreateNewRememberKey() : void
 	{
 		$ks = new KeysSettings();
 		$ret = $ks->CreateNewRememberKey();
 		$this->assertEquals(strlen($ret), 184);
 	}
 
-	public function testDefuseKey()
+	public function testDefuseKey() : void
 	{
 		$key = Key::createNewRandomKey();
 		$this->assertEquals(strlen($key->saveToAsciiSafeString()), 136);

@@ -7,157 +7,97 @@ use minga\framework\Context;
 class Settings
 {
 	// Fields para subclases
-	/** @var MailSettings */
-	private $mail = null;
-	/** @var LogSettings */
-	private $log = null;
-	/** @var PerformanceSettings */
-	private $performance = null;
-	/** @var OauthSettings */
-	private $oauth = null;
-	/** @var MonitorLimits */
-	private $limits = null;
-	/** @var DbSettings */
-	private $db = null;
-	/** @var QueueSettings */
-	private $queue = null;
-	/** @var DebugSettings */
-	private $debug = null;
-	/** @var CacheSettings */
-	private $cache = null;
-	/** @var ServersSettings */
-	private $servers = null;
-	/** @var KeysSettings */
-	private $keys = null;
-	/** @var NotificationSettings */
-	private $notifications = null;
+	private MailSettings $mail;
+	private LogSettings $log;
+	private PerformanceSettings $performance;
+	private OauthSettings $oauth;
+	private MonitorLimits $limits;
+	private DbSettings $db;
+	private QueueSettings $queue;
+	private DebugSettings $debug;
+	private CacheSettings $cache;
+	private ServersSettings $servers;
+	private KeysSettings $keys;
+	private NotificationSettings $notifications;
 
 	// UI Settings
-	/** @var string */
-	public $entorno = '';
+	public string $entorno = '';
 
-	/** @var bool */
-	public $updateGoogleBingSitemap = false;
-	/** @var bool */
-	public $readonlyForMaintenance = false;
+	public bool $updateGoogleBingSitemap = false;
+	public bool $readonlyForMaintenance = false;
 
-	/** @var string */
-	public $applicationName = 'AppName';
-	/** @var string */
-	public $currentCountry = 'Argentina';
+	public string $applicationName = 'AppName';
+	public string $currentCountry = 'Argentina';
 
-	/** @var bool */
-	public $useVendor = false;
-	/** @var bool */
-	public $allowExport = true;
-	/** @var bool */
-	public $allowExportDoc = false;
+	public bool $useVendor = false;
+	public bool $allowExport = true;
+	public bool $allowExportDoc = false;
 
-	/** @var bool */
-	public $showNewUploading = false;
-	/** @var bool */
-	public $showMoveUrl = false;
+	public bool $showNewUploading = false;
+	public bool $showMoveUrl = false;
 
-	/** @var string */
-	public $forceIfModifiedReload = '31/1/1980';
-	/** @var bool */
-	public $useOldInstitutions = true;
-	/** @var bool */
-	public $useOldProjects = true;
+	public string $forceIfModifiedReload = '31/1/1980';
+	public bool $useOldInstitutions = true;
+	public bool $useOldProjects = true;
 
-	/** @var bool */
-	public $useProjects = false;
-	/** @var bool */
-	public $useEvents = true;
-	/** @var bool */
-	public $useProfiles = true;
+	public bool $useProjects = false;
+	public bool $useEvents = true;
+	public bool $useProfiles = true;
 
 	// Deprecated en AA
-	/** @var bool */
-	public $skipExternalLibraries = false;
+	public bool $skipExternalLibraries = false;
 
-	/** @var bool */
-	public $useCDN = true;
-	/** @var bool */
-	public $useOpenId = false;
-	/** @var bool */
-	public $useOpenIdFacebook = false;
-	/** @var bool */
-	public $useOpenIdGoogle = false;
+	public bool $useCDN = true;
+	public bool $useOpenId = false;
+	public bool $useOpenIdFacebook = false;
+	public bool $useOpenIdGoogle = false;
 
-	/** @var bool */
-	public $normalizeNames = false;
-	/** @var bool */
-	public $setupInstallOnly = true;
+	public bool $normalizeNames = false;
+	public bool $setupInstallOnly = true;
 
-	/** @var bool */
-	public $decryptPdfs = true;
+	public bool $decryptPdfs = true;
 
-	/** @var string */
-	public $catalog = '';
+	public string $catalog = '';
 
 	// Caching
-	/** @var bool */
-	public $useCoverPageCache = true;
-	/** @var bool */
-	public $useOaiCache = true;
-	/** @var string */
-	public $converterURL = "";
-	/** @var string */
-	public $converterKey = "";
+	public bool $useCoverPageCache = true;
+	public bool $useOaiCache = true;
+	public string $converterURL = "";
+	public string $converterKey = "";
 
 	// globales que se setean en startup.php
-	/** @var ?string */
-	public $rootPath = null;
-	/** @var bool */
-	public $isTesting = false;
-	/** @var bool */
-	public $isExporting = false;
-	/** @var bool */
-	public $isEmbedded = false;
-	/** @var bool */
-	public $noRobots = false;
-	/** @var bool */
-	public $isEmbeddedList = false;
-	/** @var bool */
-	public $isEmbeddedMembers = false;
-	/** @var bool */
-	public $isBoxed = false;
-	/** @var bool */
-	public $isBoxValid = false;
+	public ?string $rootPath = null;
+	public bool $isTesting = false;
+	public bool $isExporting = false;
+	public bool $isEmbedded = false;
+	public bool $noRobots = false;
+	public bool $isEmbeddedList = false;
+	public bool $isEmbeddedMembers = false;
+	public bool $isBoxed = false;
+	public bool $isBoxValid = false;
 
-	/** @var ?string */
-	public $boxingContent;
-	/** @var bool */
-	public $isFramed = false;
+	public ?string $boxingContent;
+	public bool $isFramed = false;
 
 	public $timerStart = '';
 
-	/** @var bool */
-	public $isAPIEnabled = false;
+	public bool $isAPIEnabled = false;
 
-	/** @var bool */
-	public $allowPHPsession = true;
-	/** @var bool */
-	public $allowCrossSiteSessionCookie = false;
+	public bool $allowPHPsession = true;
+	public bool $allowCrossSiteSessionCookie = false;
 
 	public $storagePath = '';
 
 	// ARKS
-	/** @var ?string */
-	public $arkNAAN = null;
-	/** @var string */
-	public $arkGlobalServer = '';
-	/** @var bool */
-	public $useArks = true;
+	public ?string $arkNAAN = null;
+	public string $arkGlobalServer = '';
+	public bool $useArks = true;
 
 	// Mirrors
-	/** @var string */
-	public $publicCacheURL = '';
+	public string $publicCacheURL = '';
 
 	// otras globales
-	/** @var string */
-	public $section = '';
+	public string $section = '';
 
 	public function Initialize(string $rootPath) : void
 	{
@@ -174,7 +114,7 @@ class Settings
 
 	public function Keys() : KeysSettings
 	{
-		if($this->keys == null)
+		if(isset($this->keys) == false)
 			$this->keys = new KeysSettings();
 
 		return $this->keys;
@@ -182,7 +122,7 @@ class Settings
 
 	public function Mail() : MailSettings
 	{
-		if ($this->mail == null)
+		if (isset($this->mail) == false)
 			$this->mail = new MailSettings();
 
 		return $this->mail;
@@ -190,7 +130,7 @@ class Settings
 
 	public function Queue() : QueueSettings
 	{
-		if ($this->queue == null)
+		if (isset($this->queue) == false)
 			$this->queue = new QueueSettings();
 
 		return $this->queue;
@@ -198,7 +138,7 @@ class Settings
 
 	public function Db() : DbSettings
 	{
-		if ($this->db == null)
+		if (isset($this->db) == false)
 			$this->db = new DbSettings();
 
 		return $this->db;
@@ -206,7 +146,7 @@ class Settings
 
 	public function Oauth() : OauthSettings
 	{
-		if ($this->oauth == null)
+		if (isset($this->oauth) == false)
 			$this->oauth = new OauthSettings();
 
 		return $this->oauth;
@@ -214,7 +154,7 @@ class Settings
 
 	public function Cache() : CacheSettings
 	{
-		if ($this->cache == null)
+		if (isset($this->cache) == false)
 			$this->cache = new CacheSettings();
 
 		return $this->cache;
@@ -222,7 +162,7 @@ class Settings
 
 	public function Performance() : PerformanceSettings
 	{
-		if ($this->performance == null)
+		if (isset($this->performance) == false)
 			$this->performance = new PerformanceSettings();
 
 		return $this->performance;
@@ -230,7 +170,7 @@ class Settings
 
 	public function Log() : LogSettings
 	{
-		if ($this->log == null)
+		if (isset($this->log) == false)
 			$this->log = new LogSettings();
 
 		return $this->log;
@@ -238,7 +178,7 @@ class Settings
 
 	public function Notifications() : NotificationSettings
 	{
-		if ($this->notifications == null)
+		if (isset($this->notifications) == false)
 			$this->notifications = new NotificationSettings();
 
 		return $this->notifications;
@@ -246,7 +186,7 @@ class Settings
 
 	public function Debug() : DebugSettings
 	{
-		if ($this->debug == null)
+		if (isset($this->debug) == false)
 			$this->debug = new DebugSettings();
 
 		return $this->debug;
@@ -254,7 +194,7 @@ class Settings
 
 	public function Servers() : ServersSettings
 	{
-		if ($this->servers == null)
+		if (isset($this->servers) == false)
 			$this->servers = new ServersSettings();
 
 		return $this->servers;
@@ -262,7 +202,7 @@ class Settings
 
 	public function Limits() : MonitorLimits
 	{
-		if ($this->limits == null)
+		if (isset($this->limits) == false)
 			$this->limits = new MonitorLimits();
 
 		return $this->limits;

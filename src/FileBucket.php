@@ -4,10 +4,8 @@ namespace minga\framework;
 
 class FileBucket
 {
-	/** @var string */
-	public $path = '';
-	/** @var string */
-	public $id = '';
+	public string $path = '';
+	public string $id = '';
 
 	private static function CleanUp() : void
 	{

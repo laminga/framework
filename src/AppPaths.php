@@ -36,6 +36,13 @@ class AppPaths
 		return $path;
 	}
 
+	public function GetCronJobsPath() : string
+	{
+		$path = $this->GetStorageRoot() . "/cron";
+		IO::EnsureExists($path);
+		return $path;
+	}
+
 	public static function GetHtmlPurifierCachePath() : string
 	{
 		$path = Context::Paths()->GetStorageCaches() . '/htmlpurifier';
@@ -82,6 +89,11 @@ class AppPaths
 		$ret = $this->GetDumpMonthlyLocalPath() . '/' . Str::UrlencodeFriendly(Context::LoggedUser());
 		IO::EnsureExists($ret);
 		return $ret;
+	}
+
+	public static function GetCronJobsScriptPath() : string
+	{
+		return Context::Paths()->GetRoot() . "/services/cron";
 	}
 
 	public static function GetTwigCache() : string

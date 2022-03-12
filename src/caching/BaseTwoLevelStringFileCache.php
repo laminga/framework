@@ -59,10 +59,10 @@ class BaseTwoLevelStringFileCache
 			return true;
 		}
 
-			return false;
+		return false;
 	}
 
-	private function ResolveFilename($key1, $key2, bool $create = false)
+	private function ResolveFilename($key1, $key2, bool $create = false) : string
 	{
 		$key1 = (string)$key1;
 		$key2 = (string)$key2;
@@ -74,7 +74,7 @@ class BaseTwoLevelStringFileCache
 			return $folder . "/" . $key2 . ".txt";
 		}
 
-			return $this->path . "/" . $key1 . ".txt";
+		return $this->path . "/" . $key1 . ".txt";
 	}
 
 	public function PutDataIfMissing($key1, $key2, $value) : void

@@ -12,31 +12,28 @@ class Image
 	 * Si alguna medida es cero calcula la proporción
 	 * con la otra.
 	 *
-	 * Por default siempre grababa el resultado en png
-	 * se agregó parámetro opcional para que no lo haga.
 	 */
-	public static function Resize($type, $sourceFile,
-		$maxWidth, $maxHeight, $targetFile, $useTypeForSave = false) : void
+	public static function Resize(string $sourceFile, int $maxWidth, int $maxHeight, string $targetFile) : void
 	{
-
 		if($maxWidth == 0 && $maxHeight == 0)
 			return;
 
-		switch(Str::ToLower($type))
+		$ext = IO::GetFileExtension($sourceFile);
+
+		switch(Str::ToLower($ext))
 		{
-		case 'image/jpeg':
-		case 'image/pjpeg':
+		case 'jpeg':
+		case 'jpg':
 			$image = imagecreatefromjpeg($sourceFile);
 			break;
-		case 'image/x-png':
-		case 'image/png':
+		case 'png':
 			$image = imagecreatefrompng($sourceFile);
 			break;
-		case 'image/gif':
+		case 'gif':
 			$image = imagecreatefromgif($sourceFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: ' . $type);
+			throw new \Exception('Unsupported type: ' . $ext);
 		}
 		// Get current dimensions
 		$oldWidth = imagesx($image);
@@ -64,27 +61,20 @@ class Image
 		imagecopyresampled($new, $image, 0, 0, 0, 0,
 			$newWidth, $newHeight, $oldWidth, $oldHeight);
 
-		//Por razones de compatibilidad se agrega este parámetro,
-		//esta función grababa siempre en formato png, habría que
-		//revisar el código y actualizar esta función toda.
-		if($useTypeForSave == false)
-			$type = 'image/png';
-
-		switch(Str::ToLower($type))
+		switch(Str::ToLower($ext))
 		{
-		case 'image/jpeg':
-		case 'image/pjpeg':
+		case 'jpeg':
+		case 'jpg':
 			imagejpeg($new, $targetFile);
 			break;
-		case 'image/x-png':
-		case 'image/png':
+		case 'png':
 			imagepng($new, $targetFile, 9);
 			break;
-		case 'image/gif':
+		case 'gif':
 			imagegif($new, $targetFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: ' . $type);
+			throw new \Exception('Unsupported type: ' . $ext);
 		}
 		imagedestroy($new);
 	}
@@ -117,6 +107,40 @@ class Image
 		}
 		fclose($fd);
 		return $plte && $trns;
+	}
+
+	public static function RemoveAlfa(string $file) : void
+	{
+		$ext = IO::GetFileExtension($file);
+		if ($ext != 'png' || file_exists($file) == false
+			|| Image::IsTransparentPng($file) == false)
+		{
+			return;
+		}
+
+		$renamed = IO::GetTempFilename();
+		IO::Move($file, $renamed);
+
+		// Get the original image.
+		$src = imagecreatefrompng($renamed);
+
+		// Get the width and height.
+		$width = imagesx($src);
+		$height = imagesy($src);
+
+		// Create a white background, the same size as the original.
+		$bg = imagecreatetruecolor($width, $height);
+		$white = imagecolorallocate($bg, 255, 255, 255);
+		imagefill($bg, 0, 0, $white);
+
+		// Merge the two images.
+		imagecopyresampled($bg, $src, 0, 0, 0, 0, $width, $height, $width, $height);
+
+		// Save the finished image.
+		imagepng($bg, $file, 6);
+		imagedestroy($bg);
+		imagedestroy($src);
+		IO::Delete($renamed);
 	}
 
 }

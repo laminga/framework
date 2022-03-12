@@ -11,7 +11,7 @@ use minga\framework\Str;
 class BaseTwoLevelStringSQLiteCache
 {
 	private $path;
-	private $db;
+	private SQLiteList $db;
 
 	public function __construct($path)
 	{

@@ -4,12 +4,9 @@ namespace minga\framework;
 
 class AttributeEntity
 {
-	/** @var string */
-	public $path = '';
-	/** @var array */
-	public $attributes = [];
-	/** @var array */
-	public $extraAttributes = [];
+	public string $path = '';
+	public array $attributes = [];
+	public array $extraAttributes = [];
 
 	public function LoadAttributesOnly(string $path) : void
 	{

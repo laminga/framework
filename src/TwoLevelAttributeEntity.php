@@ -4,12 +4,9 @@ namespace minga\framework;
 
 class TwoLevelAttributeEntity
 {
-	/** @var string */
-	public $path = '';
-	/** @var array */
-	public $sections = [];
-	/** @var bool */
-	protected $keepSectionCreationDate = false;
+	public string $path = '';
+	public array $sections = [];
+	protected bool $keepSectionCreationDate = false;
 
 	public function SetLocation(string $path) : void
 	{

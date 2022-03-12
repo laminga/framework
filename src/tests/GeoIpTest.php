@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
@@ -7,14 +9,14 @@ use minga\framework\GeoIp;
 
 class GeoIpTest extends TestCaseBase
 {
-	public function testGetCurrentLatLong()
+	public function testGetCurrentLatLong() : void
 	{
 		$loc = GeoIp::GetCurrentLatLong();
 		$this->assertIsNumeric($loc['lat']);
 		$this->assertIsNumeric($loc['lon']);
 	}
 
-	public function testDatabaseUpdated()
+	public function testDatabaseUpdated() : void
 	{
 		$now = Date::DateTimeNow();
 
@@ -25,13 +27,13 @@ class GeoIpTest extends TestCaseBase
 		$this->assertLessThan(360, Date::DaysDiff($now, $date), "La base de datos de ciudades de GeoIP tiene más de un año de antigüedad. Debe ser actualizada para proveer de resultados confiables.");
 	}
 
-	public function testGetCountryName()
+	public function testGetCountryName() : void
 	{
 		$loc = GeoIp::GetCountryName('123.123.123.123');
 		$this->assertEquals('China', $loc);
 	}
 
-	public function testGetClientCountryCode()
+	public function testGetClientCountryCode() : void
 	{
 		$_SERVER['REMOTE_ADDR'] = '';
 		$loc = GeoIp::GetClientCountryCode();
@@ -47,9 +49,9 @@ class GeoIpTest extends TestCaseBase
 
 		$_SERVER['REMOTE_ADDR'] = '23.12.155.1';
 		$loc = GeoIp::GetClientCountryCode();
-		$this->assertEquals('AR', $loc, $_SERVER['REMOTE_ADDR']);	}
+		$this->assertEquals('AR', $loc, $_SERVER['REMOTE_ADDR']); }
 
-	public function testGetNameFromCode()
+	public function testGetNameFromCode() : void
 	{
 		$loc = GeoIp::GetNameFromCode('AR');
 		$this->assertEquals('Argentina', $loc);

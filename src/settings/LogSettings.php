@@ -4,12 +4,9 @@ namespace minga\framework\settings;
 
 class LogSettings
 {
-	/** @var bool */
-	public $LogErrorsToDisk = true;
-	/** @var bool */
-	public $LogEmailsToDisk = true;
+	public bool $LogErrorsToDisk = true;
+	public bool $LogEmailsToDisk = true;
 
-	/** @var bool */
-	public $LogMemoryPeaks = false;
+	public bool $LogMemoryPeaks = false;
 	public $MemoryPeakMB = 200;
 }

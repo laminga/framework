@@ -11,13 +11,15 @@ class Arr
 			$ret[$k] = clone $v;
 		return $ret;
 	}
+
 	public static function KeysToLower(array $arr) : array
 	{
 		$ret = [];
 		foreach($arr as $k => $v)
 			$ret[Str::ToLower($k)] = $v;
 		return $ret;
-	}	
+	}
+
 	public static function GetItemByNamedValue(array $arr, $itemName, $itemValue, $default = null)
 	{
 		$index = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
@@ -69,7 +71,6 @@ class Arr
 			return '';
 		return (string)$ret;
 	}
-
 
 	public static function IndexOf(array $array, $element)
 	{
@@ -379,6 +380,8 @@ class Arr
 	public static function Remove(array &$array, $value) : array
 	{
 		$n = self::IndexOf($array, $value);
+		if($n == -1)
+			return $array;
 		return self::RemoveAt($array, $n);
 	}
 
@@ -659,5 +662,4 @@ class Arr
 		array_splice($arr, $n, 0, [$element]);
 		return $arr;
 	}
-
 }

@@ -90,13 +90,13 @@ class HtmlFilter
 				continue;
 
 			$parts = explode(',', $node->src, 2);
-			$mime = self::GetMimeType($parts[0]);
+			$ext = Extensions::GetExtensionFromMimeType(self::GetMimeType($parts[0]));
 
 			$newSize = self::GetAttributesSize($node);
 			if($newSize[0] == 0 && $newSize[1] == 0)
 				continue;
 
-			$srcFile = IO::GetTempFilename();
+			$srcFile = IO::GetTempFilename() . '.' . $ext;
 			file_put_contents($srcFile, base64_decode($parts[1]));
 
 			$size = getimagesize($srcFile);
@@ -106,9 +106,8 @@ class HtmlFilter
 				continue;
 			}
 
-			$dstFile = IO::GetTempFilename();
-
-			Image::Resize($mime, $srcFile, $newSize[0], $newSize[1], $dstFile, true);
+			$dstFile = IO::GetTempFilename() . '.' . $ext;
+			Image::Resize($srcFile, $newSize[0], $newSize[1], $dstFile);
 			$node->src = $parts[0] . ',' . base64_encode(file_get_contents($dstFile));
 
 			IO::Delete($srcFile);
@@ -121,7 +120,7 @@ class HtmlFilter
 
 	private static function GetValueFromStyle(string $prop, string $text) : int
 	{
-		//TODO: implementar con otras unidades no pixeles
+		//TODO: implementar con otras unidades además de píxeles
 		$ret = preg_match("/\b" . $prop . "\s*:\s*(\d+)px/", $text, $match);
 		if($ret === false || $ret == 0)
 			return 0;
@@ -147,7 +146,7 @@ class HtmlFilter
 		if($width == 0)
 			$width = (int)$node->width;
 		if($height == 0)
-			$heigth = (int)$node->heigth;
+			$height = (int)$node->height;
 
 		return [$width, $height];
 	}

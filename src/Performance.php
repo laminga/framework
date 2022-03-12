@@ -16,8 +16,7 @@ class Performance
 	private static $timeEnd = null;
 
 	private static $timePausedStart = null;
-	/** @var bool */
-	private static $gotFromCache = true;
+	private static bool $gotFromCache = true;
 
 	private static $controller = null;
 	private static $method = null;
@@ -29,15 +28,13 @@ class Performance
 	private static $locksByClass = [];
 	private static $timeStartLocked = null;
 	private static $timeStartDb = null;
-	/** @var bool */
-	private static $daylyResetChecked = false;
+	private static bool $daylyResetChecked = false;
 
 	public static $warnToday = null;
 	public static $warnYesterday = null;
 	public static $pauseEllapsedSecs = 0;
 
-	/** @var bool */
-	public static $allowLongRunningRequest = false;
+	public static bool $allowLongRunningRequest = false;
 
 	public static $mailsSent = 0;
 

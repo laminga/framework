@@ -3,16 +3,14 @@
 namespace minga\framework;
 
 use GeoIp2\Database\Reader;
-use GeoIp2\Record\City;
 use GeoIp2\Exception\AddressNotFoundException;
+use GeoIp2\Record\City;
 use GeoIp2\Record\Country;
 
 class GeoIp
 {
-	/** @var Reader */
-	private static $geoDbCity = null;
-	/** @var Reader */
-	private static $geoDbCountry = null;
+	private static Reader $geoDbCity;
+	private static Reader $geoDbCountry;
 
 	public static function GetCurrentLatLong() : ?array
 	{
@@ -99,7 +97,7 @@ class GeoIp
 
 	private static function GetGeoDbCountry() : Reader
 	{
-		if(self::$geoDbCountry === null)
+		if(isset(self::$geoDbCountry) == false)
 		{
 			$file = self::SolvePath('GeoLite2-Country/GeoLite2-Country.mmdb');
 			self::$geoDbCountry = new Reader($file);
@@ -120,7 +118,7 @@ class GeoIp
 
 	private static function GetGeoDbCity() : Reader
 	{
-		if(self::$geoDbCity === null)
+		if(isset(self::$geoDbCity) == false)
 		{
 			$file = self::SolvePath('GeoLite2-City/GeoLite2-City.mmdb');
 			self::$geoDbCity = new Reader($file);

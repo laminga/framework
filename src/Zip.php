@@ -6,10 +6,8 @@ use minga\framework\locking\ZipLock;
 
 class Zip
 {
-	// /** @var string */
 	public $targetFile;
-	/** @var ZipLock */
-	public $lock;
+	public ZipLock $lock;
 
 	public function __construct(string $file)
 	{
@@ -299,5 +297,4 @@ class Zip
 		}
 		$zip->close();
 	}
-
 }
