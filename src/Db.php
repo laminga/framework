@@ -4,18 +4,18 @@ namespace minga\framework;
 
 class Db
 {
-	public $Host = 'localhost';
-	public $Name = '';
-	public $User = '';
-	public $NoDb = false;
-	public $Password = '';
-	public $Port = 3306;
-	public $Charset = 'utf8';
+	public string $Host = 'localhost';
+	public string $Name = '';
+	public string $User = '';
+	public bool $NoDb = false;
+	public string $Password = '';
+	public int $Port = 3306;
+	public string $Charset = 'utf8';
 
 	// comentado esto por ahora: \PDO|\Doctrine\DBAL\Connection
 	public $db = null;
 	private bool $isInTransaction = false;
-	private $lastRows = -1;
+	private int $lastRows = -1;
 
 	public function __construct($db = null, $profiler = null)
 	{
