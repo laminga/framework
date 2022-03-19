@@ -129,17 +129,17 @@ class Db
 				return $this->db->fetchAll($sql, $params);
 
 
-				$query = $this->parseArrayParams($sql, $params);
-				$stmt = $this->db->prepare($query);
-				if(key($params) === 0)
-					$stmt->execute($params);
-				else
-				{
-					foreach($params as $k => $v)
-						$stmt->bindValue($k, $v, $this->getParamType($v));
-					$stmt->execute();
-				}
-				return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+			$query = $this->parseArrayParams($sql, $params);
+			$stmt = $this->db->prepare($query);
+			if(key($params) === 0)
+				$stmt->execute($params);
+			else
+			{
+				foreach($params as $k => $v)
+					$stmt->bindValue($k, $v, $this->getParamType($v));
+				$stmt->execute();
+			}
+			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
 		}
 		finally
@@ -482,7 +482,7 @@ class Db
 		elseif(is_int($var))
 			return \PDO::PARAM_INT;
 
-			return \PDO::PARAM_STR;
+		return \PDO::PARAM_STR;
 	}
 
 	/**
