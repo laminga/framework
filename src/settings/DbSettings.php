@@ -6,13 +6,15 @@ class DbSettings
 {
 	//Datos DB
 	public bool $NoDb = false;
-	public $Name = '';
-	public $User = '';
-	public $Password = '';
-	public $Host = '';
-	public $Port = 3306;
-	public $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
+	public string $Name = '';
+	public string $User = '';
+	public string $Password = '';
+	public string $Host = '';
+	public int $Port = 3306;
+	public string $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
 	public ?string $RemoteUrl = null;
+
+	public string $Charset = 'utf8';
 
 	public int $FullTextMinWordLength = 4;
 
@@ -23,12 +25,20 @@ class DbSettings
 
 	public bool $SetTimeZone = true;
 
-	public function SetDatabase($host, $dbName, $user, $password, $port = 3306) : void
+	public function SetDatabase(string $host, string $dbName, string $user, string $password, string $charset = 'utf8', int $port = 3306) : void
 	{
 		$this->Name = $dbName;
 		$this->User = $user;
 		$this->Password = $password;
 		$this->Host = $host;
+		$this->Charset = $charset;
 		$this->Port = $port;
+	}
+
+	public function GetDriver() : string
+	{
+		if($this->Engine == 'mysql')
+			return 'pdo_mysql';
+		return '';
 	}
 }
