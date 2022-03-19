@@ -201,8 +201,14 @@ class Extensions
 				return "image/bmp";
 			case "zip":
 				return "application/zip";
+			case 'sav':
+				return 'application/x-vnd.spss-statistics-spd';
+			case 'dta':
+				return 'application/x-stata';
+			case 'rdata':
+				return 'application/octet-stream';
 			default:
-				throw new \Exception("Invalid extension.");
+				return 'application/octet-stream';
 		}
 	}
 
@@ -395,7 +401,7 @@ class Extensions
 		$arr = self::ValidMimeTypes();
 		if(isset($arr[$mime]))
 			return $arr[$mime][0];
-		Log::HandleSilentException(new \Exception('No se encontré extensión para mime: '. $mime));
+		Log::HandleSilentException(new \Exception('No se encontré extensión para mime: ' . $mime));
 		throw new \Exception('mime type not found');
 	}
 }
