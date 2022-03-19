@@ -6,10 +6,6 @@ class System
 {
 	public static function GetServerInfo()
 	{
-		// vd(php_uname('n'));
-				// $host = gethostname();
-				// $ip = gethostbyname($host);
-
 		$flags = [];
 		// $flags[] = ['flag' => 'n', 'name' => 'Servidor'];
 		$flags[] = ['flag' => 's', 'name' => 'Sistema operativo'];

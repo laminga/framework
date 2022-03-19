@@ -25,6 +25,12 @@ class KeysSettings
 	public string $AddThisKey = '';
 	public string $SendGridApiKey = '';
 
+	/**
+	 * Clave secreta random para uso interno
+	 * de la aplicación (necesario para Symfony).
+	 */
+	public string $AppSecret = '';
+
 	// Interna simple para ingresar a test
 	public string $TestEnvironmentKey = '';
 

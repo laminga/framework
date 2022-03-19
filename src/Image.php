@@ -11,7 +11,6 @@ class Image
 	 * Si ambas medidas son cero, sale.
 	 * Si alguna medida es cero calcula la proporción
 	 * con la otra.
-	 *
 	 */
 	public static function Resize(string $sourceFile, int $maxWidth, int $maxHeight, string $targetFile) : void
 	{
@@ -142,5 +141,4 @@ class Image
 		imagedestroy($src);
 		IO::Delete($renamed);
 	}
-
 }

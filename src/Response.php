@@ -17,9 +17,30 @@ class Response
 		return self::$isJson;
 	}
 
-	public static function Redirect(string $url) : void
+	public static function RedirectKeepingParams(string $url, int $status = 302) : void
 	{
-		header('Location: ' . $url);
+		$ret = $url;
+		$params = Request::GetQueryString();
+		if ($params)
+		{
+			if (Str::Contains($ret, "?") == false)
+				$ret .= "?";
+			else
+				$ret .= "&";
+			$ret .= $params;
+		}
+		self::Redirect($ret, $status);
+	}
+
+	public static function Redirect(string $url, int $status = 302) : void
+	{
+		header('Location: ' . $url, true, $status);
+		exit();
+	}
+
+	public static function PermanentRedirect(string $url) : void
+	{
+		header('Location: ' . $url, true, 301);
 		exit();
 	}
 }
