@@ -594,7 +594,6 @@ class Db
 		return $ret;
 	}
 
-
 	/**
 	 * @param array|string $name
 	 *
