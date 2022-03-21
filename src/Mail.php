@@ -63,7 +63,7 @@ class Mail
 
 	private function ResolveProvider($recipient) : int
 	{
-		if(Context::Settings()->entorno == 'desa')
+		if(Context::Settings()->environment == 'desa' || Context::Settings()->environment == 'dev')
 			return Context::Settings()->Mail()->Provider;
 
 		if (is_array($recipient) == false)
