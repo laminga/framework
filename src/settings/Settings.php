@@ -99,6 +99,7 @@ class Settings
 
 	// otras globales
 	public string $section = '';
+	public string $supportMail = '';
 
 	public function Initialize(string $rootPath) : void
 	{
@@ -207,6 +208,13 @@ class Settings
 			$this->limits = new MonitorLimits();
 
 		return $this->limits;
+	}
+
+	public function GetSupportMail() : string
+	{
+		if($this->supportMail != '')
+			return $this->supportMail;
+		return 'soporte@' . str_replace('www.', '', parse_url($this->GetMainServerPublicUrl(), PHP_URL_HOST));
 	}
 
 	public function GetPublicUrl() : string

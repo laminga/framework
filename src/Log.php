@@ -73,7 +73,7 @@ class Log
 			else
 				$textToShow = 'Se produjo un error: ' . $errorMessage;
 
-			$textToShow .= '.<p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href="mailto:soporte@aacademica.org">soporte@aacademica.org</a> describiendo el inconveniente.';
+			$textToShow .= '.<p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href="mailto:' . Context::Settings()->GetSupportMail() . '">' . Context::Settings()->GetSupportMail() . '</a> describiendo el inconveniente.';
 		}
 
 		if($filtered)
