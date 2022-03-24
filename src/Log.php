@@ -6,7 +6,7 @@ use minga\framework\locking\Lock;
 
 class Log
 {
-	private static $isLoggingMailError = false;
+	private static bool $isLoggingMailError = false;
 	public static $extraErrorTarget = null;
 	public static $extraErrorInfo = null;
 
@@ -68,12 +68,12 @@ class Log
 				|| Str::Contains($errorMessage, '>'))
 			{
 				$filtered = true;
-				$textToShow = 'Se produjo un error';
+				$textToShow = Context::Trans('Se produjo un error');
 			}
 			else
-				$textToShow = 'Se produjo un error: ' . $errorMessage;
+				$textToShow = Context::Trans('Se produjo un error') . ': ' . $errorMessage;
 
-			$textToShow .= '.<p>Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a <a href="mailto:' . Context::Settings()->GetSupportMail() . '">' . Context::Settings()->GetSupportMail() . '</a> describiendo el inconveniente.';
+			$textToShow .= '.<p>' . Context::Trans('Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a') . ' <a href="mailto:' . Context::Settings()->GetSupportMail() . '">' . Context::Settings()->GetSupportMail() . '</a> ' . Context::Trans('describiendo el inconveniente.') . '</p>';
 		}
 
 		if($filtered)
@@ -145,23 +145,23 @@ class Log
 		if(Str::Contains($errorMessage, 'function_bar'))
 			return true;
 
-		// if(Str::Contains($errorMessage, "property 'localdata' of undefined")
-		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
-		// {
-		// 	return true;
-		// }
-		//
-		// if(Str::Contains($errorMessage, 'w.source._source is undefined')
-		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
-		// {
-		// 	return true;
-		// }
-		//
-		// if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
-		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
-		// {
-		// 	return true;
-		// }
+		if(Str::Contains($errorMessage, "property 'localdata' of undefined")
+			&& Str::Contains($errorSource, '/jqwidgets/'))
+		{
+			return true;
+		}
+
+		if(Str::Contains($errorMessage, 'w.source._source is undefined')
+			&& Str::Contains($errorSource, '/jqwidgets/'))
+		{
+			return true;
+		}
+
+		if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
+			&& Str::Contains($errorSource, '/jqwidgets/'))
+		{
+			return true;
+		}
 
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
@@ -286,7 +286,7 @@ class Log
 	public static function InternalExceptionToText($exception) : string
 	{
 		$message = $exception->getMessage();
-		if (is_a($exception, MingaException::class) && $exception->getInnerException())
+		if (is_a($exception, MingaException::class) && $exception->getInnerException() != null)
 		{
 			$inner = $exception->getInnerException();
 			if (is_a($inner, \Exception::class))

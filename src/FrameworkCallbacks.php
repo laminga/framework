@@ -19,6 +19,11 @@ abstract class FrameworkCallbacks
 
 	public function Db() : Db
 	{
-		throw new \Exception('Inherit');
+		throw new \Exception('Heredar');
+	}
+
+	public static function Trans(string $str, array $parameters = [], ?string $domain = null, ?string $locale = null) : string
+	{
+		return $str;
 	}
 }

@@ -8,9 +8,9 @@ use minga\framework\settings\CacheSettings;
 
 class FileFileCache
 {
-	private $path;
+	private string $path;
 
-	public function __construct($path)
+	public function __construct(string $path)
 	{
 		$this->path = Context::Paths()->GetStorageCaches() . '/services/' . $path;
 	}
@@ -40,11 +40,8 @@ class FileFileCache
 			$out = $file;
 			return true;
 		}
-
-
 		$out = null;
 		return false;
-
 	}
 
 	public function PutDataIfMissing($key1, $value) : void

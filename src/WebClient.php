@@ -202,7 +202,7 @@ class WebClient
 		{
 			if ($this->throwErrors)
 			{
-				MessageBox::ThrowMessage("Error: " . $this->error);
+				MessageBox::ThrowMessage('Error: ' . $this->error);
 				$this->Finalize();
 			}
 			return '';
@@ -255,7 +255,7 @@ class WebClient
 		{
 			if ($this->throwErrors)
 			{
-				MessageBox::ThrowMessage("Error: " . $this->error);
+				MessageBox::ThrowMessage('Error: ' . $this->error);
 				$this->Finalize();
 			}
 			return '';
@@ -398,7 +398,7 @@ class WebClient
 	public function GetCookieFile()
 	{
 		if($this->cookieFile == '')
-			throw new ErrorException('Create cookie first.');
+			throw new ErrorException('Primero crear la cookie.');
 
 		return $this->cookieFile;
 	}

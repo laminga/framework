@@ -21,10 +21,10 @@ class Zip
 		if (file_exists($this->targetFile) == false)
 		{
 			if ($zip->open($this->targetFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true)
-				throw new \Exception('Could not open archive');
+				throw new ErrorException(Context::Trans('No se pudo abrir el archivo'));
 		}
 		else if ($zip->open($this->targetFile) !== true)
-			throw new \Exception('Could not open archive');
+			throw new ErrorException(Context::Trans('No se pudo abrir el archivo'));
 		return $zip;
 	}
 
@@ -60,7 +60,7 @@ class Zip
 				$relFile = str_replace($basePath, '', $file);
 
 				if($zip->addFile($file, $relFile) == false)
-					throw new \Exception('Could not add file.');
+					throw new ErrorException(Context::Trans('No se pudo agregar el archivo'));
 			}
 		}
 		$zip->close();
@@ -131,7 +131,7 @@ class Zip
 					break;
 
 				if($zip->addFile($file, $relFile) == false)
-					throw new \Exception('Could not add file.');
+					throw new ErrorException(Context::Trans('No se pudo agregar el archivo'));
 			}
 			if ($currentBytes >= $bytesLimit)
 				break;
@@ -188,10 +188,10 @@ class Zip
 					continue;
 
 				if (file_exists($file) == false)
-					throw new \Exception($file . ' does not exist.');
+					throw new ErrorException($file . Context::Trans(' no existe.'));
 
 				if($zip->addFile($file, $path) == false)
-					throw new \Exception('ERROR: Could not add file: ' . $file);
+					throw new ErrorException(Context::Trans('No se pudo agregar el archivo') . ': ' . $file);
 			}
 		}
 		finally
@@ -206,7 +206,7 @@ class Zip
 		$zip = new \ZipArchive();
 
 		if ($zip->open($this->targetFile) !== true)
-			throw new \Exception('Failed to extract files');
+			throw new ErrorException(Context::Trans('Falló la extracción de archivos'));
 
 		$ret = $zip->numFiles;
 		$zip->extractTo($path, $files);
@@ -218,7 +218,7 @@ class Zip
 	{
 		$zip = new \ZipArchive();
 		if ($zip->open($this->targetFile) !== true)
-			throw new \Exception('Failed to extract files');
+			throw new ErrorException(Context::Trans('Falló la extracción de archivos'));
 
 		$ret = [];
 		for($i = 0; $i < $zip->numFiles; $i++)
@@ -234,7 +234,7 @@ class Zip
 	{
 		$zip = new \ZipArchive();
 		if ($zip->open($this->targetFile) !== true)
-			throw new \Exception('Failed to extract files');
+			throw new ErrorException(Context::Trans('Falló la extracción de archivos'));
 
 		$ret = $zip->numFiles;
 		for($i = 0; $i < $zip->numFiles; $i++)
@@ -247,7 +247,7 @@ class Zip
 			// pone fecha
 			$stat = $zip->statIndex($i);
 			if($stat === false)
-				throw new \Exception('Failed to extract files');
+				throw new ErrorException(Context::Trans('Falló la extracción de archivos'));
 			$mtime = (int)($stat['mtime']);
 			$extracted = $path . '/' . $filename;
 			touch($extracted, $mtime, time());
@@ -260,7 +260,7 @@ class Zip
 	{
 		$zip = new \ZipArchive();
 		if ($zip->open($this->targetFile) !== true)
-			throw new \Exception('Failed to open file');
+			throw new ErrorException(Context::Trans('No se pudo abrir el archivo'));
 
 		foreach($files as $file)
 			$zip->deleteName($file);
@@ -273,7 +273,7 @@ class Zip
 		IO::Delete($zipFile);
 		$zip = new \ZipArchive();
 		if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true)
-			throw new ErrorException("Could not open archive");
+			throw new ErrorException(Context::Trans('No se pudo abrir el archivo'));
 
 		// adds files to the file list
 		$sourcePath = str_replace("\\", "/", $sourcePath);
@@ -286,14 +286,14 @@ class Zip
 			$path = str_replace($sourcePath, "", $fileFixed); //remove the source path from the $key to return only the file-folder structure from the root of the source folder
 
 			if (file_exists($file) == false)
-				throw new ErrorException('file does not exist. Please contact your administrator or try again later.');
+				throw new ErrorException(Context::Trans('El archivo no existe.'));
 			if (is_readable($file) == false)
-				throw new ErrorException('file not readable. Please contact your administrator or try again later.');
+				throw new ErrorException(Context::Trans('No se pudo leer el archivo.'));
 
 			if($zip->addFromString($path, $file) == false)
-				throw new ErrorException("ERROR: Could not add file: ... <br>\n numFile:");
+				throw new ErrorException(Context::Trans('No se pudo agregar el archivo') . ": ... <br>\nnumFile:");
 			if($zip->addFile(realpath($file), $path) == false)
-				throw new ErrorException("ERROR: Could not add file: ... <br>\n numFile:");
+				throw new ErrorException(Context::Trans('No se pudo agregar el archivo') . ": ... <br>\nnumFile:");
 		}
 		$zip->close();
 	}

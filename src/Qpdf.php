@@ -36,7 +36,7 @@ class Qpdf
 
 		if ($ret['return'] != 0)
 		{
-			$text = 'Qpdf exited with error (code: ' . $ret['return'] . ', error: ' . $ret['output'] . '). '
+			$text = 'Qpdf salió con error (código: ' . $ret['return'] . ', error: ' . $ret['output'] . '. '
 				. "\n---------------\nExe: " . $exe . "\n Args:" . $args . "\n------------\n";
 			$text = Str::Replace($text, "\n", '<br>');
 			Log::HandleSilentException(new ErrorException($text));

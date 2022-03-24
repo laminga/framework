@@ -29,7 +29,7 @@ class Traffic
 	{
 		$addr = inet_pton($ip);
 		if($addr === false)
-			throw new \Exception('Invalid address.');
+			throw new ErrorException(Context::Trans('Dirección no válida.'));
 
 		$chars = str_split($addr);
 
@@ -145,7 +145,7 @@ class Traffic
 		}
 	}
 
-	private static function GetDevicePlural(string $device) : string
+	private static function GetDevicePluralSpanish(string $device) : string
 	{
 		if (Str::EndsWith($device, 'r'))
 			return $device . 'es';
@@ -288,7 +288,7 @@ class Traffic
 						];
 					}
 					$totalHits += $hits;
-					$devicePlural = self::GetDevicePlural($device);
+					$devicePlural = self::GetDevicePluralSpanish($device);
 					if(isset($totalIps[$devicePlural]) == false)
 						$totalIps[$devicePlural] = 1;
 					else

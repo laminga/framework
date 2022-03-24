@@ -51,7 +51,7 @@ abstract class SingleWriterLock extends Lock
 	{
 		if (self::$writeLock == null)
 		{
-			$e = new ErrorException("Se ha intentado finalizar un " . static::class . " sin una inicialización asociada.");
+			$e = new ErrorException('Se ha intentado finalizar un ' . static::class . ' sin una inicialización asociada.');
 			Log::HandleSilentException($e);
 			return;
 		}

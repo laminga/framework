@@ -140,7 +140,7 @@ class Backup
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$backupFolderWorkingFolder = $backupFolder . "/backup";
 		self::CheckState("CHECKPOINTCREATED");
-		self::Log("Begin site backup");
+		self::Log('Incio de copia de seguridad del sitio');
 
 		$this->initializeFolder();
 		// Copia todo lo modificado hasta la actualidad
@@ -152,9 +152,9 @@ class Backup
 		//		private static $blocks = ["file_modified", "file_deleted", "directory_created", "directory_deleted"];
 
 		// 3. Hace copia física de creado
-		self::Log("Begin copy", true);
+		self::Log('Inicia copia', true);
 
-		self::Log("Copy deleted list", true);
+		self::Log('Copia lista de eliminados', true);
 		// 4. borrados
 		if (file_exists($backupFolder . "/deleted_checkpoint.txt"))
 			copy($backupFolder . "/deleted_checkpoint.txt", $backupFolderWorkingFolder . "/deleted_checkpoint.txt");
@@ -166,7 +166,7 @@ class Backup
 	public function SplitLargeFiles() : void
 	{
 		self::CheckState("COPYEVENTSDONE");
-		self::Log("Begin splitting", true);
+		self::Log('Comenzando división', true);
 
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$filename = $backupFolder . "/backup.zip";
@@ -179,7 +179,7 @@ class Backup
 		// guarda el estado
 		self::SaveState("SPLITDONE");
 		$zip->lock->Release();
-		self::Log("End splitting", true);
+		self::Log('Fin división', true);
 
 	}
 
@@ -221,7 +221,7 @@ class Backup
 		// Zipea todo lo modificado hasta la actualidad
 		$backupFolderWorkingFolder = $backupFolder . "/backup";
 
-		self::Log("Begin zip", true);
+		self::Log('Inicia zip', true);
 		// Comprime
 		$current = 0;
 		$zipedAll = $zip->AppendFilesToZipRecursiveDeleting($backupFolderWorkingFolder, [''], '', self::MAX_ZIP_SIZE, $current);
@@ -239,7 +239,7 @@ class Backup
 			self::SaveState("ZIPPEDPARTIALLY");
 		}
 		$zip->lock->Release();
-		self::Log("End backup", true);
+		self::Log('Fin copia de seguridad', true);
 	}
 
 	public static function SaveState($state) : void
@@ -264,7 +264,7 @@ class Backup
 		$text = self::GetState();
 		if ($text == $state1 || $text == $state2)
 			return;
-		throw new \Exception('Invalid backup state for request.');
+		throw new ErrorException('El estado de copia de seguridad no es válido para el pedido.');
 	}
 
 	public static function Log($text, $append = false) : void

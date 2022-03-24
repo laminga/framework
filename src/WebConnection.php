@@ -95,7 +95,7 @@ class WebConnection
 
 			if($response->HasLocationHeader() == false)
 			{
-				$this->AppendLog('Header Location not found.');
+				$this->AppendLog('El header Location no fue encontrado.');
 				break;
 			}
 
@@ -104,7 +104,7 @@ class WebConnection
 			$response = $this->Get($location, $file);
 			if ($red > 10)
 			{
-				$this->AppendLog('Max redirects reached.');
+				$this->AppendLog('Máxima cantidad de redirects alcanzada.');
 				break;
 			}
 		}
@@ -121,7 +121,7 @@ class WebConnection
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$location = $response->GetLocationHeader();
-			$this->AppendLog('Redirecting to ' . $location);
+			$this->AppendLog('Redirigiendo a ' . $location);
 			return $this->Get($location, $file);
 		}
 		return $response;
@@ -144,10 +144,10 @@ class WebConnection
 	private function ResolveRelativeUrl($url)
 	{
 		if (Str::StartsWith($url, '/') == false)
-			throw new ErrorException('Relative URL or redirect not supported');
+			throw new ErrorException('Dirección url relativa o redirección no soportado');
 
 		if ($this->lastLocation == '')
-			throw new ErrorException('Relative URL or redirect require referer');
+			throw new ErrorException('Dirección url relativa o redirección requriere referer');
 
 		$parts = parse_url($this->lastLocation);
 		$newurl = $parts['scheme'] . '://' . $parts['host'];
@@ -160,7 +160,7 @@ class WebConnection
 	private function doExecute($url, $file = '', $args = null)
 	{
 		if ($this->ch == null)
-			throw new ErrorException('Initialize() method should be called first.');
+			throw new ErrorException('Debe llamarse el método Initialize() antes.');
 
 		$this->EnableExtraLog();
 
@@ -225,7 +225,7 @@ class WebConnection
 		if ($headersSize == 0)
 		{
 			$ret = false;
-			$this->error = 'HeaderSize is zero.';
+			$this->error = 'El tamaño del header es cero.';
 		}
 		else
 		{
@@ -256,7 +256,7 @@ class WebConnection
 		$response->headers = $headers;
 		$response->success = $ret;
 		if ($this->error != '')
-			$this->AppendLogData('Returning error: ', $this->error);
+			$this->AppendLogData('error retornando: ', $this->error);
 
 		IO::Delete($headerFile);
 		if ($ret === false && $this->throwErrors)
@@ -402,7 +402,7 @@ class WebConnection
 	public function GetCookieFile()
 	{
 		if($this->cookieFile == '')
-			throw new ErrorException('Create cookie first.');
+			throw new ErrorException('Primero crear la cookie.');
 
 		return $this->cookieFile;
 	}

@@ -25,7 +25,7 @@ class Str
 			$to .= '//IGNORE';
 		$ret = iconv($from, $to, $str);
 		if($ret === false)
-			throw new ErrorException('Error converting string.');
+			throw new ErrorException(Context::Trans('Error convirtiendo texto.'));
 		return $ret;
 	}
 
@@ -303,8 +303,8 @@ class Str
 	public static function BooleanToText(bool $value) : string
 	{
 		if ($value)
-			return "Sí";
-		return "No";
+			return Context::Trans('Sí');
+		return Context::Trans('No');
 	}
 
 	public static function SpanishSingle($value)
@@ -911,7 +911,7 @@ class Str
 			$cad = substr($cad, $n + 1) . " " . substr($cad, 0, $n);
 			return self::Replace($cad, "  ", " ");
 		}
-		throw new ErrorException('Invalid normalization argument.');
+		throw new ErrorException('Argumento de normalización inválido.');
 	}
 
 	public static function Initials(string $cad) : string

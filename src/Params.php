@@ -76,7 +76,7 @@ class Params
 	public static function CheckMandatoryValue($value, $key = '')
 	{
 		if ($value === null)
-			throw new ErrorException('Parameter "' . $key . '" required.');
+			throw new ErrorException(Context::Trans('Parámetro "') . $key . Context::Trans('" requerido.'));
 		return $value;
 	}
 
@@ -154,7 +154,7 @@ class Params
 	private static function ProcessRange($value, $min, $max)
 	{
 		if ($value < $min || $value > $max)
-			throw new ErrorException('Parameter value of "' . $value . '" is out of range.');
+			throw new ErrorException(Context::Trans('El valor del parámetro "') . $value . Context::Trans('" está fuera de rango.'));
 		return $value;
 	}
 
@@ -182,19 +182,19 @@ class Params
 			return '';
 
 		if ($_FILES[$field]['error'] != 0)
-			throw new ErrorException('Error al subir el archivo.');
+			throw new ErrorException(Context::Trans('Error al subir el archivo.'));
 
 		if ($maxFileSize != -1 && $_FILES[$field]['size'] > $maxFileSize)
-			throw new ErrorException('El archivo excede el tamaño máximo.');
+			throw new ErrorException(Context::Trans('El archivo excede el tamaño máximo.'));
 
 		$ext = Extensions::GetExtensionFromMimeType($_FILES[$field]['type']);
 		if(in_array($ext, $validExtensions) == false)
-			throw new ErrorException('El formato del archivo no es válido.');
+			throw new ErrorException(Context::Trans('El formato del archivo no es válido.'));
 
 		$tmpFile = IO::GetTempFilename() . '.' . $ext;
 
 		if (move_uploaded_file($_FILES[$field]['tmp_name'], $tmpFile) == false)
-			throw new ErrorException('Error al guardar el archivo.');
+			throw new ErrorException(Context::Trans('Error al guardar el archivo.'));
 
 		return $tmpFile;
 	}
@@ -213,18 +213,18 @@ class Params
 	{
 		$i = (int)$value;
 		if ((string)$i !== (string)$value)
-			throw new ErrorException('Parameter value of "' . $value . '" is invalid.');
+			throw new ErrorException(Context::Trans('El valor del parámetro "') . $value . Context::Trans('" no es válido.'));
 		return $i;
 	}
 
 	public static function CheckParseMonthValue($value)
 	{
 		if (strlen($value) !== 7 || substr($value, 4, 1) !== '-')
-			throw new ErrorException('Parameter value of "' . $value . '" is invalid.');
+			throw new ErrorException(Context::Trans('El valor del parámetro "') . $value . Context::Trans('" no es válido.'));
 		$y = self::CheckParseIntValue(substr($value, 0, 4));
 		$m = self::CheckParseIntValue(ltrim(substr($value, 5, 2), '0'));
 		if ($y < 2000 || $y > 3000 || $m < 1 || $m > 12)
-			throw new ErrorException('Parameter value of "' . $value . '" is invalid.');
+			throw new ErrorException(Context::Trans('El valor del parámetro "') . $value . Context::Trans('" no es válido.'));
 		return $value;
 	}
 

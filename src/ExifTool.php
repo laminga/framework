@@ -38,7 +38,7 @@ class ExifTool
 		$ret = System::RunCommandRaw(self::GetBinary() . ' ' . $args);
 		if ($ret['return'] != 0)
 		{
-			$text = 'ExifTool exited with error (code: ' . $ret['return'] . ', error: ' . $ret['output'] . '). '
+			$text = 'ExifTool salió con error (código: ' . $ret['return'] . ', error: ' . $ret['output'] . '). '
 				. "\n---------------\nExe: " . self::GetBinary() . "\n Args:" . $args . "\n------------\n";
 			$text = Str::Replace($text, "\n", '<br>');
 			Log::HandleSilentException(new ErrorException($text));

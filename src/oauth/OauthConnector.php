@@ -143,8 +143,8 @@ abstract class OauthConnector
 	{
 		Log::HandleSilentException(new PublicException('No email from ' . $this->ProviderName()));
 
-		MessageBox::ShowDialogPopup('No se ha podido obtener una dirección de correo electrónico a través de '
-			. $this->ProviderName() . '. Intente otro método de registro para la identificación.', 'Atención');
+		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido obtener una dirección de correo electrónico a través de ')
+			. $this->ProviderName() . Context::Trans('. Intente otro método de registro para la identificación.'), Context::Trans('Atención'));
 	}
 
 	public function RedirectError($error = null) : void
@@ -152,7 +152,7 @@ abstract class OauthConnector
 		if($error != null)
 			Log::HandleSilentException(new ErrorException($error));
 
-		MessageBox::ShowDialogPopup('No se ha podido realizar la interacción con ' . $this->ProviderName() . ' para la identificación.', 'Atención');
+		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido realizar la interacción con ') . $this->ProviderName() . Context::Trans(' para la identificación.'), Context::Trans('Atención'));
 	}
 
 	private function RedirectSession(string $state) : void
@@ -181,7 +181,7 @@ abstract class OauthConnector
 		//-No tenga código javascript (xss).
 		if($target == '')
 		{
-			Log::HandleSilentException(new ErrorException('Undefined target.'));
+			Log::HandleSilentException(new ErrorException('Parámetro "target" no definido.'));
 			$target = Context::Settings()->GetMainServerPublicUrl();
 		}
 

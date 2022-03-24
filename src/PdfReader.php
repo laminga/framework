@@ -105,7 +105,7 @@ class PdfReader
 		catch(\Exception $e)
 		{
 			Log::HandleSilentException($e);
-			// throw new \Exception('No se puede leer el archivo pdf. Archivo dañado');
+			// throw new ErrorException('No se puede leer el archivo pdf. Archivo dañado');
 		}
 		return [];
 	}

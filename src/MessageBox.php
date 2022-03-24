@@ -19,8 +19,15 @@ class MessageBox
 		self::ThrowMessage($message, $action);
 	}
 
-	public static function ThrowMessage($message, $action = '', $title = 'Atención', $caption = 'Continuar') : void
+	public static function ThrowMessage($message, $action = '', $title = '__Atención', $caption = '__Continuar') : void
 	{
+		if($title == '__Atención')
+			$title = Context::Trans('Atención');
+
+		if($caption == '__Continuar')
+			$caption = Context::Trans('Continuar');
+
+
 		self::$IsThrowingMessage = true;
 		if (Context::Settings()->isFramed)
 		{
@@ -44,8 +51,11 @@ class MessageBox
 		self::Render($params);
 	}
 
-	public static function ThrowWaitMessage(string $message, string $action = '', string $title = 'Atención') : void
+	public static function ThrowWaitMessage(string $message, string $action = '', string $title = '__Atención') : void
 	{
+		if($title == '__Atención')
+			$title = Context::Trans('Atención');
+
 		$action = "document.location='" . $action . "';";
 
 		$params = [
@@ -63,7 +73,7 @@ class MessageBox
 			'page' => 'Oops!',
 			'message' => $message,
 			'useSearchBar' => 'false',
-			'caption' => 'Volver',
+			'caption' => Context::Trans('Volver'),
 			'action' => 'history.back();',
 		];
 		self::Render($params);
@@ -106,8 +116,11 @@ class MessageBox
 		Context::Settings()->section = 'notFound';
 	}
 
-	public static function ShowMessagePopup(string $message, string $title = 'Enviar mensaje') : void
+	public static function ShowMessagePopup(string $message, string $title = '__Enviar mensaje') : void
 	{
+		if($title == '__Enviar mensaje')
+			$title = Context::Trans('Enviar mensaje');
+
 		$params = [
 			'message' => $message,
 			'page' => $title,
@@ -116,8 +129,10 @@ class MessageBox
 		Context::Calls()->RenderTemplate('messagePopup.html.twig', $params);
 	}
 
-	public static function ShowDialogPopup(string $message, string $title = 'Enviar mensaje', array $params = []) : void
+	public static function ShowDialogPopup(string $message, string $title = '__Enviar mensaje', array $params = []) : void
 	{
+		if($title == '__Enviar mensaje')
+			$title = Context::Trans('Enviar mensaje');
 		$params = array_merge($params, [
 			'message' => $message,
 			'page' => $title,
@@ -135,9 +150,9 @@ class MessageBox
 		{
 			self::Set404NotFoundHeaders();
 			Performance::SetController('cErrDocNotFound', 'Show');
-			self::ThrowMessage('El documento <b>' . $file . '</b> no está disponible.<p>'
-				. "Sin embargo, si así lo desea, lo invitamos a visitar el perfil de <a href='" . $contentUrl
-				. "'>" . $content->GetFullName() . '</a> para consultar otros documentos relacionados.',
+			self::ThrowMessage(Context::Trans('El documento') . '<b>' . $file . '</b>' . Context::Trans('no está disponible.') . '<p>'
+				. Context::Trans('Sin embargo, si así lo desea, lo invitamos a visitar el perfil de') . ' <a href="' . $contentUrl
+				. '">' . $content->GetFullName() . '</a> ' . Context::Trans('para consultar otros documentos relacionados.'),
 				$contentUrl,
 				$content->GetFullName() . ' - ' . $content->GetLocation()
 			);
@@ -153,9 +168,9 @@ class MessageBox
 			$msg = '';
 			if ($exception != null)
 				$msg = $exception->getMessage();
-			MessageBox::ThrowMessage('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes. ' . $msg . $log, Context::Settings()->GetMainServerPublicUrl());
+			MessageBox::ThrowMessage(Context::Trans('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes.') . ' ' . $msg . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
-		MessageBox::ThrowMessage('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes.', Context::Settings()->GetMainServerPublicUrl());
+		MessageBox::ThrowMessage(Context::Trans('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes.'), Context::Settings()->GetMainServerPublicUrl());
 	}
 
 	public static function ThrowFileNotFound($extraInfo = '') : void
@@ -165,9 +180,9 @@ class MessageBox
 		if (Context::Settings()->Debug()->debug)
 		{
 			$log = Log::FormatTraceLog(debug_backtrace());
-			MessageBox::ThrowMessage('Página no encontrada. ' . $extraInfo . $log, Context::Settings()->GetMainServerPublicUrl());
+			MessageBox::ThrowMessage(Context::Trans('Página no encontrada.') . ' ' . $extraInfo . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
-		MessageBox::ThrowMessage('Página no encontrada.', Context::Settings()->GetMainServerPublicUrl());
+		MessageBox::ThrowMessage(Context::Trans('Página no encontrada.'), Context::Settings()->GetMainServerPublicUrl());
 	}
 
 	public static function ThrowAccessDenied(string $extraInfo = '') : void
@@ -177,8 +192,8 @@ class MessageBox
 		if (Context::Settings()->Debug()->debug)
 		{
 			$log = Log::FormatTraceLog(debug_backtrace());
-			MessageBox::ThrowMessage('Acceso denegado. ' . $extraInfo . $log, Context::Settings()->GetMainServerPublicUrl());
+			MessageBox::ThrowMessage(Context::Trans('Acceso denegado.') . ' ' . $extraInfo . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
-		MessageBox::ThrowMessage('Acceso denegado.', Context::Settings()->GetMainServerPublicUrl());
+		MessageBox::ThrowMessage(Context::Trans('Acceso denegado.'), Context::Settings()->GetMainServerPublicUrl());
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace minga\framework;
 
-//TODO: borrar
+//TODO: borrar?
 class ORM
 {
 	// avance

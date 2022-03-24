@@ -2,6 +2,7 @@
 
 namespace minga\framework\settings;
 
+use minga\framework\Context;
 use minga\framework\ErrorException;
 
 class ServersSettings
@@ -71,17 +72,17 @@ class ServersSettings
 		if (isset($this->currentServer) == false)
 		{
 			if (count($this->servers) > 1)
-				throw new ErrorException('Many servers are set in configuration but no current server is specificied. Call Context::Settings()->Servers()->SetCurrentServer(name) to set one.');
+				throw new ErrorException(Context::Trans('Hay varios servidores en el archivo de configuración pero ninguno especificado como el actual. Llamando Context::Settings()->Servers()->SetCurrentServer(name) se configura uno.'));
 			if (count($this->servers) == 0)
-				throw new ErrorException('No servers are set in configuration file.');
+				throw new ErrorException(Context::Trans('No hay servidores en el archivo de configuración.'));
 			$keys = array_keys($this->servers);
 			return $this->servers[$keys[0]];
 		}
 
 		if (isset($this->servers[$this->currentServer]) == false)
 		{
-			throw new ErrorException('"' . $this->currentServer
-				. '" is specified as current server but no server with such name is registered in the configuration settings .');
+			throw new ErrorException('"' . $this->currentServer . '" '
+				. Context::Trans('está especificado como servidor actual pero no hay un servidor registrado con ese nombre en la configuración.'));
 		}
 
 		return $this->servers[$this->currentServer];

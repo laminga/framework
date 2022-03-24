@@ -130,7 +130,7 @@ class Ghostscript
 
 		if ($retCode == 1)
 		{
-			$text = "Ghostscript exited with unrecoverable error (error: " . $out . "). " . $extraInfo;
+			$text = 'Ghostscript terminó con un error irrecuperable (error: ' . $out . "). " . $extraInfo;
 			$text = Str::Replace($text, "\n", '<br>');
 			Log::HandleSilentException(new ErrorException($text));
 			return false;
@@ -138,7 +138,7 @@ class Ghostscript
 
 		if (Str::Contains($out, "GPL Ghostscript") == false)
 		{
-			$text = "Ghostscript exited with unexpected output (retcode: " . $retCode . "). " . $extraInfo;
+			$text = 'Ghostscript terminó de modo inesperado (retcode: ' . $retCode . "). " . $extraInfo;
 			$text = Str::Replace($text, "\n", '<br>');
 			Log::HandleSilentException(new ErrorException($text));
 			return false;

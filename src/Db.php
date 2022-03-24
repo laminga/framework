@@ -232,7 +232,7 @@ class Db
 	{
 		$ret = $this->fetchScalarNullable($query, $params);
 		if($ret === null)
-			throw new PublicException("No se ha obtenido ningún resultado en la consulta cuando se esperaba uno.");
+			throw new PublicException(Context::Trans('No se ha obtenido ningún resultado en la consulta cuando se esperaba uno.'));
 		return $ret;
 	}
 

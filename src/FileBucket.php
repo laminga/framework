@@ -71,7 +71,7 @@ class FileBucket
 	{
 		if (trim($id) === '' || ctype_alnum($id) === false || Str::Length($id) > 40)
 		{	// verifica este parámetro para evitar saltos en el filesystem fuera de tmp
-			throw new ErrorException('Invalid bucket Id');
+			throw new ErrorException('Bucket id inválido');
 		}
 		$this->id = $id;
 		$email = Context::LoggedUser();
