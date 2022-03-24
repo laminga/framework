@@ -214,7 +214,7 @@ class Settings
 	{
 		if($this->supportMail != '')
 			return $this->supportMail;
-		return 'soporte@' . str_replace('www.', '', parse_url($this->GetMainServerPublicUrl(), PHP_URL_HOST));
+		return 'contacto@' . str_replace('www.', '', parse_url($this->GetMainServerPublicUrl(), PHP_URL_HOST));
 	}
 
 	public function GetPublicUrl() : string
