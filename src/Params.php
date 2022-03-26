@@ -76,7 +76,7 @@ class Params
 	public static function CheckMandatoryValue($value, $key = '')
 	{
 		if ($value === null)
-			throw new ErrorException(Context::Trans('Parámetro "') . $key . Context::Trans('" requerido.'));
+			throw new ErrorException(Context::Trans('Parámetro "{param}" requerido.', ['{param}' => $key ]));
 		return $value;
 	}
 
@@ -154,7 +154,7 @@ class Params
 	private static function ProcessRange($value, $min, $max)
 	{
 		if ($value < $min || $value > $max)
-			throw new ErrorException(Context::Trans('El valor del parámetro "') . $value . Context::Trans('" está fuera de rango.'));
+			throw new ErrorException(Context::Trans('El valor del parámetro {param} está fuera de rango.', ['{param}' => $value ]));
 		return $value;
 	}
 

@@ -73,7 +73,8 @@ class Log
 			else
 				$textToShow = Context::Trans('Se produjo un error') . ': ' . $errorMessage;
 
-			$textToShow .= '.<p>' . Context::Trans('Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a') . ' <a href="mailto:' . Context::Settings()->GetSupportMail() . '">' . Context::Settings()->GetSupportMail() . '</a> ' . Context::Trans('describiendo el inconveniente.') . '</p>';
+			$mail = '<a href="mailto:' . Context::Settings()->GetSupportMail() . '">' . Context::Settings()->GetSupportMail() . '</a>';
+			$textToShow .= '.<p>' . Context::Trans('Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a {correo_html} describiendo el inconveniente.', ['{correo_html}' => $mail]) . '</p>';
 		}
 
 		if($filtered)
