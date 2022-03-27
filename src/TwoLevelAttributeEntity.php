@@ -47,7 +47,7 @@ class TwoLevelAttributeEntity
 	public function SaveAttributesOnly() : void
 	{
 		if ($this->path == '')
-			throw new ErrorException("Tried to save to an uninitialized entity.");
+			throw new ErrorException('Se intentó grabar una entidad antes de inicializarla.');
 		IO::WriteEscapedIniFileWithSections($this->path, $this->sections);
 	}
 

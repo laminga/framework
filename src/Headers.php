@@ -4,10 +4,9 @@ namespace minga\framework;
 
 class Headers
 {
-	//TODO: renombrar a CORS
-	public static function AcceptAnyCOARS() : void
+	//CORS: Cross-Origin Resource Sharing
+	public static function AcceptAnyCORS() : void
 	{
-		// Resuelve el CORS
 		$origin = Params::SafeServer('HTTP_ORIGIN', '*');
 		header("Access-Control-Allow-Credentials: true");
 		header("Access-Control-Allow-Origin: $origin");

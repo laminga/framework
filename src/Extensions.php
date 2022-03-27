@@ -32,10 +32,10 @@ class Extensions
 
 		if(in_array($ext, $validExtensions) == false)
 		{
-			$message = 'La extensión del archivo debe ser ' . self::GetExtensionList($validExtensions) . '.';
+			$message = Context::Trans('La extensión del archivo debe ser una de las siguientes: ') . self::GetExtensionList($validExtensions) . '.';
 
 			if(in_array($extName, $validExtensions))
-				$message .= '<br>Si el archivo tiene una extensión válida, es posible que esté dañado o que se haya cambiado la extensión manualmente. Esto último modifica el nombre, pero no el formato del archivo. Intente abrirlo con la aplicación predeterminada y guardarlo en el formato esperado.';
+				$message .= '<br>' . Context::Trans('Si el archivo tiene una extensión válida, es posible que esté dañado o que se haya cambiado la extensión manualmente. Esto último modifica el nombre, pero no el formato del archivo. Intente abrirlo con la aplicación predeterminada y guardarlo en el formato esperado.');
 
 			MessageBox::ThrowAndLogMessage($message);
 		}
@@ -201,8 +201,14 @@ class Extensions
 				return "image/bmp";
 			case "zip":
 				return "application/zip";
+			case 'sav':
+				return 'application/x-vnd.spss-statistics-spd';
+			case 'dta':
+				return 'application/x-stata';
+			case 'rdata':
+				return 'application/octet-stream';
 			default:
-				throw new \Exception("Invalid extension.");
+				return 'application/octet-stream';
 		}
 	}
 
@@ -395,7 +401,7 @@ class Extensions
 		$arr = self::ValidMimeTypes();
 		if(isset($arr[$mime]))
 			return $arr[$mime][0];
-		Log::HandleSilentException(new \Exception('No se encontré extensión para mime: '. $mime));
-		throw new \Exception('mime type not found');
+		Log::HandleSilentException(new \Exception('No se encontró extensión para mime: ' . $mime));
+		throw new ErrorException('No se encontró extensión para el tipo');
 	}
 }

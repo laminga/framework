@@ -22,7 +22,7 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 		// Lo busca entre los decodificados
 		$items = $this->GetItems($section);
 		if ($this->useInternalId == false)
-			throw new ErrorException('TwoLevelListAttributeEntity must have InternalId to be deleted');
+			throw new ErrorException('TwoLevelListAttributeEntity debe tener un InternalId para ser eliminado');
 		$n = Arr::IndexOfByNamedValue($items, 'id', $itemId);
 		// Lo saca de los codificados
 		$values = $this->SafeGetArray($section, 'items');

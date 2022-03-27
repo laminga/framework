@@ -2,6 +2,7 @@
 
 namespace minga\framework\locking;
 
+use minga\framework\Context;
 use minga\framework\ErrorException;
 use minga\framework\IO;
 use minga\framework\Performance;
@@ -52,15 +53,15 @@ class Lock
 			// ya está lockeado
 			$values = self::$locks[$file];
 			if ($write && $values[1] == false)
-				throw new ErrorException('WriteLock could not be taken while ReadLock is used.');
+				throw new ErrorException('No se puede obtener el lock de escritura mientras el lock de lectura está en uso.');
 			self::$locks[$file] = [++$values[0], $values[1]];
 			return true;
 		}
 
 
-			// empieza él
-			self::$locks[$file] = [1, $write];
-			return false;
+		// empieza él
+		self::$locks[$file] = [1, $write];
+		return false;
 
 	}
 
@@ -77,14 +78,10 @@ class Lock
 				self::$locks[$file] = [--$values[0], $values[1]];
 				return true;
 			}
-
-
-				unset(self::$locks[$file]);
-				return false;
-
+			unset(self::$locks[$file]);
+			return false;
 		}
-
-			throw new ErrorException('The lock could not be released.');
+		throw new ErrorException('No se pudo liberar el lock.');
 	}
 
 	public function ResolveFilename() : string
@@ -117,7 +114,7 @@ class Lock
 				$this->handle = null;
 				$this->isLocked = false;
 				Performance::EndLockedWait($hadToWait);
-				throw new ErrorException('No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.');
+				throw new ErrorException(Context::Trans('No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.'));
 			}
 		}
 		$this->isLocked = true;
@@ -129,12 +126,12 @@ class Lock
 	{
 		if ($this->ReleaseUsed())
 		{
-			$this->AppendLockInfo('Tried release on used lock: ');
+			$this->AppendLockInfo('Se intentó liberar un lock en uso: ');
 			return;
 		}
 		if ($this->handle != null)
 		{
-			$this->AppendLockInfo('Release: ');
+			$this->AppendLockInfo('Liberar: ');
 
 			flock($this->handle, LOCK_UN);
 			fclose($this->handle);
@@ -146,7 +143,7 @@ class Lock
 			$this->handle = null;
 		}
 		else
-			$this->AppendLockInfo('Tried release on null lock: ');
+			$this->AppendLockInfo('Se intentó liberar un lock nulo: ');
 
 		$this->isLocked = false;
 		$this->isWriteLocked = false;

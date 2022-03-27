@@ -18,7 +18,7 @@ class Date
 	public static function NowGMT(int $offset) : int
 	{
 		if ($offset < -12 || $offset > 12)
-			throw new ErrorException("Time offset out of range: " . $offset);
+			throw new ErrorException(Context::Trans('Desplazamiento de tiempo fuera de rango: ') . $offset);
 		return self::UniversalNow() + 60 * 60 * $offset;
 	}
 
@@ -271,19 +271,19 @@ class Date
 		switch((int)$day)
 		{
 			case 1:
-				return 'Lunes';
+				return Context::Trans('Lunes');
 			case 2:
-				return 'Martes';
+				return Context::Trans('Martes');
 			case 3:
-				return 'Miércoles';
+				return Context::Trans('Miércoles');
 			case 4:
-				return 'Jueves';
+				return Context::Trans('Jueves');
 			case 5:
-				return 'Viernes';
+				return Context::Trans('Viernes');
 			case 6:
-				return 'Sábado';
+				return Context::Trans('Sábado');
 			case 7:
-				return 'Domingo';
+				return Context::Trans('Domingo');
 			default:
 				return '';
 		}
@@ -294,29 +294,29 @@ class Date
 		switch($month)
 		{
 			case 1:
-				return 'Enero';
+				return Context::Trans('Enero');
 			case 2:
-				return 'Febrero';
+				return Context::Trans('Febrero');
 			case 3:
-				return 'Marzo';
+				return Context::Trans('Marzo');
 			case 4:
-				return 'Abril';
+				return Context::Trans('Abril');
 			case 5:
-				return 'Mayo';
+				return Context::Trans('Mayo');
 			case 6:
-				return 'Junio';
+				return Context::Trans('Junio');
 			case 7:
-				return 'Julio';
+				return Context::Trans('Julio');
 			case 8:
-				return 'Agosto';
+				return Context::Trans('Agosto');
 			case 9:
-				return 'Septiembre';
+				return Context::Trans('Septiembre');
 			case 10:
-				return 'Octubre';
+				return Context::Trans('Octubre');
 			case 11:
-				return 'Noviembre';
+				return Context::Trans('Noviembre');
 			case 12:
-				return 'Diciembre';
+				return Context::Trans('Diciembre');
 			default:
 				return '';
 		}
@@ -346,11 +346,11 @@ class Date
 			return false;
 
 		if($days <= 0)
-			throw new ErrorException('Days must be a positive integer');
+			throw new ErrorException(Context::Trans('Días debe ser un entero positivo'));
 
 		$dt = self::FormattedDateToDateTime($date);
 		if($dt === false)
-			throw new ErrorException('Invalid Format');
+			throw new ErrorException(Context::Trans('Formato no válido'));
 
 		$dt->add(new \DateInterval('P' . $days . 'D'));
 		$now = new \DateTime('now');
@@ -387,7 +387,7 @@ class Date
 		$year = null;
 		$bret = self::TryParseDate($date, $day, $month, $year);
 		if ($bret == false)
-			throw new ErrorException('Invalid date.');
+			throw new ErrorException(Context::Trans('Fecha no válida.'));
 		return $year . '-' . $month . '-' . $day;
 	}
 }

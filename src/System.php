@@ -6,10 +6,6 @@ class System
 {
 	public static function GetServerInfo()
 	{
-		// vd(php_uname('n'));
-				// $host = gethostname();
-				// $ip = gethostbyname($host);
-
 		$flags = [];
 		// $flags[] = ['flag' => 'n', 'name' => 'Servidor'];
 		$flags[] = ['flag' => 's', 'name' => 'Sistema operativo'];
@@ -39,12 +35,12 @@ class System
 		{
 			$time = IO::FileMTime($file);
 			if($time === false)
-				$value = trim(file_get_contents($file)) . ' (no date)';
+				$value = trim(file_get_contents($file)) . ' (sin fecha)';
 			else
 				$value = trim(file_get_contents($file)) . ' (' . date('Y-m-d H:i:s', $time - 60 * 60 * 3) . ')';
 		}
 		else
-			$value = 'Version file not found.';
+			$value = 'Archivo de versión no encontrado.';
 
 		return [
 			'name' => 'Versión',
@@ -65,12 +61,12 @@ class System
 
 	public static function GetDbInfo() : array
 	{
-		$settings = [];
-		$settings[] = ['name' => 'Host', 'value' => Context::Settings()->Db()->Host];
-		$settings[] = ['name' => 'Database', 'value' => Context::Settings()->Db()->Name];
-		$settings[] = ['name' => 'User', 'value' => Context::Settings()->Db()->User];
-		$settings[] = ['name' => 'MySQL Version', 'value' => self::GetMySQLVersion()];
-		return $settings;
+		return [
+			['name' => 'Host', 'value' => Context::Settings()->Db()->Host],
+			['name' => 'Database', 'value' => Context::Settings()->Db()->Name],
+			['name' => 'User', 'value' => Context::Settings()->Db()->User],
+			['name' => 'MySQL Version', 'value' => self::GetMySQLVersion()],
+		];
 	}
 
 	public static function GetMySQLVersion() : string
@@ -88,7 +84,7 @@ class System
 			case 8:
 				return '64'; //64 bit version of PHP
 			default:
-				throw new ErrorException('PHP_INT_SIZE is ' . PHP_INT_SIZE);
+				throw new ErrorException('PHP_INT_SIZE es ' . PHP_INT_SIZE);
 		}
 	}
 

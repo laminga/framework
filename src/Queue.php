@@ -83,7 +83,7 @@ abstract class Queue
 				continue;
 			$interfaces = class_implements($type);
 			if(in_array(ArrayConstructable::class, $interfaces) == false)
-				throw new \Exception('No se pueden ejecutar métodos con parámetros de tipos que no implementan ArrayConstructable');
+				throw new ErrorException('No se pueden ejecutar métodos con parámetros de tipos que no implementan ArrayConstructable');
 
 			$params[$i] = Reflection::InstanciateClass($type, $params[$i]);
 		}
@@ -126,7 +126,7 @@ abstract class Queue
 		if(is_array($data) == false || isset($data['function']) == false)
 		{
 			$finalPlace = $this->MoveToFailed($file);
-			$this->SaveException($finalPlace . '.error.txt', new \Exception('Archivo vacío o malformado.'));
+			$this->SaveException($finalPlace . '.error.txt', new ErrorException('Archivo vacío o malformado.'));
 			return false;
 		}
 		try
@@ -197,10 +197,10 @@ abstract class Queue
 	private function FormatResults(int $done, int $success, int $failed, int $total) : string
 	{
 		if ($total === 0)
-			return 'Done 0 items.';
-		$ret = "Done " . $done . " items of " . $total . ".";
+			return 'Hecho 0 Ítems.';
+		$ret = 'Hecho ' . $done . ' Ítems de ' . $total . '.';
 		if ($failed > 0)
-			$ret .= " Success: " . $success . " items. Failed: " . $failed . " items.";
+			$ret .= ' Éxito: ' . $success . ' Ítems. Fallas: ' . $failed . ' ítems.';
 		return $ret;
 	}
 
@@ -226,7 +226,7 @@ abstract class Queue
 	protected function ProcessItem(string $function, array $params)
 	{
 		if ($this->processorClass == '')
-			throw new \Exception("Debe indicar un ProcessorClass o implementarse un ProcessItem");
+			throw new ErrorException('Debe indicar un ProcessorClass o implementarse un ProcessItem');
 
 		return $this->Call($this->processorClass, $function, $params);
 	}
@@ -244,7 +244,7 @@ abstract class Queue
 		$json = json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE);
 		if($json === false)
 		{
-			Log::HandleSilentException(new \Exception("Error json_encode '" . json_last_error_msg() . "' en:\n\n" . print_r($data, true)));
+			Log::HandleSilentException(new ErrorException('Error json_encode "' . json_last_error_msg() . '" en:' . "\n\n" . print_r($data, true)));
 			return;
 		}
 

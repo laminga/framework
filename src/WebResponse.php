@@ -26,7 +26,7 @@ class WebResponse
 	public function GetString()
 	{
 		if ($this->file == false)
-			throw new MessageException("No file has been received.");
+			throw new MessageException(Context::Trans('No se recibió el archivo.'));
 
 		return IO::ReadAllText($this->file);
 	}

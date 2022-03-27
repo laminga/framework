@@ -115,7 +115,7 @@ class IO
 
 		$json = json_encode($data, $flags);
 		if($json === false)
-			throw new \ErrorException('Error al crear json.');
+			throw new ErrorException('Error al crear json.');
 		return self::WriteAllText($path, $json);
 	}
 
@@ -156,7 +156,7 @@ class IO
 		$text = self::ReadAllText($path);
 		$ret = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
 		if($ret === null && Str::ToLower($text) != 'null')
-			throw new \ErrorException('Error al leer json.');
+			throw new ErrorException('Error al leer json.');
 		Profiling::EndTimer();
 		return $ret;
 	}
@@ -216,7 +216,7 @@ class IO
 	public static function CompareFileSize(string $fileA, string $fileB) : bool
 	{
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
-			MessageBox::ThrowMessage("Archivo no encontrado para comparación de tamaños.");
+			throw new ErrorException('Archivo no encontrado para comparación de tamaños.');
 
 		return filesize($fileA) == filesize($fileB);
 
@@ -225,7 +225,7 @@ class IO
 	public static function CompareBinaryFile(string $fileA, string $fileB) : bool
 	{
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
-			MessageBox::ThrowMessage("Archivo no encontrado para comparación binaria.");
+			throw new ErrorException('Archivo no encontrado para comparación binaria.');
 
 		if (filesize($fileA) == filesize($fileB))
 		{
@@ -394,7 +394,7 @@ class IO
 				hacer un if exist con lock, pero el beneficio es poco claro.
 			 */
 			if (is_dir($directory) == false)
-				throw new \ErrorException('Could not create directory');
+				throw new ErrorException('No se pudo crear el directorio');
 		}
 	}
 
@@ -851,7 +851,7 @@ class IO
 		self::EnsureExists($path);
 		$name = tempnam($path, "");
 		if($name === false)
-			throw new ErrorException('GetTempFilename failed');
+			throw new ErrorException('GetTempFilename falló');
 		self::Delete($name);
 		return $name;
 	}
@@ -878,7 +878,7 @@ class IO
 
 		// Make sure characters in prefix are safe.
 		if (strpbrk($prefix, '\\/:*?"<>|') !== false)
-			throw new ErrorException('GetTempDir failed');
+			throw new ErrorException('GetTempDir falló');
 
 		/* Attempt to create a random directory until it works. Abort if we reach
 		 * $maxAttempts. Something screwy could be happening with the filesystem

@@ -22,6 +22,7 @@ class Settings
 
 	// UI Settings
 	public string $entorno = '';
+	public string $environment = 'dev';
 
 	public bool $updateGoogleBingSitemap = false;
 	public bool $readonlyForMaintenance = false;
@@ -98,6 +99,7 @@ class Settings
 
 	// otras globales
 	public string $section = '';
+	public string $supportMail = '';
 
 	public function Initialize(string $rootPath) : void
 	{
@@ -206,6 +208,13 @@ class Settings
 			$this->limits = new MonitorLimits();
 
 		return $this->limits;
+	}
+
+	public function GetSupportMail() : string
+	{
+		if($this->supportMail != '')
+			return $this->supportMail;
+		return 'contacto@' . str_replace('www.', '', parse_url($this->GetMainServerPublicUrl(), PHP_URL_HOST));
 	}
 
 	public function GetPublicUrl() : string

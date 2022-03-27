@@ -22,7 +22,7 @@ class Context
 	public static function Calls()
 	{
 		if(isset(self::$calls) == false)
-			throw new ErrorException('Framework context Calls must be initialized.');
+			throw new ErrorException('Las llamadas de contexto del framework "Calls" deber ser inicializadas.');
 
 		return self::$calls;
 	}
@@ -72,5 +72,10 @@ class Context
 	public static function ExtraHits()
 	{
 		return self::Calls()->ExtraHits();
+	}
+
+	public static function Trans(string $str, array $parameters = [], ?string $domain = null, ?string $locale = null) : string
+	{
+		return self::Calls()->Trans($str, $parameters, $domain, $locale);
 	}
 }

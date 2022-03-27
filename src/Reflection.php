@@ -79,7 +79,7 @@ class Reflection
 	public static function CallArray(array $methodsInfo, ...$args) : void
 	{
 		if(count($args) > 9)
-			throw new \Exception('Max params 9');
+			throw new ErrorException('Máximo 9 parámetros');
 
 		foreach($methodsInfo as $methodInfo)
 		{

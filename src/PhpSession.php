@@ -86,12 +86,15 @@ class PhpSession
 			exit();
 		}
 
-		session_set_cookie_params(["Secure" => Cookies::IsSecure()]);
 		if (Context::Settings()->allowCrossSiteSessionCookie)
+		{
 			session_set_cookie_params(["SameSite" => "none"]);
-		// 	session_set_cookie_params(["SameSite" => "none"]);
-		// else
-		// 	//exit;
+			session_set_cookie_params(["Secure" => true]);
+		}
+		else
+		{
+			session_set_cookie_params(["Secure" => Cookies::IsSecure()]);
+		}
 		return session_start();
 	}
 }

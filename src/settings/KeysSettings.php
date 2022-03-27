@@ -3,6 +3,7 @@
 namespace minga\framework\settings;
 
 use Defuse\Crypto\Key;
+use minga\framework\Context;
 use minga\framework\Date;
 use minga\framework\ErrorException;
 
@@ -25,13 +26,19 @@ class KeysSettings
 	public string $AddThisKey = '';
 	public string $SendGridApiKey = '';
 
+	/**
+	 * Clave secreta random para uso interno
+	 * de la aplicación (necesario para Symfony).
+	 */
+	public string $AppSecret = '';
+
 	// Interna simple para ingresar a test
 	public string $TestEnvironmentKey = '';
 
 	public function GetHashKeyedKey() : string
 	{
 		if($this->HashKeyedKey == '')
-			throw new ErrorException('HashKeyed key not set. Please, add it to /config/settings.php file.');
+			throw new ErrorException(Context::Trans('La clave HashKeyed no está configurada. Agregarla en el archivo /config/settings.php.'));
 
 		return base64_decode($this->HashKeyedKey);
 	}
@@ -58,7 +65,7 @@ class KeysSettings
 	public function GetRememberKey() : string
 	{
 		if($this->RememberKey == '')
-			throw new ErrorException('Remember key not set. Please, add it to /config/settings.php file.');
+			throw new ErrorException(Context::Trans('La clave Remember no está configurada. Agregarla en el archivo /config/settings.php.'));
 
 		return bin2hex(base64_decode($this->RememberKey));
 	}

@@ -78,7 +78,7 @@ class CompressedDirectory
 			$this->expanded = true;
 		}
 		else
-			throw new ErrorException('Could not access contents.');
+			throw new ErrorException(Context::Trans('No se pudo acceder a los contenidos.'));
 
 		Profiling::EndTimer();
 	}

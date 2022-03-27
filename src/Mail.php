@@ -46,7 +46,7 @@ class Mail
 
 		$mail->setFrom($this->from, $this->fromCaption);
 		$mail->Subject = $this->subject;
-		$mail->AltBody = 'Para ver el mensaje, por favor use un lector de correo electrónico compatible con HTML';
+		$mail->AltBody = Context::Trans('Para ver el mensaje, por favor use un lector de correo electrónico compatible con HTML');
 		$mail->msgHTML($this->message);
 
 		$mail->isHTML(true);
@@ -63,7 +63,7 @@ class Mail
 
 	private function ResolveProvider($recipient) : int
 	{
-		if(Context::Settings()->entorno == 'desa')
+		if(Context::Settings()->environment == 'desa' || Context::Settings()->environment == 'dev')
 			return Context::Settings()->Mail()->Provider;
 
 		if (is_array($recipient) == false)

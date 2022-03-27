@@ -11,7 +11,6 @@ class Image
 	 * Si ambas medidas son cero, sale.
 	 * Si alguna medida es cero calcula la proporción
 	 * con la otra.
-	 *
 	 */
 	public static function Resize(string $sourceFile, int $maxWidth, int $maxHeight, string $targetFile) : void
 	{
@@ -33,7 +32,7 @@ class Image
 			$image = imagecreatefromgif($sourceFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: ' . $ext);
+			throw new ErrorException(Context::Trans('tipo no soportado') . ': ' . $ext);
 		}
 		// Get current dimensions
 		$oldWidth = imagesx($image);
@@ -74,7 +73,7 @@ class Image
 			imagegif($new, $targetFile);
 			break;
 		default:
-			throw new \Exception('Unsupported type: ' . $ext);
+			throw new ErrorException(Context::Trans('tipo no soportado') . ': ' . $ext);
 		}
 		imagedestroy($new);
 	}
@@ -142,5 +141,4 @@ class Image
 		imagedestroy($src);
 		IO::Delete($renamed);
 	}
-
 }

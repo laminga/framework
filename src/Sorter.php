@@ -174,14 +174,14 @@ class Sorter
 		else if(isset($a['fullname']))
 			$aName = $a['fullname'];
 		else
-			throw new \Exception('Fullname a is not set');
+			throw new ErrorException('Fullname no está seteado en el primer parámetro');
 
 		if(isset($b['fullName']))
 			$bName = $b['fullName'];
 		else if(isset($b['fullname']))
 			$bName = $b['fullname'];
 		else
-			throw new \Exception('Fullname b is not set');
+			throw new ErrorException('Fullname no está seteado en el segundo parámetro');
 
 		$aDescription = Arr::SafeGet($a, 'description');
 		$bDescription = Arr::SafeGet($b, 'description');

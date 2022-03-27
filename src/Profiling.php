@@ -97,6 +97,12 @@ class Profiling
 		PhpSession::SetSessionValue("lastProfiling", self::GetHtmlResults(true));
 	}
 
+	public static function GetJsonResults() : array
+	{
+		$ret = self::GetHtmlResults();
+		return explode("\n", $ret);
+	}
+
 	public static function GetHtmlResults(bool $saveForLaterFormat = false) : string
 	{
 		self::FinishTimers();
@@ -115,8 +121,6 @@ class Profiling
 				$ret .= "</table></div>";
 				$ret .= self::$lockStack;
 			}
-			else
-				$ret = explode("\n", $ret);
 		}
 		return $ret;
 	}
