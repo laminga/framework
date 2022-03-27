@@ -13,9 +13,12 @@ class BaseTwoLevelStringSQLiteCache
 	private $path;
 	private SQLiteList $db;
 
-	public function __construct($path)
+	public function __construct($path, bool $isAbsolutePath = false)
 	{
-		$this->path = Context::Paths()->GetStorageCaches() . '/services/' . $path;
+		if ($isAbsolutePath)
+			$this->path = $path;
+		else
+			$this->path = Context::Paths()->GetStorageCaches() . '/services/' . $path;
 		IO::EnsureExists($this->path);
 		$this->db = new SQLiteList('k', ['v']);
 	}

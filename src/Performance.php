@@ -707,7 +707,8 @@ class Performance
 				if ($n < count($extraHits))
 				{
 					$extraValues[$n][] = $extraHits[$n];
-					$totalsExtraValues[$n] += $extraHits[$n];
+					if ($extraHits[$n])
+						$totalsExtraValues[$n] += $extraHits[$n];
 				}
 				else
 					$extraValues[$n][] = '-';
@@ -717,16 +718,16 @@ class Performance
 		{
 			// Agrega la columna de promedios diarios
 			$headerRow[] = 'Promedio';
-			$dataHitRow[] = round($totalsDataHitRow / count($days));
-			$googleRow[] = round($totalsGoogleRow / count($days));
-			$mailRow[] = round($totalsMailRow / count($days));
-			$dataMsRow[] = round($totalsDataMsRow / count($days) / 1000 / 60, 1);
-			$dataAvgRow[] = round($totalsAvgRow / count($days));
-			$dataLockedRow[] = round($totalsDataLockedRow / count($days) / 1000, 1);
-			$dataDbMsRow[] = round($totalsDataDbMsRow / count($days) / 1000 / 60, 1);
-			$dataDbHitRow[] = round($totalsDataDbHitRow / count($days));
+			$dataHitRow[] = self::Average($totalsDataHitRow, count($days));
+			$googleRow[] = self::Average($totalsGoogleRow, count($days));
+			$mailRow[] = self::Average($totalsMailRow, count($days));
+			$dataMsRow[] = self::Average($totalsDataMsRow / 1000 / 60, count($days), 1);
+			$dataAvgRow[] = '-'; //round($totalsAvgRow / count($days));
+			$dataLockedRow[] = self::Average($totalsDataLockedRow / 1000, count($days), 1);
+			$dataDbMsRow[] = self::Average($totalsDataDbMsRow / 1000 / 60, count($days), 1);
+			$dataDbHitRow[] = self::Average($totalsDataDbHitRow, count($days));
 			for($n = 0; $n < count($extraValues); $n++)
-				$extraValues[$n][] = round($totalsExtraValues[$n] / count($days));
+				$extraValues[$n][] = self::Average($totalsExtraValues[$n], count($days));
 
 			// Agrega la columna de totales
 			$headerRow[] = 'Total';
@@ -734,7 +735,7 @@ class Performance
 			$googleRow[] = $totalsGoogleRow;
 			$mailRow[] = $totalsMailRow;
 			$dataMsRow[] = round($totalsDataMsRow / 1000 / 60, 1);
-			$dataAvgRow[] = round($totalsDataMsRow / $totalsDataHitRow);
+			$dataAvgRow[] = self::Average($totalsDataMsRow, $totalsDataHitRow);
 			$dataLockedRow[] = round($totalsDataLockedRow / 1000, 1);
 			$dataDbMsRow[] = round($totalsDataDbMsRow / 1000 / 60, 1);
 			$dataDbHitRow[] = $totalsDataDbHitRow;
@@ -757,6 +758,43 @@ class Performance
 		for($n = 0; $n < count($extras); $n++)
 			$ret[$extras[$n]] = $extraValues[$n];
 		return $ret;
+	}
+	private static function Average($a, $b, $precision = 0) : string
+	{
+		if ($b == 0)
+			return '';
+		else
+			return '' . round($a / $b);
+	}
+	public static function GetHistoryTable($months) : array
+	{
+		$ret = null;
+		$actualMoths = [];
+		for($n = sizeof($months) - 1; $n >= 0; $n--)
+			if (Str::StartsWith($months[$n], '2'))
+				$actualMoths[] = $months[$n];
+
+		foreach($actualMoths as $month)
+		{
+			if (Str::StartsWith($month, '2'))
+			{
+				$monthInfo = self::GetDaylyTable($month, true);
+				if ($ret === null) 
+				{
+					$ret = $monthInfo;
+					foreach($ret as $key => $value)
+						$ret[$key] = [$value[sizeof($value)-1]];
+				}
+				else
+				{
+					foreach($monthInfo as $key => $value)
+						$ret[$key][] = $value[sizeof($value)-1];
+				}
+				
+			}
+		}
+		unset($ret['Día']);
+		return array_merge(['Mes' => $actualMoths], $ret);
 	}
 
 	private static function IsAdmin($controller) : bool

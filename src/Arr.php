@@ -523,6 +523,11 @@ class Arr
 		usort($arr, function($a, $b) use ($field) : int { return Sorter::ByField($a, $b, $field); });
 	}
 
+	public static function SortByNamedValue(array &$arr, $name) : void
+	{
+		usort($arr, function($a, $b) use ($name) : int { return Sorter::ByNamedValue($a, $b, $name); });
+	}
+
 	public static function SortByGetter(array &$arr, $getter) : void
 	{
 		usort($arr, function($a, $b) use ($getter) : int { return Sorter::ByGetter($a, $b, $getter); });

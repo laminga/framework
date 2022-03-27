@@ -39,6 +39,16 @@ class Sorter
 		return 0;
 	}
 
+	public static function ByNamedValue($a, $b, $name) : int
+	{
+		if ($a[$name] > $b[$name])
+			return 1;
+		elseif ($a[$name] < $b[$name])
+			return -1;
+
+		return 0;
+	}
+
 	public static function ByField($a, $b, $field) : int
 	{
 		if ($a->$field > $b->$field)
