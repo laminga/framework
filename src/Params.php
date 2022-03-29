@@ -76,7 +76,7 @@ class Params
 	public static function CheckMandatoryValue($value, $key = '')
 	{
 		if ($value === null)
-			throw new ErrorException(Context::Trans('Parámetro "{param}" requerido.', ['{param}' => $key ]));
+			throw new ErrorException(Context::Trans('Parámetro "{param}" requerido.', ['{param}' => $key]));
 		return $value;
 	}
 
@@ -154,7 +154,7 @@ class Params
 	private static function ProcessRange($value, $min, $max)
 	{
 		if ($value < $min || $value > $max)
-			throw new ErrorException(Context::Trans('El valor del parámetro {param} está fuera de rango.', ['{param}' => $value ]));
+			throw new ErrorException(Context::Trans('El valor del parámetro {param} está fuera de rango.', ['{param}' => $value]));
 		return $value;
 	}
 
@@ -213,18 +213,18 @@ class Params
 	{
 		$i = (int)$value;
 		if ((string)$i !== (string)$value)
-			throw new ErrorException(Context::Trans('El valor del parámetro "') . $value . Context::Trans('" no es válido.'));
+			throw new ErrorException(Context::Trans('El valor del parámetro "{value}" no es válido.', ['{value}' => $value]));
 		return $i;
 	}
 
 	public static function CheckParseMonthValue($value)
 	{
 		if (strlen($value) !== 7 || substr($value, 4, 1) !== '-')
-			throw new ErrorException(Context::Trans('El valor del parámetro "') . $value . Context::Trans('" no es válido.'));
+			throw new ErrorException(Context::Trans('El valor del parámetro "{value}" no es válido.', ['{value}' => $value]));
 		$y = self::CheckParseIntValue(substr($value, 0, 4));
 		$m = self::CheckParseIntValue(ltrim(substr($value, 5, 2), '0'));
 		if ($y < 2000 || $y > 3000 || $m < 1 || $m > 12)
-			throw new ErrorException(Context::Trans('El valor del parámetro "') . $value . Context::Trans('" no es válido.'));
+			throw new ErrorException(Context::Trans('El valor del parámetro "{value}" no es válido.', ['{value}' => $value]));
 		return $value;
 	}
 

@@ -150,12 +150,11 @@ class MessageBox
 		{
 			self::Set404NotFoundHeaders();
 			Performance::SetController('cErrDocNotFound', 'Show');
-			self::ThrowMessage(Context::Trans('El documento') . '<b>' . $file . '</b>' . Context::Trans('no está disponible.') . '<p>'
-				. Context::Trans('Sin embargo, si así lo desea, lo invitamos a visitar el perfil de') . ' <a href="' . $contentUrl
-				. '">' . $content->GetFullName() . '</a> ' . Context::Trans('para consultar otros documentos relacionados.'),
-				$contentUrl,
-				$content->GetFullName() . ' - ' . $content->GetLocation()
-			);
+			//TODO: traducción mensaje largo
+			$link = '<a href="' . $contentUrl . '">' . $content->GetFullName() . '</a>';
+			self::ThrowMessage(Context::Trans('El documento <b>{file}</b> no está disponible.'
+				. '<p>Sin embargo, si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>', ['{file}' => $file, '{link}' => $link]),
+				$contentUrl, $content->GetFullName() . ' - ' . $content->GetLocation());
 		}
 	}
 
@@ -168,9 +167,9 @@ class MessageBox
 			$msg = '';
 			if ($exception != null)
 				$msg = $exception->getMessage();
-			MessageBox::ThrowMessage(Context::Trans('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes.') . ' ' . $msg . $log, Context::Settings()->GetMainServerPublicUrl());
+			MessageBox::ThrowMessage(Context::Trans('Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.') . ' ' . $msg . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
-		MessageBox::ThrowMessage(Context::Trans('Oops. Se ha producido un error... por favor, intente nuevamente en unos instantes.'), Context::Settings()->GetMainServerPublicUrl());
+		MessageBox::ThrowMessage(Context::Trans('Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.'), Context::Settings()->GetMainServerPublicUrl());
 	}
 
 	public static function ThrowFileNotFound($extraInfo = '') : void

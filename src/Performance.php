@@ -255,9 +255,9 @@ class Performance
 		PerformanceMonthlyUsageLock::EndWrite();
 		if (Context::Settings()->Performance()->PerformancePerUser)
 		{
-				PerformanceMonthlyUserLock::BeginWrite();
-				self::SaveUserUsage($ellapsedMilliseconds);
-				PerformanceMonthlyUserLock::EndWrite();
+			PerformanceMonthlyUserLock::BeginWrite();
+			self::SaveUserUsage($ellapsedMilliseconds);
+			PerformanceMonthlyUserLock::EndWrite();
 		}
 		PerformanceMonthlyLocksLock::BeginWrite();
 		self::SaveLocks();
@@ -314,7 +314,7 @@ class Performance
 
 		PerformanceDaylyUsageLock::BeginWrite();
 		if (Context::Settings()->Performance()->PerformancePerUser)
-				PerformanceDaylyUserLock::BeginWrite();
+			PerformanceDaylyUserLock::BeginWrite();
 		PerformanceDaylyLocksLock::BeginWrite();
 
 		$folder = self::ResolveFolder('dayly');
@@ -341,7 +341,7 @@ class Performance
 
 		PerformanceDaylyUsageLock::EndWrite();
 		if (Context::Settings()->Performance()->PerformancePerUser)
-				PerformanceDaylyUserLock::EndWrite();
+			PerformanceDaylyUserLock::EndWrite();
 		PerformanceDaylyLocksLock::EndWrite();
 	}
 
@@ -759,18 +759,20 @@ class Performance
 			$ret[$extras[$n]] = $extraValues[$n];
 		return $ret;
 	}
+
 	private static function Average($a, $b, $precision = 0) : string
 	{
 		if ($b == 0)
 			return '';
-		else
-			return '' . round($a / $b);
+
+		return '' . round($a / $b);
 	}
+
 	public static function GetHistoryTable($months) : array
 	{
 		$ret = null;
 		$actualMoths = [];
-		for($n = sizeof($months) - 1; $n >= 0; $n--)
+		for($n = count($months) - 1; $n >= 0; $n--)
 			if (Str::StartsWith($months[$n], '2'))
 				$actualMoths[] = $months[$n];
 
@@ -779,18 +781,18 @@ class Performance
 			if (Str::StartsWith($month, '2'))
 			{
 				$monthInfo = self::GetDaylyTable($month, true);
-				if ($ret === null) 
+				if ($ret === null)
 				{
 					$ret = $monthInfo;
 					foreach($ret as $key => $value)
-						$ret[$key] = [$value[sizeof($value)-1]];
+						$ret[$key] = [$value[count($value) - 1]];
 				}
 				else
 				{
 					foreach($monthInfo as $key => $value)
-						$ret[$key][] = $value[sizeof($value)-1];
+						$ret[$key][] = $value[count($value) - 1];
 				}
-				
+
 			}
 		}
 		unset($ret['Día']);

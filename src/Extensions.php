@@ -32,7 +32,7 @@ class Extensions
 
 		if(in_array($ext, $validExtensions) == false)
 		{
-			$message = Context::Trans('La extensión del archivo debe ser una de las siguientes: ') . self::GetExtensionList($validExtensions) . '.';
+			$message = Context::Trans('La extensión del archivo debe ser una de las siguientes: {ext}.', ['{ext}' => self::GetExtensionList($validExtensions)]);
 
 			if(in_array($extName, $validExtensions))
 				$message .= '<br>' . Context::Trans('Si el archivo tiene una extensión válida, es posible que esté dañado o que se haya cambiado la extensión manualmente. Esto último modifica el nombre, pero no el formato del archivo. Intente abrirlo con la aplicación predeterminada y guardarlo en el formato esperado.');
