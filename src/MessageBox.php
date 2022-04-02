@@ -31,7 +31,7 @@ class MessageBox
 		self::$IsThrowingMessage = true;
 		if (Context::Settings()->isFramed)
 		{
-			echo "<!doctype html><html lang='es'><head><meta charset='utf-8'></head><body onload=\"parent.ThrowMessage('" . Str::EscapeJavascript($message) . "');\"></body></html>";
+			echo "<!doctype html><html><head><meta charset='utf-8'></head><body onload=\"parent.ThrowMessage('" . Str::EscapeJavascript($message) . "');\"></body></html>";
 			exit();
 		}
 

@@ -187,7 +187,7 @@ abstract class OauthConnector
 
 		$js = "window.opener.location='" . $target . "';";
 		$js .= 'window.close();';
-		echo '<!doctype html><html lang="es"><head><meta charset="utf-8"></head><body onload="' . $js . '"></body></html>';
+		echo '<!doctype html><html><head><meta charset="utf-8"></head><body onload="' . $js . '"></body></html>';
 
 		// Guarda info de profiling
 		Profiling::SaveBeforeRedirect();
