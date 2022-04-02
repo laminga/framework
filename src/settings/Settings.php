@@ -21,7 +21,7 @@ class Settings
 	private NotificationSettings $notifications;
 
 	// UI Settings
-	public string $entorno = '';
+	public string $entorno = 'dev';
 	public string $environment = 'dev';
 
 	public bool $updateGoogleBingSitemap = false;
