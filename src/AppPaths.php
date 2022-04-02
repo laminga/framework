@@ -146,6 +146,11 @@ class AppPaths
 		return __DIR__;
 	}
 
+	public function GetTranslationsPath() : string
+	{
+		return $this->GetRoot() . '/translations';
+	}
+
 	public function GetFrameworkTranslationsPath() : string
 	{
 		return realpath($this->GetFrameworkPath() . '/../translations');
