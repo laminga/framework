@@ -443,7 +443,7 @@ class IO
 		}
 
 		if($recursive)
-			$ret = self::rglob($path . '/' . $start . '*' . $ext);
+			$ret = self::GlobR($path . '/' . $start . '*' . $ext);
 		else
 			$ret = glob($path . '/' . $start . '*' . $ext);
 
@@ -462,11 +462,11 @@ class IO
 	/**
 	 * como la función glob de php pero recursiva.
 	 */
-	private static function rglob($pattern, int $flags = 0)
+	public static function GlobR($pattern, int $flags = 0)
 	{
 		$files = glob($pattern, $flags);
 		foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir)
-			$files = array_merge($files, self::rglob($dir . '/' . basename($pattern), $flags));
+			$files = array_merge($files, self::GlobR($dir . '/' . basename($pattern), $flags));
 
 		return $files;
 	}
