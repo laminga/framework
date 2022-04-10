@@ -78,5 +78,4 @@ class FiledQueue
 		$this->lock->Release();
 		Profiling::EndTimer();
 	}
-
 }
