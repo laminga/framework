@@ -150,10 +150,8 @@ class MessageBox
 		{
 			self::Set404NotFoundHeaders();
 			Performance::SetController('cErrDocNotFound', 'Show');
-			//TODO: traducción mensaje largo
 			$link = '<a href="' . $contentUrl . '">' . $content->GetFullName() . '</a>';
-			self::ThrowMessage(Context::Trans('El documento <b>{file}</b> no está disponible.'
-				. '<p>Sin embargo, si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>', ['{file}' => $file, '{link}' => $link]),
+			self::ThrowMessage(Context::Trans('key.messagebox.docnotfound.{file}.{link}', ['{file}' => $file, '{link}' => $link]),
 				$contentUrl, $content->GetFullName() . ' - ' . $content->GetLocation());
 		}
 	}
