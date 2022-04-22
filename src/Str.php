@@ -706,7 +706,6 @@ class Str
 			0, PREG_SPLIT_NO_EMPTY));
 	}
 
-
 	public static function TryConvertUtf8(string $str, string $to = 'Windows-1252', string $from = 'UTF-8', bool $translit = false, bool $ignore = false) : string
 	{
 		try
