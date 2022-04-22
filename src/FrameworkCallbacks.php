@@ -24,6 +24,8 @@ abstract class FrameworkCallbacks
 
 	public static function Trans(string $str, array $parameters = [], ?string $domain = null, ?string $locale = null) : string
 	{
+		foreach($parameters as $k => $v)
+			$str = str_replace($k, $v, $str);
 		return $str;
 	}
 }
