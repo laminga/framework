@@ -92,9 +92,7 @@ class PhpSession
 			session_set_cookie_params(["Secure" => true]);
 		}
 		else
-		{
-			session_set_cookie_params(["Secure" => Cookies::IsSecure()]);
-		}
+			session_set_cookie_params(["Secure" => Request::IsSecure()]);
 		return session_start();
 	}
 }
