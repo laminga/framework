@@ -676,8 +676,9 @@ class Str
 		return mb_substr($str, $start, $length, $encoding);
 	}
 
-	public static function Concat(string $a, string $b, string $separator) : string
+	public static function Concat(string $a, ?string $b, string $separator) : string
 	{
+		if ($b === null) return $a;
 		if (trim($a) == "" || trim($b) == "")
 			$separator = "";
 		return trim($a) . $separator . trim($b);
