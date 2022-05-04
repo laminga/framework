@@ -39,7 +39,6 @@ class Str
 			'ISO-8859-1',
 		];
 
-		$encoding = 'UTF-8';
 		foreach ($encodings as $encoding)
 		{
 			if ($encoding === "macintosh")
@@ -708,14 +707,15 @@ class Str
 			0, PREG_SPLIT_NO_EMPTY));
 	}
 
-	public static function TryConvertUtf8(string $str) : string
+	public static function TryConvertUtf8(string $str, string $to = 'Windows-1252', string $from = 'UTF-8', bool $translit = false, bool $ignore = false) : string
 	{
 		try
 		{
-			return self::Convert($str);
+			return self::Convert($str, $to, $from, $translit, $ignore);
 		}
 		catch (\Exception $e)
 		{
+			Log::HandleSilentException(new \Exception('Error convirtiendo encoding: ' . $str . ', From: ' . $from . ', To: ' . $to, 0, $e));
 		}
 		return $str;
 	}

@@ -81,8 +81,7 @@ class ServersSettings
 
 		if (isset($this->servers[$this->currentServer]) == false)
 		{
-			throw new ErrorException('"' . $this->currentServer . '" '
-				. Context::Trans('está especificado como servidor actual pero no hay un servidor registrado con ese nombre en la configuración.'));
+			throw new ErrorException(Context::Trans('"{server}" está especificado como servidor actual pero no hay un servidor registrado con ese nombre en la configuración.'), ['{server}' => $this->currentServer]);
 		}
 
 		return $this->servers[$this->currentServer];

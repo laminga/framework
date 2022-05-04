@@ -6,11 +6,12 @@ class IO
 {
 	private static array $compressedDirectories;
 
-	public static function AppendAllBytes(string $filename, $bytes) : void
+	public static function AppendAllBytes(string $filename, $bytes) : bool
 	{
-		$fp = fopen($filename, 'a');
-		fwrite($fp, $bytes);
-		fclose($fp);
+		$ret = file_put_contents($filename, $bytes, FILE_APPEND);
+		if($ret === false)
+			return false;
+		return true;
 	}
 
 	public static function MoveDirectoryContents(string $dirSource, string $target) : void
@@ -70,24 +71,23 @@ class IO
 		return $path;
 	}
 
-	public static function ReadText(string $path, int $length) : string
+	public static function ReadText(string $file, int $length) : string
 	{
-		$handle = fopen($path, "r");
-		if($handle === false)
-			throw new ErrorException('Error abriendo archivo');
-		$contents = fread($handle, $length);
-		if($contents === false)
+		$ret = file_get_contents($file, false, null, 0, $length);
+		if($ret === false)
 			throw new ErrorException('Error leyendo archivo');
-		fclose($handle);
-		return $contents;
+		return $ret;
 	}
 
-	public static function ReadAllBytes(string $path)
+	public static function ReadAllBytes(string $path) : string
 	{
-		return file_get_contents($path);
+		$ret = file_get_contents($path);
+		if($ret === false)
+			throw new ErrorException('Error leyendo archivo');
+		return $ret;
 	}
 
-	public static function ReadAllLines(string $path, $maxLines = null)
+	public static function ReadAllLines(string $path, $maxLines = null) : array
 	{
 		$handle = fopen($path, 'r');
 		$ret = [];
@@ -102,9 +102,12 @@ class IO
 		return $ret;
 	}
 
-	public static function WriteAllText(string $path, $text)
+	public static function WriteAllText(string $path, $text) : bool
 	{
-		return file_put_contents($path, $text);
+		$ret = file_put_contents($path, $text);
+		if($ret === false)
+			return false;
+		return true;
 	}
 
 	public static function WriteJson(string $path, $data, bool $pretty = false)
@@ -119,6 +122,7 @@ class IO
 		return self::WriteAllText($path, $json);
 	}
 
+	//TODO: renombrar a StreamFile o algo así
 	public static function ReadFileChunked(string $file) : bool
 	{
 		$handle = fopen($file, 'rb');
@@ -161,18 +165,14 @@ class IO
 		return $ret;
 	}
 
-	public static function AppendLine(string $path, $line) : bool
+	public static function AppendLine(string $file, string $line) : bool
 	{
-		$handle = fopen($path, 'a');
-		if ($handle === false)
-			return false;
-		if (fwrite($handle, $line . "\r\n") === false)
-		{
-			fclose($handle);
-			return false;
-		}
-		fclose($handle);
-		return true;
+		return (bool)file_put_contents($file, $line . "\r\n", FILE_APPEND);
+	}
+
+	public static function AppendLines(string $file, array $lines) : bool
+	{
+		return self::AppendLine($file, implode("\r\n", $lines));
 	}
 
 	public static function ReadTitleTextFile(string $file, ?string &$title, ?string &$text) : void
@@ -192,9 +192,9 @@ class IO
 		$text = $pStart . implode($pEnd . $pStart, $lines) . $pEnd;
 	}
 
-	public static function ReadKeyValueCSVFile(string $path) : array
+	public static function ReadKeyValueCSVFile(string $file) : array
 	{
-		$fp = fopen($path, 'r');
+		$fp = fopen($file, 'r');
 		$ret = [];
 		while (($data = fgetcsv($fp)) !== false)
 		{
@@ -205,9 +205,9 @@ class IO
 		return $ret;
 	}
 
-	public static function WriteKeyValueCSVFile(string $path, array $assocArr) : void
+	public static function WriteKeyValueCSVFile(string $file, array $assocArr) : void
 	{
-		$fp = fopen($path, 'w');
+		$fp = fopen($file, 'w');
 		foreach ($assocArr as $key => $value)
 			fputcsv($fp, [$key, $value]);
 		fclose($fp);
@@ -251,50 +251,37 @@ class IO
 		return false;
 	}
 
-	public static function ReadIniFile(string $path)
+	public static function ReadIniFile(string $file)
 	{
-		return parse_ini_file($path);
+		return parse_ini_file($file);
 	}
 
-	public static function ReadEscapedIniFile(string $path) : array
+	public static function ReadEscapedIniFile(string $file) : array
 	{
-		$attributes = parse_ini_file($path);
+		$attributes = parse_ini_file($file);
 		foreach($attributes as $key => $value)
 			$attributes[$key] = urldecode($value);
 		return $attributes;
 	}
 
-	public static function ReadEscapedIniFileWithSections(string $path) : array
+	public static function ReadEscapedIniFileWithSections(string $file) : array
 	{
-		$attributes = parse_ini_file($path, true);
+		$attributes = parse_ini_file($file, true);
 		foreach($attributes as &$values)
 			foreach($values as $key => $value)
 				$values[$key] = urldecode($value);
 		return $attributes;
 	}
 
-	public static function WriteEscapedIniFileWithSections(string $path, array $assocArr) : bool
+	public static function WriteEscapedIniFileWithSections(string $file, array $assocArr) : bool
 	{
 		$content = "";
 		foreach($assocArr as $section => $values)
 			$content .= self::AssocArraySectionToString($section, $values);
 
-		$directory = dirname($path);
+		self::CreateDirectory(dirname($file));
 
-		self::CreateDirectory($directory);
-
-		$handle = fopen($path, 'w');
-		if ($handle === false)
-			return false;
-
-		if (fwrite($handle, $content) === false)
-		{
-			fclose($handle);
-			return false;
-		}
-
-		fclose($handle);
-		return true;
+		return self::WriteAllText($file, $content);
 	}
 
 	public static function GetSectionFromIniFile(string $path, string $section)
@@ -313,51 +300,31 @@ class IO
 		return $content;
 	}
 
-	public static function WriteIniFile(string $path, array $assocArr) : bool
+	public static function WriteIniFile(string $file, array $assocArr) : bool
 	{
-		$handle = fopen($path, 'w');
-		if ($handle === false)
-			return false;
 		$content = "";
 		foreach ($assocArr as $key => $elem)
 			$content .= $key . '="' . $elem . "\"\r\n";
 
-		if(fwrite($handle, $content) === false)
-		{
-			fclose($handle);
-			return false;
-		}
-
-		fclose($handle);
-		return true;
+		return self::WriteAllText($file, $content);
 	}
 
-	public static function WriteEscapedIniFile(string $path, array $assocArr, bool $keepSections = false) : bool
+	public static function WriteEscapedIniFile(string $file, array $assocArr, bool $keepSections = false) : bool
 	{
-		$directory = dirname($path);
+		$directory = dirname($file);
 
 		self::CreateDirectory($directory);
 
 		// se fija si tiene que mantener secciones
-		if ($keepSections && file_exists($path))
+		if ($keepSections && file_exists($file))
 		{
-			$sections = self::ReadEscapedIniFileWithSections($path);
+			$sections = self::ReadEscapedIniFileWithSections($file);
 			$sections['General'] = $assocArr;
-			return self::WriteEscapedIniFileWithSections($path, $sections);
+			return self::WriteEscapedIniFileWithSections($file, $sections);
 		}
 		$content = self::AssocArraySectionToString('General', $assocArr);
-		// empieza a grabar
-		$handle = fopen($path, 'w');
-		if ($handle === false)
-			return false;
-		if (fwrite($handle, $content) === false)
-		{
-			fclose($handle);
-			return false;
-		}
 
-		fclose($handle);
-		return true;
+		return self::WriteAllText($file, $content);
 	}
 
 	public static function RemoveExtension($filename) : string
@@ -443,7 +410,7 @@ class IO
 		}
 
 		if($recursive)
-			$ret = self::rglob($path . '/' . $start . '*' . $ext);
+			$ret = self::GlobR($path . '/' . $start . '*' . $ext);
 		else
 			$ret = glob($path . '/' . $start . '*' . $ext);
 
@@ -462,11 +429,11 @@ class IO
 	/**
 	 * como la función glob de php pero recursiva.
 	 */
-	private static function rglob($pattern, int $flags = 0)
+	public static function GlobR($pattern, int $flags = 0)
 	{
 		$files = glob($pattern, $flags);
 		foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir)
-			$files = array_merge($files, self::rglob($dir . '/' . basename($pattern), $flags));
+			$files = array_merge($files, self::GlobR($dir . '/' . basename($pattern), $flags));
 
 		return $files;
 	}

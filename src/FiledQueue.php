@@ -73,28 +73,9 @@ class FiledQueue
 		$filename = $this->path . "/" . $this->file;
 		$this->lock->LockWrite();
 
-		$this->AppendLines($filename, $this->valuesToQueue);
+		IO::AppendLines($filename, $this->valuesToQueue);
 
 		$this->lock->Release();
 		Profiling::EndTimer();
-	}
-
-	//TODO: esta funcion está en IO, confirmar
-	private function AppendLines(string $file, $lines) : bool
-	{
-		$handle = fopen($file, 'a');
-		if ($handle === false)
-			return false;
-
-		foreach($this->valuesToQueue as $value)
-		{
-			if (fwrite($handle, $value . "\r\n") === false)
-			{
-				fclose($handle);
-				return false;
-			}
-		}
-		fclose($handle);
-		return true;
 	}
 }

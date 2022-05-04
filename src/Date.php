@@ -18,7 +18,7 @@ class Date
 	public static function NowGMT(int $offset) : int
 	{
 		if ($offset < -12 || $offset > 12)
-			throw new ErrorException(Context::Trans('Desplazamiento de tiempo fuera de rango: ') . $offset);
+			throw new ErrorException(Context::Trans('Desplazamiento de tiempo fuera de rango: {offset}', ['{offset}' => $offset]));
 		return self::UniversalNow() + 60 * 60 * $offset;
 	}
 

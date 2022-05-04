@@ -30,7 +30,7 @@ class Context
 	public static function CurrentUrl() : string
 	{
 		$ret = 'http://';
-		if(Params::SafeServer('HTTPS') == 'on')
+		if(Request::IsSecure())
 			$ret = 'https://';
 
 		return $ret . Params::SafeServer('HTTP_HOST') . Params::SafeServer('REQUEST_URI');

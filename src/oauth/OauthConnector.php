@@ -142,9 +142,9 @@ abstract class OauthConnector
 	public function RedirectErrorNoEmail() : void
 	{
 		Log::HandleSilentException(new PublicException('No email from ' . $this->ProviderName()));
-
-		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido obtener una dirección de correo electrónico a través de ')
-			. $this->ProviderName() . Context::Trans('. Intente otro método de registro para la identificación.'), Context::Trans('Atención'));
+		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido obtener una dirección de correo electrónico a través de {provider}. Intente otro método de registro para la identificación.', [
+			'{provider}' => $this->ProviderName(),
+		]), Context::Trans('Atención'));
 	}
 
 	public function RedirectError($error = null) : void
@@ -152,7 +152,7 @@ abstract class OauthConnector
 		if($error != null)
 			Log::HandleSilentException(new ErrorException($error));
 
-		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido realizar la interacción con ') . $this->ProviderName() . Context::Trans(' para la identificación.'), Context::Trans('Atención'));
+		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido realizar la interacción con {provider} para la identificación.', ['{provider}' => $this->ProviderName()]), Context::Trans('Atención'));
 	}
 
 	private function RedirectSession(string $state) : void
@@ -187,7 +187,7 @@ abstract class OauthConnector
 
 		$js = "window.opener.location='" . $target . "';";
 		$js .= 'window.close();';
-		echo '<!doctype html><html lang="es"><head><meta charset="utf-8"></head><body onload="' . $js . '"></body></html>';
+		echo '<!doctype html><html><head><meta charset="utf-8"></head><body onload="' . $js . '"></body></html>';
 
 		// Guarda info de profiling
 		Profiling::SaveBeforeRedirect();

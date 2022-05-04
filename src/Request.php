@@ -6,6 +6,13 @@ class Request
 {
 	private static bool $isGoogle;
 
+	public static function IsSecure() : bool
+	{
+		return Params::SafeServer('HTTPS') == 'on'
+			|| Params::SafeServer('HTTP_X_FORWARDED_PROTO') == 'https'
+			|| Params::SafeServer('HTTP_X_FORWARDED_SSL') == 'on';
+	}
+
 	public static function IsGoogle() : bool
 	{
 		if (isset(self::$isGoogle) == false)
