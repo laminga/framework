@@ -186,7 +186,7 @@ class Log
 		if($errorSource == '' && $errorLine == 0 && $errorColumn == 0 && $trace == '')
 			return true;
 
-		if(Str::ContainsI($errorMessage, 'loadTipy') && Str::ContainsI($trace, 'Failed to fetch'))
+		if(Str::ContainsI($errorMessage, 'loadTippy') && Str::ContainsI($trace, 'Failed to fetch'))
 			return true;
 
 		//No funciona...
