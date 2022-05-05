@@ -48,6 +48,13 @@ class PhpSession
 		}
 	}
 
+	private static function SessionExists() : bool
+	{
+		if (!Context::Settings()->allowPHPsession)
+			return false;
+		return (isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE);
+	}
+
 	private static function CheckPhpSessionStarted() : void
 	{
 		if (Context::Settings()->allowPHPsession)
@@ -70,7 +77,9 @@ class PhpSession
 
 	public static function GetSessionValue($key, $default = '')
 	{
-		self::CheckPhpSessionStarted();
+		if (!self::SessionExists())
+			return $default;
+	
 		if (isset(self::$sessionValues[$key]))
 			return self::$sessionValues[$key];
 		return $default;
