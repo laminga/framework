@@ -23,6 +23,7 @@ class BaseTwoLevelStringSQLiteCache
 		$this->db = new SQLiteList('k', ['v']);
 	}
 
+	/** @phpstan-impure */
 	private function OpenRead($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
@@ -42,6 +43,7 @@ class BaseTwoLevelStringSQLiteCache
 		}
 	}
 
+	/** @phpstan-impure */
 	private function OpenWrite($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
@@ -103,9 +105,8 @@ class BaseTwoLevelStringSQLiteCache
 	public function HasData($key1, $key2, &$value = null) : bool
 	{
 		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled)
-		{
 			return false;
-		}
+
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
 
@@ -154,9 +155,7 @@ class BaseTwoLevelStringSQLiteCache
 		{
 			sleep(1);
 			if ($this->OpenWrite($levelKey, false) == false)
-			{
 				return;
-			}
 		}
 		try
 		{
@@ -166,9 +165,7 @@ class BaseTwoLevelStringSQLiteCache
 		{
 			$err = $e->getMessage();
 			if (Str::Contains($err, "Unable to prepare statement: 1, no such table: data"))
-			{
 				$this->db->Truncate();
-			}
 			throw $e;
 		}
 		$this->Close();

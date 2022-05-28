@@ -23,6 +23,7 @@ class BaseTwoLevelBlobSQLiteCache
 		$this->db = new SQLiteList('k', ['v', 'time'], ['length'], null, ['v']);
 	}
 
+	/** @phpstan-impure */
 	private function OpenRead($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
@@ -42,6 +43,7 @@ class BaseTwoLevelBlobSQLiteCache
 		}
 	}
 
+	/** @phpstan-impure */
 	private function OpenWrite($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
@@ -140,18 +142,15 @@ class BaseTwoLevelBlobSQLiteCache
 	public function PutData($key1, $key2, $valueFilename, $timeStamp = null) : void
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
-		{
 			return;
-		}
+
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
 		if ($this->OpenWrite($levelKey, false) == false)
 		{
 			sleep(1);
 			if ($this->OpenWrite($levelKey, false) == false)
-			{
 				return;
-			}
 		}
 		try
 		{
@@ -164,9 +163,7 @@ class BaseTwoLevelBlobSQLiteCache
 		{
 			$err = $e->getMessage();
 			if (Str::Contains($err, "Unable to prepare statement: 1, no such table: data"))
-			{
 				$this->db->Truncate();
-			}
 			throw $e;
 		}
 		$this->Close();
