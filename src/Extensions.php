@@ -207,6 +207,12 @@ class Extensions
 				return 'application/x-stata';
 			case 'rdata':
 				return 'application/octet-stream';
+			case 'mp3':
+				return 'audio/mpeg';
+			case 'ogg':
+				return 'audio/ogg';
+			case 'wav':
+				return 'audio/wav';
 			default:
 				return 'application/octet-stream';
 		}
