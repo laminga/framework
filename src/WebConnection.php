@@ -30,11 +30,11 @@ class WebConnection
 
 	public function Initialize(string $path = '') : void
 	{
-		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
+		$userAgent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
 		$this->ch = curl_init();
 
 		curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 10);
-		curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
+		curl_setopt($this->ch, CURLOPT_USERAGENT, $userAgent);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, false);
@@ -424,7 +424,7 @@ class WebConnection
 		return $this->cookieFile;
 	}
 
-	public function Upload(string $url, string $path, array $postData = []) : string
+	public function Upload(string $url, string $path, string $userAgent = '') : string
 	{
 		$ch = curl_init();
 		$this->ch = $ch;
@@ -435,8 +435,11 @@ class WebConnection
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->CreateCookieFile());
-		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
-		curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
+
+		// $userAgent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
+		if($userAgent != '')
+			curl_setopt($this->ch, CURLOPT_USERAGENT, $userAgent);
+
 		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
 
 
@@ -453,7 +456,7 @@ class WebConnection
 			$this->ParseErrorCodes((bool)$ret, $path);
 
 			if ($this->throwErrors)
-				MessageBox::ThrowMessage('Error: ' . $this->error);
+				throw new PublicException($this->httpCode . ' ' . $this->error);
 		}
 		curl_close($ch);
 		if(is_bool($ret))
