@@ -178,13 +178,13 @@ class WebConnection
 
 		curl_setopt($this->ch, CURLOPT_URL, $url);
 
-		$this->requestHeaders = [
+		$this->requestHeaders = array_merge($this->requestHeaders, [
 			'Accept-Language: es-es,en',
 			'Accept: ' . $this->accept,
 			'Pragma: no-cache',
 			'Cache-Control: no-cache',
 			'Connection: keep-alive',
-		];
+		]);
 
 		if ($args != null)
 		{
