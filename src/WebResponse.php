@@ -4,8 +4,8 @@ namespace minga\framework;
 
 class WebResponse
 {
-	public int $httpCode;
-	public $error;
+	public int $httpCode = 0;
+	public string $error = '';
 	public $file;
 	public $contentType;
 	public $uri;

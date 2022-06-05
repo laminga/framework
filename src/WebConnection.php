@@ -4,6 +4,12 @@ namespace minga\framework;
 
 class WebConnection
 {
+	private const Get = 'GET';
+	private const Post = 'POST';
+	private const Delete = 'DELETE';
+	private const Put = 'PUT';
+	private const Patch = 'PATCH';
+
 	protected $ch;
 	protected $cherr = null;
 	protected bool $isClosed = true;
@@ -86,7 +92,7 @@ class WebConnection
 	public function Get(string $url, string $file = '') : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute($url, $file, []);
+		$response = $this->doExecute(self::Get, $url, $file, []);
 		$red = 0;
 
 		while ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
@@ -119,13 +125,61 @@ class WebConnection
 	public function Post(string $url, string $file = '', $args = null) : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute($url, $file, $args);
+		$response = $this->doExecute(self::Post, $url, $file, $args);
 		Profiling::EndTimer();
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$location = $response->GetLocationHeader();
 			$this->AppendLog('Redirigiendo a ' . $location);
 			return $this->Get($location, $file);
+		}
+		return $response;
+	}
+
+	/**
+	 * @param string|array|null $args
+	 */
+	public function Put(string $url, string $file = '', $args = null) : WebResponse
+	{
+		Profiling::BeginTimer();
+		$response = $this->doExecute(self::Put, $url, $file, $args);
+		Profiling::EndTimer();
+		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
+		{
+			$location = $response->GetLocationHeader();
+			$this->AppendLog('Redirigiendo a ' . $location);
+			return $this->Put($location, $file, $args);
+		}
+		return $response;
+	}
+
+	/**
+	 * @param string|array|null $args
+	 */
+	public function Patch(string $url, string $file = '', $args = null) : WebResponse
+	{
+		Profiling::BeginTimer();
+		$response = $this->doExecute(self::Patch, $url, $file, $args);
+		Profiling::EndTimer();
+		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
+		{
+			$location = $response->GetLocationHeader();
+			$this->AppendLog('Redirigiendo a ' . $location);
+			return $this->Patch($location, $file, $args);
+		}
+		return $response;
+	}
+
+	public function Delete(string $url, string $file = '') : WebResponse
+	{
+		Profiling::BeginTimer();
+		$response = $this->doExecute(self::Delete, $url, $file);
+		Profiling::EndTimer();
+		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
+		{
+			$location = $response->GetLocationHeader();
+			$this->AppendLog('Redirigiendo a ' . $location);
+			return $this->Delete($location, $file);
 		}
 		return $response;
 	}
@@ -163,7 +217,7 @@ class WebConnection
 	/**
 	 * @param string|array|null $args
 	 */
-	private function doExecute(string $url, string $file = '', $args = null) : WebResponse
+	private function doExecute(string $method, string $url, string $file = '', $args = null) : WebResponse
 	{
 		if ($this->ch == null)
 			throw new ErrorException('Debe llamarse el método Initialize() antes.');
@@ -179,25 +233,19 @@ class WebConnection
 		curl_setopt($this->ch, CURLOPT_URL, $url);
 
 		$this->requestHeaders = array_merge($this->requestHeaders, [
-			'Accept-Language: es-es,en',
+			'Accept-Language: es-AR,es,en',
 			'Accept: ' . $this->accept,
 			'Pragma: no-cache',
 			'Cache-Control: no-cache',
 			'Connection: keep-alive',
 		]);
 
-		if ($args != null)
-		{
-			$method = 'POST ';
-			$this->AddPostFields($args);
-		}
-		else
-		{
-			$method = 'GET ';
-			curl_setopt($this->ch, CURLOPT_POST, 0);
-		}
+		curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
 
-		$this->AppendLog($method . $url);
+		if ($method == self::Post || $method == self::Patch || $method == self::Put)
+			$this->AddPostFields($args);
+
+		$this->AppendLog($method . ' ' . $url);
 		$this->AppendLogData('File', $file);
 
 		curl_setopt($this->ch, CURLOPT_HEADER, false);
@@ -315,12 +363,9 @@ class WebConnection
 	 */
 	private function AddPostFields($args) : void
 	{
-		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
 		{
-			// json
 			$this->requestHeaders[] = 'Content-Type: application/json';
-			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'POST');
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 			return;
 		}
@@ -429,7 +474,6 @@ class WebConnection
 		$ch = curl_init();
 		$this->ch = $ch;
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_POST, 1);
 		$data = file_get_contents($path);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
