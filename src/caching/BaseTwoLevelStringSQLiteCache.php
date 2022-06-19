@@ -23,7 +23,9 @@ class BaseTwoLevelStringSQLiteCache
 		$this->db = new SQLiteList('k', ['v']);
 	}
 
-	/** @phpstan-impure */
+	/**
+	 * @phpstan-impure
+	 */
 	private function OpenRead($key = null, bool $throwLockErrors = true) : bool
 	{
 		try
@@ -43,7 +45,9 @@ class BaseTwoLevelStringSQLiteCache
 		}
 	}
 
-	/** @phpstan-impure */
+	/**
+	 * @phpstan-impure
+	 */
 	private function OpenWrite($key = null, bool $throwLockErrors = true) : bool
 	{
 		try

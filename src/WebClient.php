@@ -390,6 +390,5 @@ class WebClient
 
 		return $this->cookieFile;
 	}
-
 }
 
