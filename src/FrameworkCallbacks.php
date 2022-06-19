@@ -26,6 +26,6 @@ abstract class FrameworkCallbacks
 	{
 		foreach($parameters as $key => $value)
 			$str = Str::Replace($str, $key, $value);
-	  	return $str;
+		return $str;
 	}
 }
