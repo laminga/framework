@@ -377,7 +377,7 @@ class Log
 		return $text;
 	}
 
-	public static function HandleSilentException($e) : void
+	public static function HandleSilentException(\Exception $e) : void
 	{
 		$textToShow = self::LogException($e, true);
 
@@ -393,7 +393,7 @@ class Log
 		}
 	}
 
-	public static function FormatTraceLog($trace)
+	public static function FormatTraceLog(array $trace) : string
 	{
 		$log = '<p>';
 		foreach ($trace as $i => $t)
