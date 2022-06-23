@@ -43,17 +43,35 @@ class KeysSettings
 		return base64_decode($this->HashKeyedKey);
 	}
 
+	public function GetGoogleMapsCount()
+	{
+		$keys = $this->GoogleMapsKey;
+		if (is_array($keys) == false)
+			return 1;
+		else
+			return count($keys);
+	}
+
+	public function GetGoogleMapsIndex()
+	{
+		$keys = $this->GoogleMapsKey;
+		if (is_array($keys) == false)
+			return 0;
+		$day = Date::CurrentDay();
+		$step = 36 / count($keys);
+		$current = (int)($day / $step);
+		if ($current >= count($keys))
+			$current = count($keys) - 1;
+		return $current;
+	}
+
 	public function GetGoogleMapsKey()
 	{
 		$keys = $this->GoogleMapsKey;
 		if (is_array($keys) == false)
 			return $keys;
-		$day = Date::CurrentDay();
-		$step = 30 / count($keys);
-		$current = (int)($day / $step);
-		if ($current >= count($keys))
-			$current = count($keys) - 1;
-		return $keys[$current];
+		else
+			return $keys[self::GetGoogleMapsIndex()];
 	}
 
 	public function CreateNewRememberKey() : string
