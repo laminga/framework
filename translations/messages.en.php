@@ -360,5 +360,27 @@ return [
 	'Zambia' => 'Zambia',
 	'Zimbabue' => 'Zimbabwe',
 
-];
 
+	//[2022-05-14 16:40:39] Keys agregados automáticamente por script. Contexto: Framework.
+	'"{server}" está especificado como servidor actual pero no hay un servidor registrado con ese nombre en la configuración.' => 'SIN TRADUCIR', //framework/src/settings/ServersSettings.php
+	'Desplazamiento de tiempo fuera de rango: {offset}' => 'SIN TRADUCIR', //framework/src/Date.php ['{offset}' => $offset]
+	'El archivo excede el tamaño máximo.' => 'SIN TRADUCIR', //framework/src/Params.php
+	'El documento <b>{file}</b> no está disponible.<p>Sin embargo, si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>' => 'SIN TRADUCIR', //framework/src/MessageBox.php ['{file}' => $file, '{link}' => $link]
+	'El formato del archivo no es válido.' => 'SIN TRADUCIR', //framework/src/Params.php
+	'El valor del parámetro "{value}" no es válido.' => 'SIN TRADUCIR', //framework/src/Params.php ['{value}' => $value]
+	'El valor del parámetro {param} está fuera de rango.' => 'SIN TRADUCIR', //framework/src/Params.php ['{param}' => $value]
+	'Error al guardar el archivo.' => 'SIN TRADUCIR', //framework/src/Params.php
+	'Error al subir el archivo.' => 'SIN TRADUCIR', //framework/src/Params.php
+	'La extensión del archivo debe ser una de las siguientes: {ext}.' => 'SIN TRADUCIR', //framework/src/Extensions.php ['{ext}' => self::GetExtensionList($validExtensions)]
+	'No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.' => 'SIN TRADUCIR', //framework/src/locking/Lock.php
+	'No se ha obtenido ningún resultado en la consulta cuando se esperaba uno.' => 'SIN TRADUCIR', //framework/src/Db.php
+	'No se ha podido obtener una dirección de correo electrónico a través de {provider}. Intente otro método de registro para la identificación.' => 'SIN TRADUCIR', //framework/src/oauth/OauthConnector.php
+	'No se ha podido realizar la interacción con {provider} para la identificación.' => 'SIN TRADUCIR', //framework/src/oauth/OauthConnector.php ['{provider}' => $this->ProviderName()]
+	'Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.' => 'SIN TRADUCIR', //framework/src/MessageBox.php
+	'Para ver el mensaje, por favor use un lector de correo electrónico compatible con HTML' => 'SIN TRADUCIR', //framework/src/Mail.php
+	'Parámetro "{param}" requerido.' => 'SIN TRADUCIR', //framework/src/Params.php ['{param}' => $key]
+	'Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a {linkMail} describiendo el inconveniente.' => 'SIN TRADUCIR', //framework/src/Log.php ['{linkMail}' => $linkMail]
+	'Se produjo un error' => 'SIN TRADUCIR', //framework/src/Log.php
+	'Si el archivo tiene una extensión válida, es posible que esté dañado o que se haya cambiado la extensión manualmente. Esto último modifica el nombre, pero no el formato del archivo. Intente abrirlo con la aplicación predeterminada y guardarlo en el formato esperado.' => 'SIN TRADUCIR', //framework/src/Extensions.php
+	'tipo no soportado: {ext}' => 'SIN TRADUCIR', //framework/src/Image.php ['{ext}' => $ext]
+];

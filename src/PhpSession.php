@@ -52,7 +52,7 @@ class PhpSession
 	{
 		if (!Context::Settings()->allowPHPsession)
 			return false;
-		return (isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE);
+		return isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE;
 	}
 
 	public static function CheckPhpSessionStarted() : void
@@ -79,7 +79,7 @@ class PhpSession
 	{
 		if (!self::SessionExists())
 			return $default;
-	
+
 		if (isset(self::$sessionValues[$key]))
 			return self::$sessionValues[$key];
 		return $default;

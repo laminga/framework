@@ -74,6 +74,11 @@ class Request
 		return Params::SafeServer('QUERY_STRING');
 	}
 
+	public static function GetHttpRange() : ?string
+	{
+		return Params::SafeServer('HTTP_RANGE', null);
+	}
+
 	public static function GetRequestURI(bool $noParameters = false) : string
 	{
 		if ($noParameters)

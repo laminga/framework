@@ -4,12 +4,12 @@ namespace minga\framework;
 
 class WebResponse
 {
-	public $httpCode;
-	public $error;
+	public int $httpCode = 0;
+	public string $error = '';
 	public $file;
 	public $contentType;
 	public $uri;
-	public $success;
+	public bool $success;
 	public array $headers = [];
 
 	public function dump() : void

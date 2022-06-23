@@ -4,37 +4,43 @@ namespace minga\framework;
 
 class WebConnection
 {
+	private const Get = 'GET';
+	private const Post = 'POST';
+	private const Delete = 'DELETE';
+	private const Put = 'PUT';
+	private const Patch = 'PATCH';
+
 	protected $ch;
 	protected $cherr = null;
-	protected $isClosed = true;
-	protected $followRedirects = true;
-	protected $lastLocation = '';
-	protected $maxFileSize = -1;
-	protected $httpCode = 0;
-	protected $error = '';
+	protected bool $isClosed = true;
+	protected bool $followRedirects = true;
+	protected string $lastLocation = '';
+	protected int $maxFileSize = -1;
+	private int $httpCode = 0;
+	private string $error = '';
 
-	public $throwErrors = true;
-	public $logFile = null;
-	public $responseFile = null;
-	public $bucket = null;
-	public $logFile2 = null;
-	public $contentType = '';
-	public $requestHeaders = [];
-	public $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8';
-	private $cookieFile = '';
+	public bool $throwErrors = true;
+	public ?string $logFile = null;
+	public ?string $responseFile = null;
+	public ?FileBucket $bucket = null;
+	public ?string $logFile2 = null;
+	public string $contentType = '';
+	public array $requestHeaders = [];
+	public string $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8';
+	private string $cookieFile = '';
 
-	public function __construct($throwErrors = false)
+	public function __construct(bool $throwErrors = false)
 	{
 		$this->throwErrors = $throwErrors;
 	}
 
-	public function Initialize($path = '') : void
+	public function Initialize(string $path = '') : void
 	{
-		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
+		$userAgent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
 		$this->ch = curl_init();
 
 		curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 10);
-		curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
+		curl_setopt($this->ch, CURLOPT_USERAGENT, $userAgent);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, false);
@@ -63,30 +69,30 @@ class WebConnection
 		}
 	}
 
-	public function SetFollowRedirects($value) : void
+	public function SetFollowRedirects(bool $value) : void
 	{
 		$this->followRedirects = $value;
 	}
 
-	public function SetPort($port) : void
+	public function SetPort(int $port) : void
 	{
 		curl_setopt($this->ch, CURLOPT_PORT, $port);
 	}
 
-	public function SetReferer($referer) : void
+	public function SetReferer(string $referer) : void
 	{
 		$this->lastLocation = $referer;
 	}
 
-	public function SetMaxFileSize($size) : void
+	public function SetMaxFileSize(int $size) : void
 	{
 		$this->maxFileSize = $size;
 	}
 
-	public function Get($url, $file = '')
+	public function Get(string $url, string $file = '') : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute($url, $file, []);
+		$response = $this->doExecute(self::Get, $url, $file, []);
 		$red = 0;
 
 		while ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
@@ -113,10 +119,13 @@ class WebConnection
 		return $response;
 	}
 
-	public function Post($url, $file = '', $args = null)
+	/**
+	 * @param string|array|null $args
+	 */
+	public function Post(string $url, string $file = '', $args = null) : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute($url, $file, $args);
+		$response = $this->doExecute(self::Post, $url, $file, $args);
 		Profiling::EndTimer();
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
@@ -127,7 +136,55 @@ class WebConnection
 		return $response;
 	}
 
-	private function StayHttps($url)
+	/**
+	 * @param string|array|null $args
+	 */
+	public function Put(string $url, string $file = '', $args = null) : WebResponse
+	{
+		Profiling::BeginTimer();
+		$response = $this->doExecute(self::Put, $url, $file, $args);
+		Profiling::EndTimer();
+		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
+		{
+			$location = $response->GetLocationHeader();
+			$this->AppendLog('Redirigiendo a ' . $location);
+			return $this->Put($location, $file, $args);
+		}
+		return $response;
+	}
+
+	/**
+	 * @param string|array|null $args
+	 */
+	public function Patch(string $url, string $file = '', $args = null) : WebResponse
+	{
+		Profiling::BeginTimer();
+		$response = $this->doExecute(self::Patch, $url, $file, $args);
+		Profiling::EndTimer();
+		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
+		{
+			$location = $response->GetLocationHeader();
+			$this->AppendLog('Redirigiendo a ' . $location);
+			return $this->Patch($location, $file, $args);
+		}
+		return $response;
+	}
+
+	public function Delete(string $url, string $file = '') : WebResponse
+	{
+		Profiling::BeginTimer();
+		$response = $this->doExecute(self::Delete, $url, $file);
+		Profiling::EndTimer();
+		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
+		{
+			$location = $response->GetLocationHeader();
+			$this->AppendLog('Redirigiendo a ' . $location);
+			return $this->Delete($location, $file);
+		}
+		return $response;
+	}
+
+	private function StayHttps(string $url) : string
 	{
 		$partsLast = parse_url($this->lastLocation);
 		$parts = parse_url($url);
@@ -141,7 +198,7 @@ class WebConnection
 		return 'https://' . substr($url, 7);
 	}
 
-	private function ResolveRelativeUrl($url)
+	private function ResolveRelativeUrl(string $url) : string
 	{
 		if (Str::StartsWith($url, '/') == false)
 			throw new ErrorException('Dirección url relativa o redirección no soportado');
@@ -157,7 +214,10 @@ class WebConnection
 		return $newurl . $url;
 	}
 
-	private function doExecute($url, $file = '', $args = null)
+	/**
+	 * @param string|array|null $args
+	 */
+	private function doExecute(string $method, string $url, string $file = '', $args = null) : WebResponse
 	{
 		if ($this->ch == null)
 			throw new ErrorException('Debe llamarse el método Initialize() antes.');
@@ -172,26 +232,20 @@ class WebConnection
 
 		curl_setopt($this->ch, CURLOPT_URL, $url);
 
-		$this->requestHeaders = [
-			'Accept-Language: es-es,en',
+		$this->requestHeaders = array_merge($this->requestHeaders, [
+			'Accept-Language: es-AR,es,en',
 			'Accept: ' . $this->accept,
 			'Pragma: no-cache',
 			'Cache-Control: no-cache',
 			'Connection: keep-alive',
-		];
+		]);
 
-		if ($args != null)
-		{
-			$method = 'POST ';
+		curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
+
+		if ($method == self::Post || $method == self::Patch || $method == self::Put)
 			$this->AddPostFields($args);
-		}
-		else
-		{
-			$method = 'GET ';
-			curl_setopt($this->ch, CURLOPT_POST, 0);
-		}
 
-		$this->AppendLog($method . $url);
+		$this->AppendLog($method . ' ' . $url);
 		$this->AppendLogData('File', $file);
 
 		curl_setopt($this->ch, CURLOPT_HEADER, false);
@@ -233,7 +287,7 @@ class WebConnection
 			copy($this->responseFile, $file);
 		}
 		// toma error
-		$this->ParseErrorCodes($ret, $file);
+		$this->ParseErrorCodes((bool)$ret, $file);
 
 		if ($this->maxFileSize != -1
 			&& $this->HasContentLength($headers))
@@ -259,7 +313,7 @@ class WebConnection
 			$this->AppendLogData('error retornando: ', $this->error);
 
 		IO::Delete($headerFile);
-		if ($ret === false && $this->throwErrors)
+		if ($ret == false && $this->throwErrors)
 		{
 			$this->Finalize();
 			MessageBox::ThrowMessage('Error: ' . $this->error);
@@ -268,24 +322,24 @@ class WebConnection
 		return $response;
 	}
 
-	private function HasContentLength($headers)
+	private function HasContentLength(array $headers) : bool
 	{
 		return isset($headers['Content-Length'])
 			|| isset($headers['content-length']);
 	}
 
-	private function GetContentLength($headers)
+	private function GetContentLength(array $headers) : int
 	{
 		if(isset($headers['Content-Length']))
-			return $headers['Content-Length'];
+			return (int)$headers['Content-Length'];
 
 		if(isset($headers['content-length']))
-			return $headers['content-length'];
+			return (int)$headers['content-length'];
 
-		return null;
+		return 0;
 	}
 
-	private function HeadersToArray($headerFile)
+	private function HeadersToArray(string $headerFile) : array
 	{
 		$lines = [];
 		if(file_exists($headerFile))
@@ -304,14 +358,14 @@ class WebConnection
 		return $headers;
 	}
 
+	/**
+	 * @param string|array $args
+	 */
 	private function AddPostFields($args) : void
 	{
-		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
 		{
-			// json
 			$this->requestHeaders[] = 'Content-Type: application/json';
-			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'POST');
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 			return;
 		}
@@ -349,16 +403,16 @@ class WebConnection
 		return $ret;
 	}
 
-	private function ParseErrorCodes($ret, $file) : void
+	private function ParseErrorCodes(bool $ret, string $file) : void
 	{
 		$this->httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		$this->error = curl_error($this->ch);
 		// guarda resultado en el log
-		$this->AppendLogData('Status', $this->httpCode);
+		$this->AppendLogData('Status', (string)$this->httpCode);
 		if ($ret == false)
 			$this->AppendLogData('Error', $this->error);
 		else if (file_exists($file))
-			$this->AppendLogData('Length', filesize($file));
+			$this->AppendLogData('Length', (string)filesize($file));
 	}
 
 	public function Finalize() : void
@@ -377,14 +431,14 @@ class WebConnection
 		}
 	}
 
-	public function AppendLog($value) : void
+	public function AppendLog(string $value) : void
 	{
 		if ($this->logFile == null)
 			return;
 		IO::AppendLine($this->logFile, "\r\n" . $value . ' [' . Date::FormattedArNow() . ']');
 	}
 
-	private function AppendLogData($key, $value) : void
+	private function AppendLogData(string $key, string $value) : void
 	{
 		if ($this->logFile == null)
 			return;
@@ -399,7 +453,7 @@ class WebConnection
 		$this->cookieFile = '';
 	}
 
-	public function GetCookieFile()
+	public function GetCookieFile() : string
 	{
 		if($this->cookieFile == '')
 			throw new ErrorException('Primero crear la cookie.');
@@ -407,7 +461,7 @@ class WebConnection
 		return $this->cookieFile;
 	}
 
-	public function CreateCookieFile()
+	public function CreateCookieFile() : string
 	{
 		if($this->cookieFile == '')
 			$this->cookieFile = IO::GetTempFilename();
@@ -415,34 +469,42 @@ class WebConnection
 		return $this->cookieFile;
 	}
 
-	public function Upload($url, $path, array $postData = [])
+	public function Upload(string $url, string $path, string $userAgent = '') : string
 	{
-		$finfo = new \finfo(FILEINFO_MIME);
-
-		$mime = $finfo->file($path);
-		$postData['file'] = new \CURLFile($path, $mime);
-
 		$ch = curl_init();
 		$this->ch = $ch;
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+		$data = file_get_contents($path);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->CreateCookieFile());
-		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
-		curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
-		$ret = curl_exec($ch);
+
+		// $userAgent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
+		if($userAgent != '')
+			curl_setopt($this->ch, CURLOPT_USERAGENT, $userAgent);
+
+		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
+
+
+		$fh = fopen($this->responseFile, 'w');
+		curl_setopt($this->ch, CURLOPT_FILE, $fh);
+
+		$ret = curl_exec($this->ch);
+
+		fclose($fh);
+
+		$this->httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		if (curl_errno($ch))
 		{
-			$this->ParseErrorCodes($ret, $path);
+			$this->ParseErrorCodes((bool)$ret, $path);
 
 			if ($this->throwErrors)
-				MessageBox::ThrowMessage('Error: ' . $this->error);
-
-			$ret = '';
+				throw new PublicException($this->httpCode . ' ' . $this->error);
 		}
 		curl_close($ch);
+		if(is_bool($ret))
+			return '';
 		return $ret;
 	}
 }

@@ -28,7 +28,7 @@ class FatalErrorSender
 			IO::Move($file, $sentPath . '/' . Date::FormattedArNow() . '-error_log.txt');
 			$found = true;
 		}
-		if (!$silent && $found)
+		if ($silent == false && $found)
 			echo "Procesado (error_log)\n";
 	}
 
@@ -44,7 +44,7 @@ class FatalErrorSender
 			IO::Move($file, $sentPath . '/' . basename($file));
 		}
 
-		if (!$silent)
+		if ($silent == false)
 			echo 'Procesados (' . Log::FatalErrorsPath . '): ' . count($files) . "\n";
 	}
 }

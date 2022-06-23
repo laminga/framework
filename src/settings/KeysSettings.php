@@ -26,6 +26,9 @@ class KeysSettings
 	public string $AddThisKey = '';
 	public string $SendGridApiKey = '';
 
+	public string $MicrosftSpeechToTextKey = '';
+	public string $MicrosftSpeechToTextRegion = '';
+
 	/**
 	 * Clave secreta random para uso interno
 	 * de la aplicación (necesario para Symfony).

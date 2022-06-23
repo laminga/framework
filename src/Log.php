@@ -158,11 +158,11 @@ class Log
 			return true;
 		}
 
-		if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
+		// if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
+		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
+		// {
+		// 	return true;
+		// }
 
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
@@ -186,7 +186,7 @@ class Log
 		if($errorSource == '' && $errorLine == 0 && $errorColumn == 0 && $trace == '')
 			return true;
 
-		if(Str::ContainsI($errorMessage, 'loadTipy') && Str::ContainsI($trace, 'Failed to fetch'))
+		if(Str::ContainsI($errorMessage, 'loadTippy') && Str::ContainsI($trace, 'Failed to fetch'))
 			return true;
 
 		//No funciona...
@@ -377,7 +377,7 @@ class Log
 		return $text;
 	}
 
-	public static function HandleSilentException($e) : void
+	public static function HandleSilentException(\Exception $e) : void
 	{
 		$textToShow = self::LogException($e, true);
 
@@ -393,7 +393,7 @@ class Log
 		}
 	}
 
-	public static function FormatTraceLog($trace)
+	public static function FormatTraceLog(array $trace) : string
 	{
 		$log = '<p>';
 		foreach ($trace as $i => $t)

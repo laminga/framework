@@ -6,24 +6,24 @@ class WebClient
 {
 	protected $ch;
 	protected $cherr = null;
-	protected $isClosed = true;
+	protected bool $isClosed = true;
 
 	public $httpCode;
 	public $error;
-	public $throwErrors = true;
+	public bool $throwErrors = true;
 	public $logFile = null;
 	public $logFile2 = null;
 	public $contentType = '';
 	public $requestHeaders = [];
 
-	private $cookieFile = '';
+	private string $cookieFile = '';
 
-	public function __construct($throwErrors = true)
+	public function __construct(bool $throwErrors = true)
 	{
 		$this->throwErrors = $throwErrors;
 	}
 
-	public function Initialize($path = '') : void
+	public function Initialize(string $path = '') : void
 	{
 		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
 		$this->ch = curl_init();
@@ -54,17 +54,17 @@ class WebClient
 		$this->cherr = $handle;
 	}
 
-	public function SetFollowRedirects($value) : void
+	public function SetFollowRedirects(bool $value) : void
 	{
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, $value);
 	}
 
-	public function SetPort($port) : void
+	public function SetPort(int $port) : void
 	{
 		curl_setopt($this->ch, CURLOPT_PORT, $port);
 	}
 
-	public function SetReferer($referer) : void
+	public function SetReferer(string $referer) : void
 	{
 		curl_setopt($this->ch, CURLOPT_REFERER, $referer);
 	}
@@ -107,21 +107,21 @@ class WebClient
 		}
 	}
 
-	private function HasContentLength($headers)
+	private function HasContentLength(array $headers) : bool
 	{
 		return isset($headers['Content-Length'])
 			|| isset($headers['content-length']);
 	}
 
-	private function GetContentLength($headers)
+	private function GetContentLength(array $headers) : int
 	{
 		if(isset($headers['Content-Length']))
-			return $headers['Content-Length'];
+			return (int)$headers['Content-Length'];
 
 		if(isset($headers['content-length']))
-			return $headers['content-length'];
+			return (int)$headers['content-length'];
 
-		return null;
+		return 0;
 	}
 
 	public function ExecuteForRedirect($url, $file = '', $args = [])
@@ -319,27 +319,7 @@ class WebClient
 		echo '</p>';
 	}
 
-	private function get_headers_from_curl_response(&$response)
-	{
-		$headers = [];
-		$sep = strpos($response, "\r\n\r\n");
-		$headerText = substr($response, 0, $sep);
-		$response = substr($response, $sep + 4);
-
-		foreach (explode("\r\n", $headerText) as $i => $line)
-			if ($i === 0)
-				$headers['http_code'] = $line;
-			else
-			{
-				 [$key, $value] = explode(': ', $line);
-
-				$headers[$key] = $value;
-			}
-
-		return $headers;
-	}
-
-	private function get_headers_from_curl_response2($headerText)
+	private function get_headers_from_curl_response2(string $headerText) : array
 	{
 		$headers = [];
 		foreach (explode("\r\n", $headerText) as $line)
@@ -357,7 +337,7 @@ class WebClient
 		return $headers;
 	}
 
-	private function get_content_from_curl_response2($headerText)
+	private function get_content_from_curl_response2(string $headerText) : string
 	{
 		return Str::EatUntil($headerText, "\r\n\r\n");
 	}
@@ -395,7 +375,7 @@ class WebClient
 		$this->cookieFile = '';
 	}
 
-	public function GetCookieFile()
+	public function GetCookieFile() : string
 	{
 		if($this->cookieFile == '')
 			throw new ErrorException('Primero crear la cookie.');
@@ -403,47 +383,12 @@ class WebClient
 		return $this->cookieFile;
 	}
 
-	public function CreateCookieFile()
+	public function CreateCookieFile() : string
 	{
 		if($this->cookieFile == '')
 			$this->cookieFile = IO::GetTempFilename();
 
 		return $this->cookieFile;
-	}
-
-	public function Upload($url, $path, array $postData = [])
-	{
-		$finfo = new \finfo(FILEINFO_MIME);
-
-		$mime = $finfo->file($path);
-		$postData['file'] = new \CURLFile($path, $mime);
-
-
-		$ch = curl_init();
-		$this->ch = $ch;
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->CreateCookieFile());
-		$agent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
-		curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
-		$ret = curl_exec($ch);
-		if (curl_errno($ch))
-		{
-			$this->ParseErrorCodes($ret);
-
-			if ($this->throwErrors)
-				MessageBox::ThrowMessage('Error: ' . $this->error);
-
-			$ret = '';
-		}
-
-		curl_close($ch);
-
-		return $ret;
 	}
 }
 
