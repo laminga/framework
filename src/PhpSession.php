@@ -55,7 +55,7 @@ class PhpSession
 		return (isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE);
 	}
 
-	private static function CheckPhpSessionStarted() : void
+	public static function CheckPhpSessionStarted() : void
 	{
 		if (Context::Settings()->allowPHPsession)
 		{
