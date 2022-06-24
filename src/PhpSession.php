@@ -18,14 +18,15 @@ class PhpSession
 			session_regenerate_id();
 			session_write_close();
 		}
-		self::$sessionValues = [];
+		self::$sessionValues = null;
 	}
 
 	public static function SessionId() : string
 	{
 		if (Context::Settings()->allowPHPsession)
 			return session_id();
-		return '';
+		else
+			return '';
 	}
 
 	public static function SetSessionValue($key, $value) : void
@@ -52,7 +53,8 @@ class PhpSession
 	{
 		if (!Context::Settings()->allowPHPsession)
 			return false;
-		return isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE;
+		else
+			return isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE;
 	}
 
 	public static function CheckPhpSessionStarted() : void
@@ -77,12 +79,13 @@ class PhpSession
 
 	public static function GetSessionValue($key, $default = '')
 	{
-		if (!self::SessionExists())
-			return $default;
+		if (!self::$sessionValues && self::SessionExists())
+			self::$sessionValues = $_SESSION;
 
-		if (isset(self::$sessionValues[$key]))
+		if (self::$sessionValues && isset(self::$sessionValues[$key]))
 			return self::$sessionValues[$key];
-		return $default;
+		else
+			return $default;
 	}
 
 	private static function SessionStart() : bool
