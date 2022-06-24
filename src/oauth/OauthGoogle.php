@@ -6,12 +6,12 @@ class OauthGoogle extends OauthConnector
 {
 	public const Provider = 'google';
 
-	protected function GetFields()
+	protected function GetFields() : array
 	{
 		return ['userinfo_email', 'userinfo_profile'];
 	}
 
-	protected function GetData()
+	protected function GetData() : OauthData
 	{
 		$data = json_decode($this->service->request('userinfo'), true);
 
@@ -20,7 +20,7 @@ class OauthGoogle extends OauthConnector
 		return $oauthData;
 	}
 
-	protected function DataGranted()
+	protected function DataGranted() : bool
 	{
 		return true;
 	}

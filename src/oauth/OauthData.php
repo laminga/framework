@@ -6,17 +6,17 @@ use minga\framework\PhpSession;
 
 class OauthData
 {
-	public $fullname = '';
-	public $firstname = '';
-	public $lastname = '';
-	public $verified = '';
-	public $id = '';
-	public $email = '';
-	public $picture = '';
-	public $gender = '';
-	public $provider = '';
+	public string $fullname = '';
+	public string $firstname = '';
+	public string $lastname = '';
+	public bool $verified = false;
+	public string $id = '';
+	public string $email = '';
+	public string $picture = '';
+	public string $gender = '';
+	public string $provider = '';
 
-	public function SetGoogleData($data) : void
+	public function SetGoogleData(array $data) : void
 	{
 		$this->provider = 'google';
 
@@ -41,7 +41,7 @@ class OauthData
 			$this->gender = $data['gender'];
 	}
 
-	public function SetFacebookData($data, $picture) : void
+	public function SetFacebookData(array $data, array $picture) : void
 	{
 		$this->provider = 'facebook';
 

@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class PhpSession
 {
-	private static $sessionValues = null;
+	private static ?array $sessionValues = null;
 
 	public static function Destroy() : void
 	{
@@ -25,11 +25,10 @@ class PhpSession
 	{
 		if (Context::Settings()->allowPHPsession)
 			return session_id();
-		else
-			return '';
+		return '';
 	}
 
-	public static function SetSessionValue($key, $value) : void
+	public static function SetSessionValue(string $key, $value) : void
 	{
 		if (Context::Settings()->allowPHPsession)
 		{
@@ -51,10 +50,10 @@ class PhpSession
 
 	private static function SessionExists() : bool
 	{
-		if (!Context::Settings()->allowPHPsession)
+		if (Context::Settings()->allowPHPsession == false)
 			return false;
-		else
-			return isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE;
+
+		return isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE;
 	}
 
 	public static function CheckPhpSessionStarted() : void
@@ -70,22 +69,19 @@ class PhpSession
 				session_write_close();
 			}
 		}
-		else
-		{
-			if (self::$sessionValues == null)
-				self::$sessionValues = [];
-		}
+		else if (self::$sessionValues == null)
+			self::$sessionValues = [];
 	}
 
-	public static function GetSessionValue($key, $default = '')
+	public static function GetSessionValue(string $key, $default = '')
 	{
-		if (!self::$sessionValues && self::SessionExists())
+		if (self::$sessionValues == null && self::SessionExists())
 			self::$sessionValues = $_SESSION;
 
-		if (self::$sessionValues && isset(self::$sessionValues[$key]))
+		if (self::$sessionValues != null && isset(self::$sessionValues[$key]))
 			return self::$sessionValues[$key];
-		else
-			return $default;
+
+		return $default;
 	}
 
 	private static function SessionStart() : bool
