@@ -9,13 +9,13 @@ class OauthFacebook extends OauthConnector
 	// http://demos.idiotminds.com/social/
 	// &display=popup
 
-	protected function GetFields()
+	protected function GetFields() : array
 	{
 		return ['email', 'public_profile'];
 	}
 
 	//No se está usando
-	protected function DataGranted()
+	protected function DataGranted() : bool
 	{
 		$result = json_decode($this->service->request('/me/permissions'), true);
 		// array ('data' =>
@@ -35,7 +35,7 @@ class OauthFacebook extends OauthConnector
 		return false;
 	}
 
-	protected function GetData()
+	protected function GetData() : OauthData
 	{
 		$data = json_decode($this->service->request('/me?fields=name,first_name,middle_name,last_name,birthday,gender,email'), true);
 		$picture = json_decode($this->service->request('/me/picture?type=large&redirect=false'), true);

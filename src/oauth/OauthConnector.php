@@ -12,6 +12,7 @@ use minga\framework\Profiling;
 use minga\framework\PublicException;
 use minga\framework\Str;
 use OAuth\Common\Consumer\Credentials;
+use OAuth\Common\Http\Uri\UriInterface;
 use OAuth\Common\Storage\Memory;
 
 abstract class OauthConnector
@@ -19,7 +20,7 @@ abstract class OauthConnector
 	//los hijos deben declarar el provider de este modo.
 	public const Provider = '';
 
-	protected $storage;
+	protected Memory $storage;
 	protected $service;
 
 	public function __construct()
@@ -46,7 +47,7 @@ abstract class OauthConnector
 	 * del usuario. Si vuelve todo bien es que el usuario autorizó
 	 * y las credenciales de oauth son válidas.
 	 */
-	public function RequestData($code, $state)
+	public function RequestData(string $code, ?string $state) : ?OauthData
 	{
 		try
 		{
@@ -65,7 +66,7 @@ abstract class OauthConnector
 		}
 	}
 
-	private function SetSession($url, $returnUrl, $terms) : array
+	private function SetSession(string $url, string $returnUrl, bool $terms) : array
 	{
 		//Setear en sesión los datos que se quieran tener para después de oauth.
 		//porque sale del sitio y no hay forma de mantener estado si no es sesión
@@ -82,7 +83,7 @@ abstract class OauthConnector
 		return $sess;
 	}
 
-	public function ResolveRedirectProvider($url, $returnUrl, $terms)
+	public function ResolveRedirectProvider(string $url, string $returnUrl, bool $terms) : UriInterface
 	{
 		$sess = $this->SetSession($url, $returnUrl, $terms);
 
@@ -93,7 +94,7 @@ abstract class OauthConnector
 		return $uri;
 	}
 
-	private function PutSessionToFile($uri, $sess) : void
+	private function PutSessionToFile(UriInterface $uri, array $sess) : void
 	{
 		$query = [];
 		parse_str($uri->getQuery(), $query);
@@ -130,12 +131,12 @@ abstract class OauthConnector
 		return '';
 	}
 
-	public function RedirectSuccess($data, string $state) : void
+	public function RedirectSuccess(OauthData $data, string $state) : void
 	{
 		if($data->email == '' || $data->verified == false)
 			$this->RedirectErrorNoEmail();
 
-		$data->SerializeToSession(static::Provider);
+		$data->SerializeToSession();
 		$this->RedirectSession($state);
 	}
 
@@ -147,7 +148,7 @@ abstract class OauthConnector
 		]), Context::Trans('Atención'));
 	}
 
-	public function RedirectError($error = null) : void
+	public function RedirectError(?string $error = null) : void
 	{
 		if($error != null)
 			Log::HandleSilentException(new ErrorException($error));
@@ -160,20 +161,19 @@ abstract class OauthConnector
 		$this->CleanOldFiles();
 
 		$url = PhpSession::GetSessionValue(static::Provider . 'OauthRedirect');
-
 		if($url == '')
 			$url = self::GetSessionFromFile($state);
 
 		$this->CloseAndRedirect($url);
 	}
 
-	public function ProviderName()
+	public function ProviderName() : string
 	{
 		$c = static::class;
 		return Str::Capitalize($c::Provider);
 	}
 
-	private function CloseAndRedirect($target) : void
+	private function CloseAndRedirect(string $target) : void
 	{
 		//TODO: validar el target.
 		//-Que sea de este dominio (que no redirija a otro sitio).
@@ -198,17 +198,17 @@ abstract class OauthConnector
 	 * Obtiene los fields que se le piden al provider
 	 * cada provider maneja los suyos.
 	 */
-	abstract protected function GetFields();
+	abstract protected function GetFields() : array;
 
 	/**
 	 * Obtiene los datos del provider normalizados
 	 * en formato de OauthData.
 	 */
-	abstract protected function GetData();
+	abstract protected function GetData() : OauthData;
 
 	/**
 	 * Valida para cada provider si los datos necesarios
 	 * fueron autorizados por el usuario.
 	 */
-	abstract protected function DataGranted();
+	abstract protected function DataGranted() : bool;
 }
