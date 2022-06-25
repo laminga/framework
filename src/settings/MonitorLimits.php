@@ -18,11 +18,16 @@ class MonitorLimits
 
 	public int $LogAgentThresholdDaylyHits = 100;
 
+	// Cuando se excede, devuelve página con mensaje
+	public int $LimitMonthlyMapsPerKey = 27500;
+
 	// Cuando estos límites se exceden, se envía un mail de alerta
 	public int $WarningDaylyHitsPerIP = 7500;
 	public int $WarningDaylyHits = 30000;
 	public int $WarningDaylyExecuteMinutes = 150;
 	public int $WarningDaylyLockMinutes = 10;
+
+	public int $WarningMonthlyMapsPerKey = 20000;
 
 	public $WarningRequestSeconds = 30;
 	public array $ExcludeIps = ['127.0.0.1'];
