@@ -9,9 +9,20 @@ class Date
 		return date("d");
 	}
 
+	public static function GetLogMonthFolderYearMonth($year, $month) : string
+	{
+		return self::doGetLogMonthFolder($year, $month);
+	}
+
 	public static function GetLogMonthFolder(int $offset = 0) : string
 	{
-		$time = mktime(0, 0, 0, (int)date("m") + $offset, 1, (int)date("Y"));
+		$now = self::DateTimeArNow();
+		return self::doGetLogMonthFolder(self::DateTimeGetYear($now), self::DateTimeGetMonth($now), $offset);
+	}
+
+	private static function doGetLogMonthFolder($year, $month, $offset = 0) : string
+	{
+		$time = mktime(0, 0, 0, $month + $offset, 1, $year);
 		return date("Y-m", $time);
 	}
 
@@ -27,7 +38,8 @@ class Date
 		$virtual = PhpSession::GetSessionValue('now');
 		if ($virtual == '')
 			return time();
-		return (int)$virtual;
+		else
+			return (int)$virtual;
 	}
 
 	public static function ChangeUniversalNow(int $time) : void
