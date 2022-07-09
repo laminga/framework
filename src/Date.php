@@ -38,8 +38,8 @@ class Date
 		$virtual = PhpSession::GetSessionValue('now');
 		if ($virtual == '')
 			return time();
-		else
-			return (int)$virtual;
+
+		return (int)$virtual;
 	}
 
 	public static function ChangeUniversalNow(int $time) : void

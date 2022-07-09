@@ -94,6 +94,10 @@ class Settings
 	public string $arkGlobalServer = '';
 	public bool $useArks = true;
 
+	// Proveedores externos
+	public bool $useLaReferencia = true;
+	public bool $useScielo = true;
+
 	// Mirrors
 	public string $publicCacheURL = '';
 

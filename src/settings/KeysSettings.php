@@ -46,16 +46,16 @@ class KeysSettings
 		return base64_decode($this->HashKeyedKey);
 	}
 
-	public function GetGoogleMapsCount()
+	public function GetGoogleMapsCount() : int
 	{
 		$keys = $this->GoogleMapsKey;
 		if (is_array($keys) == false)
 			return 1;
-		else
-			return count($keys);
+
+		return count($keys);
 	}
 
-	public function GetGoogleMapsIndex()
+	public function GetGoogleMapsIndex() : int
 	{
 		$keys = $this->GoogleMapsKey;
 		if (is_array($keys) == false)
@@ -73,8 +73,8 @@ class KeysSettings
 		$keys = $this->GoogleMapsKey;
 		if (is_array($keys) == false)
 			return $keys;
-		else
-			return $keys[self::GetGoogleMapsIndex()];
+
+		return $keys[self::GetGoogleMapsIndex()];
 	}
 
 	public function CreateNewRememberKey() : string

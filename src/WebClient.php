@@ -182,11 +182,9 @@ class WebClient
 			curl_setopt($this->ch, CURLOPT_FILE, $fh);
 		}
 		else
-		{
 			curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
-		}
-		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
 
+		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
 
 
 		// Execute the request
