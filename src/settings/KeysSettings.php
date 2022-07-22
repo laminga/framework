@@ -21,7 +21,7 @@ class KeysSettings
 
 	public string $GoogleAnalyticsKey = '';
 	/** @var array|string|null */
-	public $GoogleMapsKey = '';
+	public string $GoogleMapsKey = '';
 	public string $GoogleGeocodingKey = '';
 	public string $AddThisKey = '';
 	public string $SendGridApiKey = '';
