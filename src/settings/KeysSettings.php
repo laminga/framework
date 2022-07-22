@@ -20,7 +20,6 @@ class KeysSettings
 	public string $RecaptchaSecretKey = '';
 
 	public string $GoogleAnalyticsKey = '';
-	/** @var array|string|null */
 	public string $GoogleMapsKey = '';
 	public string $GoogleGeocodingKey = '';
 	public string $AddThisKey = '';
@@ -48,33 +47,17 @@ class KeysSettings
 
 	public function GetGoogleMapsCount() : int
 	{
-		$keys = $this->GoogleMapsKey;
-		if (is_array($keys) == false)
-			return 1;
-
-		return count($keys);
+		return 1;
 	}
 
 	public function GetGoogleMapsIndex() : int
 	{
-		$keys = $this->GoogleMapsKey;
-		if (is_array($keys) == false)
 			return 0;
-		$day = Date::CurrentDay();
-		$step = 36 / count($keys);
-		$current = (int)($day / $step);
-		if ($current >= count($keys))
-			$current = count($keys) - 1;
-		return $current;
 	}
 
-	public function GetGoogleMapsKey()
+	public function GetGoogleMapsKey() : string
 	{
-		$keys = $this->GoogleMapsKey;
-		if (is_array($keys) == false)
-			return $keys;
-
-		return $keys[self::GetGoogleMapsIndex()];
+		return $this->GoogleMapsKey;
 	}
 
 	public function CreateNewRememberKey() : string
