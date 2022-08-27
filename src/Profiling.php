@@ -192,7 +192,7 @@ class Profiling
 		return number_format($value * 100 / $total, 1, ".", "") . "%";
 	}
 
-	private static function CreateRow(string $tdStyle, string $cellFormat , string $cellFormatClose, int $depth,
+	private static function CreateRow(string $tdStyle, string $cellFormat, string $cellFormatClose, int $depth,
 		$v1, $v2, $v3, $v4, $v5, $v6, $v7, $v8, $v9) : string
 	{
 		$v1Parts = explode('\\', $v1);
