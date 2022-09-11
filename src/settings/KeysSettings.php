@@ -4,7 +4,6 @@ namespace minga\framework\settings;
 
 use Defuse\Crypto\Key;
 use minga\framework\Context;
-use minga\framework\Date;
 use minga\framework\ErrorException;
 
 class KeysSettings
