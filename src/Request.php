@@ -81,11 +81,12 @@ class Request
 
 	public static function GetRequestURI(bool $noParameters = false) : string
 	{
+		$uri = Params::SafeServer('REQUEST_URI');
 		if ($noParameters)
 		{
-			$parts = explode('?', Params::SafeServer('REQUEST_URI'), 2);
-			return $parts[0];
+			$parts = explode('?', $uri, 2);
+			$uri = $parts[0];
 		}
-		return Params::SafeServer('REQUEST_URI');
+		return Str::RemoveEnding($uri, '/');
 	}
 }

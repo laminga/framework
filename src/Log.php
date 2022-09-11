@@ -466,7 +466,11 @@ class Log
 		// va
 		IO::WriteAllText($file, $text);
 		if (self::$extraErrorTarget !== null)
-			IO::WriteAllText(self::$extraErrorTarget, $text);
+		{
+			$directory = dirname(self::$extraErrorTarget);
+			if (IO::Exists($directory))
+				IO::WriteAllText(self::$extraErrorTarget, $text);
+		}
 	}
 
 	public static function PutToMailJs(string $text) : bool
