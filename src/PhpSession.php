@@ -107,6 +107,11 @@ class PhpSession
 		}
 		else
 			session_set_cookie_params(["Secure" => Request::IsSecure()]);
+
+
+		if (Context::Settings()->allowPHPSessionCacheResults)
+			session_cache_limiter('public');
+
 		return session_start();
 	}
 }

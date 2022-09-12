@@ -21,6 +21,7 @@ class KeysSettings
 
 	public string $GoogleAnalyticsKey = '';
 	/** @var array|string|null */
+	// puede ser un array, y el hint no funciona */
 	public $GoogleMapsKey = '';
 	public string $GoogleGeocodingKey = '';
 	public string $AddThisKey = '';

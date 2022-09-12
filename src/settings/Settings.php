@@ -86,6 +86,7 @@ class Settings
 
 	public bool $allowPHPsession = true;
 	public bool $allowCrossSiteSessionCookie = false;
+	public bool $allowPHPSessionCacheResults = false;
 
 	public $storagePath = '';
 
