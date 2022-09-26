@@ -72,7 +72,7 @@ class BaseTwoLevelBlobSQLiteCache
 	{
 		if ($key1 == null)
 		{
-			IO::ClearDirectory($this->path);
+			IO::ClearDirectory($this->path, true);
 			return;
 		}
 		$levelKey = ($key2 === null ? null : $key1);
