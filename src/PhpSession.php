@@ -56,17 +56,21 @@ class PhpSession
 		return isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE;
 	}
 
-	public static function CheckPhpSessionStarted() : void
+	public static function CheckPhpSessionStarted($readOperation = false) : void
 	{
 		if (Context::Settings()->allowPHPsession)
 		{
 			if (isset($_SESSION) == false
 				&& session_status() === PHP_SESSION_NONE)
 			{
-				self::SessionStart();
-				if (self::$sessionValues == null)
-					self::$sessionValues = $_SESSION;
-				session_write_close();
+				$hasSession = isset($_COOKIE["PHPSESSID"]);
+				if (!$readOperation || $hasSession)
+				{
+					self::SessionStart();
+					if (self::$sessionValues == null)
+						self::$sessionValues = $_SESSION;
+					session_write_close();
+				}
 			}
 		}
 		else if (self::$sessionValues == null)
@@ -75,6 +79,8 @@ class PhpSession
 
 	public static function GetSessionValue(string $key, $default = '')
 	{
+		self::CheckPhpSessionStarted(true);
+
 		if (self::$sessionValues == null && self::SessionExists())
 			self::$sessionValues = $_SESSION;
 
