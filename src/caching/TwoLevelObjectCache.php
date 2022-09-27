@@ -11,9 +11,9 @@ class TwoLevelObjectCache
 {
 	private $cache;
 
-	public function __construct($path)
+	public function __construct($path, $avoidSqLite = false)
 	{
-		$this->cache = Context::Settings()->Cache()->CreateFileCache($path);
+		$this->cache = Context::Settings()->Cache()->CreateFileCache($path, $avoidSqLite);
 	}
 
 	public function Clear($key1 = null, $key2 = null) : void
