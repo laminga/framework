@@ -7,13 +7,15 @@ use PHPMailer\PHPMailer\PHPMailerSendGrid;
 
 class Mail
 {
+	/** @var string[]|string */
 	public $to;
-	public $bcc = null;
-	public $toCaption = "";
+	/** @var string[]|string */
+	public $bcc;
+	public string $toCaption = "";
 	public ?string $from = "";
-	public $fromCaption = '';
-	public $subject;
-	public $message;
+	public string $fromCaption = "";
+	public string $subject;
+	public string $message;
 	public bool $skipNotify = false;
 
 	public function __construct()
@@ -38,8 +40,12 @@ class Mail
 
 		$this->SetAddress($mail, $this->to, $this->toCaption);
 
-		if (!empty(Context::Settings()->Mail()->NotifyAddress) && !$skipNotification && !$this->skipNotify)
+		if (empty(Context::Settings()->Mail()->NotifyAddress) == false
+			&& $skipNotification == false
+			&& $this->skipNotify == false)
+		{
 			$this->SetBCC($mail, Context::Settings()->Mail()->NotifyAddress);
+		}
 
 		if(empty($this->bcc) == false)
 			$this->SetBCC($mail, $this->bcc);
@@ -51,16 +57,24 @@ class Mail
 
 		$mail->isHTML(true);
 		$mail->send();
-		Performance::$mailsSent += 1;
+		Performance::$mailsSent += $this->GetSentEmailsCount($mail);
 	}
 
-	private function IsForcedMailProviderDomain($recipient) : bool
+	private function GetSentEmailsCount(PHPMailerSendGrid $mail) : int
+	{
+		return count($mail->getToAddresses()) + count($mail->getBccAddresses());
+	}
+
+	private function IsForcedMailProviderDomain(string $recipient) : bool
 	{
 		return Str::ContainsI($recipient, '@hotmail.')
 			|| Str::ContainsI($recipient, '@live.')
 			|| Str::ContainsI($recipient, '@outlook.');
 	}
 
+	/**
+	 * @param string[]|string $recipient
+	 */
 	private function ResolveProvider($recipient) : int
 	{
 		if(Context::Settings()->environment == 'desa' || Context::Settings()->environment == 'dev')
@@ -78,7 +92,10 @@ class Mail
 		return Context::Settings()->Mail()->Provider;
 	}
 
-	public function SetProvider($mail, $recipient) : void
+	/**
+	 * @param string[]|string $recipient
+	 */
+	public function SetProvider(PHPMailerSendGrid $mail, $recipient) : void
 	{
 		$provider = $this->ResolveProvider($recipient);
 
@@ -106,7 +123,10 @@ class Mail
 		}
 	}
 
-	private function SetAddress($mail, $to, $caption) : void
+	/**
+	 * @param string[]|string $to
+	 */
+	private function SetAddress(PHPMailerSendGrid $mail, $to, string $caption) : void
 	{
 		if(is_array($to))
 		{
@@ -117,7 +137,10 @@ class Mail
 			$mail->addAddress($to, $caption);
 	}
 
-	private function SetBCC($mail, $bcc) : void
+	/**
+	 * @param string[]|string $bcc
+	 */
+	private function SetBCC(PHPMailerSendGrid $mail, $bcc) : void
 	{
 		if(is_array($bcc))
 		{

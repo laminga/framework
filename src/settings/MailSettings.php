@@ -9,7 +9,9 @@ class MailSettings
 	public const File = 4;
 	public const Mail = 5;
 
+	/** @var string[]|string */
 	public $NotifyAddress = "";
+	/** @var string[]|string */
 	public $NotifyAddressErrors = "";
 
 	public bool $NoMail = false;

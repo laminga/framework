@@ -26,6 +26,8 @@ class MonitorLimits
 	public int $WarningDaylyHits = 30000;
 	public int $WarningDaylyExecuteMinutes = 150;
 	public int $WarningDaylyLockMinutes = 10;
+	public int $WarningMonthlyEmails = 11000;
+	public int $LimitMonthlyEmails = 11997;
 
 	public int $WarningMonthlyMapsPerKey = 20000;
 
