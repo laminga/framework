@@ -149,24 +149,6 @@ class Log
 		if(Str::Contains($errorMessage, "setting 'theme'"))
 			return true;
 
-		if(Str::Contains($errorMessage, "property 'localdata' of undefined")
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
-
-		if(Str::Contains($errorMessage, 'w.source._source is undefined')
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
-
-		// if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
-		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
-		// {
-		// 	return true;
-		// }
-
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
 		{
