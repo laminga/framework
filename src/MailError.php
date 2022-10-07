@@ -22,6 +22,7 @@ class MailError extends Mail
 		//si es desa...
 		if(System::IsNearRelease() || System::IsDesa())
 		{
+			$this->to = array_keys($this->to);
 			$this->Send();
 			return;
 		}
