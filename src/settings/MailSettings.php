@@ -11,7 +11,10 @@ class MailSettings
 
 	/** @var string[]|string */
 	public $NotifyAddress = "";
-	/** @var string[]|string */
+
+	/** @var array<string,int>|string[]|string */
+	//TODO: cambiar a tipo array, inicializar [], cuando se actualicen la configuración de las implementaciones
+	//ver: MailError.php@13 [2022/10/05]
 	public $NotifyAddressErrors = "";
 
 	public bool $NoMail = false;

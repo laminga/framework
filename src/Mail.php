@@ -7,7 +7,7 @@ use PHPMailer\PHPMailer\PHPMailerSendGrid;
 
 class Mail
 {
-	/** @var string[]|string */
+	/** @var array<string,int>|string[]|string */
 	public $to;
 	/** @var string[]|string */
 	public $bcc;
@@ -36,7 +36,7 @@ class Mail
 
 		$this->SetProvider($mail, $this->to);
 
-		$mail->CharSet = "UTF-8";
+		$mail->CharSet = PHPMailerSendGrid::CHARSET_UTF8;
 
 		$this->SetAddress($mail, $this->to, $this->toCaption);
 
@@ -60,12 +60,12 @@ class Mail
 		Performance::$mailsSent += $this->GetSentEmailsCount($mail);
 	}
 
-	private function GetSentEmailsCount(PHPMailerSendGrid $mail) : int
+	protected function GetSentEmailsCount(PHPMailerSendGrid $mail) : int
 	{
 		return count($mail->getToAddresses()) + count($mail->getBccAddresses());
 	}
 
-	private function IsForcedMailProviderDomain(string $recipient) : bool
+	protected function IsForcedMailProviderDomain(string $recipient) : bool
 	{
 		return Str::ContainsI($recipient, '@hotmail.')
 			|| Str::ContainsI($recipient, '@live.')
@@ -75,7 +75,7 @@ class Mail
 	/**
 	 * @param string[]|string $recipient
 	 */
-	private function ResolveProvider($recipient) : int
+	protected function ResolveProvider($recipient) : int
 	{
 		if(Context::Settings()->environment == 'desa' || Context::Settings()->environment == 'dev')
 			return Context::Settings()->Mail()->Provider;
@@ -95,7 +95,7 @@ class Mail
 	/**
 	 * @param string[]|string $recipient
 	 */
-	public function SetProvider(PHPMailerSendGrid $mail, $recipient) : void
+	protected function SetProvider(PHPMailerSendGrid $mail, $recipient) : void
 	{
 		$provider = $this->ResolveProvider($recipient);
 
@@ -126,7 +126,7 @@ class Mail
 	/**
 	 * @param string[]|string $to
 	 */
-	private function SetAddress(PHPMailerSendGrid $mail, $to, string $caption) : void
+	protected function SetAddress(PHPMailerSendGrid $mail, $to, string $caption) : void
 	{
 		if(is_array($to))
 		{
@@ -140,7 +140,7 @@ class Mail
 	/**
 	 * @param string[]|string $bcc
 	 */
-	private function SetBCC(PHPMailerSendGrid $mail, $bcc) : void
+	protected function SetBCC(PHPMailerSendGrid $mail, $bcc) : void
 	{
 		if(is_array($bcc))
 		{
@@ -151,7 +151,7 @@ class Mail
 			$mail->addBCC($bcc);
 	}
 
-	public function PutToLog() : void
+	protected function PutToLog() : void
 	{
 		$to = '';
 		if(is_array($this->to))
