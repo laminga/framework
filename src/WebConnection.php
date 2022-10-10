@@ -100,7 +100,7 @@ class WebConnection
 	public function Get(string $url, string $file = '', int $redirectCount = 0) : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute(self::Get, $url, $file, []);
+		$response = $this->doExecute(self::Get, $url, $file);
 		$red = $redirectCount;
 
 		while ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
@@ -266,7 +266,18 @@ class WebConnection
 		$this->SetHeader('Cache-Control', 'no-cache');
 		$this->SetHeader('Connection', 'keep-alive');
 
-		curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
+		if ($method == self::Post)
+		{
+			curl_setopt($this->ch, CURLOPT_POST, 1);
+		} 
+		else if ($method == self::Get)
+		{
+			curl_setopt($this->ch, CURLOPT_POST, 0);
+		}
+		else
+		{
+			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
+		}
 
 		if ($method == self::Post || $method == self::Patch || $method == self::Put)
 			$this->AddPostFields($args);
