@@ -19,7 +19,7 @@ class TwoLevelFileFileCache
 	{
 		if ($key1 == null)
 		{
-			IO::ClearDirectory($this->path);
+			IO::ClearDirectory($this->path, true);
 			return;
 		}
 		$key1 = (string)$key1;

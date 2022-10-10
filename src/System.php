@@ -112,6 +112,27 @@ class System
 		return strpos($software, 'microsoft-iis') !== false;
 	}
 
+	/**
+	 * Devuelve true si está dentro de la cantidad
+	 * de $days desde el último release.
+	 */
+	public static function IsNearRelease(int $days = 3) : bool
+	{
+		$file = Context::Paths()->GetRoot() . '/version';
+		if (file_exists($file) == false)
+			return true;
+
+		$time = IO::FileMTime($file);
+		return $time === false
+			|| $time + $days * 60 * 60 * 24 > time();
+	}
+
+	public static function IsDesa() : bool
+	{
+		return Context::Settings()->environment == 'desa'
+			|| Context::Settings()->environment == 'dev';
+	}
+
 	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	//TODO: unificar estos cuatro métodos de Execute o RunCommand en uno.

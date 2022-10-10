@@ -7,36 +7,37 @@ use minga\framework\locking\PerformanceDaylyUsageLock;
 use minga\framework\locking\PerformanceDaylyUserLock;
 use minga\framework\locking\PerformanceMonthlyDayLock;
 use minga\framework\locking\PerformanceMonthlyLocksLock;
+use minga\framework\locking\PerformanceMonthlyTotalEmailsLock;
 use minga\framework\locking\PerformanceMonthlyUsageLock;
 use minga\framework\locking\PerformanceMonthlyUserLock;
 
 class Performance
 {
-	private static $timeStart = null;
-	private static $timeEnd = null;
+	private static ?float $timeStart = null;
+	private static ?float $timeEnd = null;
 
-	private static $timePausedStart = null;
+	private static ?float $timePausedStart = null;
 	private static bool $gotFromCache = true;
 
-	private static $controller = null;
-	private static $method = null;
-	private static $hitCount = 1;
-	private static $lockedMs = 0;
-	private static $dbMs = 0;
-	private static $dbHitCount = 0;
-	private static $lockedClass = '';
-	private static $locksByClass = [];
-	private static $timeStartLocked = null;
-	private static $timeStartDb = null;
+	private static ?string $controller = null;
+	private static ?string $method = null;
+	private static int $hitCount = 1;
+	private static int $lockedMs = 0;
+	private static int $dbMs = 0;
+	private static int $dbHitCount = 0;
+	private static string $lockedClass = '';
+	private static array $locksByClass = [];
+	private static ?float $timeStartLocked = null;
+	private static ?float $timeStartDb = null;
 	private static bool $daylyResetChecked = false;
 
-	public static $warnToday = null;
-	public static $warnYesterday = null;
-	public static $pauseEllapsedSecs = 0;
+	public static ?string $warnToday = null;
+	public static ?string $warnYesterday = null;
+	public static int $pauseEllapsedSecs = 0;
 
 	public static bool $allowLongRunningRequest = false;
 
-	public static $mailsSent = 0;
+	public static int $mailsSent = 0;
 
 	public static function CacheMissed() : void
 	{
@@ -63,7 +64,7 @@ class Performance
 	{
 		Profiling::EndTimer();
 		$ellapsed = microtime(true) - self::$timePausedStart;
-		self::$pauseEllapsedSecs += $ellapsed;
+		self::$pauseEllapsedSecs += (int)$ellapsed;
 	}
 
 	public static function End() : void
@@ -125,7 +126,7 @@ class Performance
 			return;
 
 		$ellapsedSeconds = microtime(true) - self::$timeStartDb;
-		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
+		$ellapsedMilliseconds = (int)round($ellapsedSeconds * 1000);
 
 		self::$dbMs += $ellapsedMilliseconds;
 		self::$dbHitCount++;
@@ -139,7 +140,7 @@ class Performance
 			return;
 
 		$ellapsedSeconds = microtime(true) - self::$timeStartLocked;
-		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
+		$ellapsedMilliseconds = (int)round($ellapsedSeconds * 1000);
 
 		self::$lockedMs += $ellapsedMilliseconds;
 		if (isset(self::$locksByClass[self::$lockedClass]))
@@ -206,7 +207,7 @@ class Performance
 		if (self::$timeStart == null)
 			return;
 		$ellapsedSeconds = microtime(true) - self::$timeStart - self::$pauseEllapsedSecs;
-		$ellapsedMilliseconds = round($ellapsedSeconds * 1000);
+		$ellapsedMilliseconds = (int)round($ellapsedSeconds * 1000);
 
 		// hace válidas las múltiples llamadas a end
 		self::$timeStart = self::$timeEnd;
@@ -240,15 +241,24 @@ class Performance
 		PerformanceDaylyLocksLock::BeginWrite();
 		self::SaveDaylyLocks();
 		PerformanceDaylyLocksLock::EndWrite();
-		// listo
 
 		// Chequea límites
 		self::CheckLimits($limitArgs['days'], $limitArgs['key'], $limitArgs['prevHits'],
 			$limitArgs['prevDuration'], $limitArgs['prevLock'],
 			$ellapsedMilliseconds);
+
+		while(self::$mailsSent > 0)
+		{
+			PerformanceMonthlyTotalEmailsLock::BeginWrite();
+			$totalSent = self::SaveTotalEmails(self::$mailsSent);
+			PerformanceMonthlyTotalEmailsLock::EndWrite();
+			$sent = self::$mailsSent;
+			self::$mailsSent = 0;
+			self::CheckMailLimits($sent, $totalSent);
+		}
 	}
 
-	private static function SaveMonthtly($ellapsedMilliseconds) : array
+	private static function SaveMonthtly(int $ellapsedMilliseconds) : array
 	{
 		PerformanceMonthlyUsageLock::BeginWrite();
 		self::SaveControllerUsage($ellapsedMilliseconds);
@@ -275,7 +285,7 @@ class Performance
 		return self::$warnToday != null;
 	}
 
-	private static function SaveUserUsage($ellapsedMilliseconds, string $month = '') : void
+	private static function SaveUserUsage(int $ellapsedMilliseconds, string $month = '') : void
 	{
 		if (Context::Settings()->Performance()->PerformancePerUser == false)
 			return;
@@ -295,7 +305,7 @@ class Performance
 		IO::WriteIniFile($file, $vals);
 	}
 
-	private static function SaveControllerUsage($ellapsedMilliseconds, string $month = '') : void
+	private static function SaveControllerUsage(int $ellapsedMilliseconds, string $month = '') : void
 	{
 		$file = self::ResolveFilename($month);
 		$keyMs = self::$method;
@@ -345,7 +355,7 @@ class Performance
 		PerformanceDaylyLocksLock::EndWrite();
 	}
 
-	private static function DayCompleted($newDay) : void
+	private static function DayCompleted(?string $newDay) : void
 	{
 		$folder = self::ResolveFolder('dayly');
 		$path = $folder . '/today.txt';
@@ -357,13 +367,13 @@ class Performance
 		IO::WriteAllText($path, $newDay);
 	}
 
-	private static function ReadDaysValues()
+	private static function ReadDaysValues() : array
 	{
 		$daylyProcessor = self::ResolveFilenameDayly();
 		return self::ReadIfExists($daylyProcessor);
 	}
 
-	public static function ReadTodayExtraValues(string $key)
+	public static function ReadTodayExtraValues(string $key) : ?int
 	{
 		$extras = Context::ExtraHitsLabels();
 		$index = Arr::indexOf($extras, $key);
@@ -378,7 +388,7 @@ class Performance
 		return $extraHits[$index];
 	}
 
-	private static function SaveDaylyUsage($ellapsedMilliseconds) : array
+	private static function SaveDaylyUsage(int $ellapsedMilliseconds) : array
 	{
 		$days = self::ReadDaysValues();
 		$key = Date::GetLogDayFolder();
@@ -402,6 +412,17 @@ class Performance
 		];
 	}
 
+	public static function SaveTotalEmails(int $cant) : int
+	{
+		$file = self::ResolveFilenameTotalEmails();
+		$total = $cant;
+		if(file_exists($file))
+			$total += (int)file_get_contents($file);
+
+		IO::WriteAllText($file, $total);
+		return $total;
+	}
+
 	public static function SaveDaylyLocks() : void
 	{
 		self::SaveLocks('dayly');
@@ -423,7 +444,19 @@ class Performance
 		}
 	}
 
-	private static function CheckLimits($days, $key, $prevHits, $prevDuration, $prevLocked, $ellapsedMilliseconds) : void
+	private static function CheckMailLimits(int $sent, int $totalSent) : void
+	{
+		$warning = Context::Settings()->Limits()->WarningMonthlyEmails;
+		$limit = Context::Settings()->Limits()->LimitMonthlyEmails;
+		$before = $totalSent - $sent;
+		if ($warning > $before && $warning <= $totalSent)
+			Performance::SendPerformanceWarning('cantidad de emails enviados', $warning . ' emails', $totalSent . ' emails');
+
+		if ($limit > $before && $limit <= $totalSent)
+			Performance::SendPerformanceWarning('límite de emails enviados AGOTADO', $limit . ' emails', $totalSent . ' emails');
+	}
+
+	private static function CheckLimits(array $days, string $key, int $prevHits, int $prevDuration, int $prevLocked, int $ellapsedMilliseconds) : void
 	{
 		self::ReadCurrentKeyValues($days, $key, $hits, $duration, $locked);
 
@@ -472,12 +505,12 @@ class Performance
 		$mail->Send(false, true);
 	}
 
-	private static function Format($n, $divider, $unit) : string
+	private static function Format(int $n, int $divider, string $unit) : string
 	{
 		return (int)($n / $divider) . ' ' . $unit;
 	}
 
-	private static function ReadIfExists($file)
+	private static function ReadIfExists(string $file) : array
 	{
 		if (file_exists($file))
 			return IO::ReadIniFile($file);
@@ -485,7 +518,7 @@ class Performance
 		return [];
 	}
 
-	private static function ReadCurrentKeyValues($arr, $key, &$prevHits, &$prevDuration, &$locked, &$dbMs = 0, &$dbHits = 0) : void
+	private static function ReadCurrentKeyValues(array $arr, string $key, ?int &$prevHits, ?int &$prevDuration, ?int &$locked, ?int &$dbMs = 0, ?int &$dbHits = 0) : void
 	{
 		if (isset($arr[$key]) == false)
 		{
@@ -499,7 +532,7 @@ class Performance
 			self::ParseHit($arr[$key], $prevHits, $prevDuration, $locked, $dbMs, $dbHits);
 	}
 
-	private static function IncrementKey(&$arr, $key, $value, $newHits, $newLocked, $newDbMs, $newDbHitCount) : void
+	private static function IncrementKey(array &$arr, $key, int $value, int $newHits, int $newLocked, int $newDbMs, int $newDbHitCount) : void
 	{
 		if (isset($arr[$key]) == false)
 		{
@@ -522,7 +555,7 @@ class Performance
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $dbMs . ';' . $dbHitCount;
 	}
 
-	private static function IncrementLockKey(&$arr, $key, $value, $newHits, $newLocked) : void
+	private static function IncrementLockKey(array &$arr, string $key, int $value, int $newHits, int $newLocked) : void
 	{
 		if (isset($arr[$key]) == false)
 		{
@@ -541,14 +574,15 @@ class Performance
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked;
 	}
 
-	private static function IncrementLargeKey(&$arr, $key, $value, $newHits, $newLocked, $isGoogleHit, $mailCount, $newDbMs, $newDbHits, $newExtraHits = []) : void
+	private static function IncrementLargeKey(array &$arr, $key, int $value, int $newHits, int $newLocked,
+		bool $isGoogleHit, int $mailCount, int $newDbMs, int $newDbHits, array $newExtraHits = []) : void
 	{
 		if (isset($arr[$key]) == false)
 		{
 			$hits = $newHits;
 			$duration = $value;
 			$locked = $newLocked;
-			$google = ($isGoogleHit ? 1 : 0);
+			$google = (int)$isGoogleHit;
 			$mails = $mailCount;
 			$dbMs = $newDbMs;
 			$dbHits = $newDbHits;
@@ -559,7 +593,7 @@ class Performance
 			$hits += $newHits;
 			$duration += $value;
 			$locked += $newLocked;
-			$google += ($isGoogleHit ? 1 : 0);
+			$google += (int)$isGoogleHit;
 			$mails += $mailCount;
 			$dbMs += $newDbMs;
 			$dbHits += $newDbHits;
@@ -573,8 +607,8 @@ class Performance
 			. ';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
 	}
 
-	private static function ParseHit($value, &$hits, &$duration, &$locked,
-		&$p4 = null, &$p5 = null, &$p6 = null, &$p7 = null, &$extra = null) : void
+	private static function ParseHit(string $value, ?string &$hits, ?string &$duration, ?string &$locked,
+		?int &$p4 = null, ?int &$p5 = null, ?int &$p6 = null, ?int &$p7 = null, ?array &$extra = null) : void
 	{
 		$parts = explode(';', $value);
 		$hits = $parts[0];
@@ -582,7 +616,7 @@ class Performance
 		if (count($parts) > 2)
 			$locked = $parts[2];
 		else
-			$locked = 0;
+			$locked = "0";
 		if (count($parts) > 3)
 		{
 			$p4 = (int)$parts[3];
@@ -632,6 +666,12 @@ class Performance
 		return $path . '/' . $user . '.txt';
 	}
 
+	public static function ResolveFilenameTotalEmails(string $month = '') : string
+	{
+		$path = self::ResolveFolder($month);
+		return $path . '/totalEmails.txt';
+	}
+
 	public static function ResolveFilenameDayly(string $month = '') : string
 	{
 		$path = self::ResolveFolder($month);
@@ -644,7 +684,7 @@ class Performance
 		return $path . '/locks.txt';
 	}
 
-	public static function GetDaylyTable($month, bool $appendTotals = false) : array
+	public static function GetDaylyTable(string $month, bool $appendTotals = false) : array
 	{
 		$lock = new PerformanceMonthlyDayLock();
 		$lock->LockRead();
@@ -721,10 +761,10 @@ class Performance
 			$dataHitRow[] = self::Average($totalsDataHitRow, count($days));
 			$googleRow[] = self::Average($totalsGoogleRow, count($days));
 			$mailRow[] = self::Average($totalsMailRow, count($days));
-			$dataMsRow[] = self::Average($totalsDataMsRow / 1000 / 60, count($days), 1);
+			$dataMsRow[] = self::Average($totalsDataMsRow / 1000 / 60, count($days));
 			$dataAvgRow[] = '-'; //round($totalsAvgRow / count($days));
-			$dataLockedRow[] = self::Average($totalsDataLockedRow / 1000, count($days), 1);
-			$dataDbMsRow[] = self::Average($totalsDataDbMsRow / 1000 / 60, count($days), 1);
+			$dataLockedRow[] = self::Average($totalsDataLockedRow / 1000, count($days));
+			$dataDbMsRow[] = self::Average($totalsDataDbMsRow / 1000 / 60, count($days));
 			$dataDbHitRow[] = self::Average($totalsDataDbHitRow, count($days));
 			for($n = 0; $n < count($extraValues); $n++)
 				$extraValues[$n][] = self::Average($totalsExtraValues[$n], count($days));
@@ -760,7 +800,7 @@ class Performance
 		return $ret;
 	}
 
-	private static function Average($a, $b, $precision = 0) : string
+	private static function Average(int $a, int $b) : string
 	{
 		if ($b == 0)
 			return '';
@@ -768,7 +808,7 @@ class Performance
 		return '' . round($a / $b);
 	}
 
-	public static function GetHistoryTable($months) : array
+	public static function GetHistoryTable(array $months) : array
 	{
 		$ret = null;
 		$actualMoths = [];
@@ -799,7 +839,7 @@ class Performance
 		return array_merge(['Mes' => $actualMoths], $ret);
 	}
 
-	private static function IsAdmin($controller) : bool
+	private static function IsAdmin(string $controller) : bool
 	{
 		if ($controller == 'Services')
 			return true;
@@ -814,7 +854,7 @@ class Performance
 		return file_exists($path . '/' . $controller . '.php') || file_exists($file2);
 	}
 
-	public static function GetControllerTable($month, $adminControllers, $getUsers, $methods)
+	public static function GetControllerTable(string $month, bool $adminControllers, bool $getUsers, array $methods) : array
 	{
 		if ($month == '')
 			$month = 'dayly';
@@ -845,9 +885,10 @@ class Performance
 			if ($file != 'processor.txt' && $file != 'locks.txt')
 			{
 				$controller = Str::Replace(IO::RemoveExtension($file), '#', '/');
-				if ($getUsers === Str::StartsWith($controller, '@'))
+				if ($getUsers == Str::StartsWith($controller, '@'))
 				{
-					if ($getUsers) $controller = substr($controller, 1);
+					if ($getUsers)
+						$controller = substr($controller, 1);
 					$isAdmin = self::IsAdmin($controller);
 					if ($isAdmin == $adminControllers)
 					{
@@ -934,7 +975,7 @@ class Performance
 		return $rows;
 	}
 
-	private static function FormatShare($duration, $totalDuration)
+	private static function FormatShare(int $duration, int $totalDuration) : string
 	{
 		if ($totalDuration == 0)
 			$share = '<b>n/d</b>';
@@ -952,7 +993,7 @@ class Performance
 		return $share;
 	}
 
-	public static function GetLocksTable($month) : array
+	public static function GetLocksTable(string $month) : array
 	{
 		if ($month == '')
 			$month = 'dayly';
