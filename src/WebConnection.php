@@ -25,6 +25,7 @@ class WebConnection
 	public ?FileBucket $bucket = null;
 	public ?string $logFile2 = null;
 	public string $contentType = '';
+	public bool $keepHeaders = false;
 	public array $requestHeaders = [];
 	public string $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8';
 	private string $cookieFile = '';
@@ -49,8 +50,11 @@ class WebConnection
 			$this->bucket = FileBucket::Create();
 			$path = $this->bucket->path;
 		}
-		curl_setopt($this->ch, CURLOPT_COOKIEJAR, $path . '/cookie.txt');
-		curl_setopt($this->ch, CURLOPT_COOKIEFILE, $path . '/cookie.txt');
+
+		$this->cookieFile = $path . '/cookie.txt';
+		IO::WriteAllText($this->cookieFile, '');
+		curl_setopt($this->ch, CURLOPT_COOKIEJAR, $this->cookieFile);
+		curl_setopt($this->ch, CURLOPT_COOKIEFILE, $this->cookieFile);
 
 		if($path != '')
 			IO::EnsureExists($path);
@@ -93,11 +97,11 @@ class WebConnection
 		$this->maxFileSize = $size;
 	}
 
-	public function Get(string $url, string $file = '') : WebResponse
+	public function Get(string $url, string $file = '', int $redirectCount = 0) : WebResponse
 	{
 		Profiling::BeginTimer();
 		$response = $this->doExecute(self::Get, $url, $file, []);
-		$red = 0;
+		$red = $redirectCount;
 
 		while ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
@@ -110,7 +114,8 @@ class WebConnection
 			}
 
 			$location = $response->GetLocationHeader();
-			$this->AppendLog('Redirecting to ' . $location);
+			$this->PrepareForRedirect($location, $file, $red);
+			
 			$response = $this->Get($location, $file);
 			if ($red > 10)
 			{
@@ -121,6 +126,25 @@ class WebConnection
 		Profiling::EndTimer();
 
 		return $response;
+	}
+
+	private function PrepareForRedirect(string $location, string $file, int $red = 1)
+	{
+		$this->AppendLog('Redirigiendo a ' . $location);
+		// renombra los archivos de log
+		$fileHeaders = $file . '.headers.txt';
+		$reqHeaders = $fileHeaders . ".req.txt";
+
+		$n = strrpos($file, ".");
+		$oldFileName = substr($file, 0, $n) . "@" . $red . substr($file, $n);
+		$n = strrpos($file, ".");
+		$oldHeadersFile = substr($fileHeaders, 0, $n) . "@" . $red . substr($fileHeaders, $n);
+		$n = strrpos($file, ".");
+		$oldReqHeaders = substr($reqHeaders, 0, $n) . "@" . $red . substr($reqHeaders, $n);
+
+		IO::Move($file, $oldFileName);
+		IO::Move($fileHeaders, $oldHeadersFile);
+		IO::Move($reqHeaders, $oldReqHeaders);
 	}
 
 	/**
@@ -134,8 +158,8 @@ class WebConnection
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$location = $response->GetLocationHeader();
-			$this->AppendLog('Redirigiendo a ' . $location);
-			return $this->Get($location, $file);
+			$this->PrepareForRedirect($location, $file);
+			return $this->Get($location, $file, 1);
 		}
 		return $response;
 	}
@@ -151,7 +175,7 @@ class WebConnection
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$location = $response->GetLocationHeader();
-			$this->AppendLog('Redirigiendo a ' . $location);
+			$this->AppendLog('Redirigiendo PUT a ' . $location);
 			return $this->Put($location, $file, $args);
 		}
 		return $response;
@@ -168,7 +192,7 @@ class WebConnection
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$location = $response->GetLocationHeader();
-			$this->AppendLog('Redirigiendo a ' . $location);
+			$this->AppendLog('Redirigiendo PATCH a ' . $location);
 			return $this->Patch($location, $file, $args);
 		}
 		return $response;
@@ -182,7 +206,7 @@ class WebConnection
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$location = $response->GetLocationHeader();
-			$this->AppendLog('Redirigiendo a ' . $location);
+			$this->AppendLog('Redirigiendo DELETE a ' . $location);
 			return $this->Delete($location, $file);
 		}
 		return $response;
@@ -236,13 +260,11 @@ class WebConnection
 
 		curl_setopt($this->ch, CURLOPT_URL, $url);
 
-		$this->requestHeaders = array_merge($this->requestHeaders, [
-			'Accept-Language: es-AR,es,en',
-			'Accept: ' . $this->accept,
-			'Pragma: no-cache',
-			'Cache-Control: no-cache',
-			'Connection: keep-alive',
-		]);
+		$this->SetHeader('Accept-Language', 'es-AR,es,en');
+		$this->SetHeader('Accept', $this->accept);
+		$this->SetHeader('Pragma', 'no-cache');
+		$this->SetHeader('Cache-Control', 'no-cache');
+		$this->SetHeader('Connection', 'keep-alive');
 
 		curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
 
@@ -262,9 +284,18 @@ class WebConnection
 			$file = IO::GetTempFilename();
 
 		$headerFile = $file . '.headers.txt';
+		$requestHeaderFile = $file . '.headers.txt.req.txt';
 
-		$this->AppendLogData('HeaderFile', $headerFile);
+		$this->AppendLogData('HeaderResponseFile', $headerFile);
 
+		$this->AppendLogData('HeaderRequestFile', $requestHeaderFile);
+		IO::WriteAllText($requestHeaderFile, Str::Replace(print_r($this->requestHeaders, true), "[", "\r\n["));
+
+		if ($this->cookieFile !== '' && file_exists($this->cookieFile))
+			IO::AppendLine($requestHeaderFile, "\r\nCookies: " . IO::ReadAllText($this->GetCookieFile()));
+		else
+			IO::AppendLine($requestHeaderFile, "\r\nNo cookies:" . $this->GetCookieFile());
+		
 		$fheader = fopen($headerFile, 'w');
 		curl_setopt($this->ch, CURLOPT_WRITEHEADER, $fheader);
 
@@ -316,7 +347,11 @@ class WebConnection
 		if ($this->error != '')
 			$this->AppendLogData('error retornando: ', $this->error);
 
-		IO::Delete($headerFile);
+		if (!$this->keepHeaders)
+		{
+			IO::Delete($headerFile);
+			IO::Delete($requestHeaderFile);
+		}
 		if ($ret == false && $this->throwErrors)
 		{
 			$this->Finalize();
@@ -324,6 +359,20 @@ class WebConnection
 		}
 
 		return $response;
+	}
+
+	private function SetHeader(string $key, string $value) : void
+	{
+		$valueItem = $key . ": " . $value;
+		for($n = 0; $n < count($this->requestHeaders); $n++)
+		{
+			if (Str::StartsWith($this->requestHeaders[$n], $key . ":"))
+			{
+				$this->requestHeaders[$n] = $valueItem;
+				return;
+			}
+		}
+		$this->requestHeaders[] = $valueItem;
 	}
 
 	private function HasContentLength(array $headers) : bool
@@ -369,7 +418,7 @@ class WebConnection
 	{
 		if (is_array($args) == false)
 		{
-			$this->requestHeaders[] = 'Content-Type: application/json';
+			$this->SetHeader('Content-Type', 'application/json');
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 			return;
 		}
