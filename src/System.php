@@ -116,9 +116,9 @@ class System
 	 * Devuelve true si está dentro de la cantidad
 	 * de $days desde el último release.
 	 */
-	public static function IsNearRelease(int $days = 3) : bool
+	public static function IsNearRelease(int $days = 3, $file = 'version') : bool
 	{
-		$file = Context::Paths()->GetRoot() . '/version';
+		$file = Context::Paths()->GetRoot() . '/' . $file;
 		if (file_exists($file) == false)
 			return true;
 
