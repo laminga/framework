@@ -4,12 +4,6 @@ namespace minga\framework;
 
 class WebConnection
 {
-	private const Get = 'GET';
-	private const Post = 'POST';
-	private const Delete = 'DELETE';
-	private const Put = 'PUT';
-	private const Patch = 'PATCH';
-
 	protected $ch;
 	protected $cherr = null;
 	protected bool $isClosed = true;
@@ -19,13 +13,18 @@ class WebConnection
 	private int $httpCode = 0;
 	private string $error = '';
 
+	private const Get = 'GET';
+	private const Post = 'POST';
+	private const Delete = 'DELETE';
+	private const Put = 'PUT';
+	private const Patch = 'PATCH';
+
 	public bool $throwErrors = true;
 	public ?string $logFile = null;
 	public ?string $responseFile = null;
 	public ?FileBucket $bucket = null;
 	public ?string $logFile2 = null;
 	public string $contentType = '';
-	public bool $keepHeaders = false;
 	public array $requestHeaders = [];
 	public string $accept = 'text/html, application/xhtml+xml, application/xml;q=0.9,*/*;q=0.8';
 	private string $cookieFile = '';
@@ -50,15 +49,8 @@ class WebConnection
 			$this->bucket = FileBucket::Create();
 			$path = $this->bucket->path;
 		}
-
-		$this->cookieFile = $path . '/cookie.txt';
-		IO::WriteAllText($this->cookieFile, '');
-		curl_setopt($this->ch, CURLOPT_COOKIEJAR, $this->cookieFile);
-		curl_setopt($this->ch, CURLOPT_COOKIEFILE, $this->cookieFile);
-
-		if($path != '')
-			IO::EnsureExists($path);
-
+		curl_setopt($this->ch, CURLOPT_COOKIEJAR, $path . '/cookie.txt');
+		curl_setopt($this->ch, CURLOPT_COOKIEFILE, $path . '/cookie.txt');
 		$this->logFile = $path . '/log.txt';
 		$this->responseFile = $path . '/response.dat';
 		$this->isClosed = false;
@@ -97,11 +89,11 @@ class WebConnection
 		$this->maxFileSize = $size;
 	}
 
-	public function Get(string $url, string $file = '', int $redirectCount = 0) : WebResponse
+	public function Get(string $url, string $file = '') : WebResponse
 	{
 		Profiling::BeginTimer();
 		$response = $this->doExecute(self::Get, $url, $file);
-		$red = $redirectCount;
+		$red = 0;
 
 		while ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
@@ -114,8 +106,7 @@ class WebConnection
 			}
 
 			$location = $response->GetLocationHeader();
-			$this->PrepareForRedirect($location, $file, $red);
-			
+			$this->AppendLog('Redirecting to ' . $location);
 			$response = $this->Get($location, $file);
 			if ($red > 10)
 			{
@@ -126,25 +117,6 @@ class WebConnection
 		Profiling::EndTimer();
 
 		return $response;
-	}
-
-	private function PrepareForRedirect(string $location, string $file, int $red = 1)
-	{
-		$this->AppendLog('Redirigiendo a ' . $location);
-		// renombra los archivos de log
-		$fileHeaders = $file . '.headers.txt';
-		$reqHeaders = $fileHeaders . ".req.txt";
-
-		$n = strrpos($file, ".");
-		$oldFileName = substr($file, 0, $n) . "@" . $red . substr($file, $n);
-		$n = strrpos($file, ".");
-		$oldHeadersFile = substr($fileHeaders, 0, $n) . "@" . $red . substr($fileHeaders, $n);
-		$n = strrpos($file, ".");
-		$oldReqHeaders = substr($reqHeaders, 0, $n) . "@" . $red . substr($reqHeaders, $n);
-
-		IO::Move($file, $oldFileName);
-		IO::Move($fileHeaders, $oldHeadersFile);
-		IO::Move($reqHeaders, $oldReqHeaders);
 	}
 
 	/**
@@ -158,12 +130,13 @@ class WebConnection
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$location = $response->GetLocationHeader();
-			$this->PrepareForRedirect($location, $file);
-			return $this->Get($location, $file, 1);
+			$this->AppendLog('Redirigiendo a ' . $location);
+			return $this->Get($location, $file);
 		}
 		return $response;
 	}
 
+	
 	/**
 	 * @param string|array|null $args
 	 */
@@ -266,21 +239,17 @@ class WebConnection
 		$this->SetHeader('Cache-Control', 'no-cache');
 		$this->SetHeader('Connection', 'keep-alive');
 
-		if ($method == self::Post)
+		if ($args != null)
 		{
-			curl_setopt($this->ch, CURLOPT_POST, 1);
-		} 
-		else if ($method == self::Get)
-		{
-			curl_setopt($this->ch, CURLOPT_POST, 0);
+			$this->AddPostFields($args);
 		}
 		else
 		{
-			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
+			curl_setopt($this->ch, CURLOPT_POST, 0);
 		}
 
-		if ($method == self::Post || $method == self::Patch || $method == self::Put)
-			$this->AddPostFields($args);
+		if ($method == self::Delete || $method == self::Patch || $method == self::Put)
+			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
 
 		$this->AppendLog($method . ' ' . $url);
 		$this->AppendLogData('File', $file);
@@ -295,18 +264,9 @@ class WebConnection
 			$file = IO::GetTempFilename();
 
 		$headerFile = $file . '.headers.txt';
-		$requestHeaderFile = $file . '.headers.txt.req.txt';
 
-		$this->AppendLogData('HeaderResponseFile', $headerFile);
+		$this->AppendLogData('HeaderFile', $headerFile);
 
-		$this->AppendLogData('HeaderRequestFile', $requestHeaderFile);
-		IO::WriteAllText($requestHeaderFile, Str::Replace(print_r($this->requestHeaders, true), "[", "\r\n["));
-
-		if ($this->cookieFile !== '' && file_exists($this->cookieFile))
-			IO::AppendLine($requestHeaderFile, "\r\nCookies: " . IO::ReadAllText($this->GetCookieFile()));
-		else
-			IO::AppendLine($requestHeaderFile, "\r\nNo cookies:" . $this->GetCookieFile());
-		
 		$fheader = fopen($headerFile, 'w');
 		curl_setopt($this->ch, CURLOPT_WRITEHEADER, $fheader);
 
@@ -358,11 +318,7 @@ class WebConnection
 		if ($this->error != '')
 			$this->AppendLogData('error retornando: ', $this->error);
 
-		if (!$this->keepHeaders)
-		{
-			IO::Delete($headerFile);
-			IO::Delete($requestHeaderFile);
-		}
+		IO::Delete($headerFile);
 		if ($ret == false && $this->throwErrors)
 		{
 			$this->Finalize();
@@ -372,6 +328,12 @@ class WebConnection
 		return $response;
 	}
 
+	private function HasContentLength(array $headers) : bool
+	{
+		return isset($headers['Content-Length'])
+			|| isset($headers['content-length']);
+	}
+	
 	private function SetHeader(string $key, string $value) : void
 	{
 		$valueItem = $key . ": " . $value;
@@ -384,12 +346,6 @@ class WebConnection
 			}
 		}
 		$this->requestHeaders[] = $valueItem;
-	}
-
-	private function HasContentLength(array $headers) : bool
-	{
-		return isset($headers['Content-Length'])
-			|| isset($headers['content-length']);
 	}
 
 	private function GetContentLength(array $headers) : int
@@ -427,9 +383,12 @@ class WebConnection
 	 */
 	private function AddPostFields($args) : void
 	{
+		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
 		{
+			// json
 			$this->SetHeader('Content-Type', 'application/json');
+			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'POST');
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
 			return;
 		}
@@ -538,6 +497,7 @@ class WebConnection
 		$ch = curl_init();
 		$this->ch = $ch;
 		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POST, 1);
 		$data = file_get_contents($path);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
