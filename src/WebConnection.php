@@ -89,11 +89,11 @@ class WebConnection
 		$this->maxFileSize = $size;
 	}
 
-	public function Get(string $url, string $file = '') : WebResponse
+	public function Get(string $url, string $file = '', int $redirectCount = 0) : WebResponse
 	{
 		Profiling::BeginTimer();
 		$response = $this->doExecute(self::Get, $url, $file);
-		$red = 0;
+		$red = $redirectCount;
 
 		while ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
@@ -106,7 +106,7 @@ class WebConnection
 			}
 
 			$location = $response->GetLocationHeader();
-			$this->AppendLog('Redirecting to ' . $location);
+			$this->PrepareForRedirect($location, $file, $red);
 			$response = $this->Get($location, $file);
 			if ($red > 10)
 			{
@@ -130,8 +130,8 @@ class WebConnection
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
 			$location = $response->GetLocationHeader();
-			$this->AppendLog('Redirigiendo a ' . $location);
-			return $this->Get($location, $file);
+			$this->PrepareForRedirect($location, $file);
+			return $this->Get($location, $file, 1);
 		}
 		return $response;
 	}
@@ -183,6 +183,25 @@ class WebConnection
 			return $this->Delete($location, $file);
 		}
 		return $response;
+	}
+
+	private function PrepareForRedirect(string $location, string $file, int $red = 1)
+	{
+		$this->AppendLog('Redirigiendo a ' . $location);
+		// renombra los archivos de log
+		$fileHeaders = $file . '.headers.txt';
+		$reqHeaders = $fileHeaders . ".req.txt";
+
+		$n = strrpos($file, ".");
+		$oldFileName = substr($file, 0, $n) . "@" . $red . substr($file, $n);
+		$n = strrpos($file, ".");
+		$oldHeadersFile = substr($fileHeaders, 0, $n) . "@" . $red . substr($fileHeaders, $n);
+		$n = strrpos($file, ".");
+		$oldReqHeaders = substr($reqHeaders, 0, $n) . "@" . $red . substr($reqHeaders, $n);
+
+		IO::Move($file, $oldFileName);
+		IO::Move($fileHeaders, $oldHeadersFile);
+		IO::Move($reqHeaders, $oldReqHeaders);
 	}
 
 	private function StayHttps(string $url) : string
@@ -248,7 +267,9 @@ class WebConnection
 			curl_setopt($this->ch, CURLOPT_POST, 0);
 		}
 
-		if ($method == self::Delete || $method == self::Patch || $method == self::Put)
+		if ($method == self::Post)
+				curl_setopt($this->ch, CURLOPT_POST, 1);
+		else if ($method == self::Delete || $method == self::Patch || $method == self::Put)
 			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
 
 		$this->AppendLog($method . ' ' . $url);
@@ -264,8 +285,12 @@ class WebConnection
 			$file = IO::GetTempFilename();
 
 		$headerFile = $file . '.headers.txt';
+		$requestHeaderFile = $file . '.headers.txt.req.txt';
 
 		$this->AppendLogData('HeaderFile', $headerFile);
+		$this->AppendLogData('HeaderResponseFile', $headerFile);
+		
+		IO::WriteAllText($requestHeaderFile, Str::Replace(print_r($this->requestHeaders, true), "[", "\r\n["));
 
 		$fheader = fopen($headerFile, 'w');
 		curl_setopt($this->ch, CURLOPT_WRITEHEADER, $fheader);
@@ -318,7 +343,12 @@ class WebConnection
 		if ($this->error != '')
 			$this->AppendLogData('error retornando: ', $this->error);
 
-		IO::Delete($headerFile);
+		if (!$this->keepHeaders)
+		{
+			IO::Delete($headerFile);
+			IO::Delete($requestHeaderFile);
+		}
+
 		if ($ret == false && $this->throwErrors)
 		{
 			$this->Finalize();
@@ -383,7 +413,6 @@ class WebConnection
 	 */
 	private function AddPostFields($args) : void
 	{
-		curl_setopt($this->ch, CURLOPT_POST, 1);
 		if (is_array($args) == false)
 		{
 			// json
