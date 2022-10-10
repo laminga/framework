@@ -53,7 +53,7 @@ class MailDeferredSender
 			foreach($items as $type => $texts)
 			{
 				$text = "\r\n<br>Cantidad de emails:" . count($texts) . "<br><br>\r\n\r\n"
-					. implode("\r\n\r\n<hr>\r\n\r\n", array_values($texts));
+					. implode("<br>\r\n<br>\r\n<hr><br>\r\n<br>\r\n", array_values($texts));
 				$mail = new Mail();
 				$mail->subject = "Envío diario de " . $type . " " . date('Y-m-d');
 				$mail->to = $to;
