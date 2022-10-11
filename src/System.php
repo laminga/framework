@@ -127,12 +127,6 @@ class System
 			|| $time + $days * 60 * 60 * 24 > time();
 	}
 
-	public static function IsDesa() : bool
-	{
-		return Context::Settings()->environment == 'desa'
-			|| Context::Settings()->environment == 'dev';
-	}
-
 	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	//TODO: unificar estos cuatro métodos de Execute o RunCommand en uno.

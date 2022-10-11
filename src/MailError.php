@@ -19,8 +19,8 @@ class MailError extends Mail
 		}
 
 		//Excepciones: envía el mail directo si está cercano al release,
-		//si es desa...
-		if(System::IsNearRelease() || System::IsDesa())
+		//si es debug...
+		if(System::IsNearRelease() || Context::Settings()->Debug()->debug)
 		{
 			$this->to = array_keys($this->to);
 			$this->Send();
