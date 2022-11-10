@@ -4,6 +4,7 @@ namespace minga\framework\enums;
 
 class DeliveryMode
 {
+	public const None = 0;
 	public const Now = 1;
 	public const Daily = 2;
 
