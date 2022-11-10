@@ -99,7 +99,7 @@ class Log
 	public static function LogJsError(string $agent, string $referer, string $errorMessage,
 		string $errorUrl, string $errorSource, int $errorLine, int $errorColumn, string $trace) : void
 	{
-		if(self::ShouldIgnoreJsError($errorMessage, $errorSource,
+		if(self::ShouldIgnoreJsError($agent, $errorMessage, $errorSource,
 			$errorLine, $errorColumn, $trace))
 		{
 			return;
@@ -132,8 +132,8 @@ class Log
 		self::PutToMailJs($text);
 	}
 
-	private static function ShouldIgnoreJsError(string $errorMessage, string $errorSource,
-		int $errorLine, int $errorColumn, string $trace) : bool
+	private static function ShouldIgnoreJsError(string $agent, string $errorMessage,
+		string $errorSource, int $errorLine, int $errorColumn, string $trace) : bool
 	{
 		if(Str::StartsWith($errorSource, 'moz-extension://'))
 			return true;
@@ -149,6 +149,9 @@ class Log
 			return true;
 
 		if(Str::Contains($errorMessage, "setting 'theme'"))
+			return true;
+
+		if(Str::Contains($agent, "applebot"))
 			return true;
 
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
