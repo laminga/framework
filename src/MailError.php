@@ -3,7 +3,7 @@
 namespace minga\framework;
 
 use minga\framework\enums\DeliveryMode;
-use minga\framework\enums\MailType;
+use minga\framework\enums\MailTypeError;
 use PHPMailer\PHPMailer\PHPMailerSendGrid;
 
 class MailError extends Mail
@@ -30,7 +30,7 @@ class MailError extends Mail
 		foreach($this->to as $address => $mode)
 		{
 			if (Context::Settings()->Log()->LogEmailsToDisk || $mode == DeliveryMode::Daily)
-				$this->LogMail($type, $address, $mode);
+				$this->LogMail(MailTypeError::GetName($type), $address, $mode);
 
 			if (Context::Settings()->Mail()->NoMail)
 				continue;
@@ -56,13 +56,17 @@ class MailError extends Mail
 		}
 	}
 
-	protected function LogMail(int $type, string $to, int $mode) : void
+	protected function LogMail(string $type, string $to, int $mode, string $originalTo = '') : void
 	{
-		$text = "Type: " . MailType::GetName($type) . "\r\n"
+		if($originalTo == '')
+			$originalTo = $to;
+
+		$text = "Type: " . $type . "\r\n"
 			. "DeliveryMode: " . DeliveryMode::GetName($mode) . "\r\n"
 			. "To: " . $to . "\r\n"
 			. "From: " . $this->from . "\r\n"
 			. "Subject: " . $this->subject . "\r\n"
+			. "OriginalTo: " . $originalTo . "\r\n"
 			. "\r\n"
 			. $this->message;
 

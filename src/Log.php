@@ -2,7 +2,7 @@
 
 namespace minga\framework;
 
-use minga\framework\enums\MailType;
+use minga\framework\enums\MailTypeError;
 use minga\framework\locking\Lock;
 
 class Log
@@ -341,7 +341,7 @@ class Log
 		{
 			self::$isLoggingMailError = true;
 			// Manda el error por mail
-			self::PutToMail(self::RemovePassword($text), MailType::Error);
+			self::PutToMail(self::RemovePassword($text), MailTypeError::Error);
 
 			// Si lo envió sin errores, procesa fatales pendientes
 			FatalErrorSender::SendFatalErrors(true);
@@ -465,12 +465,12 @@ class Log
 
 	public static function PutToMailJs(string $text) : bool
 	{
-		return self::PutToMail($text, MailType::JavascriptError, 'Javascript ');
+		return self::PutToMail($text, MailTypeError::JavascriptError, 'Javascript ');
 	}
 
 	public static function PutToMailFatal(string $text) : bool
 	{
-		return self::PutToMail($text, MailType::FatalError, 'Fatal ');
+		return self::PutToMail($text, MailTypeError::FatalError, 'Fatal ');
 	}
 
 	public static function PutToMail(string $text, int $type, string $prefix = '') : bool

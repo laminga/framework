@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace minga\tests;
 
-use minga\framework\enums\MailType;
+use minga\framework\enums\MailTypeError;
 use minga\framework\Log;
 use minga\framework\tests\TestCaseBase;
 
@@ -19,6 +19,6 @@ class LogTest extends TestCaseBase
 	public function testLogPutToMail() : void
 	{
 		$text = 'Test de Log::PutToMail';
-		$this->assertTrue(Log::PutToMail($text, MailType::Error));
+		$this->assertTrue(Log::PutToMail($text, MailTypeError::Error));
 	}
 }

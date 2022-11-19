@@ -2,7 +2,7 @@
 
 namespace minga\framework\enums;
 
-class MailType
+class MailTypeError
 {
 	public const Unclassified = 0;
 

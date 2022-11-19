@@ -28,7 +28,7 @@ class MailDeferredSender
 			$text = IO::ReadAllText($file);
 			$parts = explode("\r\n\r\n", $text, 2);
 			$header = self::GetHeader($parts[0]);
-			$content = $parts[1];
+			$content = "Para: " . $header['OriginalTo'] . "<br>\r\n" . $parts[1];
 
 			if($header['DeliveryMode'] != DeliveryMode::GetName(DeliveryMode::Daily))
 			{
@@ -52,7 +52,9 @@ class MailDeferredSender
 		{
 			foreach($items as $type => $texts)
 			{
-				$text = "\r\n<br>Cantidad de emails:" . count($texts) . "<br><br>\r\n\r\n"
+
+				$text = "\r\n<br>Cantidad de emails: " . count($texts) . "<br>\r\n"
+					. "Servidor: " . Context::Settings()->Servers()->Current()->name . "<br><br>\r\n\r\n"
 					. implode("<br>\r\n<br>\r\n<hr><br>\r\n<br>\r\n", array_values($texts));
 				$mail = new Mail();
 				$mail->subject = "Envío diario de " . $type . " " . date('Y-m-d');
