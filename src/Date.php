@@ -66,7 +66,7 @@ class Date
 	public static function FormattedArNowMs() : string
 	{
 		$parts = explode(' ', microtime());
-		$mt = sprintf("%03d", round($parts[0] * 1000));
+		$mt = sprintf("%03d", round((float)$parts[0] * 1000));
 		return self::FormattedDate(self::ArNow()) . '.' . $mt;
 	}
 
