@@ -137,7 +137,6 @@ class WebConnection
 		return $response;
 	}
 
-	
 	/**
 	 * @param string|array|null $args
 	 */
@@ -186,7 +185,7 @@ class WebConnection
 		return $response;
 	}
 
-	private function PrepareForRedirect(string $location, string $file, int $red = 1)
+	private function PrepareForRedirect(string $location, string $file, int $red = 1) : void
 	{
 		$this->AppendLog('Redirigiendo a ' . $location);
 		// renombra los archivos de log
@@ -290,7 +289,7 @@ class WebConnection
 
 		$this->AppendLogData('HeaderFile', $headerFile);
 		$this->AppendLogData('HeaderResponseFile', $headerFile);
-		
+
 		IO::WriteAllText($requestHeaderFile, Str::Replace(print_r($this->requestHeaders, true), "[", "\r\n["));
 
 		$fheader = fopen($headerFile, 'w');
@@ -364,7 +363,7 @@ class WebConnection
 		return isset($headers['Content-Length'])
 			|| isset($headers['content-length']);
 	}
-	
+
 	private function SetHeader(string $key, string $value) : void
 	{
 		$valueItem = $key . ": " . $value;

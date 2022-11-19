@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace minga\framework\tests;
 
 use minga\framework\Context;
-use minga\framework\System;
 use minga\framework\IO;
+use minga\framework\System;
 
 class SystemTest extends TestCaseBase
 {
@@ -35,6 +35,5 @@ class SystemTest extends TestCaseBase
 		$this->assertFalse(System::IsNearRelease(2, basename($file)));
 		IO::Delete($file);
 	}
-
 }
 
