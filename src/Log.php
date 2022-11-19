@@ -449,8 +449,7 @@ class Log
 
 		IO::EnsureExists($logPath);
 		IO::EnsureExists($path);
-
-		$file = Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser()) . '.txt';
+		$file = Date::FormattedArNowMs() . '-' . Str::UrlencodeFriendly(Context::LoggedUser()) . '.txt';
 		$file = str_replace(':', '.', $file);
 		$file = str_replace('+', '-', $file);
 		$file = $path . '/' . $file;
