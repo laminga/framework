@@ -9,8 +9,7 @@ class TemplateMessage extends AttributeEntity
 	public string $title = '';
 	public string $to = '';
 	public string $toCaption = '';
-	public string $formattedTo = '';
-	public $footer = MailFooter::General;
+	public int $footer = MailFooter::General;
 	public string $template = '';
 	public $content = null;
 	public bool $skipNotify = false;
@@ -18,7 +17,7 @@ class TemplateMessage extends AttributeEntity
 	public function SetTo(string $name, string $email) : void
 	{
 		$this->to = $email;
-		$this->toCaption = $name; // mb_encode_mimeheader($name, 'UTF-8', 'Q') . ' <' . $email . '>';
+		$this->toCaption = $name;
 	}
 
 	public function UpdateViewActionUrl(string $url) : void
