@@ -2,6 +2,7 @@
 
 namespace minga\framework;
 
+use minga\framework\enums\MailTypeError;
 use minga\framework\locking\Lock;
 
 class Log
@@ -14,6 +15,7 @@ class Log
 	public const JsErrorsPath = 'jsErrors';
 	public const ErrorsPath = 'errors';
 	public const MailsPath = 'mails';
+	public const UnsentMailsPath = 'mails/unsent';
 
 	public static function LogError($errorNumber, $errorMessage, $errorFile, $errorLine,
 		$context = [], $trace = null,
@@ -97,7 +99,7 @@ class Log
 	public static function LogJsError(string $agent, string $referer, string $errorMessage,
 		string $errorUrl, string $errorSource, int $errorLine, int $errorColumn, string $trace) : void
 	{
-		if(self::ShouldIgnoreJsError($errorMessage, $errorSource,
+		if(self::ShouldIgnoreJsError($agent, $errorMessage, $errorSource,
 			$errorLine, $errorColumn, $trace))
 		{
 			return;
@@ -130,8 +132,8 @@ class Log
 		self::PutToMailJs($text);
 	}
 
-	private static function ShouldIgnoreJsError(string $errorMessage, string $errorSource,
-		int $errorLine, int $errorColumn, string $trace) : bool
+	private static function ShouldIgnoreJsError(string $agent, string $errorMessage,
+		string $errorSource, int $errorLine, int $errorColumn, string $trace) : bool
 	{
 		if(Str::StartsWith($errorSource, 'moz-extension://'))
 			return true;
@@ -149,23 +151,8 @@ class Log
 		if(Str::Contains($errorMessage, "setting 'theme'"))
 			return true;
 
-		if(Str::Contains($errorMessage, "property 'localdata' of undefined")
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
+		if(Str::Contains($agent, "applebot"))
 			return true;
-		}
-
-		if(Str::Contains($errorMessage, 'w.source._source is undefined')
-			&& Str::Contains($errorSource, '/jqwidgets/'))
-		{
-			return true;
-		}
-
-		// if(Str::Contains($errorMessage, 'jqxGrid: The data is still loading')
-		// 	&& Str::Contains($errorSource, '/jqwidgets/'))
-		// {
-		// 	return true;
-		// }
 
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
@@ -178,6 +165,9 @@ class Log
 		{
 			return true;
 		}
+
+		if(Str::Contains($errorMessage, "Can't find variable: _AutofillCallbackHandler"))
+			return true;
 
 		// Es un virus que pueden tener algunos clientes.
 		if(Str::ContainsI($errorSource, 'massehight'))
@@ -246,6 +236,7 @@ class Log
 		string $requestUri, string $requestMethod, string $fullUrl = '') : string
 	{
 		return "REQUEST\r\n"
+			. '=> DateTime: ' . Date::FormattedArNow() . "\r\n"
 			. '=> User:        ' . Context::LoggedUser() . "\r\n"
 			. "=> Url:         <a href='" . $requestUri . "'>" . $requestUri . "</a>\r\n" . $fullUrl
 			. '=> Agent:       ' . $agent . "\r\n"
@@ -350,7 +341,7 @@ class Log
 		{
 			self::$isLoggingMailError = true;
 			// Manda el error por mail
-			self::PutToMail(self::RemovePassword($text));
+			self::PutToMail(self::RemovePassword($text), MailTypeError::Error);
 
 			// Si lo envió sin errores, procesa fatales pendientes
 			FatalErrorSender::SendFatalErrors(true);
@@ -458,8 +449,7 @@ class Log
 
 		IO::EnsureExists($logPath);
 		IO::EnsureExists($path);
-
-		$file = Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser()) . '.txt';
+		$file = Date::FormattedArNowMs() . '-' . Str::UrlencodeFriendly(Context::LoggedUser()) . '.txt';
 		$file = str_replace(':', '.', $file);
 		$file = str_replace('+', '-', $file);
 		$file = $path . '/' . $file;
@@ -475,26 +465,26 @@ class Log
 
 	public static function PutToMailJs(string $text) : bool
 	{
-		return self::PutToMail($text, 'Javascript ');
+		return self::PutToMail($text, MailTypeError::JavascriptError, 'Javascript ');
 	}
 
 	public static function PutToMailFatal(string $text) : bool
 	{
-		return self::PutToMail($text, 'Fatal ');
+		return self::PutToMail($text, MailTypeError::FatalError, 'Fatal ');
 	}
 
-	public static function PutToMail(string $text, string $prefix = '') : bool
+	public static function PutToMail(string $text, int $type, string $prefix = '') : bool
 	{
 		if (empty(Context::Settings()->Mail()->NotifyAddressErrors))
 			return true;
 		// Manda email...
-		$mail = new Mail();
+		$mail = new MailError();
 		$mail->to = Context::Settings()->Mail()->NotifyAddressErrors;
 		$mail->subject = $prefix . 'Error ' . Context::Settings()->applicationName . ' - ' . Date::FormattedArNow() . '-' . Str::UrlencodeFriendly(Context::LoggedUser());
 		$mail->message = $text;
 		if (Context::Settings()->isTesting)
 			return true;
-		$mail->Send(false, true);
+		$mail->SendByType($type);
 		return true;
 	}
 

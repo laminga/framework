@@ -20,7 +20,7 @@ class TwoLevelObjectCache
 	{
 		$this->cache->Clear($key1, $key2 = null);
 	}
-	
+
 	public function HasRawData($key1, $key2, &$out = null) : bool
 	{
 		try
@@ -77,7 +77,7 @@ class TwoLevelObjectCache
 			return;
 		$this->PutData($key1, $key2, $value);
 	}
-	
+
 	public function PutRawData($key1, $key2, $value) : void
 	{
 		try

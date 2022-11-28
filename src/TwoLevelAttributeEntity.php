@@ -26,9 +26,9 @@ class TwoLevelAttributeEntity
 		return $this->SafeGet($section, 'created');
 	}
 
-	public function SafeGetSection(?string $section, $default = [])
+	public function SafeGetSection(?string $section, array $default = []) : array
 	{
-		if ($section !== null && isset($this->sections[$section]))
+		if ($section != null && isset($this->sections[$section]))
 			return $this->sections[$section];
 		return $default;
 	}
