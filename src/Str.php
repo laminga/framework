@@ -100,6 +100,8 @@ class Str
 	 */
 	public static function ExplodeNoEmpty(string $delimiter, string $str) : array
 	{
+		if($delimiter == "")
+			return [$str];
 		return array_values(array_filter(explode($delimiter, $str)));
 	}
 
