@@ -195,7 +195,7 @@ class System
 		if ($returnCode == 126)
 			throw new ErrorException('Error de permisos: "' . $command . '".');
 
-		if (is_array($out) == false || count($out) == 0)
+		if (count($out) == 0)
 			return '';
 		else if ($returnFirstLineOnly)
 			return $out[0];

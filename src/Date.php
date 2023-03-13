@@ -245,7 +245,7 @@ class Date
 		return date("Y-m-d");
 	}
 
-	public static function CurrentDay()
+	public static function CurrentDay() : int
 	{
 		return (int)(date("j"));
 	}

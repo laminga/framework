@@ -77,7 +77,7 @@ class Mail
 	 */
 	protected function ResolveProvider($recipient) : int
 	{
-		if(Context::Settings()->environment == 'desa' || Context::Settings()->environment == 'dev')
+		if(Context::Settings()->Mail()->Provider == MailSettings::File)
 			return Context::Settings()->Mail()->Provider;
 
 		if (is_array($recipient) == false)

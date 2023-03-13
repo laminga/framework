@@ -154,6 +154,14 @@ class Log
 		if(Str::Contains($agent, "applebot"))
 			return true;
 
+		if($errorLine == 1 && $errorColumn == 1
+			&& (Str::Contains($errorMessage, "Unexpected token '&lt;'")
+				|| Str::Contains($errorMessage, "Unexpected token '<'")))
+		{
+			return true;
+		}
+
+
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
 		{

@@ -28,7 +28,7 @@ class MailDeferredSender
 			$text = IO::ReadAllText($file);
 			$parts = explode("\r\n\r\n", $text, 2);
 			$header = self::GetHeader($parts[0]);
-			$content = "Para: " . $header['OriginalTo'] . "<br>\r\n" . $parts[1];
+			$content = "Para: " . htmlspecialchars($header['OriginalTo']) . "<br>\r\n" . $parts[1];
 
 			if($header['DeliveryMode'] != DeliveryMode::GetName(DeliveryMode::Daily))
 			{

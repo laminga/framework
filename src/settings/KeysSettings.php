@@ -64,7 +64,8 @@ class KeysSettings
 		$day = Date::CurrentDay();
 		$step = 36 / count($keys);
 		$current = (int)($day / $step);
-		if (count($keys) === 3 && $day === 11) $current = 1; 
+		if (count($keys) == 3 && $day == 11)
+			$current = 1;
 		if ($current >= count($keys))
 			$current = count($keys) - 1;
 		return $current;
