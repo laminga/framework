@@ -55,9 +55,6 @@ return [
 	//Lock.php
 	// 'No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.' => '',
 
-	//Image.php
-	'tipo no soportado' => 'Unsupported type',
-
 	//Db.php
 	// 'No se ha obtenido ningún resultado en la consulta cuando se esperaba uno.' => '',
 
@@ -373,14 +370,14 @@ return [
 	'Error al subir el archivo.' => 'Error uploading file.', //framework/src/Params.php
 	'La extensión del archivo debe ser una de las siguientes: {ext}.' => 'File extension must be one of the following: {ext}.', //framework/src/Extensions.php ['{ext}' => self::GetExtensionList($validExtensions)]
 	'No fue posible obtener acceso al elemento solicitado. Intente nuevamente en unos instantes.' => 'The requested item could not be accessed. Try again later.', //framework/src/locking/Lock.php
-	'No se ha obtenido ningún resultado en la consulta cuando se esperaba uno.' => 'SIN TRADUCIR F12', //framework/src/Db.php
-	'No se ha podido obtener una dirección de correo electrónico a través de {provider}. Intente otro método de registro para la identificación.' => 'SIN TRADUCIR F13', //framework/src/oauth/OauthConnector.php
-	'No se ha podido realizar la interacción con {provider} para la identificación.' => 'SIN TRADUCIR F14', //framework/src/oauth/OauthConnector.php ['{provider}' => $this->ProviderName()]
-	'Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.' => 'SIN TRADUCIR F15', //framework/src/MessageBox.php
+	'No se ha obtenido ningún resultado en la consulta cuando se esperaba uno.' => 'No results were returned for the query when one was expected.', //framework/src/Db.php
+	'No se ha podido obtener una dirección de correo electrónico a través de {provider}. Intente otro método de registro para la identificación.' => 'Failed to get an email address through {provider}. Try another registration method for identification.', //framework/src/oauth/OauthConnector.php
+	'No se ha podido realizar la interacción con {provider} para la identificación.' => 'Failed to connect with {provider} for identification.', //framework/src/oauth/OauthConnector.php ['{provider}' => $this->ProviderName()]
+	'Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.' => 'Oops. An error occurred... please try again in a few moments.', //framework/src/MessageBox.php
 	'Para ver el mensaje, por favor use un lector de correo electrónico compatible con HTML' => 'To view the message, please use an HTML compatible email reader', //framework/src/Mail.php
 	'Parámetro "{param}" requerido.' => 'Parameter "{param}" required', //framework/src/Params.php ['{param}' => $key]
-	'Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a {linkMail} describiendo el inconveniente.' => 'SIN TRADUCIR F18', //framework/src/Log.php ['{linkMail}' => $linkMail]
-	'Se produjo un error' => 'SIN TRADUCIR F19', //framework/src/Log.php
-	'Si el archivo tiene una extensión válida, es posible que esté dañado o que se haya cambiado la extensión manualmente. Esto último modifica el nombre, pero no el formato del archivo. Intente abrirlo con la aplicación predeterminada y guardarlo en el formato esperado.' => 'SIN TRADUCIR F20', //framework/src/Extensions.php
-	'tipo no soportado: {ext}' => 'SIN TRADUCIR F21', //framework/src/Image.php ['{ext}' => $ext]
+	'Por favor, intente nuevamente. De persistir el error, póngase en contacto con soporte enviando un mensaje a {linkMail} describiendo el inconveniente.' => 'Please try again. If the error persists, contact support by sending a message to {linkMail} describing the problem.', //framework/src/Log.php ['{linkMail}' => $linkMail]
+	'Se produjo un error' => 'There was an error', //framework/src/Log.php
+	'Si el archivo tiene una extensión válida, es posible que esté dañado o que se haya cambiado la extensión manualmente. Esto último modifica el nombre, pero no el formato del archivo. Intente abrirlo con la aplicación predeterminada y guardarlo en el formato esperado.' => 'If the file has a valid extension, it is possible that the extension has been changed manually. The latter modifies the name, but not the file format. Try to open it with the default application and save it in the expected format.', //framework/src/Extensions.php
+	'Tipo no soportado: {ext}' => 'Unsupported type: {ext}', //framework/src/Image.php ['{ext}' => $ext]
 ];
