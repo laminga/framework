@@ -2,16 +2,18 @@
 
 namespace minga\framework;
 
+use minga\framework\settings\PathSettings;
+
 class AppPaths
 {
+	private function PathName() : PathSettings
+	{
+		return Context::Settings()->PathNames();
+	}
+
 	public function GetRoot() : string
 	{
 		return Context::Settings()->rootPath;
-	}
-
-	public function GetBinPath() : string
-	{
-		return $this->GetRoot() . "/cgi-bin";
 	}
 
 	public function GetStorageRoot() : string
@@ -19,62 +21,74 @@ class AppPaths
 		return Context::Settings()->storagePath;
 	}
 
-	public function GetStorageData() : string
+	public function GetFrameworkPath() : string
 	{
-		return $this->GetStorageRoot() . "/data";
+		return __DIR__;
 	}
 
-	public static function GetBackupLocalPath() : string
+	public function GetBinPath() : string
 	{
-		return Context::Paths()->GetStorageRoot() . '/backup';
+		return $this->GetRoot() . $this->PathName()->BinPath;
+	}
+
+	public function GetStorageData() : string
+	{
+		return $this->GetStorageRoot() . $this->PathName()->StorageData;
+	}
+
+	public function GetBackupLocalPath() : string
+	{
+		return Context::Paths()->GetStorageRoot() . $this->PathName()->BackupLocalPath;
 	}
 
 	public function GetQueuePath() : string
 	{
-		$path = $this->GetStorageRoot() . "/queue";
+		$path = $this->GetStorageRoot() . $this->PathName()->QueuePath;
 		IO::EnsureExists($path);
 		return $path;
 	}
 
 	public function GetCronJobsPath() : string
 	{
-		$path = $this->GetStorageRoot() . "/cron";
+		$path = $this->GetStorageRoot() . $this->PathName()->CronJobsPath;
+
 		IO::EnsureExists($path);
 		return $path;
 	}
 
-	public static function GetHtmlPurifierCachePath() : string
+	public function GetHtmlPurifierCachePath() : string
 	{
-		$path = Context::Paths()->GetStorageCaches() . '/htmlpurifier';
+		$path = Context::Paths()->GetStorageCaches() . $this->PathName()->HtmlPurifierCachePath;
 		IO::EnsureExists($path);
 		return $path;
 	}
 
 	public function GetStorageCaches() : string
 	{
-		return $this->GetStorageRoot() . "/caches";
+		return $this->GetStorageRoot() . $this->PathName()->StorageCaches;
 	}
 
 	public function GetTokensPath() : string
 	{
-		return $this->GetStorageRoot() . "/tokens";
+		return $this->GetStorageRoot() . $this->PathName()->TokensPath;
+
 	}
 
 	public function GetFeedbackPath() : string
 	{
-		$path = $this->GetStorageRoot() . "/feedback";
+		$path = $this->GetStorageRoot() . $this->PathName()->FeedbackPath;
 		IO::EnsureExists($path);
 		return $path;
 	}
 
 	public function GetLogLocalPath() : string
 	{
-		return $this->GetStorageRoot() . '/log';
+		return $this->GetStorageRoot() . $this->PathName()->LogLocalPath;
 	}
 
 	public function GetDumpLocalPath() : string
 	{
-		return $this->GetStorageRoot() . '/dump';
+		return $this->GetStorageRoot() . $this->PathName()->DumpLocalPath;
 	}
 
 	public function GetDumpMonthlyLocalPath() : string
@@ -91,64 +105,59 @@ class AppPaths
 		return $ret;
 	}
 
-	public static function GetCronJobsScriptPath() : string
+	public function GetCronJobsScriptPath() : string
 	{
-		return Context::Paths()->GetRoot() . "/services/cron";
+		return Context::Paths()->GetRoot() . $this->PathName()->CronJobsScriptPath;
 	}
 
-	public static function GetTwigCache() : string
+	public function GetTwigCache() : string
 	{
-		return Context::Paths()->GetRoot() . "/compilation_cache";
+		return Context::Paths()->GetRoot() . $this->PathName()->TwigCache;
 	}
 
 	public function GetTrafficLocalPath() : string
 	{
-		$ret = $this->GetStorageRoot() . '/traffic';
+		$ret = $this->GetStorageRoot() . $this->PathName()->TrafficLocalPath;
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
 	public function GetSearchLogLocalPath() : string
 	{
-		$ret = $this->GetStorageRoot() . '/search';
+		$ret = $this->GetStorageRoot() . $this->PathName()->SearchLogLocalPath;
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
 	public function GetPerformanceLocalPath() : string
 	{
-		$ret = $this->GetStorageRoot() . '/performance';
+		$ret = $this->GetStorageRoot() . $this->PathName()->PerformanceLocalPath;
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
 	public function GetMemoryPeakPath() : string
 	{
-		$ret = $this->GetLogLocalPath() . '/memory';
+		$ret = $this->GetLogLocalPath() . $this->PathName()->MemoryPeakPath;
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
 	public function GetTempPath() : string
 	{
-		$ret = $this->GetStorageRoot() . '/temp';
+		$ret = $this->GetStorageRoot() . $this->PathName()->TempPath;
 		IO::EnsureExists($ret);
 		return $ret;
 	}
 
 	public function GetBucketsPath() : string
 	{
-		return $this->GetStorageRoot() . '/buckets';
-	}
-
-	public function GetFrameworkPath() : string
-	{
-		return __DIR__;
+		return $this->GetStorageRoot() . $this->PathName()->BucketsPath;
 	}
 
 	public function GetTranslationsPath() : string
 	{
-		return $this->GetRoot() . '/translations';
+		return $this->GetRoot() . $this->PathName()->TranslationsPath;
 	}
 
 	public function GetFrameworkTranslationsPath() : string
@@ -163,17 +172,17 @@ class AppPaths
 
 	public function GetFrameworkTestsPath() : string
 	{
-		return $this->GetFrameworkPath() . '/tests';
+		return $this->GetFrameworkPath() . $this->PathName()->FrameworkTestsPath;
 	}
 
 	public function GetFrameworkTestDataPath() : string
 	{
-		return $this->GetFrameworkTestsPath() . '/data';
+		return $this->GetFrameworkTestsPath() . $this->PathName()->FrameworkTestDataPath;
 	}
 
 	public function GetMpdfTempPath() : string
 	{
-		$ret = $this->GetTempPath() . '/mpdftemp';
+		$ret = $this->GetTempPath() . $this->PathName()->MpdfTempPath;
 		IO::EnsureExists($ret);
 		return $ret;
 	}
