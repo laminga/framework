@@ -127,7 +127,7 @@ class Str
 	public static function Uncompact($a, $dict) : ?string
 	{
 		$ret = $a;
-		for($n = count($dict) - 1; $n >= 0; $n--) 
+		for($n = count($dict) - 1; $n >= 0; $n--)
 		{
 			$ret = self::Replace($ret, $dict[$n]['k'], $dict[$n]['v']);
 		}

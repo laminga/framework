@@ -32,7 +32,7 @@ class Image
 			$image = imagecreatefromgif($sourceFile);
 			break;
 		default:
-			throw new ErrorException(Context::Trans('tipo no soportado: {ext}', ['{ext}' => $ext]));
+			throw new ErrorException(Context::Trans('Tipo no soportado: {ext}', ['{ext}' => $ext]));
 		}
 		// Get current dimensions
 		$oldWidth = imagesx($image);
@@ -73,7 +73,7 @@ class Image
 			imagegif($new, $targetFile);
 			break;
 		default:
-			throw new ErrorException(Context::Trans('tipo no soportado: {ext}', ['{ext}' => $ext]));
+			throw new ErrorException(Context::Trans('Tipo no soportado: {ext}', ['{ext}' => $ext]));
 		}
 		imagedestroy($new);
 	}

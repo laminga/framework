@@ -9,6 +9,7 @@ class Settings
 	// Fields para subclases
 	private MailSettings $mail;
 	private LogSettings $log;
+	private PathSettings $pathNames;
 	private PerformanceSettings $performance;
 	private OauthSettings $oauth;
 	private MonitorLimits $limits;
@@ -180,6 +181,14 @@ class Settings
 			$this->log = new LogSettings();
 
 		return $this->log;
+	}
+
+	public function PathNames() : PathSettings
+	{
+		if (isset($this->pathNames) == false)
+			$this->pathNames = new PathSettings();
+
+		return $this->pathNames;
 	}
 
 	public function Notifications() : NotificationSettings
