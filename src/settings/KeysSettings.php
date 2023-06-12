@@ -21,8 +21,9 @@ class KeysSettings
 
 	public string $GoogleAnalyticsKey = '';
 	/** @var array|string|null */
-	// puede ser un array, y el hint no funciona */
+	// puede ser un array, y el hint no funciona
 	public $GoogleMapsKey = '';
+    public $FixedGoogleKey = -1;
 	public string $GoogleGeocodingKey = '';
 	public string $AddThisKey = '';
 	public string $SendGridApiKey = '';
@@ -61,11 +62,15 @@ class KeysSettings
 		$keys = $this->GoogleMapsKey;
 		if (is_array($keys) == false)
 			return 0;
-		$day = Date::CurrentDay();
-		$step = 36 / count($keys);
-		$current = (int)($day / $step);
-		if (count($keys) == 3 && $day == 11)
-			$current = 1;
+        if ($this->FixedGoogleKey != -1)
+            $current = $this->FixedGoogleKey;
+        else {
+            $day = Date::CurrentDay();
+            $step = 36 / count($keys);
+            $current = (int) ($day / $step);
+            if (count($keys) == 3 && $day == 11)
+                $current = 1;
+        }
 		if ($current >= count($keys))
 			$current = count($keys) - 1;
 		return $current;
