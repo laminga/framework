@@ -14,6 +14,7 @@ class Settings
 	private OauthSettings $oauth;
 	private MonitorLimits $limits;
 	private DbSettings $db;
+	private UploadSettings $upload;
 	private QueueSettings $queue;
 	private DebugSettings $debug;
 	private CacheSettings $cache;
@@ -189,6 +190,14 @@ class Settings
 			$this->pathNames = new PathSettings();
 
 		return $this->pathNames;
+	}
+
+	public function Upload() : UploadSettings
+	{
+		if (isset($this->upload) == false)
+			$this->upload = new UploadSettings();
+
+		return $this->upload;
 	}
 
 	public function Notifications() : NotificationSettings
