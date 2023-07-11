@@ -33,7 +33,7 @@ class Traffic
 
 		$chars = str_split($addr);
 
-		$set = self::NumberToFile(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1);
+		$set = self::NumberToFile(intval(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1));
 
 		$device = 'n/d'; // comentado por performance self::GetDevice();
 		$lock = new TrafficLock($set);
