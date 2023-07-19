@@ -10,7 +10,7 @@ class ConditionalDebug
 	{
 		$this->user = $user;
         if (!$this->user)
-            throw new SilentException("Debe indicarse un usuario para realizar la depuración condicional");
+            Log::HandleSilentException(new \Exception("Debe indicarse un usuario para realizar la depuración condicional"));
 	}
 
 	private function ConditionsMet() : bool
@@ -29,13 +29,15 @@ class ConditionalDebug
     {
         if ($this->ConditionsMet())
         {
-            echo 'done';
-			set_exception_handler([$this, 'handle']);
+            // no funciona;
+			set_exception_handler(function($exception){
+                $this->HandleException($exception);
+            });
 
             // set the error handler
             set_error_handler(function ($code, $message, $file, $line) {
-                $this->handleError($code, $message, $file, $line);
-            }, -1);
+                return $this->handleError($code, $message, $file, $line);
+            } );
         }
     }
 
@@ -44,6 +46,7 @@ class ConditionalDebug
         if ($this->ConditionsMet()) {
             $text = Log::InternalExceptionToText($ex);
             echo ($text);
+            Log::HandleSilentException(new \Exception($text));
             exit;
         } else
             throw $ex;
@@ -57,12 +60,4 @@ class ConditionalDebug
         exit;
 
     }
-    public function handle(Exception $ex)
-	{
-        echo 'done22';
-        // code to handle the exception
-		$text = Log::InternalExceptionToText($ex);
-        echo($text);
-		exit;
-	}
 }

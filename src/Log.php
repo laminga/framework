@@ -306,7 +306,7 @@ class Log
 			$exception->getLine(), [], $exception->getTraceAsString());
 	}
 
-	private static function InternalErrorToText($errorNumber, $errorMessage, $errorFile, $errorLine,
+	public static function InternalErrorToText($errorNumber, $errorMessage, $errorFile, $errorLine,
 		$context = [], $trace = null,
 		$innerErrorNumber = null, $innerErrorMessage = null,
 		$innerErrorFile = null, $innerErrorLine = null,
