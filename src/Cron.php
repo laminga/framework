@@ -32,10 +32,10 @@ class Cron
 		if($job['enabled'] == false)
 			return false;
 
-		if(isset($job['last_run']))
-			$lastRun = Date::FormattedDateToDateTime($job['last_run']);
-		else
-			$lastRun = Date::FormattedDateToDateTime($job['first_run']);
+        if (isset($job['last_run']))
+            $lastRun = Date::FormattedDateToDateTime($job['last_run']);
+        else
+            return true;
 
 		$timeNextRun = $lastRun->add(self::GetInterval($job));
 		return $timeNextRun <= new \DateTime();
