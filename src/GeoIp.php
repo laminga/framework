@@ -12,26 +12,26 @@ class GeoIp
 	private static Reader $geoDbCity;
 	private static Reader $geoDbCountry;
 
-    public static function GetCurrentIp(): string
-    {
-        $addr = Params::SafeServer('REMOTE_ADDR');
-        if ($addr === '127.0.0.1' || self::IpIsPrivate($addr)) {
-            // Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
-            $conn = new WebConnection();
-            $conn->Initialize();
-            $response = $conn->Get('https://api.ipify.org?format=json');
-            $myIp = json_decode($response->GetString(), true);
-            $conn->Finalize();
-            $addr = $myIp['ip'];
-        }
-        return $addr;
-    }
+	public static function GetCurrentIp() : string
+	{
+		$addr = Params::SafeServer('REMOTE_ADDR');
+		if ($addr === '127.0.0.1' || self::IpIsPrivate($addr)) {
+			// Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
+			$conn = new WebConnection();
+			$conn->Initialize();
+			$response = $conn->Get('https://api.ipify.org?format=json');
+			$myIp = json_decode($response->GetString(), true);
+			$conn->Finalize();
+			$addr = $myIp['ip'];
+		}
+		return $addr;
+	}
 
 	public static function GetCurrentLatLong() : ?array
 	{
 		try
 		{
-            $addr = self::GetCurrentIp();
+			$addr = self::GetCurrentIp();
 
 			$location = self::GetCityLocation($addr);
 
@@ -137,8 +137,6 @@ class GeoIp
 		try
 		{
 			$db = self::GetGeoDbCity();
-			if ($db == false)
-				return null;
 			$record = $db->city($ip);
 
 			return ['lat' => $record->location->latitude, 'lon' => $record->location->longitude];

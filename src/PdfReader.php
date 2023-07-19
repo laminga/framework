@@ -74,7 +74,10 @@ class PdfReader
 	public static function GetMetadataInfo(string $file) : array
 	{
 		$ret = ['pages' => 0, 'encrypted' => false];
-		$lines = self::GetInfo($file);
+		$isDamaged = false;
+		$lines = self::GetInfo($file, $isDamaged);
+		if($isDamaged)
+			$ret['damaged'] = true;
 		foreach($lines as $line)
 		{
 			$data = explode(':', $line);
@@ -93,7 +96,7 @@ class PdfReader
 		return $ret;
 	}
 
-	public static function GetInfo(string $file) : array
+	public static function GetInfo(string $file, bool &$isDamaged = false) : array
 	{
 		try
 		{
@@ -104,8 +107,8 @@ class PdfReader
 		}
 		catch(\Exception $e)
 		{
+			$isDamaged = true;
 			Log::HandleSilentException($e);
-			// throw new ErrorException('No se puede leer el archivo pdf. Archivo dañado');
 		}
 		return [];
 	}

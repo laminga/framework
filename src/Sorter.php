@@ -167,6 +167,23 @@ class Sorter
 		return self::ByFullName($a, $b, -1);
 	}
 
+	private static function GetNumberSortable($a)
+    {
+        if ($a === null)
+            return $a;
+
+        $a = str_replace(".", ". ", $a);
+        $palabras = explode(" ", $a);
+
+        foreach ($palabras as &$palabra) {
+            if (is_numeric($palabra) && intval($palabra) < 100000) {
+                $palabra = str_pad($palabra, 5, "0", STR_PAD_LEFT);
+            }
+        }
+        $resultado = implode(" ", $palabras);
+        return $resultado;
+    }
+
 	public static function ByFullName(array $a, array $b, $mult = 1) : int
 	{
 		if(isset($a['fullName']))
@@ -182,6 +199,9 @@ class Sorter
 			$bName = $b['fullname'];
 		else
 			throw new ErrorException('Fullname no está seteado en el segundo parámetro');
+
+		$aName = self::GetNumberSortable($aName);
+		$bName = self::GetNumberSortable($bName);
 
 		$aDescription = Arr::SafeGet($a, 'description');
 		$bDescription = Arr::SafeGet($b, 'description');
