@@ -12,12 +12,20 @@ class Cron
 			$job = IO::ReadJson($file);
 			if(self::ShouldRun($job))
 			{
-				$this->CallScript($job);
-				$job['last_run'] = Date::FormattedDate(time());
-				IO::WriteJson($file, $job, true);
+				$result = $this->CallScript($job);
+				self::SaveStatus($file, $job, $result);
 			}
 		}
 	}
+
+    public static function SaveStatus(string $file, array $job, string $result): void
+    {
+        if (trim($result) == '')
+            $result = 'OK';
+        $job['last_run'] = Date::FormattedDate(time());
+		$job['result'] = $result;
+		IO::WriteJson($file, $job, true);
+    }
 
 	private static function ShouldRun(array $job) : bool
 	{
@@ -45,13 +53,18 @@ class Cron
 		return false;
 	}
 
-	private function CallScript(array $job) : void
-	{
-		$ret = System::RunCommandRaw(Context::Settings()->Servers()->PhpCli
-			. ' ' . Context::Paths()->GetCronJobsScriptPath() . '/' . $job['script']);
+	private function CallScript(array $job): string
+    {
+        $cli = Context::Settings()->Servers()->PhpCli;
+        $linesOut = [];
+        $ret = System::Execute(
+            $cli,
+            [Context::Paths()->GetCronJobsScriptPath() . '/' . $job['script']], $linesOut);
 		if($ret['return'] != 0)
-			Log::HandleSilentException(new \Exception('Falló CallScript. Job: ' . json_encode($job) . '. Return: ' . json_encode($ret)));
-	}
+			Log::HandleSilentException(new \Exception('Falló CallScript. Job: ' . json_encode($job) . '. Return: ' . json_encode($linesOut)));
+        $result = implode("\n", $linesOut);
+		return $result;
+    }
 
 	private static function GetInterval(array $job) : \DateInterval
 	{

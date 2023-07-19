@@ -8,7 +8,7 @@ class PathSettings
 	public string $BinPath = '/cgi-bin';
 	public string $BucketsPath = '/buckets';
 	public string $CronJobsPath = '/cron';
-	public string $CronJobsScriptPath = '/services/cron';
+	public string $CronJobsScriptPath = '/src/automated/cron';
 	public string $DumpLocalPath = '/dump';
 	public string $FeedbackPath = '/feedback';
 	public string $FrameworkTestDataPath = '/data';

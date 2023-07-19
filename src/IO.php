@@ -251,6 +251,16 @@ class IO
 		return false;
 	}
 
+
+	public static function EscapeLongFilename(string $file)
+	{
+        if (Str::Contains($file, " ") &&
+            (Str::StartsWith($file, "'") == false && Str::StartsWith($file, '"') == false))
+            return '"' . $file . '"';
+        else
+            return $file;
+    }
+
 	public static function ReadIniFile(string $file)
 	{
 		return parse_ini_file($file);

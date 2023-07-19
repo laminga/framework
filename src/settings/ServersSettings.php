@@ -19,6 +19,8 @@ class ServersSettings
 	public ?string $Python27 = null;
 	public ?string $Python3 = null;
 	public string $PhpCli = 'php';
+    public string $MySqlDump = 'mysqldump';
+    public string $Gzip = 'gzip';
 
 	public ?int $LoopLocalPort = null;
 	public string $LoopLocalHost = 'localhost';
