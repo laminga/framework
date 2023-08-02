@@ -905,9 +905,7 @@ class IO
 
 		$n = 1;
 		while(file_exists($ret = $path . '/' . $file . ' (' . $n . ').' . $ext))
-		{
 			$n++;
-		}
 		return $ret;
 	}
 

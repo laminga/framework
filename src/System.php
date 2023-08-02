@@ -100,18 +100,18 @@ class System
 
 	public static function IsVerbose() : bool
 	{
-        if (isset($argv))
-        {
+		if (isset($argv))
+		{
 			for ($i = 0; $i < $argc; $i++)
-            {
+			{
 				if ($argv[$i] == '--verbose' ||
 					$argv[$i] == 'verbose')
 				{
-						return true;
+					return true;
 				}
-            }
-        }
-        return false;
+			}
+		}
+		return false;
 	}
 
 
@@ -195,7 +195,7 @@ class System
 			$str .= escapeshellarg($arg) . ' ';
 
 		$val = 0;
-        $command = IO::EscapeLongFilename($command);
+		$command = IO::EscapeLongFilename($command);
 
 		exec($command . ' ' . trim($str) . $stdErr, $lines, $val);
 		return $val;
