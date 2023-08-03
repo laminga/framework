@@ -251,6 +251,17 @@ class IO
 		return false;
 	}
 
+	public static function EscapeLongFilename(string $file)
+	{
+		if (Str::Contains($file, " ")
+			&& Str::StartsWith($file, "'") == false
+			&& Str::StartsWith($file, '"') == false)
+		{
+			return '"' . $file . '"';
+		}
+		return $file;
+	}
+
 	public static function ReadIniFile(string $file)
 	{
 		return parse_ini_file($file);
@@ -895,9 +906,7 @@ class IO
 
 		$n = 1;
 		while(file_exists($ret = $path . '/' . $file . ' (' . $n . ').' . $ext))
-		{
 			$n++;
-		}
 		return $ret;
 	}
 

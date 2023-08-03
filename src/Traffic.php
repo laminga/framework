@@ -7,9 +7,9 @@ use minga\framework\locking\TrafficLock;
 class Traffic
 {
 	public const C_FACTOR = 2;
-    public const C_PARALLEL_SETS = 6;
+	public const C_PARALLEL_SETS = 6;
 
-    public static function RegisterIP(string $ip, string $userAgent = '', bool $isMegaUser = false) : void
+	public static function RegisterIP(string $ip, string $userAgent = '', bool $isMegaUser = false) : void
 	{
 		Profiling::BeginTimer();
 		try
@@ -34,8 +34,8 @@ class Traffic
 
 		$chars = str_split($addr);
 
-        $i = rand(1, self::C_PARALLEL_SETS);
-        $set = self::NumberToFile(intval(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1));
+		$i = rand(1, self::C_PARALLEL_SETS);
+		$set = self::NumberToFile(intval(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1));
 
 		$device = 'n/d'; // comentado por performance self::GetDevice();
 		$lock = new TrafficLock(self::GetPreffix($i) . $set);
@@ -67,7 +67,7 @@ class Traffic
 			$path = Context::Paths()->GetTrafficLocalPath();
 
 			for($i = 1; $i <= self::C_PARALLEL_SETS; $i++)
-            {
+			{
 				for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
 				{
 					$set = self::NumberToFile($n);
@@ -80,7 +80,7 @@ class Traffic
 						$toZip[] = $current;
 					}
 				}
-            }
+			}
 
 
 			$file = $path . '/yesterday.zip';
