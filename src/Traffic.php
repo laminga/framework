@@ -7,8 +7,9 @@ use minga\framework\locking\TrafficLock;
 class Traffic
 {
 	public const C_FACTOR = 2;
+    public const C_PARALLEL_SETS = 6;
 
-	public static function RegisterIP(string $ip, string $userAgent = '', bool $isMegaUser = false) : void
+    public static function RegisterIP(string $ip, string $userAgent = '', bool $isMegaUser = false) : void
 	{
 		Profiling::BeginTimer();
 		try
@@ -33,13 +34,14 @@ class Traffic
 
 		$chars = str_split($addr);
 
-		$set = self::NumberToFile(intval(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1));
+        $i = rand(1, self::C_PARALLEL_SETS);
+        $set = self::NumberToFile(intval(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1));
 
 		$device = 'n/d'; // comentado por performance self::GetDevice();
-		$lock = new TrafficLock($set);
+		$lock = new TrafficLock(self::GetPreffix($i) . $set);
 
 		$lock->LockWrite();
-		$hits = self::SaveIpHit($set, $ip, $device);
+		$hits = self::SaveIpHit($i, $set, $ip, $device);
 		$lock->Release();
 
 		if($isMegaUser)
@@ -63,18 +65,23 @@ class Traffic
 		{
 			$toZip = [];
 			$path = Context::Paths()->GetTrafficLocalPath();
-			for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
-			{
-				$set = self::NumberToFile($n);
-				$current = $path . '/' . $set . '.txt';
-				if (file_exists($current))
+
+			for($i = 1; $i <= self::C_PARALLEL_SETS; $i++)
+            {
+				for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
 				{
-					$lock = new TrafficLock($set);
-					$lock->LockWrite();
-					$locks[] = $lock;
-					$toZip[] = $current;
+					$set = self::NumberToFile($n);
+					$current = $path . '/' . self::GetPreffix($i) .  $set . '.txt';
+					if (file_exists($current))
+					{
+						$lock = new TrafficLock(self::GetPreffix($i) . $set);
+						$lock->LockWrite();
+						$locks[] = $lock;
+						$toZip[] = $current;
+					}
 				}
-			}
+            }
+
 
 			$file = $path . '/yesterday.zip';
 			IO::Delete($file);
@@ -89,9 +96,9 @@ class Traffic
 		self::ClearDefensiveMode();
 	}
 
-	private static function SaveIpHit(string $set, string $ip, string $device) : int
+	private static function SaveIpHit(string $preffix, string $set, string $ip, string $device) : int
 	{
-		$file = self::ResolveFilename($set);
+		$file = self::ResolveFilename($preffix, $set);
 		$arr = self::ReadIfExists($file);
 		$hits = self::IncrementKey($arr, $ip, $device);
 		// graba
@@ -230,15 +237,20 @@ class Traffic
 		return $ret;
 	}
 
-	public static function NumberToFile(int $number) : string
+    private static function GetPreffix(int $number): string
+    {
+        return 'set' . $number . '-';
+    }
+
+    private static function NumberToFile(int $number) : string
 	{
 		return 'hits-' . str_pad(strtoupper(dechex($number)), 2, '0', STR_PAD_LEFT);
 	}
 
-	public static function ResolveFilename(string $set) : string
+	private static function ResolveFilename(string $preffix, string $set) : string
 	{
 		$path = self::ResolveFolder();
-		return $path . '/' . $set . '.txt';
+		return $path . '/' . self::GetPreffix($preffix) . $set . '.txt';
 	}
 
 	public static function GetTraffic($getYesterday, &$totalIps, &$totalHits) : array
@@ -259,47 +271,58 @@ class Traffic
 		$totalIps = [];
 		$totalHits = 0;
 
-		$ret = [];
-		for($n = 1; $n <= 256 / self::C_FACTOR; $n++)
-		{
-			$set = self::NumberToFile($n);
-			$current = $folder . '/' . $set . '.txt';
-			if (file_exists($current))
+        $results = [];
+		for($i = 1; $i <= self::C_PARALLEL_SETS; $i++)
+        {
+			for($n = 1; $n <= 256 / self::C_FACTOR; $n++)
 			{
-				$lock = new TrafficLock($set);
-				$lock->LockRead();
-				$data = IO::ReadIniFile($current);
-				$lock->Release();
-
-				foreach($data as $key => $value)
+				$set = self::NumberToFile($n);
+				$current = $folder . '/' . self::GetPreffix($i) . $set . '.txt';
+				if (file_exists($current))
 				{
-					$url = '';
-					self::ParseHit($value, $hits, $agent, $url, $device);
-					if ($hits >= $threshold)
+					$lock = new TrafficLock(self::GetPreffix($i) . $set);
+					$lock->LockRead();
+					$data = IO::ReadIniFile($current);
+					$lock->Release();
+
+					foreach($data as $key => $value)
 					{
-						$ret[] = [
-							'ip' => $key,
-							'hits' => $hits,
-							'country' => GeoIp::GetCountryName($key),
-							'agent' => $agent,
-							'isTotal' => false,
-							'url' => $url,
-							'device' => $device,
-						];
+						$url = '';
+						self::ParseHit($value, $hits, $agent, $url, $device);
+						if (array_key_exists($key, $results))
+                        {
+                            $results[$key]['hits'] += $hits;
+						}
+						else
+						{
+                            $results[$key] = [
+								'ip' => $key,
+								'hits' => $hits,
+								'country' => GeoIp::GetCountryName($key),
+								'agent' => $agent,
+								'isTotal' => false,
+								'url' => $url,
+								'device' => $device,
+							];
+						}
+						$totalHits += $hits;
+						$devicePlural = self::GetDevicePluralSpanish($device);
+						if(isset($totalIps[$devicePlural]) == false)
+							$totalIps[$devicePlural] = 1;
+						else
+							$totalIps[$devicePlural] += 1;
 					}
-					$totalHits += $hits;
-					$devicePlural = self::GetDevicePluralSpanish($device);
-					if(isset($totalIps[$devicePlural]) == false)
-						$totalIps[$devicePlural] = 1;
-					else
-						$totalIps[$devicePlural] += 1;
 				}
 			}
-		}
-
+        }
 		if ($dir !== null)
 			$dir->Release();
-
+		// filtra
+        $ret = [];
+		foreach($results as $key => $value)
+            if ($value['hits'] >= $threshold)
+                $ret[] = $value;
+		// ordena
 		Arr::SortByKeyDesc($ret, 'hits');
 
 		$ret[] = Aggregate::BuildTotalsRow($ret, 'ip', ['hits']);
