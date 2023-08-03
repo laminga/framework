@@ -168,21 +168,21 @@ class Sorter
 	}
 
 	private static function GetNumberSortable($a)
-    {
-        if ($a === null)
-            return $a;
+	{
+		if ($a === null)
+			return $a;
 
-        $a = str_replace(".", ". ", $a);
-        $palabras = explode(" ", $a);
+		$a = str_replace(".", ". ", $a);
+		$palabras = explode(" ", $a);
 
-        foreach ($palabras as &$palabra) {
-            if (is_numeric($palabra) && intval($palabra) < 100000) {
-                $palabra = str_pad($palabra, 5, "0", STR_PAD_LEFT);
-            }
-        }
-        $resultado = implode(" ", $palabras);
-        return $resultado;
-    }
+		foreach ($palabras as &$palabra) {
+			if (is_numeric($palabra) && (int)$palabra < 100000) {
+				$palabra = str_pad($palabra, 5, "0", STR_PAD_LEFT);
+			}
+		}
+		$resultado = implode(" ", $palabras);
+		return $resultado;
+	}
 
 	public static function ByFullName(array $a, array $b, $mult = 1) : int
 	{

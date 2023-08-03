@@ -18,7 +18,7 @@ class Cron
 		}
 	}
 
-	public static function SaveStatus(string $file, array $job, string $result): void
+	public static function SaveStatus(string $file, array $job, string $result) : void
 	{
 		if (trim($result) == '')
 			$result = 'OK';

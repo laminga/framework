@@ -544,5 +544,4 @@ class Log
 			$flags = FILE_APPEND;
 		file_put_contents($file, $text, $flags);
 	}
-
 }

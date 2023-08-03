@@ -104,8 +104,8 @@ class System
 		{
 			for ($i = 0; $i < $argc; $i++)
 			{
-				if ($argv[$i] == '--verbose' ||
-					$argv[$i] == 'verbose')
+				if ($argv[$i] == '--verbose'
+					|| $argv[$i] == 'verbose')
 				{
 					return true;
 				}
@@ -113,7 +113,6 @@ class System
 		}
 		return false;
 	}
-
 
 	public static function IsTestingInWindows() : bool
 	{
