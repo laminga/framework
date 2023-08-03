@@ -100,20 +100,19 @@ class System
 
 	public static function IsVerbose() : bool
 	{
-        if (isset($argv))
-        {
+		if (isset($argv))
+		{
 			for ($i = 0; $i < $argc; $i++)
-            {
-				if ($argv[$i] == '--verbose' ||
-					$argv[$i] == 'verbose')
+			{
+				if ($argv[$i] == '--verbose'
+					|| $argv[$i] == 'verbose')
 				{
-						return true;
+					return true;
 				}
-            }
-        }
-        return false;
+			}
+		}
+		return false;
 	}
-
 
 	public static function IsTestingInWindows() : bool
 	{
@@ -184,7 +183,7 @@ class System
 	/**
 	 * Execute usado por mapas.
 	 */
-	public static function Execute($command, array $args = [], array &$lines = [], $redirectStdErr = true)
+	public static function Execute($command, array $args = [], array &$lines = [], $redirectStdErr = true) : int
 	{
 		$stdErr = '';
 		if($redirectStdErr)
@@ -195,7 +194,7 @@ class System
 			$str .= escapeshellarg($arg) . ' ';
 
 		$val = 0;
-        $command = IO::EscapeLongFilename($command);
+		$command = IO::EscapeLongFilename($command);
 
 		exec($command . ' ' . trim($str) . $stdErr, $lines, $val);
 		return $val;
