@@ -60,7 +60,7 @@ class Cron
         $ret = System::Execute(
             $cli,
             [Context::Paths()->GetCronJobsScriptPath() . '/' . $job['script']], $linesOut);
-		if($ret['return'] != 0)
+		if($ret != 0)
 			Log::HandleSilentException(new \Exception('Falló CallScript. Job: ' . json_encode($job) . '. Return: ' . json_encode($linesOut)));
         $result = implode("\n", $linesOut);
 		return $result;
