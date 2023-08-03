@@ -534,4 +534,15 @@ class Log
 				return (string)$errorNumber;
 		}
 	}
+
+	public static function ToFile(string $file, string $text, bool $append = true) : void
+	{
+		if($file == '')
+			return;
+		$flags = 0;
+		if($append)
+			$flags = FILE_APPEND;
+		file_put_contents($file, $text, $flags);
+	}
+
 }

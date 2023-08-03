@@ -12,8 +12,8 @@ class Cron
 			$job = IO::ReadJson($file);
 			if(self::ShouldRun($job))
 			{
-				$result = $this->CallScript($job);
-				self::SaveStatus($file, $job, $result);
+				$res = self::CallScript($job);
+				self::SaveStatus($file, $job, $res);
 			}
 		}
 	}
@@ -53,17 +53,31 @@ class Cron
 		return false;
 	}
 
-	private function CallScript(array $job): string
+	public static function CallScript(array $job) : string
 	{
-		$cli = Context::Settings()->Servers()->PhpCli;
-		$linesOut = [];
-		$ret = System::Execute(
-			$cli,
-			[Context::Paths()->GetCronJobsScriptPath() . '/' . $job['script']], $linesOut);
-		if($ret['return'] != 0)
-			Log::HandleSilentException(new \Exception('Falló CallScript. Job: ' . json_encode($job) . '. Return: ' . json_encode($linesOut)));
-		$result = implode("\n", $linesOut);
-		return $result;
+
+		$log = IO::GetTempFilename() . '.queue.log';
+		$out = [];
+		$ret = System::Execute(Context::Settings()->Servers()->PhpCli, [Context::Paths()->GetCronJobsScriptPath() . '/' . $job['script'], 'log=' . $log], $out);
+
+		$lines = implode("\n", $out);
+
+		if($ret != 0)
+			self::LogError($log, $job, $ret, $lines);
+		else
+			IO::Delete($log);
+
+		return $lines;
+	}
+
+	private static function LogError(string $log, array $job, int $ret, string $lines) : void
+	{
+		$lastLine = self::TrySaveLastError($log);
+		Log::HandleSilentException(new \Exception('Falló CallScript. Job: ' . json_encode($job)
+			. "\nReturn: " . $ret
+			. "\nLog file: " . $log
+			. "\nLast line log: " . $lastLine
+			. "\nResult lines: " . $lines));
 	}
 
 	private static function GetInterval(array $job) : \DateInterval
@@ -78,5 +92,26 @@ class Cron
 			$unit = 'M';
 
 		return new \DateInterval('P' . $time . $job['freq'] . $unit);
+	}
+
+	private static function TrySaveLastError(string $log) : string
+	{
+		if(file_exists($log) == false)
+			return '';
+
+		$lines = IO::ReadAllLines($log);
+		if(count($lines) == 0)
+			return '';
+
+		$lastLine = str_replace("\\", "/", trim($lines[count($lines) - 1]));
+		if(Str::EndsWith($lastLine, 'DONE')
+			|| Str::Contains($lastLine, '/running/') == false
+			|| file_exists($lastLine) == false)
+		{
+			return '';
+		}
+
+		IO::Move($lastLine, str_replace('/running/', '/queued/', $lastLine));
+		return $lastLine;
 	}
 }

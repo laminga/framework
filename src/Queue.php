@@ -7,6 +7,7 @@ use minga\framework\locking\QueueProcessLock;
 
 abstract class Queue
 {
+	protected string $log = '';
 	protected string $path = '';
 	protected bool $discardSuccessfullLog;
 	protected int $maxToProcess;
@@ -14,7 +15,7 @@ abstract class Queue
 
 	protected string $processorClass = '';
 
-	abstract public function __construct();
+	abstract public function __construct(string $log = '');
 
 	public static function Enabled() : bool
 	{
@@ -23,10 +24,10 @@ abstract class Queue
 		return Context::Settings()->Queue()->Enabled;
 	}
 
-	protected function Initialize(string $path, int $maxToProcess = 50, bool $discardSuccessfullLog = false) : void
+	protected function Initialize(string $path, string $log = '', int $maxToProcess = 50, bool $discardSuccessfullLog = false) : void
 	{
 		$this->maxToProcess = $maxToProcess;
-
+		$this->log = $log;
 		$this->path = $path;
 		$this->discardSuccessfullLog = $discardSuccessfullLog;
 	}
@@ -131,6 +132,7 @@ abstract class Queue
 		}
 		try
 		{
+			Log::ToFile($this->log, $file);
 			$this->ProcessItem($data['function'], $data['params']);
 			$this->MoveToSuccess($file);
 			return true;
@@ -140,6 +142,10 @@ abstract class Queue
 			$finalPlace = $this->MoveToFailed($file);
 			$this->SaveException($finalPlace . '.error.txt', $ex);
 			return false;
+		}
+		finally
+		{
+			Log::ToFile($this->log, ": DONE\n");
 		}
 	}
 

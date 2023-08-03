@@ -184,7 +184,7 @@ class System
 	/**
 	 * Execute usado por mapas.
 	 */
-	public static function Execute($command, array $args = [], array &$lines = [], $redirectStdErr = true)
+	public static function Execute($command, array $args = [], array &$lines = [], $redirectStdErr = true) : int
 	{
 		$stdErr = '';
 		if($redirectStdErr)
