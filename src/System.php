@@ -98,17 +98,17 @@ class System
 		return PHP_SAPI == 'cli';
 	}
 
-	public static function IsVerbose() : bool
+	public static function IsVerbose(?array $argv) : bool
 	{
-		if (isset($argv))
+		if ($argv == null)
+			return false;
+
+		for ($i = 0; $i < count($argv); $i++)
 		{
-			for ($i = 0; $i < $argc; $i++)
+			if ($argv[$i] == '--verbose'
+				|| $argv[$i] == 'verbose')
 			{
-				if ($argv[$i] == '--verbose'
-					|| $argv[$i] == 'verbose')
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 		return false;
