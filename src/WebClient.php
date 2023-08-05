@@ -327,7 +327,7 @@ class WebClient
 			{
 				if ($line != '' && Str::Contains($line, ': '))
 				{
-					 [$key, $value] = explode(': ', $line);
+					[$key, $value] = explode(': ', $line);
 					$headers[$key] = $value;
 				}
 			}

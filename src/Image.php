@@ -21,18 +21,18 @@ class Image
 
 		switch(Str::ToLower($ext))
 		{
-		case 'jpeg':
-		case 'jpg':
-			$image = imagecreatefromjpeg($sourceFile);
-			break;
-		case 'png':
-			$image = imagecreatefrompng($sourceFile);
-			break;
-		case 'gif':
-			$image = imagecreatefromgif($sourceFile);
-			break;
-		default:
-			throw new ErrorException(Context::Trans('Tipo no soportado: {ext}', ['{ext}' => $ext]));
+			case 'jpeg':
+			case 'jpg':
+				$image = imagecreatefromjpeg($sourceFile);
+				break;
+			case 'png':
+				$image = imagecreatefrompng($sourceFile);
+				break;
+			case 'gif':
+				$image = imagecreatefromgif($sourceFile);
+				break;
+			default:
+				throw new ErrorException(Context::Trans('Tipo no soportado: {ext}', ['{ext}' => $ext]));
 		}
 		// Get current dimensions
 		$oldWidth = imagesx($image);
@@ -62,18 +62,18 @@ class Image
 
 		switch(Str::ToLower($ext))
 		{
-		case 'jpeg':
-		case 'jpg':
-			imagejpeg($new, $targetFile);
-			break;
-		case 'png':
-			imagepng($new, $targetFile, 9);
-			break;
-		case 'gif':
-			imagegif($new, $targetFile);
-			break;
-		default:
-			throw new ErrorException(Context::Trans('Tipo no soportado: {ext}', ['{ext}' => $ext]));
+			case 'jpeg':
+			case 'jpg':
+				imagejpeg($new, $targetFile);
+				break;
+			case 'png':
+				imagepng($new, $targetFile, 9);
+				break;
+			case 'gif':
+				imagegif($new, $targetFile);
+				break;
+			default:
+				throw new ErrorException(Context::Trans('Tipo no soportado: {ext}', ['{ext}' => $ext]));
 		}
 		imagedestroy($new);
 	}

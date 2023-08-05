@@ -268,7 +268,7 @@ class WebConnection
 		}
 
 		if ($method == self::Post)
-				curl_setopt($this->ch, CURLOPT_POST, 1);
+			curl_setopt($this->ch, CURLOPT_POST, 1);
 		else if ($method == self::Delete || $method == self::Patch || $method == self::Put)
 			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
 
