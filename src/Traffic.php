@@ -96,9 +96,9 @@ class Traffic
 		self::ClearDefensiveMode();
 	}
 
-	private static function SaveIpHit(string $preffix, string $set, string $ip, string $device) : int
+	private static function SaveIpHit(int $numPreffix, string $set, string $ip, string $device) : int
 	{
-		$file = self::ResolveFilename($preffix, $set);
+		$file = self::ResolveFilename($numPreffix, $set);
 		$arr = self::ReadIfExists($file);
 		$hits = self::IncrementKey($arr, $ip, $device);
 		// graba
@@ -247,10 +247,10 @@ class Traffic
 		return 'hits-' . str_pad(strtoupper(dechex($number)), 2, '0', STR_PAD_LEFT);
 	}
 
-	private static function ResolveFilename(string $preffix, string $set) : string
+	private static function ResolveFilename(int $numPreffix, string $set) : string
 	{
 		$path = self::ResolveFolder();
-		return $path . '/' . self::GetPreffix($preffix) . $set . '.txt';
+		return $path . '/' . self::GetPreffix($numPreffix) . $set . '.txt';
 	}
 
 	public static function GetTraffic($getYesterday, &$totalIps, &$totalHits) : array

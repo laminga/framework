@@ -37,7 +37,7 @@ class ConditionalDebug
 			});
 
 			// set the error handler
-			set_error_handler(function($code, $message, $file, $line) {
+			set_error_handler(function(int $code, string $message, string $file, int $line, array $errcontext) : bool {
 				return $this->handleError($code, $message, $file, $line);
 			});
 		}
@@ -54,13 +54,12 @@ class ConditionalDebug
 			throw $ex;
 	}
 
-	public function handleError($code, $message, $file, $line) : void
+	public function handleError($code, $message, $file, $line) : bool
 	{
-		echo 'done32' . $code . $message;
+		echo 'Failed: ' . $code . $message;
 		// code to handle the exception
 		$text = Log::InternalErrorToText($code, $message, $file, $line);
 		echo $text;
 		exit;
-
 	}
 }
