@@ -35,7 +35,7 @@ class Traffic
 		$chars = str_split($addr);
 
 		$i = rand(1, self::C_PARALLEL_SETS);
-		$set = self::NumberToFile(intval(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1));
+		$set = self::NumberToFile((int)(ord($chars[count($chars) - 1]) / self::C_FACTOR + 1));
 
 		$device = 'n/d'; // comentado por performance self::GetDevice();
 		$lock = new TrafficLock(self::GetPreffix($i) . $set);
@@ -71,7 +71,7 @@ class Traffic
 				for($n = 1; $n <= 256 / Traffic::C_FACTOR; $n++)
 				{
 					$set = self::NumberToFile($n);
-					$current = $path . '/' . self::GetPreffix($i) .  $set . '.txt';
+					$current = $path . '/' . self::GetPreffix($i) . $set . '.txt';
 					if (file_exists($current))
 					{
 						$lock = new TrafficLock(self::GetPreffix($i) . $set);
@@ -237,12 +237,12 @@ class Traffic
 		return $ret;
 	}
 
-    private static function GetPreffix(int $number): string
-    {
-        return 'set' . $number . '-';
-    }
+	private static function GetPreffix(int $number) : string
+	{
+		return 'set' . $number . '-';
+	}
 
-    private static function NumberToFile(int $number) : string
+	private static function NumberToFile(int $number) : string
 	{
 		return 'hits-' . str_pad(strtoupper(dechex($number)), 2, '0', STR_PAD_LEFT);
 	}
@@ -271,9 +271,9 @@ class Traffic
 		$totalIps = [];
 		$totalHits = 0;
 
-        $results = [];
+		$results = [];
 		for($i = 1; $i <= self::C_PARALLEL_SETS; $i++)
-        {
+		{
 			for($n = 1; $n <= 256 / self::C_FACTOR; $n++)
 			{
 				$set = self::NumberToFile($n);
@@ -290,12 +290,12 @@ class Traffic
 						$url = '';
 						self::ParseHit($value, $hits, $agent, $url, $device);
 						if (array_key_exists($key, $results))
-                        {
-                            $results[$key]['hits'] += $hits;
+						{
+							$results[$key]['hits'] += $hits;
 						}
 						else
 						{
-                            $results[$key] = [
+							$results[$key] = [
 								'ip' => $key,
 								'hits' => $hits,
 								'country' => GeoIp::GetCountryName($key),
@@ -314,14 +314,14 @@ class Traffic
 					}
 				}
 			}
-        }
+		}
 		if ($dir !== null)
 			$dir->Release();
 		// filtra
-        $ret = [];
+		$ret = [];
 		foreach($results as $key => $value)
-            if ($value['hits'] >= $threshold)
-                $ret[] = $value;
+			if ($value['hits'] >= $threshold)
+				$ret[] = $value;
 		// ordena
 		Arr::SortByKeyDesc($ret, 'hits');
 

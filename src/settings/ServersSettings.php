@@ -148,7 +148,7 @@ class ServersSettings
 	{
 		if (isset($this->mainServerObj) == false)
 			return $this->Current();
-			//throw new ErrorException('No main server is set in configuration settings.');
+		//throw new ErrorException('No main server is set in configuration settings.');
 		return $this->mainServerObj;
 	}
 }

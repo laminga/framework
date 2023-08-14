@@ -206,7 +206,7 @@ class Params
 		if (count($parts) <= $position)
 			return $default;
 
-			return $parts[$position];
+		return $parts[$position];
 	}
 
 	public static function CheckParseIntValue($value)

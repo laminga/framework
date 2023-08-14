@@ -256,7 +256,7 @@ class Backup
 		if (file_exists($ret) == false)
 			return "";
 
-			return IO::ReadAllText($ret);
+		return IO::ReadAllText($ret);
 	}
 
 	public static function CheckState($state1, $state2 = "omited") : void

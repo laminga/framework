@@ -156,7 +156,7 @@ class Log
 
 		if($errorLine == 1 && $errorColumn == 1
 			&& (Str::Contains($errorMessage, "Unexpected token '&lt;'")
-				|| Str::Contains($errorMessage, "Unexpected token '<'")))
+			|| Str::Contains($errorMessage, "Unexpected token '<'")))
 		{
 			return true;
 		}

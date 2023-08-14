@@ -338,7 +338,7 @@ class Str
 			// si es corta la asocia con la siguiente, o si es la anteúltima y
 			// la última es corta
 			if (($isLast == false && strlen($words[$n]) < $min)
-					|| ($isBeforeLast && strlen($words[$n + 1]) < $min))
+				|| ($isBeforeLast && strlen($words[$n + 1]) < $min))
 			{
 				$ret[] = '"' . $words[$n] . ' ' . $words[$n + 1] . '"';
 				$n++;
