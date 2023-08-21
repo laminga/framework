@@ -584,6 +584,13 @@ class IO
 		return false;
 	}
 
+	public static function ConvertFiletoBase64(string $file_path) : string
+	{
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$type = finfo_file($finfo, $file_path);
+		return 'data:' . $type . ';base64,' . base64_encode(file_get_contents($file_path));
+	}
+
 	public static function MoveDirectory(string $dirSource, string $dirDest, $dirName = "", ?array $exclusions = null, $timeFrom = null, bool $createEmptyFolders = true) : void
 	{
 		self::CopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders);
