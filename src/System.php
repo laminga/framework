@@ -98,22 +98,6 @@ class System
 		return PHP_SAPI == 'cli';
 	}
 
-	public static function IsVerbose(?array $argv) : bool
-	{
-		if ($argv == null)
-			return false;
-
-		for ($i = 0; $i < count($argv); $i++)
-		{
-			if ($argv[$i] == '--verbose'
-				|| $argv[$i] == 'verbose')
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static function IsTestingInWindows() : bool
 	{
 		return Context::Settings()->isTesting
