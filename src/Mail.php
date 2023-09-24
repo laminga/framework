@@ -41,7 +41,7 @@ class Mail
 		$mail->CharSet = PHPMailerSendGrid::CHARSET_UTF8;
 
 		$this->SetAddress($mail, $this->to, $this->toCaption);
-		$this->SetReplyTo($mail, $this->to, $this->toCaption);
+		$this->SetReplyTo($mail, $this->replyTo, $this->replyToCaption);
 
 		if (empty(Context::Settings()->Mail()->NotifyAddress) == false
 			&& $skipNotification == false
