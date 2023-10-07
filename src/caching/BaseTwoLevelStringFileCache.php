@@ -9,9 +9,9 @@ use minga\framework\settings\CacheSettings;
 
 class BaseTwoLevelStringFileCache
 {
-	private $path;
+	private string $path;
 
-	public function __construct($path)
+	public function __construct(string $path)
 	{
 		$this->path = Context::Paths()->GetStorageCaches() . '/services/' . $path;
 		IO::EnsureExists($this->path);
