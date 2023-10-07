@@ -177,6 +177,9 @@ class Log
 		if(Str::Contains($errorMessage, "Can't find variable: _AutofillCallbackHandler"))
 			return true;
 
+		if(Str::Contains($errorMessage, "Internal error"))
+			return true;
+
 		// Es un virus que pueden tener algunos clientes.
 		if(Str::ContainsI($errorSource, 'massehight'))
 			return true;
