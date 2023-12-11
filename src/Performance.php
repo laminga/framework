@@ -914,18 +914,37 @@ class Performance
 		$methodsPlusTotal = array_merge(['Total'], $methods);
 		foreach($methodsPlusTotal as $method)
 		{
+			if (sizeof($headers) == 0)
+			{
+				$headers[] = 'Minutes of CPU';
+				$headers[] = 'Share CPU (%)';
+			}
 			$headers[] = 'Hits';
 			$headers[] = 'Promedio ms';
 			$headers[] = 'Db promedio ms (Db hits)';
-			$headers[] = 'Share (%)';
+			$headers[] = 'Db Share (%)';
 		}
 		$rows[''] = $methodsPlusTotal;
 		$rows['Controllers'] = $headers;
-
 		$totalDuration = self::CalculateTotalDuration($controllers);
-		// pone datos
+		// calcula el total de minutos
+		$totalMinutes = 0;
+
 		foreach($controllers as $controller => $values)
 		{
+			foreach($methods as $method)
+			{
+				if (isset($values[$method]))
+				{
+					self::ParseHit($values[$method], $hits, $duration, $_, $dbMs, $dbHits);
+					$totalMinutes += $duration / 1000 / 60;
+				}
+			}
+		}
+		// genera celdas
+		foreach($controllers as $controller => $values)
+		{
+			$fist = true;
 			$cells = [0, 0, 0, 0];
 			$controllerHits = 0;
 			$controllerTime = 0;
@@ -933,10 +952,12 @@ class Performance
 			$dbControllerMs = 0;
 			foreach($methods as $method)
 			{
+				$myHits = 0;
 				if (isset($values[$method]))
 				{
 					self::ParseHit($values[$method], $hits, $duration, $_, $dbMs, $dbHits);
 					$controllerHits += $hits;
+					$myHits = $hits;
 					$avg = round($duration / $hits);
 					$controllerTime += $duration;
 					$share = self::FormatShare($duration, $totalDuration);
@@ -969,7 +990,26 @@ class Performance
 				$cells[2] = '-';
 			}
 			$cells[3] = self::FormatShare($controllerTime, $totalDuration);
-			$rows[$controller] = $cells;
+			if ($fist)
+			{
+				if ($myHits > 0)
+				{
+					$minutes = $cells[0] * $cells[1] / 1000 / 60;
+					array_unshift($cells, self::FormatShare($minutes, $totalMinutes));
+					array_unshift($cells, round($minutes * 10) / 10);
+				}
+				else
+				{
+					array_unshift($cells, '-');
+					array_unshift($cells, '-');
+				}
+			}
+			if ($controller == '')
+				$rows['n/d'] = $cells;
+			else
+				$rows[$controller] = $cells;
+
+			$fist = false;
 		}
 		ksort($rows);
 		return $rows;
