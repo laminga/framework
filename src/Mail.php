@@ -12,6 +12,8 @@ class Mail
 	/** @var string[]|string */
 	public $bcc;
 	public string $toCaption = "";
+	public string $replyTo = "";
+	public string $replyToCaption = "";
 	public ?string $from = "";
 	public string $fromCaption = "";
 	public string $subject;
@@ -39,6 +41,7 @@ class Mail
 		$mail->CharSet = PHPMailerSendGrid::CHARSET_UTF8;
 
 		$this->SetAddress($mail, $this->to, $this->toCaption);
+		$this->SetReplyTo($mail, $this->replyTo, $this->replyToCaption);
 
 		if (empty(Context::Settings()->Mail()->NotifyAddress) == false
 			&& $skipNotification == false
@@ -135,6 +138,12 @@ class Mail
 		}
 		else
 			$mail->addAddress($to, $caption);
+	}
+
+	protected function SetReplyTo(PHPMailerSendGrid $mail, string $replyTo, string $caption) : void
+	{
+		if($replyTo != '')
+			$mail->addReplyTo($replyTo, $caption);
 	}
 
 	/**

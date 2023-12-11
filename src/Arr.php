@@ -410,10 +410,8 @@ class Arr
 		return $arr;
 	}
 
-	public static function GrowArray($arr, int $size) : array
+	public static function GrowArray(array $arr, int $size) : array
 	{
-		if (is_array($arr) == false)
-			return [];
 		for ($i = count($arr); $i < $size; $i++)
 			$arr[$i] = '';
 		return $arr;

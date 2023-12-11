@@ -10,10 +10,10 @@ use minga\framework\Str;
 
 class BaseTwoLevelStringSQLiteCache
 {
-	private $path;
+	private string $path;
 	private SQLiteList $db;
 
-	public function __construct($path, bool $isAbsolutePath = false)
+	public function __construct(string $path, bool $isAbsolutePath = false)
 	{
 		if ($isAbsolutePath)
 			$this->path = $path;
