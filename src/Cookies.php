@@ -10,10 +10,12 @@ class Cookies
 
 		//Si tiene https no importa el entorno, es segura.
 		$secure = Request::IsSecure();
+
 		$host = Params::SafeServer('HTTP_HOST');
 		if ($host == false)
 			$host = parse_url(Context::Settings()->GetPublicUrl(), PHP_URL_HOST);
-
+		if (Str::Contains($host, ":"))
+			$host = explode(":", $host)[0];
 		$ret = setcookie($name, $value, $expire, '/', $host, $secure, true);
 
 		if($ret === false)
