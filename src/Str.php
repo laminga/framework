@@ -656,7 +656,7 @@ class Str
 		return mb_strimwidth($cad, 0, $maxSize, '…', 'UTF-8');
 	}
 
-	public static function EllipsisAnsi(string $cad, int $maxSize = 40, string $signal = '...')
+	public static function EllipsisAnsi(string $cad, int $maxSize = 40, string $signal = '...') : string
 	{
 		if (strlen($cad) > $maxSize)
 		{
@@ -674,7 +674,7 @@ class Str
 		return mb_strtoupper(mb_substr($cad, 0, 1)) . mb_substr($cad, 1);
 	}
 
-	public static function StartsWithAlfabetic($cad) : bool
+	public static function StartsWithAlfabetic(string $cad) : bool
 	{
 		return ctype_alpha(self::RemoveAccents(mb_substr($cad, 0, 1)));
 	}

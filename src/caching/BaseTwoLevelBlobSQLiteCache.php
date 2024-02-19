@@ -120,12 +120,7 @@ class BaseTwoLevelBlobSQLiteCache
 				return false;
 		}
 		$value = $this->db->ReadBlobValue($valueKey, 'v');
-		if ($value !== null)
-		{
-			$value = $value;
-			return true;
-		}
-		return false;
+		return ($value != '');
 	}
 
 	private function ResolveFilename($key1) : string
@@ -143,7 +138,7 @@ class BaseTwoLevelBlobSQLiteCache
 		$this->PutData($key1, $key2, $value);
 	}
 
-	public function PutData($key1, $key2, $valueFilename, $timeStamp = null) : void
+	public function PutData($key1, $key2, string $valueFilename, $timeStamp = null) : void
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
 			return;

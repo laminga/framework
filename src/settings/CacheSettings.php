@@ -18,9 +18,9 @@ class CacheSettings
 
 	public int $FileSystemMode = self::SQLITE3;
 
-	public function CreateFileCache($path, $avoidSqLite = false)
+	public function CreateFileCache(string $path, bool $avoidSqLite = false)
 	{
-		if ($this->FileSystemMode == self::SQLITE3 && !$avoidSqLite)
+		if ($this->FileSystemMode == self::SQLITE3 && $avoidSqLite == false)
 			return new BaseTwoLevelStringSQLiteCache($path);
 
 		return new BaseTwoLevelStringFileCache($path);

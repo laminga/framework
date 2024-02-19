@@ -4,24 +4,24 @@ namespace minga\framework;
 
 class SQLiteList
 {
-	private $keyColumn;
-	private $columns;
-	private $intColumns;
-	private $uniqueColumns;
-	private $blobColumns;
+	private string $keyColumn;
+	private ?array $columns;
+	private ?array $intColumns;
+	private ?array $uniqueColumns;
+	private ?array $blobColumns;
 
-	private $commaColumns;
-	private $commaArgs;
+	private string $quotedCommaColumns;
+	private string $commaArgs;
 
-	private $path = null;
+	private string $path = '';
 
-	private $db = null;
+	private \SQLite3 $db;
 
-	private static $OpenStreams = [];
-	private static $OpenStreamsSizes = [];
-	private static $OpenStreamsTimes = [];
+	private static array $OpenStreams = [];
+	private static array $OpenStreamsSizes = [];
+	private static array $OpenStreamsTimes = [];
 
-	public function __construct($key, $columns = null, $intColumns = null, $uniqueColumns = null, $blobColumns = null)
+	public function __construct(string $key, ?array $columns = null, ?array $intColumns = null, ?array $uniqueColumns = null, ?array $blobColumns = null)
 	{
 		$this->keyColumn = $key;
 		$this->columns = $columns;
@@ -29,14 +29,14 @@ class SQLiteList
 		$this->uniqueColumns = $uniqueColumns;
 		$this->blobColumns = $blobColumns;
 
-		$this->commaColumns = "";
+		$this->quotedCommaColumns = "";
 		$this->commaArgs = "";
 		$n = 2;
 		if ($columns != null)
 		{
 			foreach($columns as $col)
 			{
-				$this->commaColumns .= "," . $col;
+				$this->quotedCommaColumns .= "," . Db::QuoteColumn($col);
 				$this->commaArgs .= ",:p" . ($n++);
 			}
 		}
@@ -44,7 +44,7 @@ class SQLiteList
 		{
 			foreach($intColumns as $col)
 			{
-				$this->commaColumns .= "," . $col;
+				$this->quotedCommaColumns .= "," . Db::QuoteColumn($col);
 				$this->commaArgs .= ",:p" . ($n++);
 			}
 		}
@@ -105,15 +105,15 @@ class SQLiteList
 	{
 		$sql = "CREATE TABLE data ("
 			. "pID INTEGER PRIMARY KEY AUTOINCREMENT, "
-			. $this->keyColumn . " VARCHAR(255) UNIQUE COLLATE NOCASE ";
+			. Db::QuoteColumn($this->keyColumn) . " VARCHAR(255) UNIQUE COLLATE NOCASE ";
 		if ($this->columns != null)
 		{
 			foreach($this->columns as $column)
 			{
-				if (!$this->blobColumns || !in_array($column, $this->blobColumns))
-					$sql .= ", " . $column . " TEXT ";
+				if ($this->blobColumns == false || in_array($column, $this->blobColumns) == false)
+					$sql .= ", " . Db::QuoteColumn($column) . " TEXT ";
 				else
-					$sql .= ", " . $column . " BLOB ";
+					$sql .= ", " . Db::QuoteColumn($column) . " BLOB ";
 
 				if ($this->uniqueColumns != null && in_array($column, $this->uniqueColumns))
 					$sql .= " UNIQUE";
@@ -123,7 +123,7 @@ class SQLiteList
 		if ($this->intColumns != null)
 		{
 			foreach($this->intColumns as $column)
-				$sql .= ", " . $column . " integer ";
+				$sql .= ", " . Db::QuoteColumn($column) . " integer ";
 		}
 
 		$sql .= ")";
@@ -145,8 +145,8 @@ class SQLiteList
 		// el 1ro es el key, el 2do es el blob
 		if ($args[1] !== null)
 			$args[1] = self::GetNamedStream($args[1]);
-		$sql = "INSERT OR REPLACE INTO data (pID, " . $this->keyColumn . $this->commaColumns . ") VALUES
-			((SELECT pID FROM data WHERE " . $this->keyColumn . " = :p1), :p1 " . $this->commaArgs . ");";
+		$sql = "INSERT OR REPLACE INTO data (pID, " . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ") VALUES
+			((SELECT pID FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1), :p1 " . $this->commaArgs . ");";
 
 		$this->Execute($sql, $args, 1);
 	}
@@ -157,17 +157,16 @@ class SQLiteList
 		if (count($args) == 1 && is_array($args[0]))
 			$args = $args[0];
 
-		$sql = "INSERT OR REPLACE INTO data (pID, " . $this->keyColumn . $this->commaColumns . ") VALUES
-			((SELECT pID FROM data WHERE " . $this->keyColumn . " = :p1), :p1 " . $this->commaArgs . ");";
+		$sql = "INSERT OR REPLACE INTO data (pID, " . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ") VALUES
+			((SELECT pID FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1), :p1 " . $this->commaArgs . ");";
 
 		$this->Execute($sql, $args);
 	}
 
-	public function Execute(string $sql, $args = [], $blobIndex = -1)
+	public function Execute(string $sql, $args = [], int $blobIndex = -1)
 	{
 		if (is_array($args) == false)
 			$args = [$args];
-		$text = $this->ParamsToText($sql, $args);
 		try
 		{
 			$this->db->enableExceptions(true);
@@ -187,14 +186,14 @@ class SQLiteList
 		}
 		catch(\Exception $e)
 		{
-			throw new ErrorException($text . '. Error nativo: ' . $e->getMessage() . ".");
+			throw new ErrorException($this->ParamsToText($sql, $args) . '. Error nativo: ' . $e->getMessage() . ".");
 		}
 	}
 
 	private function ParamsToText(string $sql, array $args) : string
 	{
 		$text = 'No se ha podido completar la operación en SQLite. ';
-		if ($this->path != null)
+		if ($this->path != '')
 			$text .= 'Path: ' . $this->path;
 
 		$text .= '. Comando: ' . $sql;
@@ -218,7 +217,7 @@ class SQLiteList
 			$args = $args[0];
 
 		// Arma el insert
-		$sql = "INSERT INTO data (" . $this->keyColumn . $this->commaColumns . ") VALUES
+		$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ") VALUES
 			(:p1 " . $this->commaArgs . ");";
 
 		$statement = $this->db->prepare($sql);
@@ -238,7 +237,7 @@ class SQLiteList
 		if(is_bool($value))
 			$value = (int)$value;
 
-		$sql = "UPDATE data SET " . $column . " = :p2 WHERE " . $this->keyColumn . " = :p1;";
+		$sql = "UPDATE data SET " . Db::QuoteColumn($column) . " = :p2 WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
 		$statement->bindValue(':p1', $key);
@@ -254,7 +253,8 @@ class SQLiteList
 		if(is_bool($newValue))
 			$newValue = (int)$newValue;
 
-		$sql = "UPDATE data SET " . $column . " = REPLACE(" . $column . ", :p2, :p3) WHERE " . $this->keyColumn . " = :p1;";
+		$sql = "UPDATE data SET " . Db::QuoteColumn($column)
+			. " = REPLACE(" . Db::QuoteColumn($column) . ", :p2, :p3) WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
 		$statement->bindValue(':p1', $key);
@@ -266,7 +266,7 @@ class SQLiteList
 
 	public function AppendColumn(string $columnName, bool $isNumber, bool $indexed, bool $caseSensitive) : void
 	{
-		$sql = "ALTER TABLE data ADD COLUMN " . $columnName . " ";
+		$sql = "ALTER TABLE data ADD COLUMN " . Db::QuoteColumn($columnName) . " ";
 		if ($isNumber)
 			$sql .= " INTEGER ";
 		else
@@ -276,7 +276,7 @@ class SQLiteList
 
 		if ($indexed)
 		{
-			$sql = "CREATE INDEX short_" . $columnName . " ON data (" . $columnName . ");";
+			$sql = "CREATE INDEX " . Db::QuoteTable("short_" . $columnName) . " ON data (" . Db::QuoteColumn($columnName) . ");";
 			$this->Execute($sql);
 		}
 	}
@@ -290,7 +290,7 @@ class SQLiteList
 
 	public function Delete($key) : void
 	{
-		$sql = "DELETE FROM data WHERE " . $this->keyColumn . " = :p1;";
+		$sql = "DELETE FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
 		$statement->bindValue(':p1', $key);
@@ -304,19 +304,34 @@ class SQLiteList
 		unlink($this->path);
 	}
 
-	public function ReadBlobValue($key, string $column)
+	public function ReadBlobValue($key, string $column) : string
 	{
 		Profiling::BeginTimer();
-
-		$row = $this->ReadValue($key, 'RowId, length, time');
-
+		$row = $this->ReadValue($key, ['RowId', 'length', 'time']);
 		if ($row === null)
-			return null;
+			return '';
 
-		$lob = $this->db->openBlob('data', $column, $row[1]);
+		$lob = $this->GetBlob('data', $column, $row[1]);
+		if($lob === null)
+			return '';
 		$tmpFilename = self::CreateNameStreamFromStream($lob, $row[2], $row[3]);
 		Profiling::EndTimer();
 		return $tmpFilename;
+	}
+
+	private function GetBlob(string $table, string $column, int $id)
+	{
+		try
+		{
+			$ret = $this->db->openBlob($table, $column, $id);
+			if($ret === false)
+				return null;
+			return $ret;
+		}
+		catch(\Exception $e)
+		{
+			return null;
+		}
 	}
 
 	public static function CreateNamedStreamFromFile(string $filename) : string
@@ -353,29 +368,49 @@ class SQLiteList
 		return self::$OpenStreamsTimes[$key];
 	}
 
-	public function ReadValue($key, string $column)
+
+	/**
+	 * @param array|string $column
+	 */
+	public function ReadValue($key, $column) : ?array
 	{
 		Profiling::BeginTimer();
-		$sql = "SELECT pID, " . $column
-			. " FROM data WHERE " . $this->keyColumn . " = :p1;";
+		try
+		{
+			if(is_array($column))
+			{
+				$text = '';
+				foreach($column as $col)
+					$text .= Db::QuoteColumn($col) . ',';
+				$text = rtrim($text, ',');
+			}
+			else
+				$text = Db::QuoteColumn($column);
 
-		$statement = $this->db->prepare($sql);
-		$statement->bindValue(':p1', $key);
+			$sql = "SELECT pID, " . $text
+				. " FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
 
-		$result = $statement->execute();
+			$statement = $this->db->prepare($sql);
+			$statement->bindValue(':p1', $key);
 
-		$res = $result->fetchArray(SQLITE3_NUM);
+			$result = $statement->execute();
 
-		if ($res === false)
-			return null;
+			$res = $result->fetchArray(SQLITE3_NUM);
 
-		Profiling::EndTimer();
-		return $res;
+			if ($res === false)
+				return null;
+
+			return $res;
+		}
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	public function ReadRowByKey($key) : ?array
 	{
-		$sql = "SELECT * FROM data WHERE " . $this->keyColumn . " = :p1;";
+		$sql = "SELECT * FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
 
 		$statement = $this->db->prepare($sql);
 		$statement->bindValue(':p1', $key);
@@ -407,20 +442,19 @@ class SQLiteList
 
 		if ($res != null)
 		{
-			// update
 			$id = $res[0];
 			$n = (int)$res[1] + 1;
-			$sql = "UPDATE data SET " . $column . " = " . $n
-				. " WHERE pID = :p1;";
+			$sql = "UPDATE data SET " . Db::QuoteColumn($column) . " = :p1"
+				. " WHERE pID = :p2;";
 			$statement = $this->db->prepare($sql);
-			$statement->bindValue(':p1', $id);
+			$statement->bindValue(':p1', $n);
+			$statement->bindValue(':p2', $id);
 
 			$statement->execute();
 		}
 		else
 		{
-			// insert
-			$sql = "INSERT INTO data (" . $this->keyColumn . ", " . $column . ") VALUES (:p1, 1);";
+			$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . ", " . Db::QuoteColumn($column) . ") VALUES (:p1, 1);";
 			$statement = $this->db->prepare($sql);
 			$statement->bindValue(':p1', $key);
 

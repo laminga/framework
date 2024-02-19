@@ -17,7 +17,6 @@ class StrTest extends TestCaseBase
 
 	public function testStartsWithAlfabetic() : void
 	{
-		$this->assertFalse(Str::StartsWithAlfabetic(null));
 		$this->assertFalse(Str::StartsWithAlfabetic(''));
 		$this->assertFalse(Str::StartsWithAlfabetic('%'));
 		$this->assertFalse(Str::StartsWithAlfabetic('1'));
