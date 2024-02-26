@@ -942,9 +942,10 @@ class Performance
 			}
 		}
 		// genera celdas
+		$fist = true;
+		$myHits = 0;
 		foreach($controllers as $controller => $values)
 		{
-			$fist = true;
 			$cells = [0, 0, 0, 0];
 			$controllerHits = 0;
 			$controllerTime = 0;
