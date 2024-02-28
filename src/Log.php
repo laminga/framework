@@ -8,8 +8,8 @@ use minga\framework\locking\Lock;
 class Log
 {
 	private static bool $isLoggingMailError = false;
-	public static $extraErrorTarget = null;
-	public static $extraErrorInfo = null;
+	public static ?string $extraErrorTarget = null;
+	public static ?array $extraErrorInfo = null;
 
 	public const FatalErrorsPath = 'fatalErrors';
 	public const JsErrorsPath = 'jsErrors';
@@ -285,6 +285,9 @@ class Log
 			. '=> Stack: ' . $stack . "\r\n";
 	}
 
+	/**
+	 * @param \Exception|\Throwable|MingaException|ErrorException $exception
+	 */
 	public static function InternalExceptionToText($exception) : string
 	{
 		$message = $exception->getMessage();
@@ -405,7 +408,10 @@ class Log
 		return $log . '</p>';
 	}
 
-	public static function LogException($exception, $silent = false)
+	/**
+	 * @param \Exception|\Throwable|MingaException|ErrorException $exception
+	 */
+	public static function LogException($exception, bool $silent = false) : string
 	{
 		$message = $exception->getMessage();
 		if ($silent)

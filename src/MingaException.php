@@ -4,9 +4,9 @@ namespace minga\framework;
 
 class MingaException extends \Exception
 {
-	private $innerException;
+	private ?\Exception $innerException;
 
-	public function __construct(string $message = "", $innerException = null)
+	public function __construct(string $message = "", ?\Exception $innerException = null)
 	{
 		$this->innerException = $innerException;
 		parent::__construct($message);
@@ -22,7 +22,7 @@ class MingaException extends \Exception
 		return '[ME-E]: ' . $this->getMessage();
 	}
 
-	public function getInnerException()
+	public function getInnerException() : ?\Exception
 	{
 		return $this->innerException;
 	}

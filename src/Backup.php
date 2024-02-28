@@ -7,9 +7,9 @@ use minga\framework\locking\BackupLock;
 class Backup
 {
 	public const MAX_ZIP_SIZE = 5000000;
-	private static $blocks = ["file_modified", "file_deleted", "directory_created", "directory_deleted"];
+	private static array $blocks = ["file_modified", "file_deleted", "directory_created", "directory_deleted"];
 
-	public static $exclusions = [
+	public static array $exclusions = [
 		"/caches",
 		"/temp",
 		"/dump",
@@ -24,61 +24,57 @@ class Backup
 		"/stats",
 	];
 
-	public static function AppendModified($file) : void
+	public static function AppendModified(string $file) : void
 	{
 		self::AppendEntry("file_modified", $file);
 	}
 
-	public static function AppendDeleted($file) : void
+	public static function AppendDeleted(string $file) : void
 	{
 		self::AppendEntry("file_deleted", $file);
 	}
 
-	public static function AppendDirectoryCreated($file) : void
+	public static function AppendDirectoryCreated(string $file) : void
 	{
 		self::AppendEntry("directory_created", $file);
 	}
 
-	public static function AppendDirectoryDeleted($file) : void
+	public static function AppendDirectoryDeleted(string $file) : void
 	{
 		self::AppendEntry("directory_deleted", $file);
 	}
 
-	public static function AppendEntry($set, $file) : void
+	public static function AppendEntry(string $set, string $file) : void
 	{
 		if (self::GetState() == "")
 			return;
 		$relative = self::GetRelativePath($file);
-		if ($relative !== null && self::IsInExcludedFolder($relative) == false)
+		if ($relative != "" && self::IsInExcludedFolder($relative) == false)
 		{
 			$backupFolder = Context::Paths()->GetBackupLocalPath();
 			$lock = new BackupLock($set);
-			$file = FiledQueue::Create($lock, $backupFolder, $set . ".txt");
+			$filedQ = FiledQueue::Create($lock, $backupFolder, $set . ".txt");
 			$lock->LockWrite();
-			$file->Append($relative);
+			$filedQ->Append($relative);
 			$lock->Release();
 		}
 	}
 
-	private static function GetRelativePath($file)
+	private static function GetRelativePath(string $file) : string
 	{
 		$storage = Context::Paths()->GetStorageRoot();
 		if (Str::StartsWith($file, $storage))
-		{
 			return substr($file, strlen($storage));
-		}
-		return null;
+		return "";
 	}
 
-	private static function IsInExcludedFolder($file)
+	private static function IsInExcludedFolder(string $file) : bool
 	{
 		$file = Str::Replace($file, "\\", "/");
 		foreach(self::$exclusions as $exc)
 		{
 			if (Str::StartsWith($file, $exc . "/"))
-			{
 				return true;
-			}
 		}
 		return false;
 	}
@@ -112,7 +108,7 @@ class Backup
 		self::SaveState("CHECKPOINTCREATED");
 	}
 
-	private function initializeFolder() : void
+	private function InitializeFolder() : void
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$backupFolderWorkingFolder = $backupFolder . "/backup";
@@ -142,7 +138,7 @@ class Backup
 		self::CheckState("CHECKPOINTCREATED");
 		self::Log('Incio de copia de seguridad del sitio');
 
-		$this->initializeFolder();
+		$this->InitializeFolder();
 		// Copia todo lo modificado hasta la actualidad
 
 		// 1. Deja archivos con entradas únicas.
@@ -183,25 +179,25 @@ class Backup
 
 	}
 
-	private static function ScanAndSplitRecursive($dirsource, $maxSize) : void
+	private static function ScanAndSplitRecursive(string $dirSource, int $maxSize) : void
 	{
 		$dirHandle = null;
-		if(is_dir($dirsource))
-			$dirHandle = IO::OpenDirNoWarning($dirsource);
+		if(is_dir($dirSource))
+			$dirHandle = IO::OpenDirNoWarning($dirSource);
 		if($dirHandle === false)
 			return;
 		while($file = readdir($dirHandle))
 		{
 			if($file != '.' && $file != '..')
 			{
-				$filename = $dirsource . '/' . $file;
+				$filename = $dirSource . '/' . $file;
 				if(!is_dir($filename))
 				{
 					if (filesize($filename) > $maxSize)
 						Multipart::Split($filename, $maxSize);
 				}
 				else
-					self::ScanAndSplitRecursive($dirsource . '/' . $file, $maxSize);
+					self::ScanAndSplitRecursive($dirSource . '/' . $file, $maxSize);
 			}
 		}
 		if($dirHandle != null)
@@ -242,14 +238,14 @@ class Backup
 		self::Log('Fin copia de seguridad', true);
 	}
 
-	public static function SaveState($state) : void
+	public static function SaveState(string $state) : void
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/state.txt";
 		IO::WriteAllText($ret, $state);
 	}
 
-	public static function GetState()
+	public static function GetState() : string
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/state.txt";
@@ -259,7 +255,7 @@ class Backup
 		return IO::ReadAllText($ret);
 	}
 
-	public static function CheckState($state1, $state2 = "omited") : void
+	public static function CheckState(string $state1, $state2 = "omited") : void
 	{
 		$text = self::GetState();
 		if ($text == $state1 || $text == $state2)
@@ -267,7 +263,7 @@ class Backup
 		throw new ErrorException('El estado de copia de seguridad no es válido para el pedido.');
 	}
 
-	public static function Log($text, $append = false) : void
+	public static function Log(string $text, bool $append = false) : void
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/log.txt";
@@ -280,12 +276,12 @@ class Backup
 			IO::AppendLine($ret, $text);
 	}
 
-	public static function ReadCheckpoint()
+	public static function ReadCheckpoint() : int
 	{
 		return IO::FileMTime(self::BeginCheckPointFile());
 	}
 
-	private static function BeginCheckPointFile()
+	private static function BeginCheckPointFile() : string
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/checkpointbegin";
@@ -294,7 +290,7 @@ class Backup
 		return $ret;
 	}
 
-	private static function EndCheckPointFile()
+	private static function EndCheckPointFile() : string
 	{
 		$backupFolder = Context::Paths()->GetBackupLocalPath();
 		$ret = $backupFolder . "/checkpointend";
@@ -315,7 +311,7 @@ class Backup
 		self::SendFile($zip, "application/zip");
 	}
 
-	private static function SendFile($filename, $contentType) : void
+	private static function SendFile(string $filename, string $contentType) : void
 	{
 		$size = Zipping::Filesize($filename);
 

@@ -262,9 +262,12 @@ class IO
 		return $file;
 	}
 
-	public static function ReadIniFile(string $file)
+	public static function ReadIniFile(string $file) : array
 	{
-		return parse_ini_file($file);
+		$ret = parse_ini_file($file);
+		if($ret === false)
+			throw new \ErrorException("ReadIniFile falló");
+		return $ret;
 	}
 
 	public static function ReadEscapedIniFile(string $file) : array
@@ -440,7 +443,7 @@ class IO
 	/**
 	 * como la función glob de php pero recursiva.
 	 */
-	public static function GlobR($pattern, int $flags = 0)
+	public static function GlobR(string $pattern, int $flags = 0) : array
 	{
 		$files = glob($pattern, $flags);
 		foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir)
@@ -467,7 +470,7 @@ class IO
 		return false;
 	}
 
-	public static function GetFilesCount($path, $ext = '') : int
+	public static function GetFilesCount(string $path, string $ext = '') : int
 	{
 		return count(self::GetFilesFullPath($path, $ext));
 	}
@@ -570,18 +573,21 @@ class IO
 		return $n;
 	}
 
-	public static function FileMTime($file)
+	public static function FileMTime($file) : int
 	{
 		try
 		{
-			return filemtime($file);
+			$ret = filemtime($file);
+			if($ret === false)
+				throw new \ErrorException("FileMTime falló");
+			return $ret;
 		}
 		catch(\Exception $e)
 		{
 			if($e->getCode() !== E_WARNING)
 				Log::HandleSilentException($e);
 		}
-		return false;
+		return 0;
 	}
 
 	public static function ConvertFiletoBase64(string $file_path) : string
@@ -738,6 +744,9 @@ class IO
 		return false;
 	}
 
+	/**
+	 * @return resource|false
+	 */
 	public static function OpenDirNoWarning(string $dir)
 	{
 		try
@@ -753,15 +762,15 @@ class IO
 		return false;
 	}
 
-	public static function GetDirectoryINodesCount($dir)
+	public static function GetDirectoryInodesCount(string $dir) : int
 	{
 		Profiling::BeginTimer();
 		$ret = System::RunCommandRaw('find ' . $dir . '/. | wc -l');
 		Profiling::EndTimer();
-		return $ret['lastLine'];
+		return (int)$ret['lastLine'];
 	}
 
-	public static function GetDirectorySizeUnix($dir)
+	public static function GetDirectorySizeUnix(string $dir) : int
 	{
 		try
 		{
@@ -770,7 +779,7 @@ class IO
 			$pos = strpos($ret['lastLine'], "\t");
 			if($pos === false)
 				return 0;
-			return substr($ret['lastLine'], 0, $pos);
+			return (int)substr($ret['lastLine'], 0, $pos);
 		}
 		finally
 		{
@@ -778,7 +787,7 @@ class IO
 		}
 	}
 
-	public static function GetDirectorySize($dir, bool $sizeOnly = false)
+	public static function GetDirectorySize(string $dir, bool $sizeOnly = false) : array
 	{
 		try
 		{
@@ -788,7 +797,7 @@ class IO
 
 			$ret = ['size' => self::GetDirectorySizeUnix($dir)];
 			if ($sizeOnly == false)
-				$ret['inodes'] = self::GetDirectoryINodesCount($dir);
+				$ret['inodes'] = self::GetDirectoryInodesCount($dir);
 
 			return $ret;
 		}
@@ -927,6 +936,9 @@ class IO
 		return $dir->IsCompressed();
 	}
 
+	/**
+	 * @return CompressedDirectory|CompressedInParentDirectory
+	 */
 	public static function GetCompressedDirectory(string $path)
 	{
 		if (isset(self::$compressedDirectories))
