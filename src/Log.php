@@ -147,6 +147,9 @@ class Log
 		if(Str::Contains($errorMessage, "setting 'theme'"))
 			return true;
 
+		if(Str::Contains($errorMessage, "googletag"))
+			return true;
+
 		if(Str::Contains($agent, "applebot"))
 			return true;
 
