@@ -120,7 +120,7 @@ class BaseTwoLevelBlobSQLiteCache
 				return false;
 		}
 		$value = $this->db->ReadBlobValue($valueKey, 'v');
-		return ($value != '');
+		return $value != '';
 	}
 
 	private function ResolveFilename($key1) : string

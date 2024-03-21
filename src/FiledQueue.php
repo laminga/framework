@@ -2,6 +2,8 @@
 
 namespace minga\framework;
 
+use minga\framework\locking\Lock;
+
 class FiledQueue
 {
 	private array $valuesToQueue = [];
@@ -9,18 +11,18 @@ class FiledQueue
 	/** @var FiledQueue[] */
 	private static array $allFiles = [];
 
-	private $file;
-	private $path;
-	private $lock;
+	private string $file;
+	private string $path;
+	private Lock $lock;
 
-	public function __construct($lock, $path, $file)
+	public function __construct(Lock $lock, string $path, string $file)
 	{
 		$this->lock = $lock;
 		$this->path = $path;
 		$this->file = $file;
 	}
 
-	public static function Create($lock, string $path, string $file) : FiledQueue
+	public static function Create(Lock $lock, string $path, string $file) : FiledQueue
 	{
 		$filename = $path . "/" . $file;
 		if (isset(self::$allFiles[$filename]))
@@ -47,7 +49,7 @@ class FiledQueue
 		Profiling::EndTimer();
 	}
 
-	private static function TryFlush($value) : void
+	private static function TryFlush(FiledQueue $value) : void
 	{
 		try
 		{

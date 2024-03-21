@@ -914,7 +914,7 @@ class Performance
 		$methodsPlusTotal = array_merge(['Total'], $methods);
 		foreach($methodsPlusTotal as $method)
 		{
-			if (sizeof($headers) == 0)
+			if (count($headers) == 0)
 			{
 				$headers[] = 'Minutes of CPU';
 				$headers[] = 'Share CPU (%)';

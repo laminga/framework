@@ -19,7 +19,7 @@ class FileBucket
 		return $this->path;
 	}
 
-	public static function Create(?string $defaultBucketId = null)
+	public static function Create(?string $defaultBucketId = null) : FileBucket
 	{
 		self::CleanUp();
 		if ($defaultBucketId === null)

@@ -26,7 +26,7 @@ class Zipping
 		return $parts[0];
 	}
 
-	public static function GetFiles($filesPath, $pattern) : array
+	public static function GetFiles(string $filesPath, string $pattern) : array
 	{
 		Profiling::BeginTimer();
 		try
@@ -49,15 +49,15 @@ class Zipping
 		}
 	}
 
-	public static function FileMTime($filename)
+	public static function FileMTime(string $filename) : int
 	{
 		if (Str::StartsWith($filename, "streams:"))
-			return SQLiteList::GetNamedStreamDateTime($filename);
+			return (int)SQLiteList::GetNamedStreamDateTime($filename);
 		else if (self::IsZipped($filename) == false)
 			return IO::FileMTime($filename);
 		$stat = self::GetStat($filename);
 		if ($stat == null)
-			return false;
+			throw new \ErrorException("GetStat falló");
 
 		return (int)$stat['mtime'];
 	}
@@ -78,7 +78,7 @@ class Zipping
 		return (int)$stat['size'];
 	}
 
-	public static function GetStat($filename) : ?array
+	public static function GetStat(string $filename) : ?array
 	{
 		Profiling::BeginTimer();
 		try
@@ -133,7 +133,7 @@ class Zipping
 		IO::RmDir($path);
 	}
 
-	public static function ReadEscapedIniFileWithSections($filename)
+	public static function ReadEscapedIniFileWithSections(string $filename) : array
 	{
 		Profiling::BeginTimer();
 		$ret = '';
@@ -168,12 +168,12 @@ class Zipping
 		}
 	}
 
-	public static function IsZipped($file) : bool
+	public static function IsZipped(string $file) : bool
 	{
 		return Str::StartsWith($file, 'zip://');
 	}
 
-	private static function GetContainer($folder) : ?\ZipArchive
+	private static function GetContainer(string $folder) : ?\ZipArchive
 	{
 		if (self::IsZipped($folder))
 			$folder = substr($folder, 6);
@@ -224,9 +224,9 @@ class Zipping
 				else
 					$zip->FileAdd($filename[$n], $filesrc[$n], TBSZIP_FILE);
 			}
-			$time = IO::FileMTime($filesrc[0]);
-			if($time === false)
-				$time = time();
+			$time = time();
+			if (file_exists($filesrc[0]))
+				$time = IO::FileMTime($filesrc[0]);
 			$zip->now = $time;
 			$zip->Flush(TBSZIP_FILE, $zipFile . 'tmp', '');
 			$zip->Close();
@@ -240,10 +240,10 @@ class Zipping
 
 	public static function Release() : void
 	{
-		foreach(self::$allFiles as $key => $value)
+		foreach(self::$allFiles as $_ => $value)
 			$value->close();
 
-		foreach(self::$allLocks as $key => $lock)
+		foreach(self::$allLocks as $_ => $lock)
 			$lock->Release();
 
 		self::$allLocks = [];
