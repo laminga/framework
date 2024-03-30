@@ -34,10 +34,7 @@ class System
 		if (file_exists($file))
 		{
 			$time = IO::FileMTime($file);
-			if($time === false)
-				$value = trim(file_get_contents($file)) . ' (sin fecha)';
-			else
-				$value = trim(file_get_contents($file)) . ' (' . date('Y-m-d H:i:s', $time - 60 * 60 * 3) . ')';
+			$value = trim(file_get_contents($file)) . ' (' . date('Y-m-d H:i:s', $time - 60 * 60 * 3) . ')';
 		}
 		else
 			$value = 'Archivo de versión no encontrado.';
@@ -66,8 +63,19 @@ class System
 			['name' => 'Database', 'value' => Context::Settings()->Db()->Name],
 			['name' => 'User', 'value' => Context::Settings()->Db()->User],
 			['name' => 'MySQL Version', 'value' => self::GetMySQLVersion()],
+			['name' => 'Ping', 'value' => self::GetPingTimeMs() . " ms"],
 		];
 	}
+
+	public static function GetPingTimeMs(): float
+	{
+		$start = microtime(true);
+		$db = new Db();
+		$ret = $db->fetchScalar('SELECT @@version;');
+		$time_elapsed_secs = microtime(true) - $start;
+		return round($time_elapsed_secs * 1000, 2);
+	}
+
 
 	public static function GetMySQLVersion() : string
 	{
@@ -116,15 +124,14 @@ class System
 	 * Devuelve true si está dentro de la cantidad
 	 * de $days desde el último release.
 	 */
-	public static function IsNearRelease(int $days = 3, $file = 'version') : bool
+	public static function IsNearRelease(int $days = 3, string $file = 'version') : bool
 	{
 		$file = Context::Paths()->GetRoot() . '/' . $file;
 		if (file_exists($file) == false)
 			return true;
 
 		$time = IO::FileMTime($file);
-		return $time === false
-			|| $time + $days * 60 * 60 * 24 > time();
+		return $time + $days * 60 * 60 * 24 > time();
 	}
 
 	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

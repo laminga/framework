@@ -914,6 +914,7 @@ class Performance
 		$methodsPlusTotal = array_merge(['Total'], $methods);
 		foreach($methodsPlusTotal as $method)
 		{
+			
 			$headers[] = 'Hits';
 			$headers[] = 'Promedio ms';
 			$headers[] = 'Db promedio ms (Db hits)';
@@ -937,9 +938,10 @@ class Performance
 			}
 		}
 		// genera celdas
+		$fist = true;
+		$myHits = 0;
 		foreach($controllers as $controller => $values)
 		{
-			$fist = true;
 			$cells = [0, 0, 0, 0];
 			$controllerHits = 0;
 			$controllerTime = 0;

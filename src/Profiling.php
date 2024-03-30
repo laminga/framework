@@ -323,7 +323,7 @@ class Profiling
 			$item->dbHits++;
 	}
 
-	public static function AppendLockInfo($info) : void
+	public static function AppendLockInfo(string $info) : void
 	{
 		if (self::IsProfiling() == false)
 			return;

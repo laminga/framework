@@ -12,7 +12,7 @@ class LogTest extends TestCaseBase
 {
 	public function testLogError() : void
 	{
-		$text = Log::LogError("1000", "Log error Test", "nofile.php", 25);
+		$text = Log::LogError(1000, "Log error Test", "nofile.php", 25);
 		$this->assertTrue($text != '');
 	}
 

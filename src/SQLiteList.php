@@ -368,7 +368,6 @@ class SQLiteList
 		return self::$OpenStreamsTimes[$key];
 	}
 
-
 	/**
 	 * @param array|string $column
 	 */

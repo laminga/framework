@@ -642,6 +642,15 @@ class Db
 			Profiling::EndTimer();
 		}
 	}
+	public function dropTableLikePattern(string $tablePattern): void
+	{
+		$matrix = "SHOW TABLES LIKE '" . $tablePattern . "'";
+		$compareTables = $this->fetchAllByPos($matrix);
+		foreach ($compareTables as $table)
+		{
+			$this->dropTable($table[0]);
+		}
+	}
 
 	public function dropTable(string $table) : void
 	{

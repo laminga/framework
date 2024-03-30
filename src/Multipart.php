@@ -16,9 +16,9 @@ class Multipart
 	{
 		$fs = filesize($i);
 		$p = 1;
-		$date = IO::FileMTime($i);
-		if($date === false)
-			$date = time();
+		$date = time();
+		if(file_exists($i))
+			$date = IO::FileMTime($i);
 		for($c = 0; $c < $fs; $c = $c + $s)
 		{
 			$fileData = file_get_contents($i, false, null, $c, $s);
