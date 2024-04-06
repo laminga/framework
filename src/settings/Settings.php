@@ -27,7 +27,9 @@ class Settings
 
 	public bool $updateGoogleBingSitemap = false;
 	public bool $readonlyForMaintenance = false;
-
+	public string $readonlyForMaintenanceMessage = 'El sitio se encuentra en mantenimiento. <p>Debido a esto,'
+		. ' solo las operaciones de consulta (lectura) están habilitadas. <p>Por favor,'
+		. ' reintente nuevamente más tarde. Disculpas por las molestias ocasionadas.';
 	public string $applicationName = 'AppName';
 	public string $currentCountry = 'Argentina';
 
