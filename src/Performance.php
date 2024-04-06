@@ -800,7 +800,7 @@ class Performance
 		return $ret;
 	}
 
-	private static function Average(int $a, int $b) : string
+	private static function Average(float $a, int $b) : string
 	{
 		if ($b == 0)
 			return '';
@@ -914,7 +914,7 @@ class Performance
 		$methodsPlusTotal = array_merge(['Total'], $methods);
 		foreach($methodsPlusTotal as $method)
 		{
-			
+
 			$headers[] = 'Hits';
 			$headers[] = 'Promedio ms';
 			$headers[] = 'Db promedio ms (Db hits)';
@@ -987,7 +987,7 @@ class Performance
 				$cells[2] = '-';
 			}
 			$cells[3] = self::FormatShare($controllerTime, $totalDuration);
-			
+
 			if ($controller == '')
 				$rows['n/d'] = $cells;
 			else
