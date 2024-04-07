@@ -27,7 +27,7 @@ class DateTest extends TestCaseBase
 	public function testDateNotPastException() : void
 	{
 		$this->expectException(ErrorException::class);
-		Date::DateNotPast('aaaaaa', 9);
+		Date::DateNotPast('random text', 9);
 	}
 
 	public function testDateNotPastException1() : void
