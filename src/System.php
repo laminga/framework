@@ -67,7 +67,7 @@ class System
 		];
 	}
 
-	public static function GetPingTimeMs(): float
+	public static function GetPingTimeMs() : float
 	{
 		$start = microtime(true);
 		$db = new Db();
@@ -75,7 +75,6 @@ class System
 		$time_elapsed_secs = microtime(true) - $start;
 		return round($time_elapsed_secs * 1000, 2);
 	}
-
 
 	public static function GetMySQLVersion() : string
 	{

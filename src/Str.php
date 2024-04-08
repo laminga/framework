@@ -263,9 +263,11 @@ class Str
 		return number_format($bytes, $precision, ".", ",") . ' ' . $units[$pow];
 	}
 
-	public static function StartsWith($haystack, ?string $needle) : bool
+	public static function StartsWith(?string $haystack, ?string $needle) : bool
 	{
 		if ($needle === null)
+			return false;
+		if ($haystack === null)
 			return false;
 		return (bool)!strncmp($haystack, $needle, strlen($needle));
 	}
