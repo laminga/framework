@@ -361,6 +361,7 @@ class Extensions
 			],
 			'Microsoft OOXML' => [
 				'docx',
+				'pptx',
 			],
 			'Microsoft PowerPoint 2007+' => [
 				'pptx',
