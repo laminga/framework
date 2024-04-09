@@ -83,6 +83,8 @@ class Settings
 	public ?string $boxingContent;
 	public bool $isFramed = false;
 
+	public int $curlTimeout = 10;
+
 	public $timerStart = '';
 
 	public bool $isAPIEnabled = false;
