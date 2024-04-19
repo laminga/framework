@@ -340,12 +340,36 @@ class Date
 		}
 	}
 
+	public static function DateStringToDateTime(string $date) : \DateTime
+	{
+		$ret = \DateTime::createFromFormat("Ymd", $date);
+		if($ret === false)
+			throw new ErrorException(Context::Trans('Formato no válido'));
+		return $ret;
+	}
+
 	public static function FormattedDateToDateTime(string $date) : \DateTime
 	{
 		$ret = \DateTime::createFromFormat("Y-m-d@H.i.s", $date);
 		if($ret === false)
 			throw new ErrorException(Context::Trans('Formato no válido'));
 		return $ret;
+	}
+
+	/*
+	 * Ver DateTimeNotPast
+	 * $date en formato de FormattedDate().
+	 *
+	 */
+	public static function DateNotPast(string $date, int $days) : bool
+	{
+		if($date == '')
+			return false;
+
+		if($days <= 0)
+			throw new ErrorException(Context::Trans('Días debe ser un entero positivo'));
+
+		return self::DateTimeNotPast(self::FormattedDateToDateTime($date), $days);
 	}
 
 	/*
@@ -357,18 +381,11 @@ class Date
 	 *
 	 * $date en formato de FormattedDate().
 	 *
-	 * return bool
-	 *
 	 */
-	public static function DateNotPast(string $date, int $days) : bool
+	public static function DateTimeNotPast(\DateTime $dt, int $days) : bool
 	{
-		if($date == '')
-			return false;
-
 		if($days <= 0)
 			throw new ErrorException(Context::Trans('Días debe ser un entero positivo'));
-
-		$dt = self::FormattedDateToDateTime($date);
 
 		$dt->add(new \DateInterval('P' . $days . 'D'));
 		$now = new \DateTime('now');
