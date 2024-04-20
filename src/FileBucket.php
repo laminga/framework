@@ -2,6 +2,8 @@
 
 namespace minga\framework;
 
+use minga\framework\security\SecureTransport;
+
 class FileBucket
 {
 	public string $path = '';
@@ -24,19 +26,14 @@ class FileBucket
 		self::CleanUp();
 		if ($defaultBucketId === null)
 		{
-			$defaultBucketId = self::CreateId();
+			$defaultBucketId = SecureTransport::CreateId();
 			while(self::Exists($defaultBucketId))
 			{
 				usleep(500);
-				$defaultBucketId = self::CreateId();
+				$defaultBucketId = SecureTransport::CreateId();
 			}
 		}
 		return self::Load($defaultBucketId);
-	}
-
-	public static function CreateId() : string
-	{
-		return uniqid();
 	}
 
 	public static function Exists(string $id) : bool
@@ -50,7 +47,7 @@ class FileBucket
 	{
 		$ret = Params::SafeGet("b");
 		if ($ret == "" && $forceCreate)
-			$ret = self::CreateId();
+			$ret = SecureTransport::CreateId();
 		return $ret;
 	}
 
