@@ -441,7 +441,7 @@ class WebConnection
 			{
 				if ($ret != '')
 					$ret .= '&';
-				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, '@'))
+				if (is_a($subValues, 'CURLFile'))
 					$hasFile = true;
 				else
 				{
