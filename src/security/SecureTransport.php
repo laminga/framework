@@ -79,6 +79,5 @@ class SecureTransport
 		$hashCheck = self::HashParams($_POST, $rnd);
 		return hash_equals($hmac, $hashCheck);
 	}
-
 }
 
