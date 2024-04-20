@@ -54,9 +54,10 @@ class SecureTransport
 		return hash_equals($parts[1], $hashCheck);
 	}
 
-	public static function HashParams(?array $params) : string
+	public static function HashParams(?array $params, string $rnd = '') : string
 	{
-		$rnd = self::CreateId(16);
+		if($rnd == '')
+			$rnd = self::CreateId(16);
 		if($params == null)
 			return self::HashKeyed($rnd);
 
