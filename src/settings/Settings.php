@@ -42,9 +42,7 @@ class Settings
 
 	public string $forceIfModifiedReload = '31/1/1980';
 	public bool $useOldInstitutions = true;
-	public bool $useOldProjects = true;
 
-	public bool $useProjects = false;
 	public bool $useEvents = true;
 	public bool $useProfiles = true;
 
