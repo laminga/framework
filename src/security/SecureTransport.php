@@ -54,15 +54,16 @@ class SecureTransport
 		return hash_equals($parts[1], $hashCheck);
 	}
 
-	public static function HashParams(?array $params, string $rnd = '') : string
+	public static function HashParams(array $params, string $rnd = '') : array
 	{
 		if($rnd == '')
 			$rnd = self::CreateId(16);
-		if($params == null)
-			return self::HashKeyed($rnd);
+
+		$params['rnd'] = $rnd;
 
 		$str = WebConnection::PreparePostValues($params);
-		return self::HashKeyed($str . $rnd);
+		$params['hmac'] = self::HashKeyed($str . $rnd);
+		return $params;
 	}
 
 	public static function PostHashIsValid() : bool
@@ -72,12 +73,12 @@ class SecureTransport
 			return false;
 
 		unset($_POST['hmac']);
-		$rnd = Params::SafeGet('rnd');
+		$rnd = Params::SafePost('rnd');
 		if($rnd == '')
 			return false;
 
-		$hashCheck = self::HashParams($_POST, $rnd);
-		return hash_equals($hmac, $hashCheck);
+		$res = self::HashParams($_POST, $rnd);
+		return hash_equals($hmac, $res['hmac']);
 	}
 }
 
