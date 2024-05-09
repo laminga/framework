@@ -341,12 +341,32 @@ class IO
 		return self::WriteAllText($file, $content);
 	}
 
-	public static function RemoveExtension($filename) : string
+	public static function RemoveExtension(string $filename) : string
 	{
-		$n = strrpos($filename, '.');
-		if ($n === false || $n <= 0)
-			return $filename;
-		return substr($filename, 0, $n);
+		if(System::IsWindows())
+			$filename = str_replace("/", "\\", $filename);
+
+		$pi = pathinfo($filename);
+		$file = $pi['filename'];
+
+		// ej: .htaccess
+		if(isset($pi['basename']) && Str::StartsWith($pi['basename'], '.') && $pi['filename'] == "")
+			$file = $pi['basename'];
+
+		if(isset($pi['dirname']) == false)
+			return $file;
+
+		if(isset($pi['dirname']) && $pi['dirname'] == '.')
+			$dir = "";
+		else if(isset($pi['dirname']) && ($pi['dirname'] == '/' || $pi['dirname'] == "\\"))
+			$dir = $pi['dirname'];
+		else
+			$dir = $pi['dirname'] . DIRECTORY_SEPARATOR;
+
+		if(System::IsWindows())
+			return str_replace("\\", "/", $dir . $file);
+
+		return $dir . $file;
 	}
 
 	public static function EnsureExists(string $directory) : void
