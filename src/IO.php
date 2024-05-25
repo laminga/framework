@@ -262,17 +262,17 @@ class IO
 		return $file;
 	}
 
-	public static function ReadIniFile(string $file) : array
+	public static function ReadIniFile(string $file, bool $sections = false) : array
 	{
-		$ret = parse_ini_file($file);
+		$ret = parse_ini_file($file, $sections);
 		if($ret === false)
-			throw new \ErrorException("ReadIniFile falló");
+			throw new ErrorException("ReadIniFile falló");
 		return $ret;
 	}
 
 	public static function ReadEscapedIniFile(string $file) : array
 	{
-		$attributes = parse_ini_file($file);
+		$attributes = self::ReadIniFile($file);
 		foreach($attributes as $key => $value)
 			$attributes[$key] = urldecode($value);
 		return $attributes;
@@ -280,7 +280,7 @@ class IO
 
 	public static function ReadEscapedIniFileWithSections(string $file) : array
 	{
-		$attributes = parse_ini_file($file, true);
+		$attributes = self::ReadIniFile($file, true);
 		foreach($attributes as &$values)
 			foreach($values as $key => $value)
 				$values[$key] = urldecode($value);
@@ -599,7 +599,7 @@ class IO
 		{
 			$ret = filemtime($file);
 			if($ret === false)
-				throw new \ErrorException("FileMTime falló");
+				throw new ErrorException("FileMTime falló");
 			return $ret;
 		}
 		catch(\Exception $e)
