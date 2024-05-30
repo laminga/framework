@@ -186,6 +186,9 @@ class Log
 		if(Str::ContainsI($errorMessage, "ResizeObserver loop limit"))
 			return true;
 
+		if(Str::Contains($errorMessage, "__gCrWeb"))
+			return true;
+
 		if($errorSource == '' && $errorLine == 0 && $errorColumn == 0 && $trace == '')
 			return true;
 
