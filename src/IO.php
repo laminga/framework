@@ -262,17 +262,17 @@ class IO
 		return $file;
 	}
 
-	public static function ReadIniFile(string $file) : array
+	public static function ReadIniFile(string $file, bool $sections = false) : array
 	{
-		$ret = parse_ini_file($file);
+		$ret = parse_ini_file($file, $sections);
 		if($ret === false)
-			throw new \ErrorException("ReadIniFile falló");
+			throw new ErrorException("ReadIniFile falló");
 		return $ret;
 	}
 
 	public static function ReadEscapedIniFile(string $file) : array
 	{
-		$attributes = parse_ini_file($file);
+		$attributes = self::ReadIniFile($file);
 		foreach($attributes as $key => $value)
 			$attributes[$key] = urldecode($value);
 		return $attributes;
@@ -280,7 +280,7 @@ class IO
 
 	public static function ReadEscapedIniFileWithSections(string $file) : array
 	{
-		$attributes = parse_ini_file($file, true);
+		$attributes = self::ReadIniFile($file, true);
 		foreach($attributes as &$values)
 			foreach($values as $key => $value)
 				$values[$key] = urldecode($value);
@@ -341,12 +341,32 @@ class IO
 		return self::WriteAllText($file, $content);
 	}
 
-	public static function RemoveExtension($filename) : string
+	public static function RemoveExtension(string $filename) : string
 	{
-		$n = strrpos($filename, '.');
-		if ($n === false || $n <= 0)
-			return $filename;
-		return substr($filename, 0, $n);
+		if(System::IsWindows())
+			$filename = str_replace("/", "\\", $filename);
+
+		$pi = pathinfo($filename);
+		$file = $pi['filename'];
+
+		// ej: .htaccess
+		if(isset($pi['basename']) && Str::StartsWith($pi['basename'], '.') && $pi['filename'] == "")
+			$file = $pi['basename'];
+
+		if(isset($pi['dirname']) == false)
+			return $file;
+
+		if(isset($pi['dirname']) && $pi['dirname'] == '.')
+			$dir = "";
+		else if(isset($pi['dirname']) && ($pi['dirname'] == '/' || $pi['dirname'] == "\\"))
+			$dir = $pi['dirname'];
+		else
+			$dir = $pi['dirname'] . DIRECTORY_SEPARATOR;
+
+		if(System::IsWindows())
+			return str_replace("\\", "/", $dir . $file);
+
+		return $dir . $file;
 	}
 
 	public static function EnsureExists(string $directory) : void
@@ -579,7 +599,7 @@ class IO
 		{
 			$ret = filemtime($file);
 			if($ret === false)
-				throw new \ErrorException("FileMTime falló");
+				throw new ErrorException("FileMTime falló");
 			return $ret;
 		}
 		catch(\Exception $e)

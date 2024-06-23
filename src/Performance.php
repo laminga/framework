@@ -800,7 +800,7 @@ class Performance
 		return $ret;
 	}
 
-	private static function Average(int $a, int $b) : string
+	private static function Average(float $a, int $b) : string
 	{
 		if ($b == 0)
 			return '';
@@ -914,11 +914,7 @@ class Performance
 		$methodsPlusTotal = array_merge(['Total'], $methods);
 		foreach($methodsPlusTotal as $method)
 		{
-			if (count($headers) == 0)
-			{
-				$headers[] = 'Minutes of CPU';
-				$headers[] = 'Share CPU (%)';
-			}
+
 			$headers[] = 'Hits';
 			$headers[] = 'Promedio ms';
 			$headers[] = 'Db promedio ms (Db hits)';
@@ -991,20 +987,7 @@ class Performance
 				$cells[2] = '-';
 			}
 			$cells[3] = self::FormatShare($controllerTime, $totalDuration);
-			if ($fist)
-			{
-				if ($myHits > 0)
-				{
-					$minutes = $cells[0] * $cells[1] / 1000 / 60;
-					array_unshift($cells, self::FormatShare($minutes, $totalMinutes));
-					array_unshift($cells, round($minutes * 10) / 10);
-				}
-				else
-				{
-					array_unshift($cells, '-');
-					array_unshift($cells, '-');
-				}
-			}
+
 			if ($controller == '')
 				$rows['n/d'] = $cells;
 			else

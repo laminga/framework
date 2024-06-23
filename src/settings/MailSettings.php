@@ -2,6 +2,8 @@
 
 namespace minga\framework\settings;
 
+use minga\framework\IO;
+
 class MailSettings
 {
 	public const SMTP = 0;
@@ -32,8 +34,15 @@ class MailSettings
 	public string $SMTPPassword = "";
 	public bool $SMTPAuth = false;
 
-	/** @var string[] */
-	public array $ExcludedAddresses = [];
-
 	public ?string $From = '';
+
+	/** @var string[] */
+	private array $ExcludedAddresses;
+
+	public function GetExcludedAddresses(string $file) : array
+	{
+		if(isset($this->ExcludedAddresses) == false)
+			$this->ExcludedAddresses = IO::ReadAllLines($file);
+		return $this->ExcludedAddresses;
+	}
 }

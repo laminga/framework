@@ -27,7 +27,9 @@ class Settings
 
 	public bool $updateGoogleBingSitemap = false;
 	public bool $readonlyForMaintenance = false;
-
+	public string $readonlyForMaintenanceMessage = 'El sitio se encuentra en mantenimiento. <p>Debido a esto,'
+		. ' solo las operaciones de consulta (lectura) están habilitadas. <p>Por favor,'
+		. ' reintente nuevamente más tarde. Disculpas por las molestias ocasionadas.';
 	public string $applicationName = 'AppName';
 	public string $currentCountry = 'Argentina';
 
@@ -40,9 +42,7 @@ class Settings
 
 	public string $forceIfModifiedReload = '31/1/1980';
 	public bool $useOldInstitutions = true;
-	public bool $useOldProjects = true;
 
-	public bool $useProjects = false;
 	public bool $useEvents = true;
 	public bool $useProfiles = true;
 
@@ -80,6 +80,8 @@ class Settings
 
 	public ?string $boxingContent;
 	public bool $isFramed = false;
+
+	public int $curlTimeout = 10;
 
 	public $timerStart = '';
 

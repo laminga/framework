@@ -11,8 +11,9 @@ class DateTest extends TestCaseBase
 {
 	public function testFormattedDateToDateTime() : void
 	{
-		$this->assertEquals(Date::FormattedDateToDateTime('aaa'), false);
 		$this->assertInstanceOf(\DateTime::class, Date::FormattedDateToDateTime('2010-01-01@00.00.01'));
+		$this->expectException(ErrorException::class);
+		Date::FormattedDateToDateTime('random text');
 	}
 
 	public function testDateNotPast() : void
@@ -26,7 +27,7 @@ class DateTest extends TestCaseBase
 	public function testDateNotPastException() : void
 	{
 		$this->expectException(ErrorException::class);
-		Date::DateNotPast('aaaaaa', 9);
+		Date::DateNotPast('random text', 9);
 	}
 
 	public function testDateNotPastException1() : void

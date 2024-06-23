@@ -97,7 +97,8 @@ class SQLiteList
 			$this->db->busyTimeout(30000);
 		$this->path = $path;
 		$this->Execute('PRAGMA synchronous=OFF');
-		$this->Execute('PRAGMA journal_mode=WAL');
+		if ($readonly == false)
+			$this->Execute('PRAGMA journal_mode=WAL');
 		Profiling::EndTimer();
 	}
 

@@ -216,7 +216,7 @@ class GeoIp
 
 		$country = self::GetCountry($ip);
 
-		if($country !== null)
+		if(isset($country->names['es']))
 			return $country->names['es'];
 		return '';
 	}

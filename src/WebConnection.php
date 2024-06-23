@@ -40,7 +40,7 @@ class WebConnection
 		$userAgent = 'Mozilla/5.0 (Windows NT 6.0; rv:21.0) Gecko/20100101 Firefox/21.0';
 		$this->ch = curl_init();
 
-		curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, Context::Settings()->curlTimeout);
 		curl_setopt($this->ch, CURLOPT_USERAGENT, $userAgent);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -441,7 +441,7 @@ class WebConnection
 			{
 				if ($ret != '')
 					$ret .= '&';
-				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, '@'))
+				if (is_a($subValues, 'CURLFile'))
 					$hasFile = true;
 				else
 				{

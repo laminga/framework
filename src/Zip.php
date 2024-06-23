@@ -201,7 +201,7 @@ class Zip
 		}
 	}
 
-	public function Extract(string $path, array $files = null) : int
+	public function Extract(string $path, ?array $files = null) : int
 	{
 		$zip = new \ZipArchive();
 

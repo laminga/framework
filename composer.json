@@ -18,7 +18,7 @@
 		"defuse/php-encryption": "^2.2",
 		"geoip2/geoip2": "^2.9",
 		"lusitanian/oauth": "^0.8.11",
-		"mobiledetect/mobiledetectlib": "^2.8",
+		"mobiledetect/mobiledetectlib": "^3.74",
 		"rodrigoq/phpmailersendgrid": "^1.0",
 		"simple-html-dom/simple-html-dom": "*",
 		"twig/twig": "^3.00"

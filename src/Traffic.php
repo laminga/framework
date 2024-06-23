@@ -2,6 +2,7 @@
 
 namespace minga\framework;
 
+use Detection\MobileDetect;
 use minga\framework\locking\TrafficLock;
 
 class Traffic
@@ -162,7 +163,7 @@ class Traffic
 
 	private static function GetDevice() : string
 	{
-		$detect = new \Mobile_Detect();
+		$detect = new MobileDetect();
 		if($detect->isTablet())
 			return 'Tablet';
 		else if($detect->isMobile())
@@ -173,14 +174,14 @@ class Traffic
 
 	private static function IsMobileOrTablet() : bool
 	{
-		$detect = new \Mobile_Detect();
+		$detect = new MobileDetect();
 		return $detect->isMobile() || $detect->isTablet();
 	}
 
 	private static function GetLimit() : int
 	{
 		// PDG: comentado por performance..
-		// $detect = new \Mobile_Detect();
+		// $detect = new MobileDetect();
 		// if(self::IsMobileOrTablet())
 		// 	return self::GetMobileLimit();
 		// else
