@@ -28,6 +28,8 @@ class KeysSettings
 	public string $AddThisKey = '';
 	public string $SendGridApiKey = '';
 
+	public string $RemoteBackupAuthKey = '';
+
 	public string $MicrosftSpeechToTextKey = '';
 	public string $MicrosftSpeechToTextRegion = '';
 
@@ -46,6 +48,17 @@ class KeysSettings
 			throw new ErrorException(Context::Trans('La clave HashKeyed no está configurada. Agregarla en el archivo /config/settings.php.'));
 
 		return base64_decode($this->HashKeyedKey);
+	}
+
+	public function IsRemoteBackupAuthKeyValid($key) : bool
+	{
+		if (
+			$this->RemoteBackupAuthKey == '' ||
+			$key != $this->RemoteBackupAuthKey
+		)
+			return false;
+		else
+			return true;
 	}
 
 	public function GetGoogleMapsCount() : int

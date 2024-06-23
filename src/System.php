@@ -186,7 +186,6 @@ class System
 
 		$val = 0;
 		$command = IO::EscapeLongFilename($command);
-
 		exec($command . ' ' . trim($str) . $stdErr, $lines, $val);
 		return $val;
 	}
