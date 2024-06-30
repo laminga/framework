@@ -495,7 +495,7 @@ class Db
 			. ' WHERE ' . implode(' AND ', $where);
 
 		$ret = $this->doExecuteNamedParams($sql, $params);
-	
+
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
@@ -660,7 +660,7 @@ class Db
 		$this->ensureBegin();
 		$sql = "DROP TABLE IF EXISTS " . self::QuoteTable($table);
 		$this->execDDL($sql);
-	
+
 		Profiling::EndTimer();
 	}
 
@@ -698,7 +698,7 @@ class Db
 		$this->ensureBegin();
 		$sql = "RENAME TABLE " . self::QuoteTable($tableSource) . " TO " . self::QuoteTable($tableTarget);
 		$this->execDDL($sql);
-	
+
 		Profiling::EndTimer();
 	}
 
