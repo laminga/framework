@@ -14,6 +14,11 @@ class IO
 		return true;
 	}
 
+	/**
+	 * Copia los archivos recursivos BORRANDO antes el destino
+	 * y luego de copiar, el origen.
+	 * No mueve estrictamente hablando.
+	 */
 	public static function MoveDirectoryContents(string $dirSource, string $target) : void
 	{
 		self::EnsureExists($target);
@@ -617,6 +622,10 @@ class IO
 		return 'data:' . $type . ';base64,' . base64_encode(file_get_contents($file_path));
 	}
 
+	/**
+	 * Copia el directorio al destino y luego borra el de origen.
+	 * No mueve estrictamente hablando.
+	 */
 	public static function MoveDirectory(string $dirSource, string $dirDest, $dirName = "", ?array $exclusions = null, $timeFrom = null, bool $createEmptyFolders = true) : void
 	{
 		self::CopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders);
