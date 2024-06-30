@@ -52,13 +52,8 @@ class KeysSettings
 
 	public function IsRemoteBackupAuthKeyValid($key) : bool
 	{
-		if (
-			$this->RemoteBackupAuthKey == '' ||
-			$key != $this->RemoteBackupAuthKey
-		)
-			return false;
-		else
-			return true;
+		return $this->RemoteBackupAuthKey != ''
+			&& hash_equals($this->RemoteBackupAuthKey, $key);
 	}
 
 	public function GetGoogleMapsCount() : int
