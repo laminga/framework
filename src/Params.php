@@ -187,8 +187,8 @@ class Params
 		if ($maxFileSize != -1 && $_FILES[$field]['size'] > $maxFileSize)
 			throw new ErrorException(Context::Trans('El archivo excede el tamaño máximo.'));
 
-		$ext = Extensions::GetExtensionFromMimeType($_FILES[$field]['type']);
-		if(in_array($ext, $validExtensions) == false)
+		$ext = self::GetValidExtension($_FILES[$field]['type'], $validExtensions);
+		if($ext == '')
 			throw new ErrorException(Context::Trans('El formato del archivo no es válido.'));
 
 		$tmpFile = IO::GetTempFilename() . '.' . $ext;
@@ -197,6 +197,17 @@ class Params
 			throw new ErrorException(Context::Trans('Error al guardar el archivo.'));
 
 		return $tmpFile;
+	}
+
+	private static function GetValidExtension(string $mime, array $validExtensions) : string
+	{
+		$exts = Extensions::GetAllExtensionsFromMimeType($mime);
+		foreach($exts as $ext)
+		{
+			if(in_array($ext, $validExtensions))
+				return $ext;
+		}
+		return '';
 	}
 
 	public static function FromPath($position, $default = null)
