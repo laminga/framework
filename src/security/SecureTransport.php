@@ -66,7 +66,7 @@ class SecureTransport
 		return $params;
 	}
 
-	public static function PostHashIsValid() : bool
+	public static function PostHashIsValid(string $fileField = '', string $filename = '') : bool
 	{
 		$hmac = Params::SafePost('hmac');
 		if($hmac == '')
@@ -77,8 +77,27 @@ class SecureTransport
 		if($rnd == '')
 			return false;
 
+		if($fileField != '')
+		{
+			$fileHash = Params::SafePost($fileField . '_hash');
+			if($fileHash == '')
+				return false;
+		}
+
 		$res = self::HashParams($_POST, $rnd);
-		return hash_equals($hmac, $res['hmac']);
+		$ret = hash_equals($hmac, $res['hmac']);
+		if($ret == false || $fileField == '')
+			return $ret;
+
+		return self::ValidateFileHash($fileHash, $filename);
+	}
+
+	public static function ValidateFileHash(string $fileHash, string $filename) : bool
+	{
+		if(file_exists($filename) == false)
+			return false;
+		$hash = hash_file('sha256', $filename);
+		return hash_equals($fileHash, $hash);
 	}
 }
 
