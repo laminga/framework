@@ -311,6 +311,13 @@ class Extensions
 				// 'pptx',
 				// 'ott',
 			],
+			//tar
+			'application/x-tar' => [
+				'tar',
+				'tar.bz2',
+				'tar.gz',
+				'tar.xz',
+			],
 
 			//binario
 			// 'application/octet-stream' => ['docx'],
@@ -402,13 +409,19 @@ class Extensions
 		];
 	}
 
-	public static function GetExtensionFromMimeType(string $mime) : string
+	public static function GetAllExtensionsFromMimeType(string $mime) : array
 	{
 		$mime = Str::ToLower($mime);
 		$arr = self::ValidMimeTypes();
 		if(isset($arr[$mime]))
-			return $arr[$mime][0];
+			return $arr[$mime];
 		Log::HandleSilentException(new \Exception('No se encontró extensión para mime: ' . $mime));
 		throw new ErrorException('No se encontró extensión para el tipo');
+	}
+
+	public static function GetExtensionFromMimeType(string $mime) : string
+	{
+		$ret = self::GetAllExtensionsFromMimeType($mime);
+		return $ret[0];
 	}
 }
