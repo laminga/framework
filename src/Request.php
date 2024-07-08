@@ -49,7 +49,14 @@ class Request
 			return null;
 		return $parts[1];
 	}
-
+	public static function GetLastUriPart(): ?string
+	{
+		$uri = self::GetRequestURI(true);
+		$parts = explode('/', $uri);
+		if (count($parts) < 1)
+			return null;
+		return $parts[count($parts) - 1];
+	}
 	public static function GetThirdUriPart() : ?string
 	{
 		$uri = self::GetRequestURI(true);
