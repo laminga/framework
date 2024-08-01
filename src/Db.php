@@ -309,6 +309,8 @@ class Db
 			. ' VALUES (' . rtrim(str_repeat('?,', count($data)), ',') . ')';
 
 		$ret = $this->doExecute($query, array_values($data));
+
+		$this->markTableUpdate($tableName);
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
@@ -343,6 +345,7 @@ class Db
 
 		$query = 'DELETE FROM ' . self::QuoteTable($tableName) . ' WHERE ' . implode(' AND ', $criteria);
 		$ret = $this->doExecuteNamedParams($query, $identifier);
+		$this->markTableUpdate($tableName);
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
@@ -356,6 +359,7 @@ class Db
 			. ' WHERE ' . self::QuoteColumn($columnName)
 			. ' IN (' . self::JoinPlaceholders($values) . ')';
 		$ret = $this->doExecute($query, $values);
+		$this->markTableUpdate($tableName);
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
@@ -495,6 +499,8 @@ class Db
 			. ' WHERE ' . implode(' AND ', $where);
 
 		$ret = $this->doExecuteNamedParams($sql, $params);
+
+		$this->markTableUpdate($tableName);
 
 		Performance::EndDbWait();
 		Profiling::EndTimer();
@@ -654,12 +660,34 @@ class Db
 		}
 	}
 
-	public function dropTable(string $table) : void
+	public function markTableUpdate(string $table): void
+	{
+		if (Context::Settings()->Db()->LogTableUpdateTime === false)
+			return;
+
+		Profiling::BeginTimer();
+
+		$folder = Context::Paths()->GetTableUpdatePath();
+		IO::EnsureExists($folder);
+
+		if (Str::ContainsAny($table, [".", "\\", "/", ":"]))
+			throw new ErrorException("Nombre de tabla no válido");
+		
+		$file = $folder . '/' . Str::ToLower($table);
+		touch($file);
+		
+		Profiling::EndTimer();
+	}
+
+
+	public function dropTable(string $tableName) : void
 	{
 		Profiling::BeginTimer();
 		$this->ensureBegin();
-		$sql = "DROP TABLE IF EXISTS " . self::QuoteTable($table);
+		$sql = "DROP TABLE IF EXISTS " . self::QuoteTable($tableName);
 		$this->execDDL($sql);
+
+		$this->markTableUpdate($tableName);
 
 		Profiling::EndTimer();
 	}
@@ -698,6 +726,9 @@ class Db
 		$this->ensureBegin();
 		$sql = "RENAME TABLE " . self::QuoteTable($tableSource) . " TO " . self::QuoteTable($tableTarget);
 		$this->execDDL($sql);
+
+		$this->markTableUpdate($tableSource);
+		$this->markTableUpdate($tableTarget);
 
 		Profiling::EndTimer();
 	}

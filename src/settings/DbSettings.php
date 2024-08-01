@@ -20,6 +20,8 @@ class DbSettings
 
 	public $SpecialWords = [];
 
+	public bool $LogTableUpdateTime = false;
+
 	public bool $ForceStrictTables = false;
 	public bool $ForceOnlyFullGroupBy = false;
 

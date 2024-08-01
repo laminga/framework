@@ -22,6 +22,7 @@ class PathSettings
 	public string $SearchLogLocalPath = '/search';
 	public string $StorageCaches = '/caches';
 	public string $StorageData = '/data';
+	public string $TableUpdatePath = '/timestamps';
 	public string $TempPath = '/temp';
 	public string $TokensPath = '/tokens';
 	public string $TrafficLocalPath = '/traffic';
