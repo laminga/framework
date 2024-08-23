@@ -23,7 +23,6 @@ class ServersSettings
 	public string $PhpCli = 'php';
 	public string $MySqlDump = 'mysqldump';
 	public string $Gzip = 'gzip';
-	public bool $LoadLocalSignatures = false;
 	public bool $VeryifyTransactionServerCertificate = true;
 	public ?int $LoopLocalPort = null;
 	public string $LoopLocalHost = 'localhost';
@@ -67,7 +66,7 @@ class ServersSettings
 		$this->currentServer = $name;
 	}
 
-	public function CurrentIsMain() : bool
+	public function IsMainServerRequest() : bool
 	{
 		$server = $this->Current();
 		return $server->type == 'main';
