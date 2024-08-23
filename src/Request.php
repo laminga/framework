@@ -23,6 +23,18 @@ class Request
 		return self::$isGoogle;
 	}
 
+	public static function Protocol(): string
+	{
+		if (
+			isset($_SERVER['HTTPS']) &&
+			$_SERVER['HTTPS'] !== 'off' &&
+			$_SERVER['HTTPS'] !== ''
+		) {
+			return 'https';
+		}
+		return 'http';
+	}
+
 	public static function Referer() : string
 	{
 		return Params::SafeServer('HTTP_REFERER');

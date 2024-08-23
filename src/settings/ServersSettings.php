@@ -2,7 +2,9 @@
 
 namespace minga\framework\settings;
 
+use minga\framework\Str;
 use minga\framework\Context;
+use minga\framework\Request;
 use minga\framework\ErrorException;
 
 class ServersSettings
@@ -21,7 +23,8 @@ class ServersSettings
 	public string $PhpCli = 'php';
 	public string $MySqlDump = 'mysqldump';
 	public string $Gzip = 'gzip';
-
+	public bool $LoadLocalSignatures = false;
+	public bool $VeryifyTransactionServerCertificate = true;
 	public ?int $LoopLocalPort = null;
 	public string $LoopLocalHost = 'localhost';
 	public string $LoopLocalScheme = 'http';
@@ -29,11 +32,29 @@ class ServersSettings
 	public function RegisterServer(string $name, string $url, bool $isCDN = false) : void
 	{
 		$type = ($isCDN ? 'cdns' : 'main');
+		$this->doRegisterServer($name, $url, $type);
+	}
 
+	private function doRegisterServer(string $name, string $url, string $type): void
+	{
 		$server = new ServerItem($name, $type, $url);
 		if ($type == 'main')
 			$this->mainServerObj = $server;
 		$this->servers[$name] = $server;
+	}
+
+	public function IsTransactionServerRequest(): bool
+	{
+		$url = Request::Host() . Request::GetRequestURI(true);
+		$server = $this->GetTransactionServer();
+		$url_no_protocol = Str::EatUntil($url, "://");
+		$server_url_no_protocol = Str::EatUntil($server->publicUrl, "://");
+		return Str::StartsWith($url_no_protocol, $server_url_no_protocol);
+	}
+
+	public function RegisterTransactionServer(string $name, string $url): void
+	{
+		$this->doRegisterServer($name, $url, 'transactions');
 	}
 
 	public function RegisterCDNServer(string $name, string $url) : void
@@ -99,6 +120,16 @@ class ServersSettings
 		return true;
 	}
 
+	public function GetTransactionServer(): ServerItem
+	{
+		foreach ($this->servers as $key => $value) {
+			if ($value->type == 'transactions')
+				return $value;
+		}
+		return $this->Main();
+	}
+
+
 	public function GetCDNServers() : array
 	{
 		$ret = [];
@@ -123,7 +154,10 @@ class ServersSettings
 		foreach($cdns as $value)
 			$servers[] = $value->publicUrl;
 		if (count($servers) == 0)
-			$servers = [$this->Current()->publicUrl];
+		{
+			$tran = $this->GetTransactionServer();
+			$servers = [$tran->publicUrl];
+		}
 		return $servers;
 	}
 

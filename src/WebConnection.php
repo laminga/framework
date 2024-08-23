@@ -13,11 +13,11 @@ class WebConnection
 	private int $httpCode = 0;
 	private string $error = '';
 
-	private const Get = 'GET';
-	private const Post = 'POST';
-	private const Delete = 'DELETE';
-	private const Put = 'PUT';
-	private const Patch = 'PATCH';
+	private const GetMethod = 'GET';
+	private const PostMethod = 'POST';
+	private const DeleteMethod = 'DELETE';
+	private const PutMethod = 'PUT';
+	private const PatchMethod = 'PATCH';
 
 	public bool $throwErrors = true;
 	public ?string $logFile = null;
@@ -90,10 +90,19 @@ class WebConnection
 		$this->maxFileSize = $size;
 	}
 
-	public function Get(string $url, string $file = '', int $redirectCount = 0) : WebResponse
+	public function Get(string $url, string $file = '', int $redirectCount = 0, $args = null) : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute(self::Get, $url, $file);
+		// Agrega los parámetros
+		if ($args !== null) {
+			$argsAsString = self::PreparePostValues($args);
+			if (Str::Contains($url, "?") == false)
+				$url .= "?" . $argsAsString;
+			else
+				$url .= "&" . $argsAsString;
+		}
+		// Hace el pedido
+		$response = $this->doExecute(self::GetMethod, $url, $file);
 		$red = $redirectCount;
 
 		while ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
@@ -126,7 +135,7 @@ class WebConnection
 	public function Post(string $url, string $file = '', $args = null) : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute(self::Post, $url, $file, $args);
+		$response = $this->doExecute(self::PostMethod, $url, $file, $args);
 		Profiling::EndTimer();
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
@@ -143,7 +152,7 @@ class WebConnection
 	public function Put(string $url, string $file = '', $args = null) : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute(self::Put, $url, $file, $args);
+		$response = $this->doExecute(self::PutMethod, $url, $file, $args);
 		Profiling::EndTimer();
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
@@ -160,7 +169,7 @@ class WebConnection
 	public function Patch(string $url, string $file = '', $args = null) : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute(self::Patch, $url, $file, $args);
+		$response = $this->doExecute(self::PatchMethod, $url, $file, $args);
 		Profiling::EndTimer();
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
@@ -174,7 +183,7 @@ class WebConnection
 	public function Delete(string $url, string $file = '') : WebResponse
 	{
 		Profiling::BeginTimer();
-		$response = $this->doExecute(self::Delete, $url, $file);
+		$response = $this->doExecute(self::DeleteMethod, $url, $file);
 		Profiling::EndTimer();
 		if ($response->httpCode == 301 || $response->httpCode == 302 || $response->httpCode == 307)
 		{
@@ -267,9 +276,9 @@ class WebConnection
 			curl_setopt($this->ch, CURLOPT_POST, 0);
 		}
 
-		if ($method == self::Post)
+		if ($method == self::PostMethod)
 			curl_setopt($this->ch, CURLOPT_POST, 1);
-		else if ($method == self::Delete || $method == self::Patch || $method == self::Put)
+		else if ($method == self::DeleteMethod || $method == self::PatchMethod || $method == self::PutMethod)
 			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
 
 		$this->AppendLog($method . ' ' . $url);

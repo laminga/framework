@@ -173,6 +173,12 @@ class Arr
 		return $ret;
 	}
 
+	public static function InArrayByNamedValue(array $arr, $itemName, $itemValue): int
+	{
+		$i = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
+		return ($i !== -1);
+	}
+
 	public static function IndexOfByNamedValue(array $arr, $itemName, $itemValue) : int
 	{
 		for($n = 0; $n < count($arr); $n++)
