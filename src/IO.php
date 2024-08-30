@@ -14,22 +14,33 @@ class IO
 		return true;
 	}
 
-	/**
-	 * Copia los archivos recursivos BORRANDO antes el destino
-	 * y luego de copiar, el origen.
-	 * No mueve estrictamente hablando.
-	 */
-	public static function MoveDirectoryContents(string $dirSource, string $target) : void
+	public static function MoveDirectoryContents(string $origen, string $destino)
 	{
-		self::EnsureExists($target);
-		// limpia
-		$dirname = substr($dirSource, strrpos($dirSource, "/") + 1);
-		if (file_exists($target . "/" . $dirname))
-			self::RemoveDirectory($target . "/" . $dirname);
-		// copia
-		self::CopyDirectory($dirSource, $target);
-		// borra
-		self::ClearDirectory($dirSource, true);
+		// Crear el directorio de destino si no existe
+		if (!file_exists($destino)) {
+			mkdir($destino, 0777, true);
+		}
+
+		// Abrir el directorio de origen
+		$dir = opendir($origen);
+
+		// Leer el contenido del directorio
+		while (($archivo = readdir($dir)) !== false) {
+			if ($archivo != '.' && $archivo != '..') {
+				$rutaOrigen = $origen . '/' . $archivo;
+				$rutaDestino = $destino . '/' . $archivo;
+
+				if (is_dir($rutaOrigen)) {
+					// Si es un directorio, llamar recursivamente a la función
+					self::MoveDirectoryContents($rutaOrigen, $rutaDestino);
+				} else {
+					// Si es un archivo, moverlo
+					rename($rutaOrigen, $rutaDestino);
+				}
+			}
+		}
+		// Cerrar el directorio
+		closedir($dir);
 	}
 
 	public static function ReadAllText(string $path, $maxLength = -1)
@@ -374,21 +385,21 @@ class IO
 		return $dir . $file;
 	}
 
-	public static function EnsureExists(string $directory) : void
+	public static function EnsureExists(string $directory, int $permissions = 0777) : void
 	{
 		if (is_dir($directory) == false)
 		{
 			self::EnsureExists(dirname($directory));
-			self::CreateDirectory($directory);
+			self::CreateDirectory($directory, $permissions);
 		}
 	}
 
-	public static function CreateDirectory(string $directory) : void
+	public static function CreateDirectory(string $directory, int $permissions = 0777) : void
 	{
 		try
 		{
 			if (is_dir($directory) == false)
-				mkdir($directory);
+				mkdir($directory, $permissions);
 		}
 		catch (\Exception $e)
 		{
@@ -693,8 +704,7 @@ class IO
 
 		if ($createEmptyFolders)
 		{
-			self::EnsureExists($dirDest);
-			mkdir($dirDest . '/' . $dirName, 0750);
+			self::EnsureExists($dirDest . '/' . $dirName, 0750);
 		}
 
 		while($file = readdir($dirHandle))
