@@ -8,9 +8,9 @@ class Request
 
 	public static function IsSecure() : bool
 	{
-		return Params::SafeServer('HTTPS') == 'on'
-			|| Params::SafeServer('HTTP_X_FORWARDED_PROTO') == 'https'
-			|| Params::SafeServer('HTTP_X_FORWARDED_SSL') == 'on';
+		return
+			(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+			|| $_SERVER['SERVER_PORT'] == 443;
 	}
 
 	public static function IsGoogle() : bool

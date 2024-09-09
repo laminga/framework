@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class Cookies
 {
-	public static function SetCookie(string $name, $value, int $expireDays = 30) : void
+	public static function SetCookie(string $name, $value, int $expireDays = 30, bool $allowCrossSite = false) : void
 	{
 		$expire = time() + 60 * 60 * 24 * $expireDays;
 
@@ -16,7 +16,22 @@ class Cookies
 			$host = parse_url(Context::Settings()->GetPublicUrl(), PHP_URL_HOST);
 		if (Str::Contains($host, ":"))
 			$host = explode(":", $host)[0];
-		$ret = setcookie($name, $value, $expire, '/', $host, $secure, true);
+
+		$cookie_options = array(
+			'expires' => $expire,
+			'path' => '/',
+			'domain' => $host,
+			// leading dot for compatibility or use subdomain
+			'secure' => $secure,
+			// or false
+			'httponly' => true
+		);
+		if (Context::Settings()->allowCrossSiteSessionCookie)
+		{
+			$cookie_options['samesite'] = 'None'; // None || Lax || Strict
+			$cookie_options['secure'] = true;
+		}
+		$ret = setcookie($name, $value, $cookie_options);
 
 		if($ret === false)
 			Log::HandleSilentException(new ErrorException('SetCookie'));
