@@ -8,6 +8,7 @@ class WebResponse
 	public string $error = '';
 	public $file;
 	public $contentType;
+	public $content = null;
 	public $uri;
 	public bool $success;
 	public array $headers = [];

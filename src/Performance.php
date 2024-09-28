@@ -21,10 +21,12 @@ class Performance
 
 	private static ?string $controller = null;
 	private static ?string $method = null;
+
 	private static int $hitCount = 1;
 	private static int $lockedMs = 0;
 	private static int $dbMs = 0;
 	private static int $dbHitCount = 0;
+	private static int $errorCount = 0;
 	private static string $lockedClass = '';
 	private static array $locksByClass = [];
 	private static ?float $timeStartLocked = null;
@@ -80,10 +82,14 @@ class Performance
 			Log::HandleSilentException($e);
 		}
 		self::$hitCount = 0;
+		self::$errorCount = 0;
 
 		self::CheckMemoryPeaks();
 	}
-
+	public static function GetCurrentErrorCount() : bool
+	{
+		return self::$errorCount;
+	}
 	private static function CheckMemoryPeaks() : void
 	{
 		if (Context::Settings()->Log()->LogMemoryPeaks == false)
@@ -113,6 +119,11 @@ class Performance
 	{
 		self::$lockedClass = $class;
 		self::$timeStartLocked = microtime(true);
+	}
+
+	public static function IncrementErrors(): void
+	{
+		self::$errorCount++;
 	}
 
 	public static function BeginDbWait() : void
@@ -630,11 +641,14 @@ class Performance
 		if (count($parts) > 5)
 		{
 			$p6 = (int)$parts[5];
-			$p7 = (int)$parts[6];
 		}
 		else
 		{
 			$p6 = 0;
+		}
+		if (count($parts) > 6) {
+			$p7 = (int) $parts[6];
+		} else {
 			$p7 = 0;
 		}
 		if (count($parts) > 7)

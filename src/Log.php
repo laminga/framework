@@ -419,6 +419,7 @@ class Log
 	 */
 	public static function LogException($exception, bool $silent = false) : string
 	{
+		Performance::IncrementErrors();
 		$message = $exception->getMessage();
 		if ($silent)
 			$message .= ' (silently processed)';
