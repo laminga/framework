@@ -86,7 +86,7 @@ class Performance
 
 		self::CheckMemoryPeaks();
 	}
-	public static function GetCurrentErrorCount() : bool
+	public static function GetCurrentErrorCount() : int
 	{
 		return self::$errorCount;
 	}
