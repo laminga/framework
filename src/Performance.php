@@ -399,6 +399,23 @@ class Performance
 		return $extraHits[$index];
 	}
 
+	private static function CheckErrorLimits(array $extraHits): void
+	{
+		// Controla errores
+		$labels = Context::ExtraHitsLabels();
+		$i = Arr::IndexOf($labels, 'Errores');
+		if ($i === -1)
+			return;
+
+		$errorCount = $extraHits[$i];
+		if ($errorCount == Context::Settings()->Limits()->WarningDaylyErrors) 
+		{
+			Performance::SendPerformanceWarning(
+				'errores diarios',
+				Context::Settings()->Limits()->WarningDaylyErrors. ' errores', $errorCount . ' errores');
+		}
+	}
+
 	private static function SaveDaylyUsage(int $ellapsedMilliseconds) : array
 	{
 		$days = self::ReadDaysValues();
@@ -408,8 +425,10 @@ class Performance
 
 		$extraHits = Context::ExtraHits();
 
-		self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs,
+		$currentValues = self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs,
 			Request::IsGoogle(), self::$mailsSent, self::$dbMs, self::$dbHitCount, $extraHits);
+
+		self::CheckErrorLimits($currentValues[7]);
 
 		$daylyProcessor = self::ResolveFilenameDayly();
 		IO::WriteIniFile($daylyProcessor, $days);
@@ -586,7 +605,7 @@ class Performance
 	}
 
 	private static function IncrementLargeKey(array &$arr, $key, int $value, int $newHits, int $newLocked,
-		bool $isGoogleHit, int $mailCount, int $newDbMs, int $newDbHits, array $newExtraHits = []) : void
+		bool $isGoogleHit, int $mailCount, int $newDbMs, int $newDbHits, array $newExtraHits = []) : array
 	{
 		if (isset($arr[$key]) == false)
 		{
@@ -616,6 +635,8 @@ class Performance
 		}
 		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails
 			. ';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
+
+		return [$hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $newExtraHits];
 	}
 
 	private static function ParseHit(string $value, ?string &$hits, ?string &$duration, ?string &$locked,
