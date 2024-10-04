@@ -408,7 +408,7 @@ class Performance
 			return;
 
 		$errorCount = $extraHits[$i];
-		if ($errorCount == Context::Settings()->Limits()->WarningDaylyErrors) 
+		if ($errorCount == Context::Settings()->Limits()->WarningDaylyErrors)
 		{
 			Performance::SendPerformanceWarning(
 				'errores diarios',
@@ -520,10 +520,10 @@ class Performance
 			return;
 		// Manda email....
 		$server = Str::ToUpper(Context::Settings()->Servers()->Current()->name);
-
+		$host = Str::Replace(Context::Settings()->Servers()->Current()->publicUrl, "https://", "");
 		$mail = new Mail();
 		$mail->to = Context::Settings()->Mail()->NotifyAddress;
-		$mail->subject = 'ALERTA ADMINISTRATIVA de ' . Context::Settings()->applicationName . ' ' . $server . ' (' . $metric . ' > ' . $limit . ')';
+		$mail->subject = 'ALERTA ADMINISTRATIVA de ' . Context::Settings()->applicationName . ' ' . $server . ' (' . $metric . ' > ' . $limit . ') - ' . $host;
 		$vals = [
 			'metric' => $metric,
 			'limit' => $limit,

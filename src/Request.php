@@ -35,6 +35,13 @@ class Request
 		return 'http';
 	}
 
+	public static function IP($default = ''): string
+	{
+		$addr = Params::SafeServer('HTTP_X_FORWARDED_FOR', $default);
+		if ($addr === $default)
+			$addr = Params::SafeServer('REMOTE_ADDR', $default);
+		return $addr;
+	}
 	public static function Referer() : string
 	{
 		return Params::SafeServer('HTTP_REFERER');

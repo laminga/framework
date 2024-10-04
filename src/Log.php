@@ -108,7 +108,7 @@ class Log
 		$errorMessage = self::TrimMessage($errorMessage);
 
 
-		$remoteAddr = Params::SafeServer('REMOTE_ADDR', 'null');
+		$remoteAddr = Request::IP('null');
 		$text = self::FormatRequest($agent, $referer, $remoteAddr,
 			$errorUrl, 'JS');
 
@@ -230,7 +230,7 @@ class Log
 	{
 		$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
 		$referer = Params::SafeServer('HTTP_REFERER', 'null');
-		$remoteAddr = Params::SafeServer('REMOTE_ADDR', 'null');
+		$remoteAddr = Request::IP('null');
 		$requestUri = Params::SafeServer('REQUEST_URI', '');
 		$requestMethod = Params::SafeServer('REQUEST_METHOD', 'null');
 

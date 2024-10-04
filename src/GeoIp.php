@@ -14,7 +14,8 @@ class GeoIp
 
 	public static function GetCurrentIp() : string
 	{
-		$addr = Params::SafeServer('REMOTE_ADDR');
+		$addr = Request::IP();
+
 		if ($addr === '127.0.0.1' || self::IpIsPrivate($addr)) {
 			// Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
 			$conn = new WebConnection();
@@ -223,7 +224,7 @@ class GeoIp
 
 	public static function GetClientCountryCode() : string
 	{
-		$ip = Params::SafeServer('REMOTE_ADDR');
+		$ip = Request::IP();
 		if ($ip == '')
 			return '--';
 		$country = self::GetCountry($ip);
