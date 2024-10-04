@@ -69,15 +69,21 @@ class System
 
 	public static function GetPingTimeMs() : float
 	{
+		if (Context::Settings()->Db()->NoDbConnection())
+			return -1;
+
 		$start = microtime(true);
 		$db = new Db();
-		$ret = $db->fetchScalar('SELECT @@version;');
+		$db->fetchScalar('SELECT @@version;');
 		$time_elapsed_secs = microtime(true) - $start;
 		return round($time_elapsed_secs * 1000, 2);
 	}
 
+
 	public static function GetMySQLVersion() : string
 	{
+		if (Context::Settings()->Db()->NoDbConnection())
+			return '-';
 		$db = new Db();
 		return $db->fetchScalar('SELECT @@version;');
 	}

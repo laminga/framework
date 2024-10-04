@@ -243,6 +243,10 @@ class WebConnection
 		return $newurl . $url;
 	}
 
+	public function SetCookies(string $cookiesValue) : void
+	{
+		$this->SetHeader('Cookie', $cookiesValue);
+	}
 	/**
 	 * @param string|array|null $args
 	 */

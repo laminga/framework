@@ -27,6 +27,12 @@ class DbSettings
 
 	public bool $SetTimeZone = true;
 
+	public function NoDbConnection(): bool
+	{
+		return ($this->NoDb || $this->Host == '' ||
+			$this->Name == '' || $this->User == '');
+	}
+
 	public function SetDatabase(string $host, string $dbName, string $user, string $password, string $charset = 'utf8', int $port = 3306) : void
 	{
 		$this->Name = $dbName;

@@ -38,6 +38,12 @@ class Request
 	public static function IP($default = ''): string
 	{
 		$addr = Params::SafeServer('HTTP_X_FORWARDED_FOR', $default);
+		if ($addr !== $default)
+		{	// Si hay varias, retiene solo la primera
+			$parts = explode(',', $addr);
+			if (sizeof($parts) > 1)
+				$addr = $parts[0];
+		}
 		if ($addr === $default)
 			$addr = Params::SafeServer('REMOTE_ADDR', $default);
 		return $addr;
