@@ -43,6 +43,12 @@ class WebResponse
 			|| isset($this->headers['location']);
 	}
 
+	public function IsRedirect() : bool
+	{
+		return (($this->httpCode === 301 || $this->httpCode === 302) &&
+			$this->HasLocationHeader());
+	}
+
 	public function GetLocationHeader()
 	{
 		if(isset($this->headers['Location']))

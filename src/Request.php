@@ -106,6 +106,11 @@ class Request
 		return Params::SafeServer('QUERY_STRING');
 	}
 
+	public static function IsInternal() : bool
+	{
+		return Params::SafeServer('HTTP_INTERNAL') === "1";
+	}
+
 	public static function GetHttpRange() : ?string
 	{
 		return Params::SafeServer('HTTP_RANGE', null);

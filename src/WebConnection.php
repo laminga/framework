@@ -45,6 +45,8 @@ class WebConnection
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, false);
+		curl_setopt($this->ch, CURLOPT_MAXREDIRS, 10);
+
 		if ($path == '')
 		{
 			$this->bucket = FileBucket::Create();
@@ -377,7 +379,7 @@ class WebConnection
 			|| isset($headers['content-length']);
 	}
 
-	private function SetHeader(string $key, string $value) : void
+	public function SetHeader(string $key, string $value) : void
 	{
 		$valueItem = $key . ": " . $value;
 		for($n = 0; $n < count($this->requestHeaders); $n++)
