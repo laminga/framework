@@ -15,16 +15,19 @@ class GeoIp
 	public static function GetCurrentIp() : string
 	{
 		$addr = Request::IP();
-
-		if ($addr === '127.0.0.1' || self::IpIsPrivate($addr)) {
-			// Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
-			$conn = new WebConnection();
-			$conn->Initialize();
-			$response = $conn->Get('https://api.ipify.org?format=json');
-			$myIp = json_decode($response->GetString(), true);
-			$conn->Finalize();
-			if ($myIp !== null && array_key_exists('ip', $myIp))
-				$addr = $myIp['ip'];
+		if (Context::Settings()->Debug()->debug)
+		{
+			if ($addr === '127.0.0.1' || self::IpIsPrivate($addr)) 
+			{
+				// Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
+				$conn = new WebConnection();
+				$conn->Initialize();
+				$response = $conn->Get('https://api.ipify.org?format=json');
+				$myIp = json_decode($response->GetString(), true);
+				$conn->Finalize();
+				if ($myIp !== null && array_key_exists('ip', $myIp))
+					$addr = $myIp['ip'];
+			}
 		}
 		return $addr;
 	}

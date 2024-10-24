@@ -161,7 +161,6 @@ class System
 
 		if(System::IsWindows())
 			$command = Str::RemoveBegining($command, './');
-
 		$lastLine = exec($command, $output, $return);
 
 		if($return !== 0 && $throwOnError)
