@@ -71,6 +71,10 @@ class WebConnection
 			$this->cherr = $handle;
 		}
 	}
+	public function SetUserAgent(string $userAgent) : void
+	{
+		curl_setopt($this->ch, CURLOPT_USERAGENT, $userAgent);
+	}
 
 	public function SetFollowRedirects(bool $value) : void
 	{
