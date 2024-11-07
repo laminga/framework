@@ -55,6 +55,31 @@ class System
 			'value' => $host . ' (' . $ip . ')',
 		];
 	}
+	public static function GetDiskInfoBytes(): array
+	{
+		$root = Context::Paths()->GetStorageRoot();
+		$storage = disk_free_space($root);
+		$tmp = sys_get_temp_dir();
+		$system = disk_free_space($tmp);
+		return ['Storage' => $storage, 'System' => $system];
+	}
+	public static function GetDiskInfo() : array
+	{
+		$root = Context::Paths()->GetStorageRoot();
+		$storage = disk_free_space($root);
+		$storageFormatted = round($storage / 1024 / 1024, 1) . "MB";
+		$tmp = sys_get_temp_dir();
+		$system = disk_free_space($tmp);
+		$systemFormatted = round($system / 1024 / 1024, 1) . "MB";
+
+		return [
+			['name' => 'Storage location', 'value' => $root],
+			['name' => 'Storage free space', 'value' => $storageFormatted, 'valueNumeric' => $storage],
+			['name' => 'System location', 'value' => $tmp],
+			['name' => 'System free space', 'value' => $systemFormatted, 'valueNumeric' => $system]
+		];
+	}
+
 
 	public static function GetDbInfo() : array
 	{

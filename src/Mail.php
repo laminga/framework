@@ -9,8 +9,11 @@ class Mail
 {
 	/** @var array<string,int>|string[]|string */
 	public $to;
+	/** @var array<string,int>|string[]|string */
+	public $cc;
 	/** @var string[]|string */
 	public $bcc;
+
 	public string $toCaption = "";
 	public string $replyTo = "";
 	public string $replyToCaption = "";
@@ -107,7 +110,10 @@ class Mail
 			case MailSettings::SendGrid:
 				$mail->isSendGrid();
 				$mail->SendGridApiKey = Context::Settings()->Keys()->SendGridApiKey;
+				$mail->SendGridHost = Context::Settings()->Mail()->SendGridHost;
 				break;
+
+
 			case MailSettings::File:
 				$mail->isFile();
 				$mail->EmailFilePath = Context::Settings()->Mail()->EmailFilePath;
@@ -138,6 +144,19 @@ class Mail
 		}
 		else
 			$mail->addAddress($to, $caption);
+	}
+
+
+	/**
+	 * @param string[]|string $cc
+	 */
+	protected function SetCC(PHPMailerSendGrid $mail, $cc, string $ccCaption): void
+	{
+		if (is_array($cc)) {
+			foreach ($cc as $address)
+				$mail->addCC($address);
+		} else
+			$mail->addCC($cc, $ccCaption);
 	}
 
 	protected function SetReplyTo(PHPMailerSendGrid $mail, string $replyTo, string $caption) : void

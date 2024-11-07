@@ -34,6 +34,8 @@ class MailSettings
 	public string $SMTPPassword = "";
 	public bool $SMTPAuth = false;
 
+	public string $SendGridHost = "";
+
 	public ?string $From = '';
 
 	/** @var string[] */

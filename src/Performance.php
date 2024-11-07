@@ -358,6 +358,7 @@ class Performance
 			// Llama a quienes precisan saber que el día cambió dentro del framework
 			self::DayCompleted(self::$warnToday);
 			Traffic::DayCompleted();
+			self::CheckDailyLimits();
 		}
 
 		PerformanceDaylyUsageLock::EndWrite();
@@ -366,6 +367,26 @@ class Performance
 		PerformanceDaylyLocksLock::EndWrite();
 	}
 
+	private static function CheckDailyLimits() : void
+	{
+		$diskInfo = System::GetDiskInfoBytes();
+
+		$storageMB = round($diskInfo['Storage'] / 1024 / 1024, 10);
+		if ($storageMB < Context::Settings()->Limits()->WarningMinimumFreeStorageSpaceMB)
+		{
+			Performance::SendPerformanceWarning(
+				'espacio en disco en Storage',
+				Context::Settings()->Limits()->WarningMinimumFreeStorageSpaceMB. ' MB', $storageMB . ' MB');
+		}
+
+		$systemMB = round($diskInfo['System'] / 1024 / 1024, 10);
+		if ($systemMB < Context::Settings()->Limits()->WarningMinimumFreeSystemSpaceMB) {
+			Performance::SendPerformanceWarning(
+				'espacio en disco en Sistema Operativo',
+				Context::Settings()->Limits()->WarningMinimumFreeSystemSpaceMB . ' MB', $systemMB . ' MB'
+			);
+		}
+	}
 	private static function DayCompleted(?string $newDay) : void
 	{
 		$folder = self::ResolveFolder('dayly');
@@ -407,12 +428,12 @@ class Performance
 		if ($i === -1)
 			return;
 
-		$errorCount = $extraHits[$i];
-		if ($errorCount == Context::Settings()->Limits()->WarningDaylyErrors)
+		$dailyErrorCount = $extraHits[$i];
+		if (self::$errorCount > 0 && $dailyErrorCount == Context::Settings()->Limits()->WarningDaylyErrors)
 		{
 			Performance::SendPerformanceWarning(
 				'errores diarios',
-				Context::Settings()->Limits()->WarningDaylyErrors. ' errores', $errorCount . ' errores');
+				Context::Settings()->Limits()->WarningDaylyErrors. ' errores', $dailyErrorCount . ' errores');
 		}
 	}
 

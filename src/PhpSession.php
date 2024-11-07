@@ -56,8 +56,9 @@ class PhpSession
 		return isset($_SESSION) != false || session_status() !== PHP_SESSION_NONE;
 	}
 
-	public static function CheckPhpSessionStarted($readOperation = false) : void
+	public static function CheckPhpSessionStarted($readOperation = false) : bool
 	{
+		$ret = false;
 		if (Context::Settings()->allowPHPsession)
 		{
 			if (isset($_SESSION) == false
@@ -67,6 +68,7 @@ class PhpSession
 				if (!$readOperation || $hasSession)
 				{
 					self::SessionStart();
+					$ret = true;
 					if (self::$sessionValues == null)
 						self::$sessionValues = $_SESSION;
 					session_write_close();
@@ -75,6 +77,7 @@ class PhpSession
 		}
 		else if (self::$sessionValues == null)
 			self::$sessionValues = [];
+		return $ret;
 	}
 
 	public static function GetSessionValue(string $key, $default = '')

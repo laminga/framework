@@ -30,6 +30,7 @@ class KeysSettings
 
 	public string $RemoteBackupAuthKey = '';
 	public string $DeploymentAuthKey = '';
+	public string $RemoteEmailKey = '';
 
 	public string $MicrosftSpeechToTextKey = '';
 	public string $MicrosftSpeechToTextRegion = '';

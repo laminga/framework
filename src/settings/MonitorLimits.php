@@ -35,6 +35,12 @@ class MonitorLimits
 
 	public $WarningRequestSeconds = 30;
 	public array $ExcludeIps = ['127.0.0.1'];
+
+	// Verifica diariamente el espacio libre
+	public int $WarningMinimumFreeStorageSpaceMB = 1000;
+	public int $WarningMinimumFreeSystemSpaceMB = 1000;
+
+
 }
 
 
