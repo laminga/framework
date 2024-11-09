@@ -13,6 +13,7 @@ class PhpSession
 			self::SessionStart();
 			session_unset();
 			session_destroy();
+			$_SERVER["HTTP_SESSION_ID"] = null;
 			// Crea una nueva
 			self::SessionStart();
 			session_regenerate_id();
@@ -58,17 +59,18 @@ class PhpSession
 
 	public static function CheckPhpSessionStarted($readOperation = false) : bool
 	{
-		$ret = false;
+		$newSessionStarted = false;
 		if (Context::Settings()->allowPHPsession)
 		{
-			if (isset($_SESSION) == false
-				&& session_status() === PHP_SESSION_NONE)
+			if (
+				self::$sessionValues === null /*isset($_SESSION) == false
+				&& session_status() === PHP_SESSION_NONE*/)
 			{
-				$hasSession = isset($_COOKIE["PHPSESSID"]);
+				$hasSession = isset($_COOKIE["PHPSESSID"]) || Params::SafeServer('HTTP_SESSION_ID', null);
 				if (!$readOperation || $hasSession)
 				{
+					$newSessionStarted = ($hasSession == false);
 					self::SessionStart();
-					$ret = true;
 					if (self::$sessionValues == null)
 						self::$sessionValues = $_SESSION;
 					session_write_close();
@@ -77,7 +79,7 @@ class PhpSession
 		}
 		else if (self::$sessionValues == null)
 			self::$sessionValues = [];
-		return $ret;
+		return $newSessionStarted;
 	}
 
 	public static function GetSessionValue(string $key, $default = '')
@@ -92,7 +94,17 @@ class PhpSession
 
 		return $default;
 	}
+	private static function RecoverSessionId(): void
+	{
+		$sessionId = Params::SafeServer('HTTP_SESSION_ID', null);
 
+//		if ($sessionId && preg_match('/^[a-zA-Z0-9,-]{1,128}$/', $sessionId)) {
+	//		echo 'gotit';
+		//	exit;
+		if ($sessionId)
+			session_id($sessionId);
+		//}
+	}
 	private static function SessionStart() : bool
 	{
 		if (ini_get('session.use_cookies') && isset($_COOKIE['PHPSESSID'])
@@ -115,6 +127,17 @@ class PhpSession
 		if (Context::Settings()->allowPHPSessionCacheResults)
 			session_cache_limiter('public');
 
-		return session_start();
+		// COOKIE-LESS SESSION
+		self::RecoverSessionId();
+		//session_set_cookie_params(0, '/', '', false, true);
+		//ini_set('session.use_cookies', '0');
+		//ini_set('session.use_only_cookies', '1');
+
+		$start = session_start();
+
+		// COOKIE-LESS SESSION
+		if ($start)
+			header('Session-Id: ' . session_id(), true);
+		return $start;
 	}
 }
