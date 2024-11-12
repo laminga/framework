@@ -62,17 +62,14 @@ class PhpSession
 		$newSessionStarted = false;
 		if (Context::Settings()->allowPHPsession)
 		{
-			if (
-				self::$sessionValues === null /*isset($_SESSION) == false
-				&& session_status() === PHP_SESSION_NONE*/)
+			if (self::$sessionValues === null)
 			{
 				$hasSession = isset($_COOKIE["PHPSESSID"]) || Params::SafeServer('HTTP_SESSION_ID', null);
 				if (!$readOperation || $hasSession)
 				{
 					$newSessionStarted = ($hasSession == false);
 					self::SessionStart();
-					if (self::$sessionValues == null)
-						self::$sessionValues = $_SESSION;
+					self::$sessionValues = $_SESSION;
 					session_write_close();
 				}
 			}
