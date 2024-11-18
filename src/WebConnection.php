@@ -71,6 +71,7 @@ class WebConnection
 			$this->cherr = $handle;
 		}
 	}
+
 	public function SetUserAgent(string $userAgent) : void
 	{
 		curl_setopt($this->ch, CURLOPT_USERAGENT, $userAgent);
@@ -253,6 +254,7 @@ class WebConnection
 	{
 		$this->SetHeader('Cookie', $cookiesValue);
 	}
+
 	/**
 	 * @param string|array|null $args
 	 */

@@ -17,15 +17,15 @@ class Cookies
 		if (Str::Contains($host, ":"))
 			$host = explode(":", $host)[0];
 
-		$cookie_options = array(
+		$cookie_options = [
 			'expires' => $expire,
 			'path' => '/',
 			'domain' => $host,
 			// leading dot for compatibility or use subdomain
 			'secure' => $secure,
 			// or false
-			'httponly' => true
-		);
+			'httponly' => true,
+		];
 		if (Context::Settings()->allowCrossSiteSessionCookie)
 		{
 			$cookie_options['samesite'] = 'None'; // None || Lax || Strict

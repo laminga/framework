@@ -73,7 +73,7 @@ class AppPaths
 		return $this->GetStorageRoot() . $this->PathName()->TokensPath;
 	}
 
-	public function GetTableUpdatePath(): string
+	public function GetTableUpdatePath() : string
 	{
 		return $this->GetStorageRoot() . $this->PathName()->TableUpdatePath;
 	}

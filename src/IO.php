@@ -14,7 +14,7 @@ class IO
 		return true;
 	}
 
-	public static function MoveDirectoryContents(string $origen, string $destino)
+	public static function MoveDirectoryContents(string $origen, string $destino) : void
 	{
 		// Crear el directorio de destino si no existe
 		if (!file_exists($destino)) {

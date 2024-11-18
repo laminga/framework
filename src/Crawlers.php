@@ -4,7 +4,6 @@ namespace minga\framework;
 
 class Crawlers
 {
-
 	public static function UserAgentIsCrawler() : bool
 	{
 		$agent = Params::SafeServer('HTTP_USER_AGENT');
@@ -91,5 +90,4 @@ class Crawlers
 			"aa" => "botAA-pdfconverter",
 		];
 	}
-
 }

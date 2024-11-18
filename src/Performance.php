@@ -86,10 +86,12 @@ class Performance
 
 		self::CheckMemoryPeaks();
 	}
+
 	public static function GetCurrentErrorCount() : int
 	{
 		return self::$errorCount;
 	}
+
 	private static function CheckMemoryPeaks() : void
 	{
 		if (Context::Settings()->Log()->LogMemoryPeaks == false)
@@ -121,7 +123,7 @@ class Performance
 		self::$timeStartLocked = microtime(true);
 	}
 
-	public static function IncrementErrors(): void
+	public static function IncrementErrors() : void
 	{
 		self::$errorCount++;
 	}
@@ -376,7 +378,7 @@ class Performance
 		{
 			Performance::SendPerformanceWarning(
 				'espacio en disco en Storage',
-				Context::Settings()->Limits()->WarningMinimumFreeStorageSpaceMB. ' MB', $storageMB . ' MB');
+				Context::Settings()->Limits()->WarningMinimumFreeStorageSpaceMB . ' MB', $storageMB . ' MB');
 		}
 
 		$systemMB = round($diskInfo['System'] / 1024 / 1024, 10);
@@ -387,6 +389,7 @@ class Performance
 			);
 		}
 	}
+
 	private static function DayCompleted(?string $newDay) : void
 	{
 		$folder = self::ResolveFolder('dayly');
@@ -420,7 +423,7 @@ class Performance
 		return $extraHits[$index];
 	}
 
-	private static function CheckErrorLimits(array $extraHits): void
+	private static function CheckErrorLimits(array $extraHits) : void
 	{
 		// Controla errores
 		$labels = Context::ExtraHitsLabels();
@@ -433,7 +436,7 @@ class Performance
 		{
 			Performance::SendPerformanceWarning(
 				'errores diarios',
-				Context::Settings()->Limits()->WarningDaylyErrors. ' errores', $dailyErrorCount . ' errores');
+				Context::Settings()->Limits()->WarningDaylyErrors . ' errores', $dailyErrorCount . ' errores');
 		}
 	}
 
@@ -689,7 +692,7 @@ class Performance
 			$p6 = 0;
 		}
 		if (count($parts) > 6) {
-			$p7 = (int) $parts[6];
+			$p7 = (int)$parts[6];
 		} else {
 			$p7 = 0;
 		}

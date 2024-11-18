@@ -2,10 +2,10 @@
 
 namespace minga\framework\settings;
 
-use minga\framework\Str;
 use minga\framework\Context;
-use minga\framework\Request;
 use minga\framework\ErrorException;
+use minga\framework\Request;
+use minga\framework\Str;
 
 class ServersSettings
 {
@@ -34,7 +34,7 @@ class ServersSettings
 		$this->doRegisterServer($name, $url, $type);
 	}
 
-	private function doRegisterServer(string $name, string $url, string $type): void
+	private function doRegisterServer(string $name, string $url, string $type) : void
 	{
 		$server = new ServerItem($name, $type, $url);
 		if ($type == 'main')
@@ -42,7 +42,7 @@ class ServersSettings
 		$this->servers[$name] = $server;
 	}
 
-	public function IsTransactionServerRequest(): bool
+	public function IsTransactionServerRequest() : bool
 	{
 		$url = Request::Host() . Request::GetRequestURI(true);
 		$server = $this->GetTransactionServer();
@@ -51,7 +51,7 @@ class ServersSettings
 		return Str::StartsWith($url_no_protocol, $server_url_no_protocol);
 	}
 
-	public function RegisterTransactionServer(string $name, string $url): void
+	public function RegisterTransactionServer(string $name, string $url) : void
 	{
 		$this->doRegisterServer($name, $url, 'transactions');
 	}
@@ -119,7 +119,7 @@ class ServersSettings
 		return true;
 	}
 
-	public function GetTransactionServer(): ServerItem
+	public function GetTransactionServer() : ServerItem
 	{
 		foreach ($this->servers as $key => $value) {
 			if ($value->type == 'transactions')
@@ -127,7 +127,6 @@ class ServersSettings
 		}
 		return $this->Main();
 	}
-
 
 	public function GetCDNServers() : array
 	{

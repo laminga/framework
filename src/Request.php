@@ -23,31 +23,32 @@ class Request
 		return self::$isGoogle;
 	}
 
-	public static function Protocol(): string
+	public static function Protocol() : string
 	{
 		if (
-			isset($_SERVER['HTTPS']) &&
-			$_SERVER['HTTPS'] !== 'off' &&
-			$_SERVER['HTTPS'] !== ''
+			isset($_SERVER['HTTPS'])
+			&& $_SERVER['HTTPS'] !== 'off'
+			&& $_SERVER['HTTPS'] !== ''
 		) {
 			return 'https';
 		}
 		return 'http';
 	}
 
-	public static function IP($default = ''): string
+	public static function IP($default = '') : string
 	{
 		$addr = Params::SafeServer('HTTP_X_FORWARDED_FOR', $default);
 		if ($addr !== $default)
 		{	// Si hay varias, retiene solo la primera
 			$parts = explode(',', $addr);
-			if (sizeof($parts) > 1)
+			if (count($parts) > 1)
 				$addr = $parts[0];
 		}
 		if ($addr === $default)
 			$addr = Params::SafeServer('REMOTE_ADDR', $default);
 		return $addr;
 	}
+
 	public static function Referer() : string
 	{
 		return Params::SafeServer('HTTP_REFERER');
@@ -74,7 +75,8 @@ class Request
 			return null;
 		return $parts[1];
 	}
-	public static function GetLastUriPart(): ?string
+
+	public static function GetLastUriPart() : ?string
 	{
 		$uri = self::GetRequestURI(true);
 		$parts = explode('/', $uri);
@@ -82,6 +84,7 @@ class Request
 			return null;
 		return $parts[count($parts) - 1];
 	}
+
 	public static function GetThirdUriPart() : ?string
 	{
 		$uri = self::GetRequestURI(true);

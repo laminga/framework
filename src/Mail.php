@@ -146,11 +146,10 @@ class Mail
 			$mail->addAddress($to, $caption);
 	}
 
-
 	/**
 	 * @param string[]|string $cc
 	 */
-	protected function SetCC(PHPMailerSendGrid $mail, $cc, string $ccCaption): void
+	protected function SetCC(PHPMailerSendGrid $mail, $cc, string $ccCaption) : void
 	{
 		if (is_array($cc)) {
 			foreach ($cc as $address)

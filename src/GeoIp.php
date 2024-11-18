@@ -17,7 +17,7 @@ class GeoIp
 		$addr = Request::IP();
 		if (Context::Settings()->Debug()->debug)
 		{
-			if ($addr === '127.0.0.1' || self::IpIsPrivate($addr)) 
+			if ($addr === '127.0.0.1' || self::IpIsPrivate($addr))
 			{
 				// Si estoy en el servidor de desarrollo, o navegando local, busco mi ip externa.
 				$conn = new WebConnection();

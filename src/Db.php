@@ -660,7 +660,7 @@ class Db
 		}
 	}
 
-	public function markTableUpdate(string $table): void
+	public function markTableUpdate(string $table) : void
 	{
 		if (Context::Settings()->Db()->LogTableUpdateTime === false)
 			return;
@@ -672,13 +672,12 @@ class Db
 
 		if (Str::ContainsAny($table, [".", "\\", "/", ":"]))
 			throw new ErrorException("Nombre de tabla no válido");
-		
+
 		$file = $folder . '/' . Str::ToLower($table);
 		touch($file);
-		
+
 		Profiling::EndTimer();
 	}
-
 
 	public function dropTable(string $tableName) : void
 	{

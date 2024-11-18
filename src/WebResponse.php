@@ -45,8 +45,8 @@ class WebResponse
 
 	public function IsRedirect() : bool
 	{
-		return (($this->httpCode === 301 || $this->httpCode === 302) &&
-			$this->HasLocationHeader());
+		return ($this->httpCode === 301 || $this->httpCode === 302)
+			&& $this->HasLocationHeader();
 	}
 
 	public function GetLocationHeader()

@@ -18,7 +18,8 @@ class DebugSettings
 	{
 		$this->sessionDebug = PhpSession::GetSessionValue("debugging", false);
 	}
-	public function SetSessionDebugging(bool $value): void
+
+	public function SetSessionDebugging(bool $value) : void
 	{
 		$this->sessionDebug = $value;
 		PhpSession::SetSessionValue("debugging", $value);
