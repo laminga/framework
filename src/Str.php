@@ -247,7 +247,8 @@ class Str
 		$name = self::Replace($name, "__", "_");
 		$name = self::Replace($name, "__", "_");
 		$name = self::Replace($name, "__", "_");
-		if (self::EndsWith($name, "_")) $name = substr($name, 0, strlen($name) - 1);
+		if (self::EndsWith($name, "_"))
+			$name = substr($name, 0, strlen($name) - 1);
 		return urlencode($name);
 	}
 
