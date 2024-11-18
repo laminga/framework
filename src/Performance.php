@@ -663,43 +663,36 @@ class Performance
 		return [$hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $newExtraHits];
 	}
 
-	private static function ParseHit(string $value, ?string &$hits, ?string &$duration, ?string &$locked,
+	private static function ParseHit(string $value, ?int &$hits = 0, ?int &$duration, ?int &$locked,
 		?int &$p4 = null, ?int &$p5 = null, ?int &$p6 = null, ?int &$p7 = null, ?array &$extra = null) : void
 	{
 		$parts = explode(';', $value);
-		$hits = $parts[0];
-		$duration = $parts[1];
+		$hits = (int)$parts[0];
+		$duration = (int)$parts[1];
+
+		$locked = 0;
 		if (count($parts) > 2)
-			$locked = $parts[2];
-		else
-			$locked = "0";
+			$locked = (int)$parts[2];
+
+		$p4 = 0;
+		$p5 = 0;
 		if (count($parts) > 3)
 		{
 			$p4 = (int)$parts[3];
 			$p5 = (int)$parts[4];
 		}
-		else
-		{
-			$p4 = 0;
-			$p5 = 0;
-		}
+
+		$p6 = 0;
 		if (count($parts) > 5)
-		{
 			$p6 = (int)$parts[5];
-		}
-		else
-		{
-			$p6 = 0;
-		}
-		if (count($parts) > 6) {
+
+		$p7 = 0;
+		if (count($parts) > 6)
 			$p7 = (int)$parts[6];
-		} else {
-			$p7 = 0;
-		}
+
+		$extra = [];
 		if (count($parts) > 7)
 			$extra = explode(',', $parts[7]);
-		else
-			$extra = [];
 	}
 
 	private static function ResolveFolder(string $month = '') : string

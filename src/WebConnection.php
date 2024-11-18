@@ -43,7 +43,7 @@ class WebConnection
 		curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, Context::Settings()->curlTimeout);
 		curl_setopt($this->ch, CURLOPT_USERAGENT, $userAgent);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, false);
 		curl_setopt($this->ch, CURLOPT_MAXREDIRS, 10);
 
@@ -66,7 +66,7 @@ class WebConnection
 		{
 			$this->logFile2 = $this->logFile . '.extra.txt';
 			$handle = fopen($this->logFile2, 'w');
-			curl_setopt($this->ch, CURLOPT_VERBOSE, 1);
+			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 			curl_setopt($this->ch, CURLOPT_STDERR, $handle);
 			$this->cherr = $handle;
 		}
@@ -285,11 +285,11 @@ class WebConnection
 		}
 		else
 		{
-			curl_setopt($this->ch, CURLOPT_POST, 0);
+			curl_setopt($this->ch, CURLOPT_POST, false);
 		}
 
 		if ($method == self::PostMethod)
-			curl_setopt($this->ch, CURLOPT_POST, 1);
+			curl_setopt($this->ch, CURLOPT_POST, true);
 		else if ($method == self::DeleteMethod || $method == self::PatchMethod || $method == self::PutMethod)
 			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
 
@@ -297,7 +297,7 @@ class WebConnection
 		$this->AppendLogData('File', $file);
 
 		curl_setopt($this->ch, CURLOPT_HEADER, false);
-		curl_setopt($this->ch, CURLOPT_NOBODY, 0);
+		curl_setopt($this->ch, CURLOPT_NOBODY, false);
 		$this->SetReferer($this->lastLocation);
 		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
 
@@ -547,10 +547,10 @@ class WebConnection
 		$ch = curl_init();
 		$this->ch = $ch;
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POST, true);
 		$data = file_get_contents($path);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->CreateCookieFile());
 

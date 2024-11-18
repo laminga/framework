@@ -407,11 +407,11 @@ class Date
 			if ((string)$parts[$i] != $prev)
 				return false;
 		}
-		if (checkdate((int)$parts[1], (int)$parts[0], (int)$parts[2]) == false)
+		if (checkdate($parts[1], $parts[0], $parts[2]) == false)
 			return false;
-		$day = $parts[0];
-		$month = $parts[1];
-		$year = $parts[2];
+		$day = (string)$parts[0];
+		$month = (string)$parts[1];
+		$year = (string)$parts[2];
 		return true;
 	}
 
