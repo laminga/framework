@@ -38,6 +38,8 @@ class Crawlers
 			// Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)
 			// Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot
 			"openai" => "openai",
+			// AcademicBotRTU (https://academicbot.rtu.lv; mailto:caps@rtu.lv)
+			"academicbot" => "academicbot",
 			// Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html)
 			"semrush" => "semrush",
 			// 1scienceBot (contact: acquisition@1science.com, info: https://www.1science.com/1sciencebot/)
