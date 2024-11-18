@@ -8,9 +8,8 @@ class Request
 
 	public static function IsSecure() : bool
 	{
-		return
-			(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-			|| $_SERVER['SERVER_PORT'] == 443;
+		return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+			|| (!empty($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] == 443);
 	}
 
 	public static function IsGoogle() : bool
@@ -28,8 +27,8 @@ class Request
 		if (
 			isset($_SERVER['HTTPS'])
 			&& $_SERVER['HTTPS'] !== 'off'
-			&& $_SERVER['HTTPS'] !== ''
-		) {
+			&& $_SERVER['HTTPS'] !== '')
+	  	{
 			return 'https';
 		}
 		return 'http';
