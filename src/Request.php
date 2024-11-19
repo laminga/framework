@@ -9,7 +9,7 @@ class Request
 	public static function IsSecure() : bool
 	{
 		return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-			|| (!empty($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] == 443);
+			|| (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
 	}
 
 	public static function IsGoogle() : bool
