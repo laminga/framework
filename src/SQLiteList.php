@@ -471,7 +471,8 @@ class SQLiteList
 			if(Str::Contains($e->getMessage(), 'no such table: data'))
 				IO::Delete($this->path);
 			else
-				throw $e;
+				Log::HandleSilentException($e);
+				// throw $e;
 		}
 		finally
 		{
