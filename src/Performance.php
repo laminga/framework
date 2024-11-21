@@ -312,7 +312,7 @@ class Performance
 		else
 			$keyMs = 'público';
 
-		$vals = self::ReadIfExists($file);
+		$vals = IO::ReadIfExists($file);
 		self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$dbHitCount);
 		// graba
 		IO::WriteIniFile($file, $vals);
@@ -323,7 +323,7 @@ class Performance
 		$file = self::ResolveFilename($month);
 		$keyMs = self::$method;
 
-		$vals = self::ReadIfExists($file);
+		$vals = IO::ReadIfExists($file);
 
 		self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$dbHitCount);
 		// graba
@@ -405,7 +405,7 @@ class Performance
 	private static function ReadDaysValues() : array
 	{
 		$daylyProcessor = self::ResolveFilenameDayly();
-		return self::ReadIfExists($daylyProcessor);
+		return IO::ReadIfExists($daylyProcessor);
 	}
 
 	public static function ReadTodayExtraValues(string $key) : ?int
@@ -489,7 +489,7 @@ class Performance
 			if ($month == '')
 				$month = Date::GetLogMonthFolder();
 			$path = self::ResolveFilenameLocks($month);
-			$current = self::ReadIfExists($path);
+			$current = IO::ReadIfExists($path);
 
 			foreach(self::$locksByClass as $key => $value)
 				self::IncrementLockKey($current, $key, $value[2], $value[0], $value[1]);
@@ -562,14 +562,6 @@ class Performance
 	private static function Format(int $n, int $divider, string $unit) : string
 	{
 		return (int)($n / $divider) . ' ' . $unit;
-	}
-
-	private static function ReadIfExists(string $file) : array
-	{
-		if (file_exists($file))
-			return IO::ReadIniFile($file);
-
-		return [];
 	}
 
 	private static function ReadCurrentKeyValues(array $arr, string $key, ?int &$prevHits, ?int &$prevDuration, ?int &$locked, ?int &$dbMs = 0, ?int &$dbHits = 0) : void
@@ -749,7 +741,7 @@ class Performance
 		$lock->LockRead();
 
 		$path = self::ResolveFilenameDayly($month);
-		$days = self::ReadIfExists($path);
+		$days = IO::ReadIfExists($path);
 
 		$lock->Release();
 
@@ -951,7 +943,7 @@ class Performance
 					$isAdmin = self::IsAdmin($controller);
 					if ($isAdmin == $adminControllers)
 					{
-						$data = self::ReadIfExists($path . '/' . $file);
+						$data = IO::ReadIfExists($path . '/' . $file);
 						$controllers[$controller] = $data;
 						foreach($data as $key => $_)
 						{
@@ -1089,7 +1081,7 @@ class Performance
 		$lock->LockRead();
 
 		$path = self::ResolveFilenameLocks($month);
-		$rows = self::ReadIfExists($path);
+		$rows = IO::ReadIfExists($path);
 		$lock->Release();
 
 		ksort($rows);

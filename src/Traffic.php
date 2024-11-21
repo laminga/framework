@@ -100,7 +100,7 @@ class Traffic
 	private static function SaveIpHit(int $numPreffix, string $set, string $ip, string $device) : int
 	{
 		$file = self::ResolveFilename($numPreffix, $set);
-		$arr = self::ReadIfExists($file);
+		$arr = IO::ReadIfExists($file);
 		$hits = self::IncrementKey($arr, $ip, $device);
 		// graba
 		IO::WriteIniFile($file, $arr);
@@ -221,14 +221,6 @@ class Traffic
 				Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits', $ip, $userAgent);
 		}
 		return $limit;
-	}
-
-	private static function ReadIfExists(string $file) : array
-	{
-		if (file_exists($file))
-			return IO::ReadIniFile($file);
-
-		return [];
 	}
 
 	private static function ResolveFolder() : string

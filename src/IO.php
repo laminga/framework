@@ -278,6 +278,14 @@ class IO
 		return $file;
 	}
 
+	public static function ReadIfExists(string $file) : array
+	{
+		if (file_exists($file))
+			return self::ReadIniFile($file);
+
+		return [];
+	}
+
 	public static function ReadIniFile(string $file, bool $sections = false) : array
 	{
 		$ret = parse_ini_file($file, $sections);

@@ -85,13 +85,6 @@ class SearchLog
 		return true;
 	}
 
-	private static function ReadIfExists($file)
-	{
-		if (file_exists($file))
-			return IO::ReadAllLines($file);
-		return [];
-	}
-
 	public static function GetSearchTable($month = '', $includeHeaders = false)
 	{
 		$lock = new SearchLogLock();
@@ -104,7 +97,7 @@ class SearchLog
 		else
 			$path = self::ResolveFile($currentMonth);
 
-		$rows = self::ReadIfExists($path);
+		$rows = IO::ReadIfExists($path);
 		$lock->Release();
 
 		$ret = [];
