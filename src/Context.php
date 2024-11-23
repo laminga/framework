@@ -64,12 +64,12 @@ class Context
 		self::Calls()->EndRequest();
 	}
 
-	public static function ExtraHitsLabels()
+	public static function ExtraHitsLabels() : array
 	{
 		return self::Calls()->ExtraHitsLabels();
 	}
 
-	public static function ExtraHits()
+	public static function ExtraHits() : array
 	{
 		return self::Calls()->ExtraHits();
 	}

@@ -11,7 +11,7 @@ use minga\framework\Str;
 
 class ExifToolTest extends TestCaseBase
 {
-	protected $testFile = '';
+	protected string $testFile = '';
 
 	public function setUp() : void
 	{
