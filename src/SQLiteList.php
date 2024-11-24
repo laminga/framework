@@ -467,12 +467,14 @@ class SQLiteList
 		}
 		catch(\Exception $e)
 		{
-			// Si se corrompe el archivo sqlite, se borra...
-			if(Str::Contains($e->getMessage(), 'no such table: data'))
+			// Si se corrompe el archivo sqlite y es referer, se borra...
+			if(Str::Contains($e->getMessage(), 'no such table: data')
+				&& Str::EndsWith($this->path, 'referers.db'))
+			{
 				IO::Delete($this->path);
+			}
 			else
-				Log::HandleSilentException($e);
-				// throw $e;
+				throw $e;
 		}
 		finally
 		{
