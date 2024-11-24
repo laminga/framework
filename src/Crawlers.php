@@ -31,6 +31,8 @@ class Crawlers
 			"yahoo" => "Slurp",
 			"yandex" => "YandexBot",
 			"baidu" => "Baiduspider",
+			//  Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; MicrosoftPreview/2.0; +https://aka.ms/MicrosoftPreview) Chrome/100.0.4896.127 Safari/537.36
+			"microsoft" => "MicrosoftPreview",
 			// LinkedInBot/1.0 (compatible; Mozilla/5.0; Apache-HttpClient +http://www.linkedin.com)
 			"linkedin" => "LinkedInBot",
 			// Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot)
