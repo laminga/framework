@@ -4,6 +4,19 @@ namespace minga\framework;
 
 class Date
 {
+	public static function SecondsToMidnight() : int
+	{
+		$midnight = new \DateTime('tomorrow 00:00:00');
+		$now = new \DateTime('now');
+
+		$interval = $midnight->diff($now);
+		return $interval->h * 60 * 60
+			+ $interval->i * 60
+			+ $interval->s
+			// Un minutito más...
+			+ 60;
+	}
+
 	public static function GetLogDayFolder() : string
 	{
 		return date("d");
