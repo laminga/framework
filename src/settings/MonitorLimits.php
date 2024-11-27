@@ -13,8 +13,14 @@ class MonitorLimits
 	public int $DefensiveModeThresholdDaylyHits = 30000;
 	public int $DefensiveModeMaximumDaylyHitsPerIP = 500;
 
+	/**
+	 * @deprecated No se usa, quitar de settings
+	 */
 	public int $MaximumMobileDaylyHitsPerIP = 10000;
-	public int $DefensiveModeMaximumMobileDaylyHitsPerIP = 250;
+	/**
+	 * @deprecated No se usa, quitar de settings
+	 */
+	public int $DefensiveModeMaximumMobileDaylyHitsPerIP = 500;
 
 	public int $LogAgentThresholdDaylyHits = 100;
 
@@ -39,8 +45,4 @@ class MonitorLimits
 	// Verifica diariamente el espacio libre
 	public int $WarningMinimumFreeStorageSpaceMB = 1000;
 	public int $WarningMinimumFreeSystemSpaceMB = 1000;
-
-
 }
-
-
