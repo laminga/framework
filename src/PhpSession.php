@@ -49,7 +49,7 @@ class PhpSession
 		}
 	}
 
-	public static function SessionExists() : bool
+	private static function SessionExists() : bool
 	{
 		if (Context::Settings()->allowPHPsession == false)
 			return false;
