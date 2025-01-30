@@ -14,7 +14,7 @@ class IO
 		return true;
 	}
 
-	public static function MoveDirectoryContents(string $origen, string $destino)
+	public static function MoveDirectoryContents(string $origen, string $destino) : void
 	{
 		// Crear el directorio de destino si no existe
 		if (!file_exists($destino)) {
@@ -276,6 +276,14 @@ class IO
 			return '"' . $file . '"';
 		}
 		return $file;
+	}
+
+	public static function ReadIfExists(string $file) : array
+	{
+		if (file_exists($file))
+			return self::ReadIniFile($file);
+
+		return [];
 	}
 
 	public static function ReadIniFile(string $file, bool $sections = false) : array

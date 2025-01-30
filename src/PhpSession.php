@@ -91,7 +91,8 @@ class PhpSession
 
 		return $default;
 	}
-	private static function RecoverSessionId(): void
+
+	private static function RecoverSessionId() : void
 	{
 		$sessionId = Params::SafeServer('HTTP_SESSION_ID', null);
 
@@ -102,6 +103,7 @@ class PhpSession
 			session_id($sessionId);
 		//}
 	}
+
 	private static function SessionStart() : bool
 	{
 		if (ini_get('session.use_cookies') && isset($_COOKIE['PHPSESSID'])

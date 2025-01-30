@@ -27,8 +27,7 @@ class Extensions
 
 		$name = $_FILES[$field]['name'];
 
-		$ext = self::GetRealExtension($name,
-			$_FILES[$field]['tmp_name'], $extName);
+		$ext = self::GetRealExtension($name, $_FILES[$field]['tmp_name'], $extName);
 
 		if(in_array($ext, $validExtensions) == false)
 		{

@@ -122,38 +122,38 @@ final class ReflectionTest extends TestCaseBase
 
 class ForTesting
 {
-	public function Method1()
+	public function Method1() : string
 	{
 		return __FUNCTION__;
 	}
 
-	public function Method2(int $a0, string $a1)
+	public function Method2(int $a0, string $a1) : string
 	{
 		return __FUNCTION__ . $a0 . $a1;
 	}
 
-	private function Method3()
+	private function Method3() : string
 	{
 		return __FUNCTION__;
 	}
 
-	private function Method4(int $a0, string $a1)
+	private function Method4(int $a0, string $a1) : string
 	{
 		return __FUNCTION__ . $a0 . $a1;
 	}
 
-	private function Method5(int $a0, string &$a1)
+	private function Method5(int $a0, string &$a1) : string
 	{
 		$a1 = 'ref';
 		return __FUNCTION__ . $a0;
 	}
 
-	private static function Method6()
+	private static function Method6() : string
 	{
 		return __FUNCTION__;
 	}
 
-	private static function Method7(int $a0, string $a1)
+	private static function Method7(int $a0, string $a1) : string
 	{
 		return __FUNCTION__ . $a0 . $a1;
 	}

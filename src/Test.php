@@ -7,17 +7,17 @@ class Test
 {
 	private static string $server = '';
 
-	public static function SetServer($host) : void
+	public static function SetServer(string $host) : void
 	{
 		self::$server = $host;
 	}
 
-	public static function WriteLine($text) : void
+	public static function WriteLine(string $text) : void
 	{
 		echo "<b>" . $text . "</b><br>";
 	}
 
-	public static function Get($url) : void
+	public static function Get(string $url) : void
 	{
 		echo "<a href='" . self::$server . $url . "'>" . $url . "</a><br>";
 	}

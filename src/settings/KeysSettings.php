@@ -57,11 +57,13 @@ class KeysSettings
 		return $this->RemoteBackupAuthKey != ''
 			&& hash_equals($this->RemoteBackupAuthKey, $key);
 	}
+
 	public function IsDeploymentAuthKeyValid($key) : bool
 	{
 		return $this->DeploymentAuthKey != ''
 			&& hash_equals($this->DeploymentAuthKey, $key);
 	}
+
 	public function GetGoogleMapsCount() : int
 	{
 		$keys = $this->GoogleMapsKey;

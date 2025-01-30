@@ -32,7 +32,7 @@ class WebClient
 
 		curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
 		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 		if ($path != '')
 		{
@@ -49,7 +49,7 @@ class WebClient
 		$this->logFile2 = $this->logFile . '.extra.txt';
 
 		$handle = fopen($this->logFile2, 'w');
-		curl_setopt($this->ch, CURLOPT_VERBOSE, 1);
+		curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 		curl_setopt($this->ch, CURLOPT_STDERR, $handle);
 		$this->cherr = $handle;
 	}
@@ -159,20 +159,20 @@ class WebClient
 		else
 		{
 			$method = 'GET ';
-			curl_setopt($this->ch, CURLOPT_POST, 0);
+			curl_setopt($this->ch, CURLOPT_POST, false);
 		}
 		$this->AppendLog($method . $url);
 		$this->AppendLogData('File', $file);
 
 		if ($saveHeaders)
 		{
-			curl_setopt($this->ch, CURLOPT_HEADER, 1);
-			curl_setopt($this->ch, CURLOPT_NOBODY, 1);
+			curl_setopt($this->ch, CURLOPT_HEADER, true);
+			curl_setopt($this->ch, CURLOPT_NOBODY, true);
 		}
 		else
 		{
-			curl_setopt($this->ch, CURLOPT_HEADER, 0);
-			curl_setopt($this->ch, CURLOPT_NOBODY, 0);
+			curl_setopt($this->ch, CURLOPT_HEADER, false);
+			curl_setopt($this->ch, CURLOPT_NOBODY, false);
 		}
 		// indica el archivo
 		$fh = null;
@@ -182,7 +182,7 @@ class WebClient
 			curl_setopt($this->ch, CURLOPT_FILE, $fh);
 		}
 		else
-			curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
 
 		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
 
@@ -221,13 +221,13 @@ class WebClient
 		else
 		{
 			$method = 'GET ';
-			curl_setopt($this->ch, CURLOPT_POST, 0);
+			curl_setopt($this->ch, CURLOPT_POST, false);
 		}
 		$this->AppendLog($method . $url);
 		$this->AppendLogData('File', $file);
 
-		curl_setopt($this->ch, CURLOPT_HEADER, 1);
-		curl_setopt($this->ch, CURLOPT_NOBODY, 0);
+		curl_setopt($this->ch, CURLOPT_HEADER, true);
+		curl_setopt($this->ch, CURLOPT_NOBODY, false);
 
 		// indica el archivo
 		$fh = null;
@@ -238,7 +238,7 @@ class WebClient
 		}
 		else
 		{
-			curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
 		}
 		// Execute the request
 		$ret = curl_exec($this->ch);
@@ -264,7 +264,7 @@ class WebClient
 
 	private function AddPostFields($args) : void
 	{
-		curl_setopt($this->ch, CURLOPT_POST, 1);
+		curl_setopt($this->ch, CURLOPT_POST, true);
 		if (is_array($args) == false)
 		{
 			// json

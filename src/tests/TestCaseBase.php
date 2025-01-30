@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class TestCaseBase extends TestCase
 {
-	public function RemoteProvider()
+	public function RemoteProvider() : array
 	{
 		return [
 			'Sin Remote' => [null],
@@ -17,7 +17,7 @@ class TestCaseBase extends TestCase
 		];
 	}
 
-	public function __construct($name = null, array $data = [], $dataName = '')
+	public function __construct(?string $name = null, array $data = [], string $dataName = '')
 	{
 		Context::Settings()->isTesting = true;
 		Context::Settings()->Debug()->debug = false;

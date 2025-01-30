@@ -55,7 +55,8 @@ class System
 			'value' => $host . ' (' . $ip . ')',
 		];
 	}
-	public static function GetDiskInfoBytes(): array
+
+	public static function GetDiskInfoBytes() : array
 	{
 		$root = Context::Paths()->GetStorageRoot();
 		$storage = disk_free_space($root);
@@ -63,6 +64,7 @@ class System
 		$system = disk_free_space($tmp);
 		return ['Storage' => $storage, 'System' => $system];
 	}
+
 	public static function GetDiskInfo() : array
 	{
 		$root = Context::Paths()->GetStorageRoot();
@@ -76,10 +78,9 @@ class System
 			['name' => 'Storage location', 'value' => $root],
 			['name' => 'Storage free space', 'value' => $storageFormatted, 'valueNumeric' => $storage],
 			['name' => 'System location', 'value' => $tmp],
-			['name' => 'System free space', 'value' => $systemFormatted, 'valueNumeric' => $system]
+			['name' => 'System free space', 'value' => $systemFormatted, 'valueNumeric' => $system],
 		];
 	}
-
 
 	public static function GetDbInfo() : array
 	{
@@ -103,7 +104,6 @@ class System
 		$time_elapsed_secs = microtime(true) - $start;
 		return round($time_elapsed_secs * 1000, 2);
 	}
-
 
 	public static function GetMySQLVersion() : string
 	{

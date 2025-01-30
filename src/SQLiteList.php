@@ -438,28 +438,47 @@ class SQLiteList
 	public function Increment($key, string $column) : void
 	{
 		Profiling::BeginTimer();
-		$res = $this->ReadValue($key, $column);
-
-		if ($res != null)
+		try
 		{
-			$id = $res[0];
-			$n = (int)$res[1] + 1;
-			$sql = "UPDATE data SET " . Db::QuoteColumn($column) . " = :p1"
-				. " WHERE pID = :p2;";
-			$statement = $this->db->prepare($sql);
-			$statement->bindValue(':p1', $n);
-			$statement->bindValue(':p2', $id);
 
-			$statement->execute();
+			$res = $this->ReadValue($key, $column);
+
+			if ($res !== null)
+			{
+				$id = $res[0];
+				$n = (int)$res[1] + 1;
+				$sql = "UPDATE data SET " . Db::QuoteColumn($column) . " = :p1"
+					. " WHERE pID = :p2;";
+				$statement = $this->db->prepare($sql);
+				$statement->bindValue(':p1', $n);
+				$statement->bindValue(':p2', $id);
+
+				$statement->execute();
+			}
+			else
+			{
+				$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . ", " . Db::QuoteColumn($column) . ") VALUES (:p1, 1);";
+				$statement = $this->db->prepare($sql);
+				$statement->bindValue(':p1', $key);
+
+				$statement->execute();
+			}
+
 		}
-		else
+		catch(\Exception $e)
 		{
-			$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . ", " . Db::QuoteColumn($column) . ") VALUES (:p1, 1);";
-			$statement = $this->db->prepare($sql);
-			$statement->bindValue(':p1', $key);
-
-			$statement->execute();
+			// Si se corrompe el archivo sqlite y es referer, se borra...
+			if(Str::Contains($e->getMessage(), 'no such table: data')
+				&& Str::EndsWith($this->path, 'referers.db'))
+			{
+				IO::Delete($this->path);
+			}
+			else
+				throw $e;
 		}
-		Profiling::EndTimer();
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 }

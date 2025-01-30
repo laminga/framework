@@ -41,6 +41,20 @@ class Performance
 
 	public static int $mailsSent = 0;
 
+	private static function GetEmptyData() : array
+	{
+		return [
+			'hits' => 0,
+			'duration' => 0,
+			'locked' => 0,
+			'p4' => 0,
+			'p5' => 0,
+			'p6' => 0,
+			'p7' => 0,
+			'extra' => [],
+		];
+	}
+
 	public static function CacheMissed() : void
 	{
 		self::$gotFromCache = false;
@@ -86,10 +100,12 @@ class Performance
 
 		self::CheckMemoryPeaks();
 	}
+
 	public static function GetCurrentErrorCount() : int
 	{
 		return self::$errorCount;
 	}
+
 	private static function CheckMemoryPeaks() : void
 	{
 		if (Context::Settings()->Log()->LogMemoryPeaks == false)
@@ -121,7 +137,7 @@ class Performance
 		self::$timeStartLocked = microtime(true);
 	}
 
-	public static function IncrementErrors(): void
+	public static function IncrementErrors() : void
 	{
 		self::$errorCount++;
 	}
@@ -310,8 +326,8 @@ class Performance
 		else
 			$keyMs = 'público';
 
-		$vals = self::ReadIfExists($file);
-		self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$dbHitCount);
+		$vals = IO::ReadIfExists($file);
+		$vals = self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$dbHitCount);
 		// graba
 		IO::WriteIniFile($file, $vals);
 	}
@@ -321,9 +337,8 @@ class Performance
 		$file = self::ResolveFilename($month);
 		$keyMs = self::$method;
 
-		$vals = self::ReadIfExists($file);
-
-		self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$dbHitCount);
+		$vals = IO::ReadIfExists($file);
+		$vals = self::IncrementKey($vals, $keyMs, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs, self::$dbMs, self::$dbHitCount);
 		// graba
 		IO::WriteIniFile($file, $vals);
 	}
@@ -341,13 +356,12 @@ class Performance
 		$folder = self::ResolveFolder('dayly');
 		$path = $folder . '/today.txt';
 		$today = Date::Today();
+		$todayFolder = '';
 		if (file_exists($path))
 			$todayFolder = IO::ReadAllText($path);
-		else
-			$todayFolder = '';
+
 		if ($today != $todayFolder)
 		{
-			// está en un cambio de día
 			self::$warnToday = $today;
 			self::$warnYesterday = $todayFolder;
 		}
@@ -376,7 +390,7 @@ class Performance
 		{
 			Performance::SendPerformanceWarning(
 				'espacio en disco en Storage',
-				Context::Settings()->Limits()->WarningMinimumFreeStorageSpaceMB. ' MB', $storageMB . ' MB');
+				Context::Settings()->Limits()->WarningMinimumFreeStorageSpaceMB . ' MB', $storageMB . ' MB');
 		}
 
 		$systemMB = round($diskInfo['System'] / 1024 / 1024, 10);
@@ -387,6 +401,7 @@ class Performance
 			);
 		}
 	}
+
 	private static function DayCompleted(?string $newDay) : void
 	{
 		$folder = self::ResolveFolder('dayly');
@@ -402,25 +417,25 @@ class Performance
 	private static function ReadDaysValues() : array
 	{
 		$daylyProcessor = self::ResolveFilenameDayly();
-		return self::ReadIfExists($daylyProcessor);
+		return IO::ReadIfExists($daylyProcessor);
 	}
 
-	public static function ReadTodayExtraValues(string $key) : ?int
+	public static function ReadTodayExtraValues(string $key) : int
 	{
 		$extras = Context::ExtraHitsLabels();
-		$index = Arr::indexOf($extras, $key);
-		if ($index === -1)
-			return null;
+		$index = Arr::IndexOf($extras, $key);
+		if ($index == -1)
+			return 0;
 		$days = self::ReadDaysValues();
 		$key = Date::GetLogDayFolder();
-		self::ReadCurrentKeyValues($days, $key, $prevHits, $prevDuration, $prevLock);
-		if (isset($days[$key]) == false)
-			return null;
-		self::ParseHit($days[$key], $_, $_, $_, $_, $_, $_, $_, $extraHits);
-		return $extraHits[$index];
+		$data = self::ReadCurrentKeyValues($days, $key);
+		if (isset($data['extra'][$index]))
+			return $data['extra'][$index];
+
+		return 0;
 	}
 
-	private static function CheckErrorLimits(array $extraHits): void
+	private static function CheckErrorLimits(array $extraHits) : void
 	{
 		// Controla errores
 		$labels = Context::ExtraHitsLabels();
@@ -433,7 +448,7 @@ class Performance
 		{
 			Performance::SendPerformanceWarning(
 				'errores diarios',
-				Context::Settings()->Limits()->WarningDaylyErrors. ' errores', $dailyErrorCount . ' errores');
+				Context::Settings()->Limits()->WarningDaylyErrors . ' errores', $dailyErrorCount . ' errores');
 		}
 	}
 
@@ -442,14 +457,14 @@ class Performance
 		$days = self::ReadDaysValues();
 		$key = Date::GetLogDayFolder();
 
-		self::ReadCurrentKeyValues($days, $key, $prevHits, $prevDuration, $prevLock);
+		$data = self::ReadCurrentKeyValues($days, $key);
 
 		$extraHits = Context::ExtraHits();
 
-		$currentValues = self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs,
+		$days = self::IncrementLargeKey($days, $key, $ellapsedMilliseconds, self::$hitCount, self::$lockedMs,
 			Request::IsGoogle(), self::$mailsSent, self::$dbMs, self::$dbHitCount, $extraHits);
 
-		self::CheckErrorLimits($currentValues[7]);
+		self::CheckErrorLimits($extraHits);
 
 		$daylyProcessor = self::ResolveFilenameDayly();
 		IO::WriteIniFile($daylyProcessor, $days);
@@ -457,9 +472,9 @@ class Performance
 		return [
 			'days' => $days,
 			'key' => $key,
-			'prevHits' => $prevHits,
-			'prevDuration' => $prevDuration,
-			'prevLock' => $prevLock,
+			'prevHits' => $data['hits'],
+			'prevDuration' => $data['duration'],
+			'prevLock' => $data['locked'],
 		];
 	}
 
@@ -486,10 +501,10 @@ class Performance
 			if ($month == '')
 				$month = Date::GetLogMonthFolder();
 			$path = self::ResolveFilenameLocks($month);
-			$current = self::ReadIfExists($path);
+			$current = IO::ReadIfExists($path);
 
 			foreach(self::$locksByClass as $key => $value)
-				self::IncrementLockKey($current, $key, $value[2], $value[0], $value[1]);
+				$current = self::IncrementLockKey($current, $key, $value[2], $value[0], $value[1]);
 
 			IO::WriteIniFile($path, $current);
 		}
@@ -509,29 +524,29 @@ class Performance
 
 	private static function CheckLimits(array $days, string $key, int $prevHits, int $prevDuration, int $prevLocked, int $ellapsedMilliseconds) : void
 	{
-		self::ReadCurrentKeyValues($days, $key, $hits, $duration, $locked);
+		$data = self::ReadCurrentKeyValues($days, $key);
 
 		$maxMs = Context::Settings()->Limits()->WarningDaylyExecuteMinutes * 60 * 1000;
 		$maxHits = Context::Settings()->Limits()->WarningDaylyHits;
 		$maxLockMs = Context::Settings()->Limits()->WarningDaylyLockMinutes * 60 * 1000;
 		$maxRequestSeconds = Context::Settings()->Limits()->WarningRequestSeconds;
 
-		if ($prevHits < $maxHits && $hits >= $maxHits)
-			self::SendPerformanceWarning('hits', $maxHits . ' hits', $hits . ' hits');
-		if ($prevDuration < $maxMs && $duration >= $maxMs)
-			self::SendPerformanceWarning('minutos de CPU', self::Format($maxMs, 1000 * 60, 'minutos'), self::Format($duration, 1000 * 60, 'minutos'));
-		if ($prevLocked < $maxLockMs && $locked >= $maxLockMs)
-			self::SendPerformanceWarning('tiempo de locking', self::Format($maxLockMs, 1000 * 60, 'minutos'), self::Format($locked, 1000 * 60, 'minutos'));
+		if ($prevHits < $maxHits && $data['hits'] >= $maxHits)
+			self::SendPerformanceWarning('hits', $maxHits . ' hits', $data['hits'] . ' hits');
+		if ($prevDuration < $maxMs && $data['duration'] >= $maxMs)
+			self::SendPerformanceWarning('minutos de CPU', self::Format($maxMs, 1000 * 60, 'minutos'), self::Format($data['duration'], 1000 * 60, 'minutos'));
+		if ($prevLocked < $maxLockMs && $data['locked'] >= $maxLockMs)
+			self::SendPerformanceWarning('tiempo de locking', self::Format($maxLockMs, 1000 * 60, 'minutos'), self::Format($data['locked'], 1000 * 60, 'minutos'));
 
 		if ($ellapsedMilliseconds >= $maxRequestSeconds * 1000 && self::$allowLongRunningRequest == false)
 			Log::HandleSilentException(new PublicException('El pedido ha excedido los ' . $maxRequestSeconds . ' segundos de ejecución. Tiempo transcurrido: ' . $ellapsedMilliseconds . ' ms.'));
 
 		// Se fija si tiene que pasar a 'defensive Mode'
 		$defensiveThreshold = Context::Settings()->Limits()->DefensiveModeThresholdDaylyHits;
-		if ($prevHits < $defensiveThreshold && $hits >= $defensiveThreshold)
+		if ($data['hits'] >= $defensiveThreshold && Traffic::IsInDefensiveMode() == false)
 		{
 			Traffic::GoDefensiveMode();
-			self::SendPerformanceWarning('activación de modo defensivo', $defensiveThreshold . ' hits', $hits . ' hits');
+			self::SendPerformanceWarning('activación de modo defensivo', $defensiveThreshold . ' hits', $data['hits'] . ' hits');
 		}
 	}
 
@@ -561,142 +576,117 @@ class Performance
 		return (int)($n / $divider) . ' ' . $unit;
 	}
 
-	private static function ReadIfExists(string $file) : array
+	private static function ReadCurrentKeyValues(array $arr, string $key) : array
 	{
-		if (file_exists($file))
-			return IO::ReadIniFile($file);
-
-		return [];
+		if (isset($arr[$key]))
+			return self::ParseHit($arr[$key]);
+		return self::GetEmptyData();
 	}
 
-	private static function ReadCurrentKeyValues(array $arr, string $key, ?int &$prevHits, ?int &$prevDuration, ?int &$locked, ?int &$dbMs = 0, ?int &$dbHits = 0) : void
+	private static function IncrementKey(array $arr, string $key, int $value, int $newHits, int $newLocked, int $newDbMs, int $newDbHitCount) : array
 	{
-		if (isset($arr[$key]) == false)
+		$data = [
+			'hits' => $newHits,
+			'duration' => $value,
+			'locked' => $newLocked,
+			'p4' => $newDbMs,
+			'p5' => $newDbHitCount,
+		];
+		if (isset($arr[$key]))
 		{
-			$prevHits = 0;
-			$prevDuration = 0;
-			$locked = 0;
-			$dbMs = 0;
-			$dbHits = 0;
+			$data = self::ParseHit($arr[$key]);
+
+			$data['hits'] += $newHits;
+			$data['duration'] += $value;
+			$data['locked'] += $newLocked;
+			$data['p4'] += $newDbMs;
+			$data['p5'] += $newDbHitCount;
 		}
-		else
-			self::ParseHit($arr[$key], $prevHits, $prevDuration, $locked, $dbMs, $dbHits);
+		$arr[$key] = $data['hits'] . ';' . $data['duration'] . ';' . $data['locked'] . ';' . $data['p4'] . ';' . $data['p5'];
+		return $arr;
 	}
 
-	private static function IncrementKey(array &$arr, $key, int $value, int $newHits, int $newLocked, int $newDbMs, int $newDbHitCount) : void
+	private static function IncrementLockKey(array $arr, string $key, int $value, int $newHits, int $newLocked) : array
 	{
-		if (isset($arr[$key]) == false)
+		$data = [
+			'hits' => $newHits,
+			'duration' => $value,
+			'locked' => $newLocked,
+		];
+		if (isset($arr[$key]))
 		{
-			$hits = $newHits;
-			$duration = $value;
-			$locked = $newLocked;
-			$dbMs = $newDbMs;
-			$dbHitCount = $newDbHitCount;
-		}
-		else
-		{
-			self::ParseHit($arr[$key], $hits, $duration, $locked, $dbMs, $dbHitCount);
+			$data = self::ParseHit($arr[$key]);
 
-			$hits += $newHits;
-			$duration += $value;
-			$locked += $newLocked;
-			$dbMs += $newDbMs;
-			$dbHitCount += $newDbHitCount;
+			$data['hits'] += $newHits;
+			$data['duration'] += $value;
+			$data['locked'] += $newLocked;
 		}
-		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $dbMs . ';' . $dbHitCount;
+		$arr[$key] = $data['hits'] . ';' . $data['duration'] . ';' . $data['locked'];
+		return $arr;
 	}
 
-	private static function IncrementLockKey(array &$arr, string $key, int $value, int $newHits, int $newLocked) : void
+	private static function IncrementLargeKey(array $arr, string $key, int $value, int $newHits, int $newLocked,
+		bool $isGoogleHit, int $mailCount, int $newDbMs, int $newDbHits, array &$newExtraHits) : array
 	{
-		if (isset($arr[$key]) == false)
-		{
-			$hits = $newHits;
-			$duration = $value;
-			$locked = $newLocked;
-		}
-		else
-		{
-			self::ParseHit($arr[$key], $hits, $duration, $locked);
+		$data = [
+			'hits' => $newHits,
+			'duration' => $value,
+			'locked' => $newLocked,
+			'p4' => (int)$isGoogleHit,
+			'p5' => $mailCount,
+			'p6' => $newDbMs,
+			'p7' => $newDbHits,
+		];
 
-			$hits += $newHits;
-			$duration += $value;
-			$locked += $newLocked;
-		}
-		$arr[$key] = $hits . ';' . $duration . ';' . $locked;
-	}
-
-	private static function IncrementLargeKey(array &$arr, $key, int $value, int $newHits, int $newLocked,
-		bool $isGoogleHit, int $mailCount, int $newDbMs, int $newDbHits, array $newExtraHits = []) : array
-	{
-		if (isset($arr[$key]) == false)
+		if (isset($arr[$key]))
 		{
-			$hits = $newHits;
-			$duration = $value;
-			$locked = $newLocked;
-			$google = (int)$isGoogleHit;
-			$mails = $mailCount;
-			$dbMs = $newDbMs;
-			$dbHits = $newDbHits;
-		}
-		else
-		{
-			self::ParseHit($arr[$key], $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $extraHits);
-			$hits += $newHits;
-			$duration += $value;
-			$locked += $newLocked;
-			$google += (int)$isGoogleHit;
-			$mails += $mailCount;
-			$dbMs += $newDbMs;
-			$dbHits += $newDbHits;
+			$data = self::ParseHit($arr[$key]);
+			$data['hits'] += $newHits;
+			$data['duration'] += $value;
+			$data['locked'] += $newLocked;
+			$data['p4'] += (int)$isGoogleHit;
+			$data['p5'] += $mailCount;
+			$data['p6'] += $newDbMs;
+			$data['p7'] += $newDbHits;
 			for($n = 0; $n < count($newExtraHits); $n++)
 			{
-				if($n < count($extraHits) && $extraHits[$n])
-					$newExtraHits[$n] += $extraHits[$n];
+				if($n < count($data['extra']) && isset($data['extra'][$n]))
+					$newExtraHits[$n] += $data['extra'][$n];
 			}
 		}
-		$arr[$key] = $hits . ';' . $duration . ';' . $locked . ';' . $google . ';' . $mails
-			. ';' . $dbMs . ';' . $dbHits . ';' . implode(',', $newExtraHits);
+		$arr[$key] = $data['hits'] . ';' . $data['duration'] . ';' . $data['locked'] . ';' . $data['p4']
+			. ';' . $data['p5'] . ';' . $data['p6'] . ';' . $data['p7'] . ';' . implode(',', $newExtraHits);
 
-		return [$hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $newExtraHits];
+		return $arr;
 	}
 
-	private static function ParseHit(string $value, ?string &$hits, ?string &$duration, ?string &$locked,
-		?int &$p4 = null, ?int &$p5 = null, ?int &$p6 = null, ?int &$p7 = null, ?array &$extra = null) : void
+	private static function ParseHit(string $value) : array
 	{
 		$parts = explode(';', $value);
-		$hits = $parts[0];
-		$duration = $parts[1];
+
+		$ret = self::GetEmptyData();
+		$ret['hits'] = (int)$parts[0];
+		$ret['duration'] = (int)$parts[1];
+
 		if (count($parts) > 2)
-			$locked = $parts[2];
-		else
-			$locked = "0";
+			$ret['locked'] = (int)$parts[2];
+
 		if (count($parts) > 3)
 		{
-			$p4 = (int)$parts[3];
-			$p5 = (int)$parts[4];
+			$ret['p4'] = (int)$parts[3];
+			$ret['p5'] = (int)$parts[4];
 		}
-		else
-		{
-			$p4 = 0;
-			$p5 = 0;
-		}
+
 		if (count($parts) > 5)
-		{
-			$p6 = (int)$parts[5];
-		}
-		else
-		{
-			$p6 = 0;
-		}
-		if (count($parts) > 6) {
-			$p7 = (int) $parts[6];
-		} else {
-			$p7 = 0;
-		}
+			$ret['p6'] = (int)$parts[5];
+
+		if (count($parts) > 6)
+			$ret['p7'] = (int)$parts[6];
+
 		if (count($parts) > 7)
-			$extra = explode(',', $parts[7]);
-		else
-			$extra = [];
+			$ret['extra'] = array_map('intval', explode(',', $parts[7]));
+
+		return $ret;
 	}
 
 	private static function ResolveFolder(string $month = '') : string
@@ -746,7 +736,7 @@ class Performance
 		$lock->LockRead();
 
 		$path = self::ResolveFilenameDayly($month);
-		$days = self::ReadIfExists($path);
+		$days = IO::ReadIfExists($path);
 
 		$lock->Release();
 
@@ -778,21 +768,26 @@ class Performance
 		foreach($days as $key => $value)
 		{
 			$headerRow[] = $key;
-			self::ParseHit($value, $hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $extraHits);
-			$dataHitRow[] = $hits;
-			$totalsDataHitRow += $hits;
+			$data = self::ParseHit($value);
+			$google = $data['p4'];
+			$mails = $data['p5'];
+			$dbMs = $data['p6'];
+			$dbHits = $data['p7'];
+
+			$dataHitRow[] = $data['hits'];
+			$totalsDataHitRow += $data['hits'];
 
 			$googleRow[] = $google;
 			$totalsGoogleRow += $google;
 			$mailRow[] = $mails;
 			$totalsMailRow += $mails;
 
-			$dataMsRow[] = round($duration / 1000 / 60, 1);
-			$totalsDataMsRow += $duration;
-			$dataAvgRow[] = round($duration / $hits);
-			$totalsAvgRow += ($duration / $hits);
-			$dataLockedRow[] = round($locked / 1000, 1);
-			$totalsDataLockedRow += $locked;
+			$dataMsRow[] = round($data['duration'] / 1000 / 60, 1);
+			$totalsDataMsRow += $data['duration'];
+			$dataAvgRow[] = round($data['duration'] / $data['hits']);
+			$totalsAvgRow += ($data['duration'] / $data['hits']);
+			$dataLockedRow[] = round($data['locked'] / 1000, 1);
+			$totalsDataLockedRow += $data['locked'];
 			$dataDbMsRow[] = round($dbMs / 1000 / 60, 1);
 			$totalsDataDbMsRow += $dbMs;
 			$dataDbHitRow[] = $dbHits;
@@ -800,11 +795,11 @@ class Performance
 
 			for($n = 0; $n < count($extraValues); $n++)
 			{
-				if ($n < count($extraHits))
+				if ($n < count($data['extra']))
 				{
-					$extraValues[$n][] = $extraHits[$n];
-					if ($extraHits[$n])
-						$totalsExtraValues[$n] += $extraHits[$n];
+					$extraValues[$n][] = $data['extra'][$n];
+					if (isset($data['extra'][$n]))
+						$totalsExtraValues[$n] += $data['extra'][$n];
 				}
 				else
 					$extraValues[$n][] = '-';
@@ -869,8 +864,10 @@ class Performance
 		$ret = null;
 		$actualMoths = [];
 		for($n = count($months) - 1; $n >= 0; $n--)
+		{
 			if (Str::StartsWith($months[$n], '2'))
 				$actualMoths[] = $months[$n];
+		}
 
 		foreach($actualMoths as $month)
 		{
@@ -888,7 +885,6 @@ class Performance
 					foreach($monthInfo as $key => $value)
 						$ret[$key][] = $value[count($value) - 1];
 				}
-
 			}
 		}
 		unset($ret['Día']);
@@ -948,7 +944,7 @@ class Performance
 					$isAdmin = self::IsAdmin($controller);
 					if ($isAdmin == $adminControllers)
 					{
-						$data = self::ReadIfExists($path . '/' . $file);
+						$data = IO::ReadIfExists($path . '/' . $file);
 						$controllers[$controller] = $data;
 						foreach($data as $key => $_)
 						{
@@ -988,14 +984,12 @@ class Performance
 			{
 				if (isset($values[$method]))
 				{
-					self::ParseHit($values[$method], $hits, $duration, $_, $dbMs, $dbHits);
-					$totalMinutes += $duration / 1000 / 60;
+					$data = self::ParseHit($values[$method]);
+					$totalMinutes += $data['duration'] / 1000 / 60;
 				}
 			}
 		}
 		// genera celdas
-		$fist = true;
-		$myHits = 0;
 		foreach($controllers as $controller => $values)
 		{
 			$cells = [0, 0, 0, 0];
@@ -1005,51 +999,43 @@ class Performance
 			$dbControllerMs = 0;
 			foreach($methods as $method)
 			{
-				$myHits = 0;
+				$data = [ 'hits' => '-', ];
+				$avg = '-';
+				$db = '-';
+				$share = '-';
 				if (isset($values[$method]))
 				{
-					self::ParseHit($values[$method], $hits, $duration, $_, $dbMs, $dbHits);
-					$controllerHits += $hits;
-					$myHits = $hits;
-					$avg = round($duration / $hits);
-					$controllerTime += $duration;
-					$share = self::FormatShare($duration, $totalDuration);
-					$db = round($dbMs / $hits) . ' (' . round($dbHits / $hits, 1) . ')';
+					$data = self::ParseHit($values[$method]);
+					$dbMs = $data['p4'];
+					$dbHits = $data['p5'];
+
+					$controllerHits += $data['hits'];
+					$avg = round($data['duration'] / $data['hits']);
+					$controllerTime += $data['duration'];
+					$share = self::FormatShare($data['duration'], $totalDuration);
+					$db = round($dbMs / $data['hits']) . ' (' . round($dbHits / $data['hits'], 1) . ')';
 					$dbControllerHits += $dbHits;
 					$dbControllerMs += $dbMs;
 				}
-				else
-				{
-					$hits = '-';
-					$avg = '-';
-					$db = '-';
-					$share = '-';
-				}
-				$cells[] = $hits;
+				$cells[] = $data['hits'];
 				$cells[] = $avg;
 				$cells[] = $db;
 				$cells[] = $share;
 			}
+			$cells[0] = '-';
+			$cells[1] = '-';
+			$cells[2] = '-';
 			if ($controllerHits > 0)
 			{
 				$cells[0] = $controllerHits;
 				$cells[1] = round($controllerTime / $controllerHits);
 				$cells[2] = round($dbControllerMs / $controllerHits) . ' (' . round($dbControllerHits / $controllerHits, 1) . ')';
 			}
-			else
-			{
-				$cells[0] = '-';
-				$cells[1] = '-';
-				$cells[2] = '-';
-			}
 			$cells[3] = self::FormatShare($controllerTime, $totalDuration);
 
 			if ($controller == '')
-				$rows['n/d'] = $cells;
-			else
-				$rows[$controller] = $cells;
-
-			$fist = false;
+				$controller = 'n/d';
+			$rows[$controller] = $cells;
 		}
 		ksort($rows);
 		return $rows;
@@ -1078,7 +1064,7 @@ class Performance
 		if ($month == '')
 			$month = 'dayly';
 
-		if ($month === 'dayly' || $month === 'yesterday')
+		if ($month == 'dayly' || $month == 'yesterday')
 			$lock = new PerformanceDaylyLocksLock();
 		else
 			$lock = new PerformanceMonthlyLocksLock();
@@ -1086,7 +1072,7 @@ class Performance
 		$lock->LockRead();
 
 		$path = self::ResolveFilenameLocks($month);
-		$rows = self::ReadIfExists($path);
+		$rows = IO::ReadIfExists($path);
 		$lock->Release();
 
 		ksort($rows);
@@ -1095,18 +1081,18 @@ class Performance
 
 		foreach($rows as $key => $value)
 		{
-			self::ParseHit($value, $hits, $waited, $locked);
+			$data = self::ParseHit($value);
 			$avg = '-';
-			if ($waited > 0)
-				$avg = round($locked / $waited);
+			if ($data['duration'] > 0)
+				$avg = round($data['locked'] / $data['duration']);
 
 			$cells = [
-				$hits . ($waited > 0 ? ' (' . $waited . ')' : ''),
+				$data['hits'] . ($data['duration'] > 0 ? ' (' . $data['duration'] . ')' : ''),
 				$avg,
-				$locked / 1000,
+				$data['locked'] / 1000,
 			];
 
-			$ret[$key . ($waited > 0 ? ' (waited)' : '')] = $cells;
+			$ret[$key . ($data['duration'] > 0 ? ' (waited)' : '')] = $cells;
 		}
 		return $ret;
 	}
@@ -1118,10 +1104,11 @@ class Performance
 		{
 			foreach($values as $value)
 			{
-				self::ParseHit($value, $_, $duration, $_);
-				$ret += $duration;
+				$data = self::ParseHit($value);
+				$ret += $data['duration'];
 			}
 		}
 		return $ret;
 	}
 }
+
