@@ -527,12 +527,12 @@ class Performance
 		$data = self::ReadCurrentKeyValues($days, $key);
 
 		$maxMs = Context::Settings()->Limits()->WarningDaylyExecuteMinutes * 60 * 1000;
-		$maxHits = Context::Settings()->Limits()->WarningDaylyHits;
 		$maxLockMs = Context::Settings()->Limits()->WarningDaylyLockMinutes * 60 * 1000;
 		$maxRequestSeconds = Context::Settings()->Limits()->WarningRequestSeconds;
 
-		if ($prevHits < $maxHits && $data['hits'] >= $maxHits)
-			self::SendPerformanceWarning('hits', $maxHits . ' hits', $data['hits'] . ' hits');
+		// $maxHits = Context::Settings()->Limits()->WarningDaylyHits;
+		// if ($prevHits < $maxHits && $data['hits'] >= $maxHits)
+		// 	self::SendPerformanceWarning('hits', $maxHits . ' hits', $data['hits'] . ' hits');
 		if ($prevDuration < $maxMs && $data['duration'] >= $maxMs)
 			self::SendPerformanceWarning('minutos de CPU', self::Format($maxMs, 1000 * 60, 'minutos'), self::Format($data['duration'], 1000 * 60, 'minutos'));
 		if ($prevLocked < $maxLockMs && $data['locked'] >= $maxLockMs)
