@@ -183,11 +183,11 @@ class Traffic
 
 			Performance::SendPerformanceWarning('BLOQUEO por IP (' . $ip . ')' . $defensiveMode, $limit . ' hits', $hits . ' hits', $ip, $userAgent);
 		}
-		if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
-		{
-			Performance::SendPerformanceWarning('tráfico por IP (' . $ip . ')',
-				Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits', $ip, $userAgent);
-		}
+		// if ($hits == Context::Settings()->Limits()->WarningDaylyHitsPerIP)
+		// {
+		// 	Performance::SendPerformanceWarning('tráfico por IP (' . $ip . ')',
+		// 		Context::Settings()->Limits()->WarningDaylyHitsPerIP . ' hits', $hits . ' hits', $ip, $userAgent);
+		// }
 		return $limit;
 	}
 
