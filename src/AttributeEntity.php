@@ -8,12 +8,14 @@ class AttributeEntity
 	public array $attributes = [];
 	public array $extraAttributes = [];
 
-	public function LoadAttributesOnly(string $path) : void
+	public function LoadAttributesOnly(string $path): void
 	{
+		Profiling::BeginTimer();
 		$this->path = $path;
 		$this->attributes = [];
 		if ($path != "" && file_exists($path))
 			$this->attributes = IO::ReadEscapedIniFile($path);
+		Profiling::EndTimer();
 	}
 
 	public function SafeGet(string $key, $default = '')
@@ -90,7 +92,9 @@ class AttributeEntity
 	{
 		if ($this->path == '')
 			throw new ErrorException('Se intentó guardar una entidad no inicializada.');
+		Profiling::BeginTimer();
 		IO::WriteEscapedIniFile($this->path, $this->attributes);
+		Profiling::EndTimer();
 	}
 
 	public function SetValue(string $key, $value) : void
