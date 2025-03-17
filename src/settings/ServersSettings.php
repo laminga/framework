@@ -45,6 +45,8 @@ class ServersSettings
 	public function IsTransactionServerRequest() : bool
 	{
 		$url = Request::Host() . Request::GetRequestURI(true);
+		if ($url == '')
+			return true;
 		$server = $this->GetTransactionServer();
 		$url_no_protocol = Str::EatUntil($url, "://");
 		$server_url_no_protocol = Str::EatUntil($server->publicUrl, "://");
