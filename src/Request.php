@@ -16,7 +16,7 @@ class Request
 	{
 		if (isset(self::$isGoogle) == false)
 		{
-			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
+			$agent = self::UserAgent();
 			self::$isGoogle = Str::Contains($agent, "Googlebot");
 		}
 		return self::$isGoogle;
@@ -51,6 +51,11 @@ class Request
 	public static function Referer() : string
 	{
 		return Params::SafeServer('HTTP_REFERER');
+	}
+
+	public static function UserAgent(): string
+	{
+		return Params::SafeServer('HTTP_USER_AGENT', '');
 	}
 
 	public static function Host() : string

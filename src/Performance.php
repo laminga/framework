@@ -515,6 +515,7 @@ class Performance
 		self::ReadCurrentKeyValues($days, $key, $hits, $duration, $locked);
 
 		$maxMs = Context::Settings()->Limits()->WarningDaylyExecuteMinutes * 60 * 1000;
+		$maxHits = Context::Settings()->Limits()->WarningDaylyHits;
 		$maxLockMs = Context::Settings()->Limits()->WarningDaylyLockMinutes * 60 * 1000;
 		$maxRequestSeconds = Context::Settings()->Limits()->WarningRequestSeconds;
 
