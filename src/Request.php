@@ -48,6 +48,11 @@ class Request
 		return $addr;
 	}
 
+	public static function UserAgent(): string
+	{
+		return Params::SafeServer('HTTP_USER_AGENT', '');
+	}
+
 	public static function Referer() : string
 	{
 		return Params::SafeServer('HTTP_REFERER');
