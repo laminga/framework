@@ -58,11 +58,6 @@ class Request
 		return Params::SafeServer('HTTP_REFERER');
 	}
 
-	public static function UserAgent(): string
-	{
-		return Params::SafeServer('HTTP_USER_AGENT', '');
-	}
-
 	public static function Host() : string
 	{
 		return Params::SafeServer('HTTP_HOST');
