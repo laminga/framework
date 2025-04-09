@@ -51,7 +51,30 @@ class KeysSettings
 
 		return base64_decode($this->HashKeyedKey);
 	}
+	public function Ofuscate($texto, $key = 'salt') : string
+	{
+		if ($texto == '' || $texto == null)
+			return '';
+		// Convertimos texto y clave a arrays de bytes
+		$textoBytes = unpack('C*', $texto);
+		$keyBytes = unpack('C*', $key);
+		$keyLength = count($keyBytes);
 
+		// Ofuscamos cada byte del texto usando la clave
+		$resultado = '';
+		foreach ($textoBytes as $index => $byte) {
+			// Obtenemos el byte correspondiente de la clave
+			$keyIndex = (($index - 1) % $keyLength) + 1;
+			$keyByte = $keyBytes[$keyIndex];
+
+			// XOR entre el byte del texto y el byte de la clave
+			$ofuscado = $byte ^ $keyByte;
+
+			// Convertimos a hexadecimal y añadimos al resultado
+			$resultado .= sprintf('%02x', $ofuscado);
+		}
+		return $resultado;
+	}
 	public function IsRemoteBackupAuthKeyValid($key) : bool
 	{
 		return $this->RemoteBackupAuthKey != ''
