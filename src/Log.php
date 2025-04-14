@@ -236,7 +236,7 @@ class Log
 
 		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
 		if ($fullUrlData !== null)
-			$fullUrl = '=> Client:      ' . $fullUrlData . "\r\n";
+			$fullUrl = "=> Client:      <a href='" . $fullUrlData . "'>" . $fullUrlData . "</a>\r\n";
 		else
 			$fullUrl = '';
 
