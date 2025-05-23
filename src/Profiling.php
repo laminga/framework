@@ -16,6 +16,8 @@ class Profiling
 	private static ?ProfilingItem $profileData = null;
 	private static $localIsProfiling = null;
 
+	public static bool $DumpQueries = false;
+
 	public static function BeginShowQueries(bool $trimQueries = false, bool $progressOnly = false) : void
 	{
 		self::$showQueries = true;
