@@ -51,6 +51,7 @@ class KeysSettings
 
 		return base64_decode($this->HashKeyedKey);
 	}
+
 	public function Ofuscate($texto, $key = 'salt') : string
 	{
 		if ($texto == '' || $texto == null)
@@ -75,6 +76,7 @@ class KeysSettings
 		}
 		return $resultado;
 	}
+
 	public function IsRemoteBackupAuthKeyValid($key) : bool
 	{
 		return $this->RemoteBackupAuthKey != ''

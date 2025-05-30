@@ -22,7 +22,6 @@ class CacheSettings
 	{
 		if ($this->FileSystemMode == self::SQLITE3 && $avoidSqLite == false)
 			return new BaseTwoLevelStringSQLiteCache($path);
-		else
-			return new BaseTwoLevelStringFileCache($path);
+		return new BaseTwoLevelStringFileCache($path);
 	}
 }
