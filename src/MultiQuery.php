@@ -58,7 +58,7 @@ class MultiQuery
 				$params = array_merge($params, $query->Params);
 		}
 		if (substr($where, 0, 5) == " AND ")
-			$where = substr($where, 5);
+			$where = (string)substr($where, 5);
 
 		$this->params = $params;
 		$this->sql = "SELECT " . $select . " FROM " . $from
