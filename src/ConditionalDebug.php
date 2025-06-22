@@ -37,7 +37,7 @@ class ConditionalDebug
 			});
 
 			// set the error handler
-			set_error_handler(function(int $code, string $message, string $file, int $line, array $errcontext) : bool {
+			set_error_handler(function(int $code, string $message, string $file, int $line) : bool {
 				return $this->handleError($code, $message, $file, $line);
 			});
 		}
