@@ -4,19 +4,28 @@ namespace minga\framework;
 
 class Crawlers
 {
+	private static ?bool $isBoot = null;
+
 	public static function UserAgentIsCrawler() : bool
 	{
 		$agent = Params::SafeServer('HTTP_USER_AGENT');
-		// si no tiene user agent es un crawler
+		// si no tiene user agent, lo considera un crawler
 		if($agent == '')
 			return true;
 
-		foreach(self::GetCrawlers() as $bot)
+		if (self::$isBoot === null)
 		{
-			if (Str::Contains($agent, $bot))
-				return true;
+			self::$isBoot = false;
+			foreach(self::GetCrawlers() as $bot)
+			{
+				if (Str::Contains($agent, $bot))
+				{
+					self::$isBoot = true;
+					break;
+				}
+			}
 		}
-		return false;
+		return self::$isBoot;
 	}
 
 	public static function GetCrawlers() : array
@@ -39,7 +48,7 @@ class Crawlers
 			"amazon" => "Amazonbot",
 			// Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)
 			// Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot
-			"openai" => "openai",
+			"openai" => "GPTBot",
 			// AcademicBotRTU (https://academicbot.rtu.lv; mailto:caps@rtu.lv)
 			"academicbot" => "academicbot",
 			// Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html)
