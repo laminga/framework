@@ -120,6 +120,14 @@ class Db
 		{
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
+
+			if (Profiling::$DumpQueries) {
+				echo "\n<P>- QUERY --------------------------------------------------------<P>\n";
+				echo $sql;
+				echo "\n<P>--------------------------------<P>\n";
+				print_r($params);
+				echo "\n<P>----------------------------------------------------------------<P>\n";
+			}
 			if (method_exists($this->db, 'fetchAll'))
 				return $this->db->fetchAll($sql, $params);
 

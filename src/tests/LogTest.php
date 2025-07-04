@@ -6,7 +6,6 @@ namespace minga\framework\tests;
 
 use minga\framework\enums\MailTypeError;
 use minga\framework\Log;
-use minga\framework\tests\TestCaseBase;
 
 class LogTest extends TestCaseBase
 {

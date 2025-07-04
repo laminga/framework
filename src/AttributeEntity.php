@@ -8,7 +8,7 @@ class AttributeEntity
 	public array $attributes = [];
 	public array $extraAttributes = [];
 
-	public function LoadAttributesOnly(string $path): void
+	public function LoadAttributesOnly(string $path) : void
 	{
 		Profiling::BeginTimer();
 		$this->path = $path;

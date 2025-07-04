@@ -236,7 +236,7 @@ class Log
 
 		$fullUrlData = Params::SafeServer('HTTP_FULL_URL', null);
 		if ($fullUrlData !== null)
-			$fullUrl = '=> Client:      ' . $fullUrlData . "\r\n";
+			$fullUrl = "=> Client:      <a href='" . $fullUrlData . "'>" . $fullUrlData . "</a>\r\n";
 		else
 			$fullUrl = '';
 
@@ -300,7 +300,7 @@ class Log
 		if (is_a($exception, MingaException::class) && $exception->getInnerException() != null)
 		{
 			$inner = $exception->getInnerException();
-			if (is_a($inner, \Exception::class))
+			if ($inner != null)
 			{
 				return self::InternalErrorToText($exception->getCode(), $message, $exception->getFile(),
 					$exception->getLine(), [], $exception->getTraceAsString(),
@@ -427,7 +427,7 @@ class Log
 		if (is_a($exception, MingaException::class) && $exception->getInnerException())
 		{
 			$inner = $exception->getInnerException();
-			if (is_a($inner, \Exception::class))
+			if ($inner != null)
 			{
 				return self::LogError($exception->getCode(), $message, $exception->getFile(),
 					$exception->getLine(), [], $exception->getTraceAsString(),

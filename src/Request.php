@@ -22,7 +22,7 @@ class Request
 	{
 		if (isset(self::$isGoogle) == false)
 		{
-			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
+			$agent = self::UserAgent();
 			self::$isGoogle = Str::Contains($agent, "Googlebot");
 		}
 		return self::$isGoogle;
@@ -52,7 +52,7 @@ class Request
 			isset($_SERVER['HTTPS'])
 			&& $_SERVER['HTTPS'] !== 'off'
 			&& $_SERVER['HTTPS'] !== '')
-	  	{
+		{
 			return 'https';
 		}
 		return 'http';
@@ -72,7 +72,7 @@ class Request
 		return $addr;
 	}
 
-	public static function UserAgent(): string
+	public static function UserAgent() : string
 	{
 		return Params::SafeServer('HTTP_USER_AGENT', '');
 	}

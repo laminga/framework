@@ -96,11 +96,10 @@ class BaseTwoLevelStringSQLiteCache
 			}
 			else
 			{
-				// Es de 2 niveles y pide borrar todo
-				$this->OpenWrite($key1);
-				$this->db->DeleteAll();
-				$this->db->Close();
 				$file = $this->ResolveFilename($key1);
+				// Es de 2 niveles y pide borrar todo
+				IO::Delete($file . "-wal");
+				IO::Delete($file . "-shm");
 				IO::Delete($file);
 			}
 		}
