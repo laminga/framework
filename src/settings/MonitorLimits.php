@@ -13,13 +13,9 @@ class MonitorLimits
 	public int $DefensiveModeThresholdDaylyHits = 30000;
 	public int $DefensiveModeMaximumDaylyHitsPerIP = 500;
 
-	/**
-	 * @deprecated No se usa, quitar de settings
-	 */
+	/** @deprecated No se usa, quitar de settings */
 	public int $MaximumMobileDaylyHitsPerIP = 10000;
-	/**
-	 * @deprecated No se usa, quitar de settings
-	 */
+	/** @deprecated No se usa, quitar de settings */
 	public int $DefensiveModeMaximumMobileDaylyHitsPerIP = 500;
 
 	public int $LogAgentThresholdDaylyHits = 100;

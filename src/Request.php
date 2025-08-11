@@ -5,6 +5,8 @@ namespace minga\framework;
 class Request
 {
 	private static bool $isGoogle;
+	private static bool $isOpenAI;
+	private static bool $isClaude;
 
 	public static function IsSecure() : bool
 	{
@@ -12,6 +14,10 @@ class Request
 			|| (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
 	}
 
+	public static function IsCrawler() : bool
+	{
+		return Crawlers::UserAgentIsCrawler();
+	}
 	public static function IsGoogle() : bool
 	{
 		if (isset(self::$isGoogle) == false)
@@ -22,13 +28,31 @@ class Request
 		return self::$isGoogle;
 	}
 
+	public static function IsOpenAI(): bool
+	{
+		if (isset(self::$isOpenAI) == false) {
+			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
+			self::$isOpenAI = Str::Contains($agent, "GPTBot");
+		}
+		return self::$isOpenAI;
+	}
+
+	public static function IsClaude(): bool
+	{
+		if (isset(self::$isClaude) == false) {
+			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
+			self::$isClaude= Str::Contains($agent, "ClaudeBot");
+		}
+		return self::$isClaude;
+	}
+
 	public static function Protocol() : string
 	{
 		if (
 			isset($_SERVER['HTTPS'])
 			&& $_SERVER['HTTPS'] !== 'off'
 			&& $_SERVER['HTTPS'] !== '')
-	  	{
+		{
 			return 'https';
 		}
 		return 'http';
@@ -48,7 +72,7 @@ class Request
 		return $addr;
 	}
 
-	public static function UserAgent(): string
+	public static function UserAgent() : string
 	{
 		return Params::SafeServer('HTTP_USER_AGENT', '');
 	}
