@@ -971,7 +971,7 @@ class Performance
 			$headers[] = 'Db promedio ms (Db hits)';
 			$headers[] = 'Db Share (%)';
 		}
-		$rows[''] = $methodsPlusTotal;
+		$rows['&nbsp;'] = $methodsPlusTotal;
 		$rows['Controllers'] = $headers;
 		$totalDuration = self::CalculateTotalDuration($controllers);
 		// calcula el total de minutos

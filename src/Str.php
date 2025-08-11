@@ -537,8 +537,7 @@ class Str
 
 	public static function ReplaceGroup($cad, $str, $s2)
 	{
-		for ($i = 0; $i < strlen($str); $i++)
-			$cad = str_replace($str[$i], $s2, $cad);
+		$cad = str_replace($str, $s2, $cad);
 
 		return $cad;
 	}

@@ -23,7 +23,10 @@ class GeoIp
 				$conn = new WebConnection();
 				$conn->Initialize();
 				$response = $conn->Get('https://api.ipify.org?format=json');
-				$myIp = json_decode($response->GetString(), true);
+				if (!$response->file || !file_exists($response->file)) 
+					$myIp = null;
+				else
+					$myIp = json_decode($response->GetString(), true);
 				$conn->Finalize();
 				if ($myIp !== null && array_key_exists('ip', $myIp))
 					$addr = $myIp['ip'];

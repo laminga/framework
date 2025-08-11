@@ -69,7 +69,7 @@ class SearchLog
 		if(is_array($text) || is_array($matches))
 			return '';
 
-		return $user . "\t" . $now . "\t" . $matches . "\t" . Str::Replace($text, "\t", ' ') . "\t" . $ellapsedMs;
+		return $user . "\t" . $now . "\t" . $matches . "\t" . Str::ReplaceGroup($text, array("\t", "\n", "\r" ), ' ') . "\t" . $ellapsedMs;
 	}
 
 	private static function ParseHit($value, &$user, &$dateTime, &$text, &$matches, &$ellapsed)
@@ -97,23 +97,25 @@ class SearchLog
 		else
 			$path = self::ResolveFile($currentMonth);
 
-		$rows = IO::ReadIfExists($path);
+		if (IO::Exists($path))
+		{
+			$rows = IO::ReadAllLines($path);
+		}
+		else
+			$rows = [];
 		$lock->Release();
 
 		$ret = [];
 		if ($includeHeaders)
-			$ret[] = ['Fecha', 'Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
+			$ret['Id'] = ['Fecha', 'Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
 
-		$currentDay = Date::FormattedArDate();
-		for($n = count($rows) - 1; $n >= 0; $n--)
-		{
+			$currentDay = Date::FormattedArDate();
+		for ($n = count($rows) - 1; $n >= 0; $n--) {
 			$line = $rows[$n];
-			if (self::ParseHit($line, $user, $dateTime, $text, $matches, $ellapsed))
-			{
-				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay))
-				{
+			if (self::ParseHit($line, $user, $dateTime, $text, $matches, $ellapsed)) {
+				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay)) {
 					$cells = [$dateTime, $text, $matches, $ellapsed, $user];
-					$ret[] = $cells;
+					$ret["" . (count($rows) - $n - 1)] = $cells;
 				}
 			}
 		}
