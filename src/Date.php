@@ -392,8 +392,6 @@ class Date
 	 * es decir, no está pasada la fecha de vencimiento,
 	 * si no, false.
 	 *
-	 * $date en formato de FormattedDate().
-	 *
 	 */
 	public static function DateTimeNotPast(\DateTime $dt, int $days) : bool
 	{

@@ -9,37 +9,29 @@ class IO
 	public static function AppendAllBytes(string $filename, $bytes) : bool
 	{
 		$ret = file_put_contents($filename, $bytes, FILE_APPEND);
-		if($ret === false)
-			return false;
-		return true;
+		return $ret !== false;
 	}
 
 	public static function MoveDirectoryContents(string $origen, string $destino) : void
 	{
-		// Crear el directorio de destino si no existe
-		if (!file_exists($destino)) {
+		if (file_exists($destino) == false)
 			mkdir($destino, 0777, true);
-		}
 
-		// Abrir el directorio de origen
 		$dir = opendir($origen);
 
-		// Leer el contenido del directorio
-		while (($archivo = readdir($dir)) !== false) {
-			if ($archivo != '.' && $archivo != '..') {
+		while (($archivo = readdir($dir)) !== false)
+		{
+			if ($archivo != '.' && $archivo != '..')
+			{
 				$rutaOrigen = $origen . '/' . $archivo;
 				$rutaDestino = $destino . '/' . $archivo;
 
-				if (is_dir($rutaOrigen)) {
-					// Si es un directorio, llamar recursivamente a la función
+				if (is_dir($rutaOrigen)) // Si es un directorio, llamar recursivamente a la función
 					self::MoveDirectoryContents($rutaOrigen, $rutaDestino);
-				} else {
-					// Si es un archivo, moverlo
+				else // Si es un archivo, moverlo
 					rename($rutaOrigen, $rutaDestino);
-				}
 			}
 		}
-		// Cerrar el directorio
 		closedir($dir);
 	}
 
@@ -121,9 +113,7 @@ class IO
 	public static function WriteAllText(string $path, $text) : bool
 	{
 		$ret = file_put_contents($path, $text);
-		if($ret === false)
-			return false;
-		return true;
+		return $ret !== false;
 	}
 
 	public static function WriteJson(string $path, $data, bool $pretty = false)
@@ -617,7 +607,7 @@ class IO
 		return $n;
 	}
 
-	public static function FileMTime($file) : int
+	public static function FileMTime(string $file) : int
 	{
 		try
 		{
