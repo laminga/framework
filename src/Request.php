@@ -18,6 +18,7 @@ class Request
 	{
 		return Crawlers::UserAgentIsCrawler();
 	}
+
 	public static function IsGoogle() : bool
 	{
 		if (isset(self::$isGoogle) == false)
@@ -28,7 +29,7 @@ class Request
 		return self::$isGoogle;
 	}
 
-	public static function IsOpenAI(): bool
+	public static function IsOpenAI() : bool
 	{
 		if (isset(self::$isOpenAI) == false) {
 			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
@@ -37,11 +38,11 @@ class Request
 		return self::$isOpenAI;
 	}
 
-	public static function IsClaude(): bool
+	public static function IsClaude() : bool
 	{
 		if (isset(self::$isClaude) == false) {
 			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
-			self::$isClaude= Str::Contains($agent, "ClaudeBot");
+			self::$isClaude = Str::Contains($agent, "ClaudeBot");
 		}
 		return self::$isClaude;
 	}
