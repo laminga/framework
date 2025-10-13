@@ -964,13 +964,26 @@ class Str
 		return $ret;
 	}
 
-	public static function SanitizeFilename(string $title) : string
+	public static function SanitizeFilename(string $title): string
 	{
 		$title = trim($title);
-		//remueve caracteres no válidos en nombres de archivo, windows y mac.
+
+		// Extrae la extensión si existe
+		$extension = '';
+		$dotPosition = strrpos($title, '.');
+		if ($dotPosition !== false && $dotPosition > 0) {
+			$extension = substr($title, $dotPosition);
+			$title = substr($title, 0, $dotPosition);
+		}
+
+		// Remueve caracteres no válidos en nombres de archivo, windows y mac.
 		$title = preg_replace('#[/¿¡\?\<\>\\:\*\|"\^\r\n\t]#u', '', $title);
-		//140 es un número razonable para el máximo, windows soporta 256 sumando directorios.
-		return self::EllipsisAnsi($title, 140, "(...)");
+
+		// 140 es un número razonable para el máximo, windows soporta 256 sumando directorios.
+		$title = self::EllipsisAnsi($title, 140, "(...)");
+
+		// Vuelve a agregar la extensión
+		return $title . $extension;
 	}
 
 	public static function IsAllLetters(string $cad) : bool
