@@ -23,7 +23,7 @@ class GeoIp
 				$conn = new WebConnection();
 				$conn->Initialize();
 				$response = $conn->Get('https://api.ipify.org?format=json');
-				if (!$response->file || !file_exists($response->file)) 
+				if ($response->file == false || file_exists($response->file) == false)
 					$myIp = null;
 				else
 					$myIp = json_decode($response->GetString(), true);
