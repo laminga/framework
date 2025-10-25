@@ -44,11 +44,11 @@ final class ReflectionTest extends TestCaseBase
 		$this->assertEquals(count($params), 0, 'Count GetParamNames(ForTestingNoParams)');
 	}
 
-	public function testGetParamType() : void
+	public function testGetParamClass() : void
 	{
 		for($i = 0; $i < self::CANT_PARAMS; $i++)
 		{
-			$param = Reflection::GetParamType([__CLASS__, 'ForTesting'], $i);
+			$param = Reflection::GetParamClass([__CLASS__, 'ForTesting'], $i);
 			if($i == self::CANT_PARAMS - 1)
 				$this->assertEquals($param, __CLASS__, 'Type' . $i);
 			else

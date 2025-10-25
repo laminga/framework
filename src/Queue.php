@@ -79,7 +79,7 @@ abstract class Queue
 	{
 		for($i = 0; $i < count($params); $i++)
 		{
-			$type = Reflection::GetParamType($method, $i);
+			$type = Reflection::GetParamClass($method, $i);
 			if($type == null)
 				continue;
 			$interfaces = class_implements($type);
