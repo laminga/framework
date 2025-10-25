@@ -425,9 +425,8 @@ class Db
 				$ret .= (int)$v . ', ';
 			}
 			else
-				$ret .= $this->db->quote($v, $this->getParamType($v)) . ', ';
+				$ret .= $this->db->quote($v . '', $this->getParamType($v)) . ', ';
 		}
-
 		return rtrim($ret, ', ');
 	}
 
