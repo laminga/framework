@@ -653,6 +653,11 @@ class Str
 
 	public static function Ellipsis(string $cad, int $maxSize = 50) : string
 	{
+		// Distintas versiones de php dan distintos resultados
+		// con size = 0 o negativo.
+		if($maxSize <= 0)
+			throw new ErrorException('Argumento invalido maxSize.');
+
 		return mb_strimwidth($cad, 0, $maxSize, '…', 'UTF-8');
 	}
 

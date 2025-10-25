@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace minga\framework\tests;
 
 use minga\framework\Str;
+use minga\framework\ErrorException;
 
 class StrTest extends TestCaseBase
 {
@@ -54,8 +55,10 @@ class StrTest extends TestCaseBase
 		$this->assertEquals(Str::Ellipsis($val, 11), $val);
 		$this->assertEquals(Str::Ellipsis($val, 9), '01234567…');
 		$this->assertEquals(Str::Ellipsis($val, 1), '…');
-		$this->assertEquals(Str::Ellipsis($val, 0), $val);
 		$this->assertEquals(Str::Ellipsis('Tábú', 3), 'Tá…');
+
+		$this->expectException(ErrorException::class);
+		$this->assertEquals(Str::Ellipsis($val, 0), $val);
 	}
 }
 
