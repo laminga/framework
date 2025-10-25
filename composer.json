@@ -6,8 +6,8 @@
 		}
 	},
 	"autoload": {
-		"classmap": [
-			"vendor/simple-html-dom/simple-html-dom/"
+		"files": [
+			"vendor/rodrigoq/simple-html-dom/simple_html_dom_base.php"
 		],
 		"psr-4": {
 			"minga\\framework\\": "src/"
@@ -18,9 +18,9 @@
 		"defuse/php-encryption": "^2.2",
 		"geoip2/geoip2": "^2.9",
 		"rodrigoq/phpmailersendgrid": "^1.0",
-		"simple-html-dom/simple-html-dom": "*",
 		"twig/twig": "^3.00",
-		"rodrigoq/lusitanian-oauth": "^2.0"
+		"rodrigoq/lusitanian-oauth": "^2.0",
+		"rodrigoq/simple-html-dom": "^1.5"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.3",
