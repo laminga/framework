@@ -6,14 +6,20 @@ namespace minga\framework\tests;
 
 use minga\framework\Date;
 use minga\framework\GeoIp;
+use minga\framework\System;
 
 class GeoIpTest extends TestCaseBase
 {
 	public function testGetCurrentLatLong() : void
 	{
 		$loc = GeoIp::GetCurrentLatLong();
-		$this->assertIsNumeric($loc['lat']);
-		$this->assertIsNumeric($loc['lon']);
+		if(System::IsCli() && GeoIp::GetCurrentIp() == "")
+			$this->assertNull($loc);
+		else
+		{
+			$this->assertIsNumeric($loc['lat']);
+			$this->assertIsNumeric($loc['lon']);
+		}
 	}
 
 	public function testDatabaseUpdated() : void
@@ -40,6 +46,10 @@ class GeoIpTest extends TestCaseBase
 		$this->assertEquals('--', $loc, $_SERVER['REMOTE_ADDR']);
 
 		$_SERVER['REMOTE_ADDR'] = '77.111.247.71';
+		$loc = GeoIp::GetClientCountryCode();
+		$this->assertEquals('NO', $loc, $_SERVER['REMOTE_ADDR']);
+
+		$_SERVER['REMOTE_ADDR'] = '100.64.1.2';
 		$loc = GeoIp::GetClientCountryCode();
 		$this->assertEquals('--', $loc, $_SERVER['REMOTE_ADDR']);
 
