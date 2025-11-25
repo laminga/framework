@@ -112,7 +112,7 @@ class Str
 		return strcasecmp($a2, $b2);
 	}
 
-	public static function IntCmp($a, $b)
+	public static function IntCmp(?int $a, ?int $b) : int
 	{
 		if ($a === null && $b === null)
 			return 0;
@@ -124,7 +124,7 @@ class Str
 			return $a - $b;
 	}
 
-	public static function Uncompact($a, $dict) : ?string
+	public static function Uncompact($a, array $dict) : ?string
 	{
 		$ret = $a;
 		for($n = count($dict) - 1; $n >= 0; $n--)
@@ -270,25 +270,31 @@ class Str
 			return false;
 		if ($haystack === null)
 			return false;
-		return (bool)!strncmp($haystack, $needle, strlen($needle));
+		return (bool)strncmp($haystack, $needle, strlen($needle)) == false;
 	}
 
 	public static function StartsWithI($haystack, ?string $needle) : bool
 	{
+		if ($haystack === null)
+			$haystack = "";
 		if ($needle === null)
 			return false;
-		return (bool)!strncasecmp($haystack, $needle, strlen($needle));
+		return (bool)strncasecmp($haystack, $needle, strlen($needle)) == false;
 	}
 
 	//Contains case insensitve
-	public static function ContainsI($haystack, $needle) : bool
+	public static function ContainsI(?string $haystack, string $needle) : bool
 	{
+		if($haystack === null)
+			$haystack = "";
 		$pos = stripos($haystack, $needle);
 		return $pos !== false;
 	}
 
-	public static function Contains($haystack, $needle) : bool
+	public static function Contains(?string $haystack, string $needle) : bool
 	{
+		if($haystack === null)
+			$haystack = "";
 		$pos = strpos($haystack, $needle);
 		return $pos !== false;
 	}
@@ -301,17 +307,20 @@ class Str
 		return false;
 	}
 
-	public static function ContainsAnyI($haystack, array $needles) : bool
+	public static function ContainsAnyI(?string $haystack, array $needles) : bool
 	{
 		foreach($needles as $needle)
+		{
 			if (self::ContainsI($haystack, $needle))
 				return true;
+		}
 		return false;
 	}
 
 	public static function EscapeJavascript(string $string) : string
 	{
-		return str_replace("'", '\'', str_replace("\n", '\n', str_replace('"', '\"', addcslashes(str_replace("\r", '', (string)$string), "\0..\37'\\"))));
+		return str_replace("'", '\'', str_replace("\n", '\n', str_replace('"', '\"',
+			addcslashes(str_replace("\r", '', (string)$string), "\0..\37'\\"))));
 	}
 
 	public static function BooleanToText(bool $value) : string
@@ -626,7 +635,7 @@ class Str
 		return $cad;
 	}
 
-	public static function RemoveBegining($cad, $part)
+	public static function RemoveBegining($cad, $part) : string
 	{
 		if (self::StartsWith($cad, $part))
 			$cad = substr($cad, strlen($part));
@@ -760,23 +769,9 @@ class Str
 		return implode(' ', array_slice($words, 0, $n));
 	}
 
-	public static function RemoveResumenWord(string $newAbstract) : string
+	public static function RemoveResumenWord(string $str) : string
 	{
-		//TODO: reemplazar por regex
-		//Algo así: /^resumen|abstract[:\.]/iu
-		$newAbstract = self::RemoveBegining($newAbstract, 'resumen:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'RESUMEN:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'Resumen:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'abstract:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'ABSTRACT:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'Abstract:');
-
-		$newAbstract = self::RemoveBegining($newAbstract, 'resumen.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'RESUMEN.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'Resumen.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'abstract.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'ABSTRACT.');
-		return self::RemoveBegining($newAbstract, 'Abstract.');
+		return preg_replace("/^resumen|abstract[:\.]/iu", '', $str);
 	}
 
 	public static function RemoveWordFormats(string $str) : string

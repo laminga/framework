@@ -16,6 +16,38 @@ class StrTest extends TestCaseBase
 		$this->assertEquals("'", Str::DecodeEntities("&amp;#39;"));
 	}
 
+	public function testRemoveResumenWord() : void
+	{
+		$this->assertEquals(Str::RemoveResumenWord('resumen:'), '');
+		$this->assertEquals(Str::RemoveResumenWord('RESUMEN:'), '');
+		$this->assertEquals(Str::RemoveResumenWord('Resumen:'), '');
+		$this->assertEquals(Str::RemoveResumenWord('abstract:'), '');
+		$this->assertEquals(Str::RemoveResumenWord('ABSTRACT:'), '');
+		$this->assertEquals(Str::RemoveResumenWord('Abstract:'), '');
+		$this->assertEquals(Str::RemoveResumenWord('resumen.'), '');
+		$this->assertEquals(Str::RemoveResumenWord('RESUMEN.'), '');
+		$this->assertEquals(Str::RemoveResumenWord('Resumen.'), '');
+		$this->assertEquals(Str::RemoveResumenWord('abstract.'), '');
+		$this->assertEquals(Str::RemoveResumenWord('ABSTRACT.'), '');
+		$this->assertEquals(Str::RemoveResumenWord('Abstract.'), '');
+		$this->assertEquals(Str::RemoveResumenWord('.'), '.');
+		$this->assertEquals(Str::RemoveResumenWord(':'), ':');
+		$this->assertEquals(Str::RemoveResumenWord(''), '');
+		$this->assertEquals(Str::RemoveResumenWord('xxx Abstract.'), 'xxx Abstract.');
+		$this->assertEquals(Str::RemoveResumenWord('xxx Resumen.'), 'xxx Resumen.');
+		$this->assertEquals(Str::RemoveResumenWord('Abstract. '), ' ');
+		$this->assertEquals(Str::RemoveResumenWord('Resumen'), 'Resumen');
+		$this->assertEquals(Str::RemoveResumenWord('Abstract'), 'Abstract');
+	}
+
+	public function testRemoveBegining() : void
+	{
+		$this->assertEquals(Str::RemoveBegining('', ''), '');
+		$this->assertEquals(Str::RemoveBegining('a', 'a'), '');
+		$this->assertEquals(Str::RemoveBegining('aaabc', 'aaa'), 'bc');
+		$this->assertEquals(Str::RemoveBegining('a', 'a'), '');
+	}
+
 	public function testStartsWithAlfabetic() : void
 	{
 		$this->assertFalse(Str::StartsWithAlfabetic(''));
