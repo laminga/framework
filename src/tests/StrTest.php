@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
-use minga\framework\Str;
 use minga\framework\ErrorException;
+use minga\framework\Str;
 
 class StrTest extends TestCaseBase
 {
