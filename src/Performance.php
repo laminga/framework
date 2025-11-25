@@ -191,7 +191,7 @@ class Performance
 	{
 		if (self::$controller == null || $forceSet)
 		{
-			if(Str::Contains($controller, "\\"))
+			if(Str::Contains((string)$controller, "\\"))
 			{
 				$parts = explode("\\", $controller);
 				self::$controller = end($parts);
