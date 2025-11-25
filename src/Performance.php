@@ -676,18 +676,13 @@ class Performance
 			$p5 = 0;
 		}
 		if (count($parts) > 5)
-		{
 			$p6 = (int)$parts[5];
-		}
 		else
-		{
 			$p6 = 0;
-		}
-		if (count($parts) > 6) {
+		if (count($parts) > 6)
 			$p7 = (int)$parts[6];
-		} else {
+		else
 			$p7 = 0;
-		}
 		if (count($parts) > 7)
 			$extra = explode(',', $parts[7]);
 		else
@@ -883,7 +878,6 @@ class Performance
 					foreach($monthInfo as $key => $value)
 						$ret[$key][] = $value[count($value) - 1];
 				}
-
 			}
 		}
 		unset($ret['Día']);
