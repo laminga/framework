@@ -105,8 +105,12 @@ class Str
 		return array_values(array_filter(explode($delimiter, $str)));
 	}
 
-	public static function CultureCmp($a, $b) : int
+	public static function CultureCmp(?string $a, ?string $b) : int
 	{
+		if($a === null)
+			$a = "";
+		if($b == null)
+			$b = "";
 		$a2 = self::RemoveAccents($a);
 		$b2 = self::RemoveAccents($b);
 		return strcasecmp($a2, $b2);
@@ -124,22 +128,22 @@ class Str
 			return $a - $b;
 	}
 
-	public static function Uncompact($a, array $dict) : ?string
+	public static function Uncompact(?string $a, array $dict) : ?string
 	{
 		$ret = $a;
 		for($n = count($dict) - 1; $n >= 0; $n--)
-		{
 			$ret = self::Replace($ret, $dict[$n]['k'], $dict[$n]['v']);
-		}
 		return $ret;
 	}
 
-	public static function UrlencodeFriendly($cad) : string
+	public static function UrlencodeFriendly(?string $cad) : string
 	{
+		if($cad === null)
+			$cad = "";
 		return str_replace('%40', '@', urlencode($cad));
 	}
 
-	public static function FixEncoding($cad)
+	public static function FixEncoding($cad) : string
 	{
 		$cad = self::Replace($cad, 'Â¡', 'á');
 		$cad = self::Replace($cad, 'Â¢', 'â');
@@ -273,7 +277,7 @@ class Str
 		return (bool)strncmp($haystack, $needle, strlen($needle)) == false;
 	}
 
-	public static function StartsWithI($haystack, ?string $needle) : bool
+	public static function StartsWithI(?string $haystack, ?string $needle) : bool
 	{
 		if ($haystack === null)
 			$haystack = "";
@@ -435,6 +439,9 @@ class Str
 
 	public static function TwoSplit($text, $separator, &$first, &$last) : void
 	{
+		if($text === null)
+			$text = "";
+
 		$pos = strpos($text, $separator);
 		if ($pos === false)
 		{
@@ -450,6 +457,8 @@ class Str
 
 	public static function TwoSplitReverse($text, $separator, &$first, &$last) : void
 	{
+		if($text === null)
+			$text = "";
 		$pos = strrpos($text, $separator);
 		if ($pos === false)
 		{
@@ -465,6 +474,8 @@ class Str
 
 	public static function AppendParam($url, $param, $value = "") : string
 	{
+		if($url === null)
+			$url = "";
 		$n = strpos($url, "#");
 		$suffix = "";
 		if ($n !== false)
@@ -486,6 +497,8 @@ class Str
 
 	public static function EatFrom($haystack, $needle)
 	{
+		if($haystack === null)
+			$haystack = "";
 		$pos = strpos($haystack, $needle);
 		if ($pos === false)
 			return $haystack;
@@ -561,6 +574,8 @@ class Str
 
 	public static function ReplaceOnce($cad, $str, $s2)
 	{
+		if($cad === null)
+			$cad = "";
 		$pos = strpos($cad, $str);
 		if ($pos !== false)
 			return substr_replace($cad, $s2, $pos, strlen($str));
@@ -570,6 +585,8 @@ class Str
 
 	public static function ReplaceLast($subject, $search, $replace)
 	{
+		if($subject === null)
+			$subject = "";
 		$pos = strrpos($subject, $search);
 		if($pos !== false)
 			$subject = substr_replace($subject, $replace, $pos, strlen($search));
@@ -579,11 +596,15 @@ class Str
 
 	public static function RemoveNonAlphanumeric($cad) : ?string
 	{
+		if($cad === null)
+			$cad = "";
 		return preg_replace("/[^A-Za-z0-9 ]/", '', $cad);
 	}
 
-	public static function RemoveAccents($cad) : string
+	public static function RemoveAccents(?string $cad) : string
 	{
+		if($cad === null)
+			$cad = "";
 		$table = [
 			'Š' => 'S', 'š' => 's', 'Đ' => 'Dj', 'đ' => 'dj', 'Ž' => 'Z', 'ž' => 'z', 'Č' => 'C', 'č' => 'c', 'Ć' => 'C', 'ć' => 'c',
 			'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
@@ -635,15 +656,19 @@ class Str
 		return $cad;
 	}
 
-	public static function RemoveBegining($cad, $part) : string
+	public static function RemoveBegining(?string $cad, $part) : string
 	{
+		if($cad === null)
+			$cad = "";
 		if (self::StartsWith($cad, $part))
 			$cad = substr($cad, strlen($part));
 		return $cad;
 	}
 
-	public static function RemoveEnding($cad, $part)
+	public static function RemoveEnding(?string $cad, $part) : string
 	{
+		if($cad === null)
+			$cad = "";
 		if (self::EndsWith($cad, $part))
 			$cad = substr($cad, 0, strlen($cad) - strlen($part));
 		return $cad;
@@ -771,7 +796,7 @@ class Str
 
 	public static function RemoveResumenWord(string $str) : string
 	{
-		return preg_replace("/^resumen|abstract[:\.]/iu", '', $str);
+		return preg_replace("/^resumen[:\.]|^abstract[:\.]/iu", '', $str);
 	}
 
 	public static function RemoveWordFormats(string $str) : string
