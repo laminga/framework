@@ -59,7 +59,7 @@ class SearchLog
 		IO::AppendLine($file, $line);
 	}
 
-	private static function CreateKey($text, $matches, $ellapsedMs)
+	private static function CreateKey($text, $matches, $ellapsedMs) : string
 	{
 		$user = Context::LoggedUser();
 		if ($user == false)
