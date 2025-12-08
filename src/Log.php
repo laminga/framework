@@ -21,7 +21,7 @@ class Log
 		$context = [], $trace = null,
 		$innerErrorNumber = null, $innerErrorMessage = null,
 		$innerErrorFile = null, $innerErrorLine = null,
-		$innerTrace = null)
+		$innerTrace = null) : string
 	{
 		Lock::ReleaseAllStaticLocks();
 
