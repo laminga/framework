@@ -7,7 +7,7 @@ class ORM
 {
 	// avance
 
-	// m·s mejoras
+	// m√°s mejoras
 
 }
 

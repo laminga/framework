@@ -6,11 +6,11 @@ use minga\framework\PhpSession;
 
 class DebugSettings
 {
-	// Refleja la configuración activa de debug:
+	// Refleja la configuraciÃ³n activa de debug:
 	public bool $debug = false;
 	public bool $showErrors = false;
 	public bool $profiling = false;
-	// Guardan registro de la configuración de debug:
+	// Guardan registro de la configuraciÃ³n de debug:
 	public bool $settingsDebug = false;
 	public bool $sessionDebug = false;
 
