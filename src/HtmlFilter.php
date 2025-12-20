@@ -12,6 +12,59 @@ class HtmlFilter
 		return $config;
 	}
 
+	public static function FixResponsiveYoutube(string $html) : string
+	{
+		Profiling::BeginTimer();
+		$dom = new \simple_html_dom();
+		$dom->load($html);
+		foreach($dom->find('iframe') as $node)
+		{
+			unset($node->width);
+			unset($node->height);
+			unset($node->title);
+			unset($node->allow);
+			unset($node->referrerpolicy);
+			$node->parent->class = "video-container";
+		}
+		$ret = $dom->save();
+		Profiling::EndTimer();
+		return $ret;
+	}
+
+	/**
+	 * Remueve attributos height y width del tag img
+	 * también remueve inline styles height y width.
+	 */
+	public static function RemoveImageSizes(string $html) : string
+	{
+		Profiling::BeginTimer();
+		$dom = new \simple_html_dom();
+		$dom->load($html);
+		foreach($dom->find('img') as $node)
+		{
+			unset($node->height);
+			unset($node->width);
+
+			if($node->style === false)
+				continue;
+
+			$styles = explode(';', $node->style);
+			for($i = count($styles) - 1; $i >= 0; $i--)
+			{
+				if(Str::StartsWith($styles[$i], "width:")
+					|| Str::StartsWith($styles[$i], "height:"))
+				{
+					unset($styles[$i]);
+					continue;
+				}
+			}
+			$node->style = implode(';', $styles);
+		}
+		$ret = $dom->save();
+		Profiling::EndTimer();
+		return $ret;
+	}
+
 	/**
 	 * Permite solo links y formato básico.
 	 * Filtra todo lo demás, está relacionado
