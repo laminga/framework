@@ -380,8 +380,8 @@ class Str
 		}
 		else
 		{
-			$first = substr($text, 0, $pos);
-			$last = substr($text, $pos + strlen($separator));
+			$first = (string)substr($text, 0, $pos);
+			$last = (string)substr($text, $pos + strlen($separator));
 		}
 	}
 
@@ -401,8 +401,8 @@ class Str
 		}
 		else
 		{
-			$first = substr($text, 0, $pos);
-			$last = substr($text, $pos + strlen($separator));
+			$first = (string)substr($text, 0, $pos);
+			$last = (string)substr($text, $pos + strlen($separator));
 		}
 	}
 
