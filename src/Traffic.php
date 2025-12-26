@@ -30,7 +30,7 @@ class Traffic
 	{
 		$addr = inet_pton($ip);
 		if($addr === false)
-			throw new ErrorException(Context::Trans('Dirección no válida.'));
+			throw new ErrorException(Context::Trans('Dirección no válida.') . " " . $ip);
 
 		$chars = str_split($addr);
 		$last = ord(end($chars));
