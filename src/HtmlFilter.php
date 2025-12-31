@@ -171,9 +171,12 @@ class HtmlFilter
 		return $ret;
 	}
 
+	/**
+	 * Obtiene el valor de la propiedad en style="" inline del texto,
+	 * Lo hace con regulaexpressions y solo para px como unidad.
+	 */
 	private static function GetValueFromStyle(string $prop, string $text) : int
 	{
-		//TODO: implementar con otras unidades además de píxeles
 		$ret = preg_match("/\b" . $prop . "\s*:\s*(\d+)px/", $text, $match);
 		if($ret === false || $ret == 0)
 			return 0;

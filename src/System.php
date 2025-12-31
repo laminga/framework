@@ -164,12 +164,6 @@ class System
 		return $time + $days * 60 * 60 * 24 > time();
 	}
 
-	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	//TODO: unificar estos cuatro métodos de Execute o RunCommand en uno.
-	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
 	/**
 	 * Ejecuta un comando en el directorio del
 	 * binario, para ello guarda el directorio
