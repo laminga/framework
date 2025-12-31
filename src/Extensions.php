@@ -11,7 +11,6 @@ namespace minga\framework;
 class Extensions
 {
 	public const Pdf = ['pdf'];
-	//TODO: implementar rtf
 	public const Document = ['pdf', 'docx', 'doc'];
 	public const WordDocument = ['docx', 'doc'];
 	public const Presentation = ['pdf', 'pptx', 'ppt', 'ppsx', 'pps'];
@@ -44,6 +43,17 @@ class Extensions
 	public static function RemoveExtension(string $filename) : string
 	{
 		return IO::RemoveExtension($filename);
+	}
+
+	/**
+	 * @param string $filename el nombre del archivo al que cambiar la extensión.
+	 * @param string $newExt la nueva extensión con o sin punto.
+	 */
+	public static function ChangeExtension(string $filename, string $newExt) : string
+	{
+		if(Str::StartsWith($newExt, '.') == false)
+			$newExt = '.' . $newExt;
+		return self::RemoveExtension($filename) . $newExt;
 	}
 
 	public static function GetRealExtension(string $filename, string $filePath, ?string &$extName = '') : string
