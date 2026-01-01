@@ -415,7 +415,7 @@ class IO
 				hacer un if exist con lock, pero el beneficio es poco claro.
 			 */
 			if (is_dir($directory) == false)
-				throw new ErrorException('No se pudo crear el directorio: '. $directory);
+				throw new ErrorException('No se pudo crear el directorio: ' . $directory);
 		}
 	}
 

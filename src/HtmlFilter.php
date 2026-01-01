@@ -19,11 +19,11 @@ class HtmlFilter
 		$dom->load($html);
 		foreach($dom->find('iframe') as $node)
 		{
-			unset($node->width);
-			unset($node->height);
-			unset($node->title);
-			unset($node->allow);
-			unset($node->referrerpolicy);
+			$node->width = null;
+			$node->height = null;
+			$node->title = null;
+			$node->allow = null;
+			$node->referrerpolicy = null;
 			$node->parent->class = "video-container";
 		}
 		$ret = $dom->save();
@@ -42,8 +42,8 @@ class HtmlFilter
 		$dom->load($html);
 		foreach($dom->find('img') as $node)
 		{
-			unset($node->height);
-			unset($node->width);
+			$node->height = null;
+			$node->width = null;
 
 			if($node->style === false)
 				continue;

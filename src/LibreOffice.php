@@ -34,7 +34,7 @@ class LibreOffice
 		if($ret['return'] != 0)
 		{
 			throw new ErrorException("Error al ejecutar libreoffice, puede ser que falte instalarlo "
-				. $msg ."\nEjecutable: '" . self::GetExecutable() . "' Error: " . print_r($ret, true));
+				. $msg . "\nEjecutable: '" . self::GetExecutable() . "' Error: " . print_r($ret, true));
 		}
 	}
 }
