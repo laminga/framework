@@ -105,14 +105,18 @@ class Str
 		return array_values(array_filter(explode($delimiter, $str)));
 	}
 
-	public static function CultureCmp($a, $b) : int
+	public static function CultureCmp(?string $a, ?string $b) : int
 	{
+		if($a === null)
+			$a = "";
+		if($b == null)
+			$b = "";
 		$a2 = self::RemoveAccents($a);
 		$b2 = self::RemoveAccents($b);
 		return strcasecmp($a2, $b2);
 	}
 
-	public static function IntCmp($a, $b)
+	public static function IntCmp(?int $a, ?int $b) : int
 	{
 		if ($a === null && $b === null)
 			return 0;
@@ -124,109 +128,40 @@ class Str
 			return $a - $b;
 	}
 
-	public static function Uncompact($a, $dict) : ?string
+	public static function Uncompact(?string $a, array $dict) : ?string
 	{
 		$ret = $a;
 		for($n = count($dict) - 1; $n >= 0; $n--)
-		{
 			$ret = self::Replace($ret, $dict[$n]['k'], $dict[$n]['v']);
-		}
 		return $ret;
 	}
 
-	public static function UrlencodeFriendly($cad) : string
+	public static function UrlencodeFriendly(?string $cad) : string
 	{
+		if($cad === null)
+			$cad = "";
 		return str_replace('%40', '@', urlencode($cad));
 	}
 
-	public static function FixEncoding($cad)
+	public static function FixEncoding(?string $cad) : string
 	{
-		$cad = self::Replace($cad, 'Â¡', 'á');
-		$cad = self::Replace($cad, 'Â¢', 'â');
-		$cad = self::Replace($cad, 'Â£', 'ã');
-		$cad = self::Replace($cad, 'Â¤', 'ä');
-		$cad = self::Replace($cad, 'Â¥', 'å');
-		$cad = self::Replace($cad, 'Â¦', 'æ');
-		$cad = self::Replace($cad, 'Â§', 'ç');
-		$cad = self::Replace($cad, 'Â¨', 'è');
-		$cad = self::Replace($cad, 'Â©', 'é');
-		$cad = self::Replace($cad, 'Âª', 'ê');
-		$cad = self::Replace($cad, 'Â«', 'ë');
-		$cad = self::Replace($cad, 'Â­', 'í');
-		$cad = self::Replace($cad, 'Â®', 'î');
-		$cad = self::Replace($cad, 'Â¯', 'ï');
-		$cad = self::Replace($cad, 'Â°', 'ð');
-		$cad = self::Replace($cad, 'Â±', 'ñ');
-		$cad = self::Replace($cad, 'Â²', 'ò');
-		$cad = self::Replace($cad, 'Â³', 'ó');
-		$cad = self::Replace($cad, 'Â´', 'ô');
-		$cad = self::Replace($cad, 'Âµ', 'õ');
-		$cad = self::Replace($cad, 'Â·', '÷');
-		$cad = self::Replace($cad, 'Â¸', 'ø');
-		$cad = self::Replace($cad, 'Â¹', 'ù');
-		$cad = self::Replace($cad, 'Âº', 'ú');
-		$cad = self::Replace($cad, 'Â»', 'û');
-		$cad = self::Replace($cad, 'Â¼', 'ü');
-		$cad = self::Replace($cad, 'Â½', 'ý');
-		$cad = self::Replace($cad, 'Â¾', 'þ');
-		$cad = self::Replace($cad, 'Â¿', 'ÿ');
-		$cad = self::Replace($cad, 'Ã€', 'À');
-		$cad = self::Replace($cad, 'Ã', 'Á');
-		$cad = self::Replace($cad, 'Ã‚', 'Â');
-		$cad = self::Replace($cad, 'Ãƒ', 'Ã');
-		$cad = self::Replace($cad, 'Ã„', 'Ä');
-		$cad = self::Replace($cad, 'Ã…', 'Å');
-		$cad = self::Replace($cad, 'Ã†', 'Æ');
-		$cad = self::Replace($cad, 'Ã‡', 'Ç');
-		$cad = self::Replace($cad, 'Ãˆ', 'È');
-		$cad = self::Replace($cad, 'Ã‰', 'É');
-		$cad = self::Replace($cad, 'ÃŠ', 'Ê');
-		$cad = self::Replace($cad, 'Ã‹', 'Ë');
-		$cad = self::Replace($cad, 'ÃŒ', 'Ì');
-		$cad = self::Replace($cad, 'ÃŽ', 'Î');
-		$cad = self::Replace($cad, 'Ã‘', 'Ñ');
-		$cad = self::Replace($cad, 'Ã’', 'Ò');
-		$cad = self::Replace($cad, 'Ã“', 'Ó');
-		$cad = self::Replace($cad, 'Ã”', 'Ô');
-		$cad = self::Replace($cad, 'Ã•', 'Õ');
-		$cad = self::Replace($cad, 'Ã–', 'Ö');
-		$cad = self::Replace($cad, 'Ã—', '×');
-		$cad = self::Replace($cad, 'Ã˜', 'Ø');
-		$cad = self::Replace($cad, 'Ã™', 'Ù');
-		$cad = self::Replace($cad, 'Ãš', 'Ú');
-		$cad = self::Replace($cad, 'Ã›', 'Û');
-		$cad = self::Replace($cad, 'Ãœ', 'Ü');
-		$cad = self::Replace($cad, 'Ãž', 'Þ');
-		$cad = self::Replace($cad, 'ÃŸ', 'ß');
-		$cad = self::Replace($cad, 'Ã¡', 'á');
-		$cad = self::Replace($cad, 'Ã¢', 'â');
-		$cad = self::Replace($cad, 'Ã£', 'ã');
-		$cad = self::Replace($cad, 'Ã¤', 'ä');
-		$cad = self::Replace($cad, 'Ã¥', 'å');
-		$cad = self::Replace($cad, 'Ã¦', 'æ');
-		$cad = self::Replace($cad, 'Ã§', 'ç');
-		$cad = self::Replace($cad, 'Ã¨', 'è');
-		$cad = self::Replace($cad, 'Ã©', 'é');
-		$cad = self::Replace($cad, 'Ãª', 'ê');
-		$cad = self::Replace($cad, 'Ã«', 'ë');
-		$cad = self::Replace($cad, 'Ã­', 'í');
-		$cad = self::Replace($cad, 'Ã®', 'î');
-		$cad = self::Replace($cad, 'Ã¯', 'ï');
-		$cad = self::Replace($cad, 'Ã°', 'ð');
-		$cad = self::Replace($cad, 'Ã±', 'ñ');
-		$cad = self::Replace($cad, 'Ã²', 'ò');
-		$cad = self::Replace($cad, 'Ã³', 'ó');
-		$cad = self::Replace($cad, 'Ã´', 'ô');
-		$cad = self::Replace($cad, 'Ãµ', 'õ');
-		$cad = self::Replace($cad, 'Ã·', '÷');
-		$cad = self::Replace($cad, 'Ã¸', 'ø');
-		$cad = self::Replace($cad, 'Ã¹', 'ù');
-		$cad = self::Replace($cad, 'Ãº', 'ú');
-		$cad = self::Replace($cad, 'Ã»', 'û');
-		$cad = self::Replace($cad, 'Ã¼', 'ü');
-		$cad = self::Replace($cad, 'Ã½', 'ý');
-		$cad = self::Replace($cad, 'Ã¾', 'þ');
-		return self::Replace($cad, 'Ã¿', 'ÿ');
+		if($cad === null)
+			$cad = "";
+		$src = [
+			'Â¡', 'Â¢', 'Â£', 'Â¤', 'Â¥', 'Â¦', 'Â§', 'Â¨', 'Â©', 'Âª', 'Â«', 'Â­', 'Â®', 'Â¯', 'Â°', 'Â±', 'Â²',
+			'Â³', 'Â´', 'Âµ', 'Â·', 'Â¸', 'Â¹', 'Âº', 'Â»', 'Â¼', 'Â½', 'Â¾', 'Â¿', 'Ã€', 'Ã', 'Ã‚', 'Ãƒ', 'Ã„',
+			'Ã…', 'Ã†', 'Ã‡', 'Ãˆ', 'Ã‰', 'ÃŠ', 'Ã‹', 'ÃŒ', 'ÃŽ', 'Ã‘', 'Ã’', 'Ã“', 'Ã”', 'Ã•', 'Ã–', 'Ã—', 'Ã˜',
+			'Ã™', 'Ãš', 'Ã›', 'Ãœ', 'Ãž', 'ÃŸ', 'Ã¡', 'Ã¢', 'Ã£', 'Ã¤', 'Ã¥', 'Ã¦', 'Ã§', 'Ã¨', 'Ã©', 'Ãª', 'Ã«',
+			'Ã­', 'Ã®', 'Ã¯', 'Ã°', 'Ã±', 'Ã²', 'Ã³', 'Ã´', 'Ãµ', 'Ã·', 'Ã¸', 'Ã¹', 'Ãº', 'Ã»', 'Ã¼', 'Ã½', 'Ã¾', 'Ã¿',
+		];
+		$dst = [
+			'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ',
+			'÷', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê',
+			'Ë', 'Ì', 'Î', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', '×', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Þ', 'ß', 'á', 'â', 'ã',
+			'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', '÷', 'ø', 'ù',
+			'ú', 'û', 'ü', 'ý', 'þ', 'ÿ',
+		];
+		return str_replace($src, $dst, $cad);
 	}
 
 	public static function UrlDecodeFriendly(string $cad) : string
@@ -234,24 +169,21 @@ class Str
 		return urldecode(str_replace('@', '%40', $cad));
 	}
 
-	public static function CrawlerUrlEncode($name) : string
+	public static function CrawlerUrlEncode(?string $name) : string
 	{
+		if ($name === null)
+			$name = "";
+
 		$name = self::RemoveAccents(self::ToLower($name));
-		$name = self::Replace($name, " ", "_");
-		$name = self::Replace($name, ",", "_");
-		$name = self::Replace($name, "/", "_");
-		$name = self::Replace($name, "\\", "_");
-		$name = self::Replace($name, "(", "_");
-		$name = self::Replace($name, ")", "_");
-		$name = self::Replace($name, ".", "_");
-		$name = self::Replace($name, "__", "_");
-		$name = self::Replace($name, "__", "_");
-		$name = self::Replace($name, "__", "_");
+		$name = self::ReplaceGroup($name, [" ", "(", ")", ",", ".", "/", "\\", "__"], "_");
 		if (self::EndsWith($name, "_"))
 			$name = substr($name, 0, strlen($name) - 1);
 		return urlencode($name);
 	}
 
+	/**
+	 * @param string|int $bytes
+	 */
 	public static function SizeToHumanReadable($bytes, int $precision = 2) : string
 	{
 		if ($bytes == "-")
@@ -270,25 +202,31 @@ class Str
 			return false;
 		if ($haystack === null)
 			return false;
-		return (bool)!strncmp($haystack, $needle, strlen($needle));
+		return (bool)strncmp($haystack, $needle, strlen($needle)) == false;
 	}
 
-	public static function StartsWithI($haystack, ?string $needle) : bool
+	public static function StartsWithI(?string $haystack, ?string $needle) : bool
 	{
+		if ($haystack === null)
+			$haystack = "";
 		if ($needle === null)
 			return false;
-		return (bool)!strncasecmp($haystack, $needle, strlen($needle));
+		return (bool)strncasecmp($haystack, $needle, strlen($needle)) == false;
 	}
 
 	//Contains case insensitve
-	public static function ContainsI($haystack, $needle) : bool
+	public static function ContainsI(?string $haystack, string $needle) : bool
 	{
+		if($haystack === null)
+			$haystack = "";
 		$pos = stripos($haystack, $needle);
 		return $pos !== false;
 	}
 
-	public static function Contains($haystack, $needle) : bool
+	public static function Contains(?string $haystack, string $needle) : bool
 	{
+		if($haystack === null)
+			$haystack = "";
 		$pos = strpos($haystack, $needle);
 		return $pos !== false;
 	}
@@ -301,17 +239,20 @@ class Str
 		return false;
 	}
 
-	public static function ContainsAnyI($haystack, array $needles) : bool
+	public static function ContainsAnyI(?string $haystack, array $needles) : bool
 	{
 		foreach($needles as $needle)
+		{
 			if (self::ContainsI($haystack, $needle))
 				return true;
+		}
 		return false;
 	}
 
 	public static function EscapeJavascript(string $string) : string
 	{
-		return str_replace("'", '\'', str_replace("\n", '\n', str_replace('"', '\"', addcslashes(str_replace("\r", '', (string)$string), "\0..\37'\\"))));
+		return str_replace("'", '\'', str_replace("\n", '\n', str_replace('"', '\"',
+			addcslashes(str_replace("\r", '', (string)$string), "\0..\37'\\"))));
 	}
 
 	public static function BooleanToText(bool $value) : string
@@ -321,7 +262,7 @@ class Str
 		return Context::Trans('No');
 	}
 
-	public static function SpanishSingle($value)
+	public static function SpanishSingle(?string $value) : string
 	{
 		if (self::EndsWith($value, "les"))
 			$value = self::RemoveEnding($value, "es");
@@ -330,7 +271,7 @@ class Str
 		return $value;
 	}
 
-	private static function AssociateShortWords($words) : array
+	private static function AssociateShortWords(array $words) : array
 	{
 		$ret = [];
 		$min = Context::Settings()->Db()->FullTextMinWordLength;
@@ -417,15 +358,20 @@ class Str
 		return substr($haystack, $pos + strlen($needle));
 	}
 
-	public static function CheapSqlEscape($cad) : string
+	public static function CheapSqlEscape(?string $cad) : string
 	{
 		if ($cad === null)
 			return 'null';
 		return "'" . Str::Replace($cad, "'", "\'") . "'";
 	}
 
-	public static function TwoSplit($text, $separator, &$first, &$last) : void
+	public static function TwoSplit(?string $text, ?string $separator, ?string &$first, ?string &$last) : void
 	{
+		if($text === null)
+			$text = "";
+		if($separator === null)
+			$separator = "";
+
 		$pos = strpos($text, $separator);
 		if ($pos === false)
 		{
@@ -434,13 +380,19 @@ class Str
 		}
 		else
 		{
-			$first = substr($text, 0, $pos);
-			$last = substr($text, $pos + strlen($separator));
+			$first = (string)substr($text, 0, $pos);
+			$last = (string)substr($text, $pos + strlen($separator));
 		}
 	}
 
-	public static function TwoSplitReverse($text, $separator, &$first, &$last) : void
+	public static function TwoSplitReverse(?string $text, ?string $separator, ?string &$first, ?string &$last) : void
 	{
+		if($text === null)
+			$text = "";
+
+		if($separator === null)
+			$separator = "";
+
 		$pos = strrpos($text, $separator);
 		if ($pos === false)
 		{
@@ -449,13 +401,15 @@ class Str
 		}
 		else
 		{
-			$first = substr($text, 0, $pos);
-			$last = substr($text, $pos + strlen($separator));
+			$first = (string)substr($text, 0, $pos);
+			$last = (string)substr($text, $pos + strlen($separator));
 		}
 	}
 
-	public static function AppendParam($url, $param, $value = "") : string
+	public static function AppendParam(?string $url, ?string $param, ?string $value = "") : string
 	{
+		if($url === null)
+			$url = "";
 		$n = strpos($url, "#");
 		$suffix = "";
 		if ($n !== false)
@@ -475,8 +429,12 @@ class Str
 		return $ret . $suffix;
 	}
 
-	public static function EatFrom($haystack, $needle)
+	public static function EatFrom(?string $haystack, ?string $needle) : string
 	{
+		if($haystack === null)
+			$haystack = "";
+		if($needle === null)
+			$needle = "";
 		$pos = strpos($haystack, $needle);
 		if ($pos === false)
 			return $haystack;
@@ -484,15 +442,23 @@ class Str
 		return substr($haystack, 0, $pos);
 	}
 
-	public static function EnsureEndsWith($haystack, $needle) : string
+	public static function EnsureEndsWith(?string $haystack, ?string $needle) : string
 	{
+		if($haystack === null)
+			$haystack = "";
+		if($needle === null)
+			$needle = "";
 		if (self::EndsWith($haystack, $needle))
 			return $haystack;
 		return $haystack . $needle;
 	}
 
-	public static function EndsWith($haystack, $needle) : bool
+	public static function EndsWith(?string $haystack, ?string $needle) : bool
 	{
+		if($haystack === null)
+			$haystack = "";
+		if($needle === null)
+			$needle = "";
 		$length = strlen($needle);
 		if ($length == 0)
 			return true;
@@ -525,7 +491,7 @@ class Str
 		return false;
 	}
 
-	public static function TextContainsWordList($list, $cad) : array
+	public static function TextContainsWordList(array $list, ?string $cad) : array
 	{
 		$ret = [];
 		$cadSpaced = ' ' . $cad . ' ';
@@ -535,32 +501,56 @@ class Str
 		return $ret;
 	}
 
-	public static function ReplaceGroup($cad, $str, $s2)
+	public static function ReplaceGroup(?string $subject, array $search, ?string $replace) : string
 	{
-		return str_replace($str, $s2, $cad);
-	}
-
-	public static function ReplaceI($subject, $search, $replace)
-	{
-		return str_ireplace($search, $replace, $subject);
-	}
-
-	public static function Replace($subject, $search, $replace)
-	{
+			if($subject === null)
+				$subject = "";
+			if($replace === null)
+				$replace = "";
 		return str_replace($search, $replace, $subject);
 	}
 
-	public static function ReplaceOnce($cad, $str, $s2)
+	public static function ReplaceI(?string $subject, ?string $search, ?string $replace) : string
 	{
-		$pos = strpos($cad, $str);
-		if ($pos !== false)
-			return substr_replace($cad, $s2, $pos, strlen($str));
-
-		return $cad;
+		if($subject === null)
+			$subject = "";
+		if($search === null)
+			$search = "";
+		if($replace === null)
+			$replace = "";
+		return str_ireplace($search, $replace, $subject);
 	}
 
-	public static function ReplaceLast($subject, $search, $replace)
+	public static function Replace(?string $subject, ?string $search, ?string $replace) : string
 	{
+		if($subject === null)
+			$subject = "";
+		if($search === null)
+			$search = "";
+		if($replace === null)
+			$replace = "";
+		return str_replace($search, $replace, $subject);
+	}
+
+	public static function ReplaceOnce(?string $subject, $str, $replace) : string
+	{
+		if($subject === null)
+			$subject = "";
+		$pos = strpos($subject, $str);
+		if ($pos !== false)
+			return substr_replace($subject, $replace, $pos, strlen($str));
+
+		return $subject;
+	}
+
+	public static function ReplaceLast(?string $subject, ?string $search, ?string $replace) : string
+	{
+		if($subject === null)
+			$subject = "";
+		if($search === null)
+			$search = "";
+		if($replace === null)
+			$replace = "";
 		$pos = strrpos($subject, $search);
 		if($pos !== false)
 			$subject = substr_replace($subject, $replace, $pos, strlen($search));
@@ -568,25 +558,23 @@ class Str
 		return $subject;
 	}
 
-	public static function RemoveNonAlphanumeric($cad) : ?string
+	public static function RemoveNonAlphanumeric(?string $cad) : ?string
 	{
+		if($cad === null)
+			$cad = "";
 		return preg_replace("/[^A-Za-z0-9 ]/", '', $cad);
 	}
 
-	public static function RemoveAccents($cad) : string
+	public static function RemoveAccents(?string $cad) : string
 	{
-		$table = [
-			'Š' => 'S', 'š' => 's', 'Đ' => 'Dj', 'đ' => 'dj', 'Ž' => 'Z', 'ž' => 'z', 'Č' => 'C', 'č' => 'c', 'Ć' => 'C', 'ć' => 'c',
-			'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
-			'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O',
-			'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss',
-			'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e',
-			'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o',
-			'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b',
-			'ÿ' => 'y', 'Ŕ' => 'R', 'ŕ' => 'r',
-		];
+		if ($cad === null)
+			$cad = "";
+		$otros = "Æ > AE; æ > ae; ß > ss; ẞ > SS; Đ > D; đ > d; ħ > h; ı > i; ĸ > k; Ŀ > L;"
+			. "ŀ > l; Ł > L; ł > l; ŉ > N; Ŋ > N; ŋ > n; Œ > OE; œ > oe; Ŧ > T; ŧ > t;";
+		$translit = \Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC; ' . $otros,
+			\Transliterator::FORWARD);
 
-		return strtr($cad, $table);
+		return $translit->transliterate($cad);
 	}
 
 	public static function RemoveDot(string $cad) : string
@@ -626,15 +614,19 @@ class Str
 		return $cad;
 	}
 
-	public static function RemoveBegining($cad, $part)
+	public static function RemoveBegining(?string $cad, $part) : string
 	{
+		if($cad === null)
+			$cad = "";
 		if (self::StartsWith($cad, $part))
 			$cad = substr($cad, strlen($part));
 		return $cad;
 	}
 
-	public static function RemoveEnding($cad, $part)
+	public static function RemoveEnding(?string $cad, $part) : string
 	{
+		if($cad === null)
+			$cad = "";
 		if (self::EndsWith($cad, $part))
 			$cad = substr($cad, 0, strlen($cad) - strlen($part));
 		return $cad;
@@ -646,13 +638,18 @@ class Str
 		return self::RemoveEnding($cad, ")");
 	}
 
-	public static function IsNullOrEmpty($cad) : bool
+	public static function IsNullOrEmpty(?string $cad) : bool
 	{
 		return $cad === '' || $cad === null;
 	}
 
 	public static function Ellipsis(string $cad, int $maxSize = 50) : string
 	{
+		// Distintas versiones de php dan distintos resultados
+		// con size = 0 o negativo.
+		if($maxSize <= 0)
+			throw new ErrorException('Argumento invalido maxSize.');
+
 		return mb_strimwidth($cad, 0, $maxSize, '…', 'UTF-8');
 	}
 
@@ -669,8 +666,10 @@ class Str
 		return $cad;
 	}
 
-	public static function Capitalize($cad) : string
+	public static function Capitalize(?string $cad) : string
 	{
+		if($cad === null)
+			$cad = "";
 		return mb_strtoupper(mb_substr($cad, 0, 1)) . mb_substr($cad, 1);
 	}
 
@@ -685,31 +684,40 @@ class Str
 		return nl2br($cad);
 	}
 
-	public static function Length($str, $encoding = 'UTF-8') : int
+	public static function Length(?string $str, string $encoding = 'UTF-8') : int
 	{
+		if($str === null)
+			$str = "";
 		return mb_strlen($str, $encoding);
 	}
 
-	public static function Substr($str, $start, $length = null, $encoding = 'UTF-8') : string
+	public static function Substr(?string $str, int $start, ?int $length = null, string $encoding = 'UTF-8') : string
 	{
+		if($str === null)
+			$str = "";
 		return mb_substr($str, $start, $length, $encoding);
 	}
 
 	public static function Concat(string $a, ?string $b, string $separator) : string
 	{
-		if ($b === null) return $a;
+		if ($b === null)
+			return $a;
 		if (trim($a) == "" || trim($b) == "")
 			$separator = "";
 		return trim($a) . $separator . trim($b);
 	}
 
-	public static function ToLower($str) : string
+	public static function ToLower(?string $str) : string
 	{
+		if($str === null)
+			$str = "";
 		return mb_convert_case($str, MB_CASE_LOWER);
 	}
 
-	public static function ToUpper($str) : string
+	public static function ToUpper(?string $str) : string
 	{
+		if($str === null)
+			$str = "";
 		return mb_convert_case($str, MB_CASE_UPPER);
 	}
 
@@ -755,23 +763,9 @@ class Str
 		return implode(' ', array_slice($words, 0, $n));
 	}
 
-	public static function RemoveResumenWord(string $newAbstract) : string
+	public static function RemoveResumenWord(string $str) : string
 	{
-		//TODO: reemplazar por regex
-		//Algo así: /^resumen|abstract[:\.]/iu
-		$newAbstract = self::RemoveBegining($newAbstract, 'resumen:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'RESUMEN:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'Resumen:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'abstract:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'ABSTRACT:');
-		$newAbstract = self::RemoveBegining($newAbstract, 'Abstract:');
-
-		$newAbstract = self::RemoveBegining($newAbstract, 'resumen.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'RESUMEN.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'Resumen.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'abstract.');
-		$newAbstract = self::RemoveBegining($newAbstract, 'ABSTRACT.');
-		return self::RemoveBegining($newAbstract, 'Abstract.');
+		return preg_replace("/^resumen[:\.]|^abstract[:\.]/iu", '', $str);
 	}
 
 	public static function RemoveWordFormats(string $str) : string
@@ -825,13 +819,17 @@ class Str
 			array_slice($words, count($words) - $n, $n));
 	}
 
-	public static function IsNumber($cad) : bool
+	public static function IsNumber(?string $cad) : bool
 	{
+		if($cad === null)
+			$cad = "";
 		return is_numeric($cad);
 	}
 
-	public static function IsNumberNotPlaceheld($cad) : bool
+	public static function IsNumberNotPlaceheld(?string $cad) : bool
 	{
+		if($cad === null)
+			$cad = "";
 		if (strlen($cad) > 1 && $cad[0] === '0' && $cad[1] !== '.')
 			return false;
 
@@ -859,6 +857,9 @@ class Str
 			str_replace($replace, '', $str));
 	}
 
+	/**
+	 * @param array|string $partsRaw
+	 */
 	public static function SmartImplode($partsRaw, string $trailingCad = "", int $normalization = 0) : string
 	{
 		// $normalization = 0: Nada
@@ -1036,12 +1037,12 @@ class Str
 		return 'l-' . self::RandomStringLowerCase(16);
 	}
 
-	public static function FormatLocaleNumber($value, $decimals = 0) : string
+	public static function FormatLocaleNumber($value, int $decimals = 0) : string
 	{
 		return number_format($value, $decimals, ",", "");
 	}
 
-	public static function FormatNumber($value, $decimals = 0, $leadingZeros = 0) : string
+	public static function FormatNumber($value, int $decimals = 0, int $leadingZeros = 0) : string
 	{
 		$format = '%0';
 		if ($leadingZeros > 0)

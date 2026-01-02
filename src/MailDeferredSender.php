@@ -77,7 +77,9 @@ class MailDeferredSender
 		foreach($lines as $line)
 		{
 			$parts = explode(":", $line, 2);
-			$ret[trim($parts[0])] = trim($parts[1]);
+			$ret[trim($parts[0])] = "";
+			if(isset($parts[1]))
+				$ret[trim($parts[0])] = trim($parts[1]);
 		}
 		return $ret;
 	}

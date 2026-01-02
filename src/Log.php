@@ -21,7 +21,7 @@ class Log
 		$context = [], $trace = null,
 		$innerErrorNumber = null, $innerErrorMessage = null,
 		$innerErrorFile = null, $innerErrorLine = null,
-		$innerTrace = null)
+		$innerTrace = null) : string
 	{
 		Lock::ReleaseAllStaticLocks();
 
@@ -147,7 +147,7 @@ class Log
 		if(Str::Contains($errorMessage, "setting 'theme'"))
 			return true;
 
-		if(Str::Contains($errorMessage, "googletag"))
+		if(Str::Contains($errorMessage . $errorSource, "googletag"))
 			return true;
 
 		if(Str::Contains($agent, "applebot"))

@@ -16,6 +16,7 @@ class Settings
 	private DbSettings $db;
 	private UploadSettings $upload;
 	private QueueSettings $queue;
+	private WordConversionSettings $wordConversion;
 	private DebugSettings $debug;
 	private CacheSettings $cache;
 	private ServersSettings $servers;
@@ -144,6 +145,14 @@ class Settings
 			$this->queue = new QueueSettings();
 
 		return $this->queue;
+	}
+
+	public function WordConversion() : WordConversionSettings
+	{
+		if (isset($this->wordConversion) == false)
+			$this->wordConversion = new WordConversionSettings();
+
+		return $this->wordConversion;
 	}
 
 	public function Db() : DbSettings

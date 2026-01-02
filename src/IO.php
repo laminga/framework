@@ -35,7 +35,11 @@ class IO
 		closedir($dir);
 	}
 
-	public static function ReadAllText(string $path, $maxLength = -1)
+	//TODO: devolver string o throw...
+	/**
+	 * @return string|false
+	 */
+	public static function ReadAllText(string $path, int $maxLength = -1)
 	{
 		if ($maxLength == -1)
 			return file_get_contents($path);
@@ -71,8 +75,10 @@ class IO
 		return $file;
 	}
 
-	public static function GetRelativePath($path)
+	public static function GetRelativePath(?string $path) : string
 	{
+		if($path === null)
+			$path = "";
 		$base = Context::Paths()->GetRoot();
 		if (Str::StartsWith($path, $base))
 			return substr($path, strlen($base));
@@ -116,7 +122,7 @@ class IO
 		return $ret !== false;
 	}
 
-	public static function WriteJson(string $path, $data, bool $pretty = false)
+	public static function WriteJson(string $path, $data, bool $pretty = false) : bool
 	{
 		$flags = JSON_INVALID_UTF8_SUBSTITUTE;
 		if($pretty)
@@ -257,7 +263,7 @@ class IO
 		return false;
 	}
 
-	public static function EscapeLongFilename(string $file)
+	public static function EscapeLongFilename(string $file) : string
 	{
 		if (Str::Contains($file, " ")
 			&& Str::StartsWith($file, "'") == false
@@ -409,7 +415,7 @@ class IO
 				hacer un if exist con lock, pero el beneficio es poco claro.
 			 */
 			if (is_dir($directory) == false)
-				throw new ErrorException('No se pudo crear el directorio');
+				throw new ErrorException('No se pudo crear el directorio: ' . $directory);
 		}
 	}
 
@@ -423,28 +429,31 @@ class IO
 		return new DirectoriesCursor($path, $ext);
 	}
 
-	public static function GetFilesRecursive($path, $ext = '', bool $returnFullPath = false)
+	public static function GetFilesRecursive(?string $path, string $ext = '', bool $returnFullPath = false) : array
 	{
 		return self::GetFilesStartsWithAndExt($path, '', $ext, $returnFullPath, true);
 	}
 
-	public static function GetFilesFullPath($path, $ext = '') : array
+	public static function GetFilesFullPath(?string $path, string $ext = '') : array
 	{
 		return self::GetFiles($path, $ext, true);
 	}
 
-	public static function GetFiles($path, $ext = '', bool $returnFullPath = false) : array
+	public static function GetFiles(?string $path, string $ext = '', bool $returnFullPath = false) : array
 	{
 		return self::GetFilesStartsWithAndExt($path, '', $ext, $returnFullPath);
 	}
 
-	public static function GetFilesStartsWith($path, $start = '', bool $returnFullPath = false) : array
+	public static function GetFilesStartsWith(?string $path, $start = '', bool $returnFullPath = false) : array
 	{
 		return self::GetFilesStartsWithAndExt($path, $start, '', $returnFullPath);
 	}
 
-	public static function GetFilesStartsWithAndExt($path, $start = '', $ext = '', bool $returnFullPath = false, bool $recursive = false) : array
+	public static function GetFilesStartsWithAndExt(?string $path, $start = '', $ext = '', bool $returnFullPath = false, bool $recursive = false) : array
 	{
+		if($path === null)
+			$path = "";
+
 		if($ext != '' && Str::StartsWith($ext, '.') == false)
 			$ext = '.' . $ext;
 
@@ -509,8 +518,10 @@ class IO
 		return count(self::GetFilesFullPath($path, $ext));
 	}
 
-	public static function GetDirectories($path, $start = '', bool $returnFullPath = false)
+	public static function GetDirectories(?string $path, string $start = '', bool $returnFullPath = false) : array
 	{
+		if($path === null)
+			$path = "";
 		$start = str_replace(['/', "\\"], '', $start);
 
 		$notAlpha = false;
@@ -538,8 +549,10 @@ class IO
 		return $info['dirname'] . '/' . $info['filename'] . '_' . $i . '.' . $info['extension'];
 	}
 
-	public static function ClearDirectory($dir, bool $recursive = false) : int
+	public static function ClearDirectory(?string $dir, bool $recursive = false) : int
 	{
+		if($dir === null)
+			$dir = "";
 		if (file_exists($dir) == false)
 			return 0;
 		$n = 0;
@@ -934,7 +947,7 @@ class IO
 		return $ret;
 	}
 
-	public static function Move($source, $target) : bool
+	public static function Move(string $source, string $target) : bool
 	{
 		try
 		{

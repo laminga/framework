@@ -12,6 +12,59 @@ class HtmlFilter
 		return $config;
 	}
 
+	public static function FixResponsiveYoutube(string $html) : string
+	{
+		Profiling::BeginTimer();
+		$dom = new \simple_html_dom();
+		$dom->load($html);
+		foreach($dom->find('iframe') as $node)
+		{
+			$node->width = null;
+			$node->height = null;
+			$node->title = null;
+			$node->allow = null;
+			$node->referrerpolicy = null;
+			$node->parent->class = "video-container";
+		}
+		$ret = $dom->save();
+		Profiling::EndTimer();
+		return $ret;
+	}
+
+	/**
+	 * Remueve attributos height y width del tag img
+	 * también remueve inline styles height y width.
+	 */
+	public static function RemoveImageSizes(string $html) : string
+	{
+		Profiling::BeginTimer();
+		$dom = new \simple_html_dom();
+		$dom->load($html);
+		foreach($dom->find('img') as $node)
+		{
+			$node->height = null;
+			$node->width = null;
+
+			if($node->style === false)
+				continue;
+
+			$styles = explode(';', $node->style);
+			for($i = count($styles) - 1; $i >= 0; $i--)
+			{
+				if(Str::StartsWith($styles[$i], "width:")
+					|| Str::StartsWith($styles[$i], "height:"))
+				{
+					unset($styles[$i]);
+					continue;
+				}
+			}
+			$node->style = implode(';', $styles);
+		}
+		$ret = $dom->save();
+		Profiling::EndTimer();
+		return $ret;
+	}
+
 	/**
 	 * Permite solo links y formato básico.
 	 * Filtra todo lo demás, está relacionado
@@ -118,9 +171,12 @@ class HtmlFilter
 		return $ret;
 	}
 
+	/**
+	 * Obtiene el valor de la propiedad en style="" inline del texto,
+	 * Lo hace con regulaexpressions y solo para px como unidad.
+	 */
 	private static function GetValueFromStyle(string $prop, string $text) : int
 	{
-		//TODO: implementar con otras unidades además de píxeles
 		$ret = preg_match("/\b" . $prop . "\s*:\s*(\d+)px/", $text, $match);
 		if($ret === false || $ret == 0)
 			return 0;

@@ -22,13 +22,19 @@ class Reflection
 		return $res;
 	}
 
-	public static function GetParamType($method, int $index)
+	public static function GetParamClass($method, int $index) : ?string
 	{
 		$params = self::GetParams($method);
-		$class = $params[$index]->getClass();
-		if($class === null)
-			return null;
-		return $class->name;
+		$type = $params[$index]->getType();
+		if ($type instanceof \ReflectionNamedType)
+		{
+			if ($type->isBuiltin())
+				return null;
+			return $type->getName();
+		}
+		// elseif ($type instanceof \ReflectionUnionType)
+		// elseif ($type instanceof \ReflectionIntersectionType)
+		return null;
 	}
 
 	public static function GetParams($method)

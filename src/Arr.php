@@ -20,7 +20,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function GetItemByNamedValue(array $arr, $itemName, $itemValue, $default = null)
+	public static function GetItemByNamedValue(array $arr, string $itemName, $itemValue, $default = null)
 	{
 		$index = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
 		if ($index == -1)
@@ -28,7 +28,7 @@ class Arr
 		return $arr[$index];
 	}
 
-	public static function GetItemByProperty(array $arr, $itemProperty, $itemValue, $default = null)
+	public static function GetItemByProperty(array $arr, string $itemProperty, $itemValue, $default = null)
 	{
 		$index = self::IndexOfByProperty($arr, $itemProperty, $itemValue);
 		if ($index == -1)
@@ -160,7 +160,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function RemoveDuplicatesByNamedKey(array $arr, $itemName) : array
+	public static function RemoveDuplicatesByNamedKey(array $arr, string $itemName) : array
 	{
 		$ret = [];
 
@@ -173,13 +173,13 @@ class Arr
 		return $ret;
 	}
 
-	public static function InArrayByNamedValue(array $arr, $itemName, $itemValue) : bool
+	public static function InArrayByNamedValue(array $arr, string $itemName, $itemValue) : bool
 	{
 		$i = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
 		return $i !== -1;
 	}
 
-	public static function IndexOfByNamedValue(array $arr, $itemName, $itemValue) : int
+	public static function IndexOfByNamedValue(array $arr, string $itemName, $itemValue) : int
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
@@ -190,7 +190,7 @@ class Arr
 		return -1;
 	}
 
-	public static function IndexOfByProperty(array $arr, $itemProperty, $itemValue) : int
+	public static function IndexOfByProperty(array $arr, string $itemProperty, $itemValue) : int
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
@@ -374,7 +374,7 @@ class Arr
 		return $arr;
 	}
 
-	public static function RemoveItemByNamedKey(array $array, $name, $key)
+	public static function RemoveItemByNamedKey(array $array, string $name, $key)
 	{
 		$pos = self::IndexOfByNamedValue($array, $name, $key);
 		if ($pos == -1)

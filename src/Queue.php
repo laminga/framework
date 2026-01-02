@@ -24,7 +24,7 @@ abstract class Queue
 		return Context::Settings()->Queue()->Enabled;
 	}
 
-	protected function Initialize(string $path, string $log = '', int $maxToProcess = 50, bool $discardSuccessfullLog = false) : void
+	protected function Initialize(string $path, string $log, int $maxToProcess, bool $discardSuccessfullLog = false) : void
 	{
 		$this->maxToProcess = $maxToProcess;
 		$this->log = $log;
@@ -79,7 +79,7 @@ abstract class Queue
 	{
 		for($i = 0; $i < count($params); $i++)
 		{
-			$type = Reflection::GetParamType($method, $i);
+			$type = Reflection::GetParamClass($method, $i);
 			if($type == null)
 				continue;
 			$interfaces = class_implements($type);
@@ -204,7 +204,7 @@ abstract class Queue
 	{
 		if ($total === 0)
 			return 'Hecho 0 Ítems.';
-		$ret = 'Hecho ' . $done . ' Ítems de ' . $total . '.';
+		$ret = 'Hecho ' . $done . ' ítems de ' . $total . '.';
 		if ($failed > 0)
 			$ret .= ' Éxito: ' . $success . ' Ítems. Fallas: ' . $failed . ' ítems.';
 		return $ret;
@@ -245,7 +245,7 @@ abstract class Queue
 
 		$lock->LockWrite();
 
-		$file = $this->GetQueuePath('queued') . '/' . microtime(true) . '.json';
+		$file = $this->GetQueuePath('queued') . '/' . sprintf('%.4f', microtime(true)) . '.json';
 		//$json = Serializator::JsonSerialize($data);
 		$json = json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE);
 		if($json === false)
