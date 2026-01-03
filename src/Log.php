@@ -99,16 +99,15 @@ class Log
 	public static function LogJsError(string $agent, string $referer, string $errorMessage,
 		string $errorUrl, string $errorSource, int $errorLine, int $errorColumn, string $trace) : void
 	{
-		if(self::ShouldIgnoreJsError($agent, $errorMessage, $errorSource,
-			$errorLine, $errorColumn, $trace))
+		$remoteAddr = Request::IP('null');
+		if(self::IgnoreJsError($agent, $errorMessage, $errorSource,
+			$errorLine, $errorColumn, $trace, $remoteAddr))
 		{
 			return;
 		}
 
 		$errorMessage = self::TrimMessage($errorMessage);
 
-
-		$remoteAddr = Request::IP('null');
 		$text = self::FormatRequest($agent, $referer, $remoteAddr,
 			$errorUrl, 'JS');
 
@@ -132,8 +131,8 @@ class Log
 		self::PutToMailJs($text);
 	}
 
-	private static function ShouldIgnoreJsError(string $agent, string $errorMessage,
-		string $errorSource, int $errorLine, int $errorColumn, string $trace) : bool
+	private static function IgnoreJsError(string $agent, string $errorMessage,
+		string $errorSource, int $errorLine, int $errorColumn, string $trace, string $remoteAddr) : bool
 	{
 		if(Str::StartsWith($errorSource, 'moz-extension://'))
 			return true;
@@ -160,6 +159,12 @@ class Log
 			return true;
 		}
 
+		//TODO: bloquear ese rango de IP.
+		if(Str::Contains($remoteAddr, '116.179.33.')
+			&& Str::Contains($errorMessage, 'Uncaught ReferenceError: jqxBaseFramework is not defined'))
+		{
+			return true;
+		}
 
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
