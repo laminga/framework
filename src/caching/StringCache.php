@@ -8,12 +8,12 @@ class StringCache
 {
 	private $cache;
 
-	public function __construct($path, bool $forceFileSystem = false)
+	public function __construct($path, bool $forceFileSystem = false, int $limitMB = -1)
 	{
 		if ($forceFileSystem)
 			$this->cache = new BaseTwoLevelStringFileCache($path);
 		else
-			$this->cache = Context::Settings()->Cache()->CreateFileCache($path);
+			$this->cache = Context::Settings()->Cache()->CreateFileCache($path, false, $limitMB);
 	}
 
 	public function Clear($key = null) : void

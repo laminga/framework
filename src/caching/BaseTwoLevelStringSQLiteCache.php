@@ -12,9 +12,10 @@ class BaseTwoLevelStringSQLiteCache
 {
 	private string $path;
 	private SQLiteList $db;
-
-	public function __construct(string $path, bool $isAbsolutePath = false)
+	private int $LimitMB;
+	public function __construct(string $path, bool $isAbsolutePath = false, int $limitMB = -1)
 	{
+		$this->LimitMB = $limitMB;
 		if ($isAbsolutePath)
 			$this->path = $path;
 		else
@@ -105,6 +106,22 @@ class BaseTwoLevelStringSQLiteCache
 		}
 	}
 
+	public function DataSizeMB($key): int
+	{
+		$this->OpenRead($key);
+		$ret = $this->db->DataSizeMB();
+		$this->db->Close();
+		return $ret;
+	}
+
+	public function DiskSizeMB($key): int
+	{
+		$this->OpenRead($key);
+		$ret = $this->db->DiskSizeMB();
+		$this->db->Close();
+		return $ret;
+	}
+
 	public function HasData($key1, $key2, &$value = null) : bool
 	{
 		if (Context::Settings()->Cache()->Enabled !== CacheSettings::Enabled)
@@ -131,6 +148,27 @@ class BaseTwoLevelStringSQLiteCache
 		return false;
 	}
 
+	private function CheckLimits($levelKey): void
+	{
+		if ($this->LimitMB === -1)
+			return;
+		// Le toca?
+		if (mt_rand(1, 100) !== 1)
+			return;
+		// Puede leer?
+		if ($this->OpenRead($levelKey, false) == false)
+			return;
+		// Excedió la cuota?
+		if ($this->db->DataSizeMB() > $this->LimitMB)
+		{
+			$this->Close();
+			if ($this->OpenWrite($levelKey, false))
+				$this->db->FreeQuota(10);
+		}
+		// Sale
+		$this->Close();
+	}
+
 	private function ResolveFilename($key1) : string
 	{
 		if ($key1 === null)
@@ -154,6 +192,9 @@ class BaseTwoLevelStringSQLiteCache
 		}
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
+
+		$this->CheckLimits($levelKey);
+
 		if ($this->OpenWrite($levelKey, false) == false)
 		{
 			sleep(1);

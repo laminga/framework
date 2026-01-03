@@ -16,7 +16,7 @@ class SQLiteList
 	private string $path = '';
 
 	private \SQLite3 $db;
-
+	private bool $checked = false;
 	private static array $OpenStreams = [];
 	private static array $OpenStreamsSizes = [];
 	private static array $OpenStreamsTimes = [];
@@ -127,7 +127,7 @@ class SQLiteList
 				$sql .= ", " . Db::QuoteColumn($column) . " integer ";
 		}
 
-		$sql .= ")";
+		$sql .= ", last_accessed INTEGER DEFAULT 0)";
 		return $sql;
 	}
 
@@ -146,10 +146,48 @@ class SQLiteList
 		// el 1ro es el key, el 2do es el blob
 		if ($args[1] !== null)
 			$args[1] = self::GetNamedStream($args[1]);
-		$sql = "INSERT OR REPLACE INTO data (pID, " . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ") VALUES
-			((SELECT pID FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1), :p1 " . $this->commaArgs . ");";
+		$sql = "INSERT OR REPLACE INTO data (pID, " . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ", last_accessed) VALUES
+			((SELECT pID FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1), :p1 " . $this->commaArgs . ", strftime('%s', 'now'));";
 
-		$this->Execute($sql, $args, 1);
+		$this->Execute($sql, $args, 1, true);
+	}
+
+	public function FreeQuota(int $percentage): int
+	{
+		// Calcular cuántos registros eliminar
+		$total = $this->db->querySingle("SELECT COUNT(*) FROM data");
+		$toDelete = (int) ($total * $percentage / 100);
+		if ($toDelete === 0) {
+			return 0;
+		}
+		// Eliminar los más antiguos
+		$sql = "DELETE FROM data WHERE rowid IN (
+			SELECT rowid FROM data
+			ORDER BY last_accessed ASC
+			LIMIT :limit
+		)";
+		$statement = $this->db->prepare($sql);
+		$statement->bindValue(':limit', $toDelete, SQLITE3_INTEGER);
+		$statement->execute();
+		// Retornar cuántos se eliminaron
+		return $this->db->changes();
+	}
+
+	public function DataSizeMB(): int
+	{
+		// Tamaño actual
+		$used = $this->DiskSizeMB();
+		// Páginas libres (espacio recuperable)
+		$free = $this->db->querySingle("SELECT freelist_count * page_size FROM pragma_freelist_count(), pragma_page_size();") / 1024 / 1024;
+
+		return $used - $free;
+	}
+
+	public function DiskSizeMB(): int
+	{
+		// Tamaño actual
+		$used = $this->db->querySingle("SELECT page_count * page_size FROM pragma_page_count(), pragma_page_size();");
+		return $used / 1024 / 1024;
 	}
 
 	public function InsertOrUpdate() : void
@@ -158,13 +196,13 @@ class SQLiteList
 		if (count($args) == 1 && is_array($args[0]))
 			$args = $args[0];
 
-		$sql = "INSERT OR REPLACE INTO data (pID, " . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ") VALUES
-			((SELECT pID FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1), :p1 " . $this->commaArgs . ");";
+		$sql = "INSERT OR REPLACE INTO data (pID, " . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ", last_accessed) VALUES
+					((SELECT pID FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1), :p1 " . $this->commaArgs . ", strftime('%s', 'now'));";
 
-		$this->Execute($sql, $args);
+		$this->Execute($sql, $args, -1, true);
 	}
 
-	public function Execute(string $sql, $args = [], int $blobIndex = -1)
+	public function Execute(string $sql, $args = [], int $blobIndex = -1, $doColumnCheck = false)
 	{
 		if (is_array($args) == false)
 			$args = [$args];
@@ -183,7 +221,10 @@ class SQLiteList
 				else
 					$statement->bindValue(':p' . ($n++), $val);
 			}
-			return $statement->execute();
+			if ($doColumnCheck)
+				return $this->executeWithColumnCheck($statement);
+			else
+				return $statement->Execute();
 		}
 		catch(\Exception $e)
 		{
@@ -218,8 +259,8 @@ class SQLiteList
 			$args = $args[0];
 
 		// Arma el insert
-		$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ") VALUES
-			(:p1 " . $this->commaArgs . ");";
+		$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ", last_accessed) VALUES
+			(:p1 " . $this->commaArgs . ", strftime('%s', 'now'));";
 
 		$statement = $this->db->prepare($sql);
 		$n = 1;
@@ -230,7 +271,7 @@ class SQLiteList
 				$val = (int)$arg;
 			$statement->bindValue(':p' . ($n++), $val);
 		}
-		$statement->execute();
+		$this->executeWithColumnCheck($statement);
 	}
 
 	public function Update($key, string $column, $value) : void
@@ -364,6 +405,27 @@ class SQLiteList
 		return self::$OpenStreamsSizes[$key];
 	}
 
+	private function executeWithColumnCheck($statement)
+	{
+		if (!$this->checked)
+		{
+			$result = $this->db->query("PRAGMA table_info(data)");
+
+			$hasLastAccessed = false;
+			while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+				if ($row['name'] === 'last_accessed') {
+					$hasLastAccessed = true;
+					break;
+				}
+			}
+			if (!$hasLastAccessed) {
+				$this->db->exec("ALTER TABLE data ADD COLUMN last_accessed INTEGER DEFAULT 0");
+			}
+			$this->checked = true;
+		}
+		return $statement->Execute();
+	}
+
 	public static function GetNamedStreamDateTime(string $key)
 	{
 		return self::$OpenStreamsTimes[$key];
@@ -457,11 +519,11 @@ class SQLiteList
 			}
 			else
 			{
-				$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . ", " . Db::QuoteColumn($column) . ") VALUES (:p1, 1);";
+				$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . ", " . Db::QuoteColumn($column) . ", last_accessed) VALUES (:p1, 1, strftime('%s', 'now'));";
 				$statement = $this->db->prepare($sql);
 				$statement->bindValue(':p1', $key);
 
-				$statement->execute();
+				$this->executeWithColumnCheck($statement);
 			}
 
 		}
