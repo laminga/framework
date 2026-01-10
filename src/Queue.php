@@ -245,7 +245,7 @@ abstract class Queue
 
 		$lock->LockWrite();
 
-		$file = $this->GetQueuePath('queued') . '/' . sprintf('%.4f', microtime(true)) . '.json';
+		$file = $this->GetQueuePath('queued') . '/' . sprintf('%.6f', microtime(true)) . '.json';
 		//$json = Serializator::JsonSerialize($data);
 		$json = json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE);
 		if($json === false)
