@@ -13,8 +13,13 @@ class BaseTwoLevelBlobSQLiteCache
 	private $path;
 	private SQLiteList $db;
 
+	public int $LimitMB;
+
 	public function __construct($path, bool $isAbsolutePath = false, int $limitMB = -1)
 	{
+		// no implementado
+		$this->LimitMB = $limitMB;
+
 		if ($isAbsolutePath)
 			$this->path = $path;
 		else

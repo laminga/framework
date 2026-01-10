@@ -10,7 +10,7 @@ class TwoLevelStringCache
 
 	public function __construct($path, $limitMB = -1)
 	{
-		$this->cache = Context::Settings()->Cache()->CreateFileCache($path, $limitMB);
+		$this->cache = Context::Settings()->Cache()->CreateFileCache($path, false, $limitMB);
 	}
 
 	public function Clear($key1 = null, $key2 = null) : void
