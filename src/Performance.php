@@ -382,7 +382,8 @@ class Performance
 		}
 
 		$systemMB = round($diskInfo['System'] / 1024 / 1024, 10);
-		if ($systemMB < Context::Settings()->Limits()->WarningMinimumFreeSystemSpaceMB) {
+		if ($systemMB < Context::Settings()->Limits()->WarningMinimumFreeSystemSpaceMB)
+		{
 			Performance::SendPerformanceWarning(
 				'espacio en disco en Sistema Operativo',
 				Context::Settings()->Limits()->WarningMinimumFreeSystemSpaceMB . ' MB', $systemMB . ' MB'

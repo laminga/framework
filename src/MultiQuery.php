@@ -51,7 +51,8 @@ class MultiQuery
 				$groupBy .= ($groupBy != "" ? ", " : "") . $query->GroupBy;
 			if ($query->OrderBy != null)
 				$orderBy .= ($orderBy != "" ? ", " : "") . $query->OrderBy;
-			if ($query->MaxRows !== null) {
+			if ($query->MaxRows !== null)
+			{
 				$this->setMaxRows($query->MaxRows);
 			}
 			if ($query->Params != null)

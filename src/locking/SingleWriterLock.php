@@ -65,7 +65,9 @@ abstract class SingleWriterLock extends Lock
 			{
 				$lock->Release();
 			}
-			catch (\Exception $e) { }
+			catch (\Exception $e)
+			{
+			}
 		}
 	}
 }

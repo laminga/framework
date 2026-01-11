@@ -123,7 +123,8 @@ class ServersSettings
 
 	public function GetTransactionServer() : ServerItem
 	{
-		foreach ($this->servers as $key => $value) {
+		foreach ($this->servers as $key => $value)
+		{
 			if ($value->type == 'transactions')
 				return $value;
 		}

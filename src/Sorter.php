@@ -175,8 +175,10 @@ class Sorter
 		$a = str_replace(".", ". ", $a);
 		$palabras = explode(" ", $a);
 
-		foreach ($palabras as &$palabra) {
-			if (is_numeric($palabra) && (int)$palabra < 100000) {
+		foreach ($palabras as &$palabra)
+		{
+			if (is_numeric($palabra) && (int)$palabra < 100000)
+			{
 				$palabra = str_pad($palabra, 5, "0", STR_PAD_LEFT);
 			}
 		}

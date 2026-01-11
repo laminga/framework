@@ -45,7 +45,8 @@ class ConditionalDebug
 
 	public function HandleException($ex) : void
 	{
-		if ($this->ConditionsMet()) {
+		if ($this->ConditionsMet())
+		{
 			$text = Log::InternalExceptionToText($ex);
 			echo $text;
 			Log::HandleSilentException(new \Exception($text));

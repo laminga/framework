@@ -63,7 +63,8 @@ class KeysSettings
 
 		// Ofuscamos cada byte del texto usando la clave
 		$resultado = '';
-		foreach ($textoBytes as $index => $byte) {
+		foreach ($textoBytes as $index => $byte)
+		{
 			// Obtenemos el byte correspondiente de la clave
 			$keyIndex = (($index - 1) % $keyLength) + 1;
 			$keyByte = $keyBytes[$keyIndex];
@@ -105,7 +106,8 @@ class KeysSettings
 			return 0;
 		if ($this->FixedGoogleKey != -1)
 			$current = $this->FixedGoogleKey;
-		else {
+		else
+		{
 			$day = Date::CurrentDay();
 			$step = 36 / count($keys);
 			$current = (int)($day / $step);

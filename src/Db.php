@@ -121,7 +121,8 @@ class Db
 			Profiling::BeginTimer();
 			Performance::BeginDbWait();
 
-			if (Profiling::$DumpQueries) {
+			if (Profiling::$DumpQueries)
+			{
 				echo "\n<P>- QUERY --------------------------------------------------------<P>\n";
 				echo $sql;
 				echo "\n<P>--------------------------------<P>\n";
