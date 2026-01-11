@@ -57,12 +57,9 @@ class Lock
 			self::$locks[$file] = [++$values[0], $values[1]];
 			return true;
 		}
-
-
 		// empieza él
 		self::$locks[$file] = [1, $write];
 		return false;
-
 	}
 
 	private function ReleaseUsed() : bool

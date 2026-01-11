@@ -90,7 +90,8 @@ class SearchLog
 		$lock = new SearchLogLock();
 		$lock->LockRead();
 
-		if ($month == '') $month = 'dayly';
+		if ($month == '')
+		  	$month = 'dayly';
 		$currentMonth = Date::GetLogMonthFolder();
 		if ($month !== 'dayly')
 			$path = self::ResolveFile($month);
@@ -98,9 +99,7 @@ class SearchLog
 			$path = self::ResolveFile($currentMonth);
 
 		if (IO::Exists($path))
-		{
 			$rows = IO::ReadAllLines($path);
-		}
 		else
 			$rows = [];
 		$lock->Release();

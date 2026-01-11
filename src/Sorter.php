@@ -178,9 +178,7 @@ class Sorter
 		foreach ($palabras as &$palabra)
 		{
 			if (is_numeric($palabra) && (int)$palabra < 100000)
-			{
 				$palabra = str_pad($palabra, 5, "0", STR_PAD_LEFT);
-			}
 		}
 		$resultado = implode(" ", $palabras);
 		return $resultado;

@@ -229,9 +229,7 @@ class IO
 	{
 		if (file_exists($fileA) == false || file_exists($fileB) == false)
 			throw new ErrorException('Archivo no encontrado para comparación de tamaños.');
-
 		return filesize($fileA) == filesize($fileB);
-
 	}
 
 	public static function CompareBinaryFile(string $fileA, string $fileB) : bool
@@ -714,9 +712,7 @@ class IO
 			$dirName = substr($dirSource, strrpos($dirSource, '/') + 1);
 
 		if ($createEmptyFolders)
-		{
 			self::EnsureExists($dirDest . '/' . $dirName, 0750);
-		}
 
 		while($file = readdir($dirHandle))
 		{

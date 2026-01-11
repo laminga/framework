@@ -144,7 +144,6 @@ class Db
 				$stmt->execute();
 			}
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
 		}
 		finally
 		{
@@ -663,9 +662,7 @@ class Db
 		$matrix = "SHOW TABLES LIKE '" . $tablePattern . "'";
 		$compareTables = $this->fetchAllByPos($matrix);
 		foreach ($compareTables as $table)
-		{
 			$this->dropTable($table[0]);
-		}
 	}
 
 	public function markTableUpdate(string $table) : void

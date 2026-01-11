@@ -893,8 +893,10 @@ class Performance
 
 		$path2 = Context::Paths()->GetRoot() . '/src/controllers/logs';
 
-		if ($controller === 'logs') $controller = 'logs/activity';
-		if ($controller === 'admin') $controller = 'admin/activity';
+		if ($controller === 'logs')
+			$controller = 'logs/activity';
+		if ($controller === 'admin')
+			$controller = 'admin/activity';
 
 		$file2 = $path2 . '/c' . Str::Capitalize(Str::Replace($controller, 'logs/', '')) . '.php';
 		return file_exists($path . '/' . $controller . '.php') || file_exists($file2);

@@ -188,9 +188,7 @@ class BaseTwoLevelStringSQLiteCache
 	public function PutData($key1, $key2, $value) : void
 	{
 		if (Context::Settings()->Cache()->Enabled === CacheSettings::Disabled)
-		{
 			return;
-		}
 		$levelKey = ($key2 === null ? null : $key1);
 		$valueKey = ($key2 === null ? $key1 : $key2);
 

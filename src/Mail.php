@@ -155,7 +155,8 @@ class Mail
 		{
 			foreach ($cc as $address)
 				$mail->addCC($address);
-		} else
+		}
+		else
 			$mail->addCC($cc, $ccCaption);
 	}
 
