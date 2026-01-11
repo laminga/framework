@@ -13,6 +13,7 @@ class BaseTwoLevelStringSQLiteCache
 	private string $path;
 	private SQLiteList $db;
 	private int $LimitMB;
+
 	public function __construct(string $path, bool $isAbsolutePath = false, int $limitMB = -1)
 	{
 		$this->LimitMB = $limitMB;
@@ -106,7 +107,7 @@ class BaseTwoLevelStringSQLiteCache
 		}
 	}
 
-	public function DataSizeMB($key): int
+	public function DataSizeMB($key) : int
 	{
 		$this->OpenRead($key);
 		$ret = $this->db->DataSizeMB();
@@ -114,7 +115,7 @@ class BaseTwoLevelStringSQLiteCache
 		return $ret;
 	}
 
-	public function DiskSizeMB($key): int
+	public function DiskSizeMB($key) : int
 	{
 		$this->OpenRead($key);
 		$ret = $this->db->DiskSizeMB();
@@ -148,7 +149,7 @@ class BaseTwoLevelStringSQLiteCache
 		return false;
 	}
 
-	private function CheckLimits($levelKey): void
+	private function CheckLimits($levelKey) : void
 	{
 		if ($this->LimitMB === -1)
 			return;

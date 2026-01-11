@@ -152,14 +152,13 @@ class SQLiteList
 		$this->Execute($sql, $args, 1, true);
 	}
 
-	public function FreeQuota(int $percentage): int
+	public function FreeQuota(int $percentage) : int
 	{
 		// Calcular cuántos registros eliminar
 		$total = $this->db->querySingle("SELECT COUNT(*) FROM data");
-		$toDelete = (int) ($total * $percentage / 100);
-		if ($toDelete === 0) {
+		$toDelete = (int)($total * $percentage / 100);
+		if ($toDelete === 0)
 			return 0;
-		}
 		// Eliminar los más antiguos
 		$sql = "DELETE FROM data WHERE rowid IN (
 			SELECT rowid FROM data
@@ -173,7 +172,7 @@ class SQLiteList
 		return $this->db->changes();
 	}
 
-	public function DataSizeMB(): int
+	public function DataSizeMB() : int
 	{
 		// Tamaño actual
 		$used = $this->DiskSizeMB();
@@ -183,7 +182,7 @@ class SQLiteList
 		return $used - $free;
 	}
 
-	public function DiskSizeMB(): int
+	public function DiskSizeMB() : int
 	{
 		// Tamaño actual
 		$used = $this->db->querySingle("SELECT page_count * page_size FROM pragma_page_count(), pragma_page_size();");
@@ -223,8 +222,7 @@ class SQLiteList
 			}
 			if ($doColumnCheck)
 				return $this->executeWithColumnCheck($statement);
-			else
-				return $statement->Execute();
+			return $statement->Execute();
 		}
 		catch(\Exception $e)
 		{
@@ -407,20 +405,21 @@ class SQLiteList
 
 	private function executeWithColumnCheck($statement)
 	{
-		if (!$this->checked)
+		if ($this->checked == false)
 		{
 			$result = $this->db->query("PRAGMA table_info(data)");
 
 			$hasLastAccessed = false;
-			while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-				if ($row['name'] === 'last_accessed') {
+			while ($row = $result->fetchArray(SQLITE3_ASSOC))
+			{
+				if ($row['name'] === 'last_accessed')
+				{
 					$hasLastAccessed = true;
 					break;
 				}
 			}
-			if (!$hasLastAccessed) {
+			if ($hasLastAccessed == false)
 				$this->db->exec("ALTER TABLE data ADD COLUMN last_accessed INTEGER DEFAULT 0");
-			}
 			$this->checked = true;
 		}
 		return $statement->Execute();
@@ -502,7 +501,6 @@ class SQLiteList
 		Profiling::BeginTimer();
 		try
 		{
-
 			$res = $this->ReadValue($key, $column);
 
 			if ($res !== null)

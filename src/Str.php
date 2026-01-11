@@ -963,7 +963,7 @@ class Str
 		return $ret;
 	}
 
-	public static function SanitizeFilename(string $title): string
+	public static function SanitizeFilename(string $title) : string
 	{
 		$title = trim($title);
 
