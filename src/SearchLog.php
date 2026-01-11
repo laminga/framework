@@ -91,7 +91,7 @@ class SearchLog
 		$lock->LockRead();
 
 		if ($month == '')
-		  	$month = 'dayly';
+			$month = 'dayly';
 		$currentMonth = Date::GetLogMonthFolder();
 		if ($month !== 'dayly')
 			$path = self::ResolveFile($month);
