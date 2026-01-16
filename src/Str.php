@@ -564,17 +564,20 @@ class Str
 			$cad = "";
 		return preg_replace("/[^A-Za-z0-9 ]/", '', $cad);
 	}
-
-	public static function RemoveAccents(?string $cad) : string
+	public static function RemoveAccents($cad) : string
 	{
-		if ($cad === null)
-			$cad = "";
-		$otros = "Æ > AE; æ > ae; ß > ss; ẞ > SS; Đ > D; đ > d; ħ > h; ı > i; ĸ > k; Ŀ > L;"
-			. "ŀ > l; Ł > L; ł > l; ŉ > N; Ŋ > N; ŋ > n; Œ > OE; œ > oe; Ŧ > T; ŧ > t;";
-		$translit = \Transliterator::createFromRules(':: NFD; :: [:Nonspacing Mark:] Remove; :: NFC; ' . $otros,
-			\Transliterator::FORWARD);
+		$table = [
+			'Š' => 'S', 'š' => 's', 'Đ' => 'Dj', 'đ' => 'dj', 'Ž' => 'Z', 'ž' => 'z', 'Č' => 'C', 'č' => 'c', 'Ć' => 'C', 'ć' => 'c',
+			'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
+			'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O',
+			'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss',
+			'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e',
+			'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o',
+			'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b',
+			'ÿ' => 'y', 'Ŕ' => 'R', 'ŕ' => 'r',
+		];
 
-		return $translit->transliterate($cad);
+		return strtr($cad, $table);
 	}
 
 	public static function RemoveDot(string $cad) : string
