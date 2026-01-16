@@ -179,9 +179,10 @@ class Arr
 		return $i !== -1;
 	}
 
-	public static function IndexOfByIndexValue(array $arr, int $itemIndex, $itemValue): int
+	public static function IndexOfByIndexValue(array $arr, int $itemIndex, $itemValue) : int
 	{
-		for ($n = 0; $n < count($arr); $n++) {
+		for ($n = 0; $n < count($arr); $n++)
+		{
 			$current = $arr[$n];
 			if (isset($current[$itemIndex]) && $current[$itemIndex] == $itemValue)
 				return $n;

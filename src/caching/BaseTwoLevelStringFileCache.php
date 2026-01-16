@@ -61,7 +61,6 @@ class BaseTwoLevelStringFileCache
 			Profiling::EndTimer();
 			return true;
 		}
-
 		return false;
 	}
 
@@ -81,11 +80,13 @@ class BaseTwoLevelStringFileCache
 		}
 		return false;
 	}
-	public function DataSizeMB($key1): int
+
+	public function DataSizeMB($key1) : int
 	{
 		return $this->DiskSizeMB($key1);
 	}
-	public function DiskSizeMB($key1): int
+
+	public function DiskSizeMB($key1) : int
 	{
 		if ($key1 == '')
 			$folder = $this->ResolveFolder($key1, '', false);
@@ -95,7 +96,7 @@ class BaseTwoLevelStringFileCache
 		return $info['size'] / 1024 / 1024;
 	}
 
-	private function CheckLimits($key1, $key2): void
+	private function CheckLimits($key1, $key2) : void
 	{
 		if ($this->LimitMB === -1)
 			return;
@@ -109,57 +110,54 @@ class BaseTwoLevelStringFileCache
 		// Excedió la cuota?
 		$info = IO::GetDirectorySize($folder, false);
 		if ($info['size'] / 1024 / 1024 > $this->LimitMB)
-		{
 			$this->FreeQuota($folder, 10);
-		}
 	}
 
-	public function FreeQuota(string $folder, int $percentage): int
+	public function FreeQuota(string $folder, int $percentage) : int
 	{
-		if (!is_dir($folder)) {
+		if (is_dir($folder) == false)
 			return 0;
-		}
 
 		// Obtener archivos con sus tiempos de acceso (en linux es casi siempre la fecha de creación)
 		$files = [];
-		foreach (scandir($folder) as $filename) {
+		foreach (scandir($folder) as $filename)
+		{
 			$path = $folder . '/' . $filename;
-			if (is_file($path)) {
+			if (is_file($path))
+			{
 				$files[] = [
 					'path' => $path,
-					'atime' => fileatime($path)
+					'atime' => fileatime($path),
 				];
 			}
 		}
 
 		$total = count($files);
-		if ($total === 0) {
+		if ($total === 0)
 			return 0;
-		}
 
 		// Calcular cuántos eliminar
-		$toDelete = (int) ($total * $percentage / 100);
-		if ($toDelete === 0) {
+		$toDelete = (int)($total * $percentage / 100);
+		if ($toDelete === 0)
 			return 0;
-		}
 
 		// Ordenar por acceso (más viejos primero)
-		usort($files, fn($a, $b) => $a['atime'] <=> $b['atime']);
+		usort($files, fn ($a, $b) => $a['atime'] <=> $b['atime']);
 
 		// Eliminar los más viejos
 		$deleted = 0;
-		for ($i = 0; $i < $toDelete; $i++) {
-			if (unlink($files[$i]['path'])) {
+		for ($i = 0; $i < $toDelete; $i++)
+		{
+			if (unlink($files[$i]['path']))
 				$deleted++;
-			}
 		}
 		return $deleted;
 	}
 
-	private function ResolveFolder($key1, $key2, bool $create = false): string
+	private function ResolveFolder($key1, $key2, bool $create = false) : string
 	{
-		$key1 = (string) $key1;
-		$key2 = (string) $key2;
+		$key1 = (string)$key1;
+		$key2 = (string)$key2;
 		if ($key2 !== '')
 		{
 			$folder = $this->path . "/" . $key1;
@@ -167,10 +165,7 @@ class BaseTwoLevelStringFileCache
 				IO::EnsureExists($folder);
 			return $folder;
 		}
-		else
-		{
-			return $this->path;
-		}
+		return $this->path;
 	}
 
 	private function ResolveFilename($key1, $key2, bool $create = false) : string
@@ -180,19 +175,17 @@ class BaseTwoLevelStringFileCache
 		$folder = $this->ResolveFolder($key1, $key2, $create);
 		if ($key2 !== '')
 			return $folder . "/" . $key2 . ".txt";
-		else
-			return $folder . "/" . $key1 . ".txt";
+		return $folder . "/" . $key1 . ".txt";
 	}
 
 	private function ResolveFilenameRaw($key1, $key2, bool $create = false) : string
 	{
-		$key1 = (string) $key1;
-		$key2 = (string) $key2;
+		$key1 = (string)$key1;
+		$key2 = (string)$key2;
 		$folder = $this->ResolveFolder($key1, $key2, $create);
 		if ($key2 !== '')
 			return $folder . "/" . $key2 . ".raw";
-		else
-			return $folder . "/" . $key1 . ".raw";
+		return $folder . "/" . $key1 . ".raw";
 	}
 
 	public function PutDataIfMissing($key1, $key2, $value) : void

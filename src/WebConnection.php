@@ -101,7 +101,8 @@ class WebConnection
 	{
 		Profiling::BeginTimer();
 		// Agrega los parámetros
-		if ($args !== null) {
+		if ($args !== null)
+		{
 			$argsAsString = self::PreparePostValues($args);
 			if (Str::Contains($url, "?") == false)
 				$url .= "?" . $argsAsString;
@@ -280,13 +281,9 @@ class WebConnection
 		$this->SetHeader('Connection', 'keep-alive');
 
 		if ($args != null)
-		{
 			$this->AddPostFields($args);
-		}
 		else
-		{
 			curl_setopt($this->ch, CURLOPT_POST, false);
-		}
 
 		if ($method == self::PostMethod)
 			curl_setopt($this->ch, CURLOPT_POST, true);

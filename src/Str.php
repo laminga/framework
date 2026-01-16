@@ -963,14 +963,15 @@ class Str
 		return $ret;
 	}
 
-	public static function SanitizeFilename(string $title): string
+	public static function SanitizeFilename(string $title) : string
 	{
 		$title = trim($title);
 
 		// Extrae la extensión si existe
 		$extension = '';
 		$dotPosition = strrpos($title, '.');
-		if ($dotPosition !== false && $dotPosition > 0) {
+		if ($dotPosition !== false && $dotPosition > 0)
+		{
 			$extension = substr($title, $dotPosition);
 			$title = substr($title, 0, $dotPosition);
 		}

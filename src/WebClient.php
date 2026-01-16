@@ -237,9 +237,7 @@ class WebClient
 			curl_setopt($this->ch, CURLOPT_FILE, $fh);
 		}
 		else
-		{
 			curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-		}
 		// Execute the request
 		$ret = curl_exec($this->ch);
 		if ($fh != null && $file != '')
@@ -284,7 +282,8 @@ class WebClient
 				$value = [$value];
 			foreach($value as $subValues)
 			{
-				if ($cad != '') $cad = $cad . '&';
+				if ($cad != '')
+					$cad = $cad . '&';
 				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, '@'))
 					$hasFile = true;
 				else

@@ -145,7 +145,6 @@ class Zipping
 		}
 		Profiling::EndTimer();
 		return $ret;
-
 	}
 
 	public static function CompressedFileExists(string $filename) : bool
@@ -196,7 +195,6 @@ class Zipping
 		self::$allLocks[$filename] = $lock;
 		Profiling::EndTimer();
 		return $ret;
-
 	}
 
 	/**

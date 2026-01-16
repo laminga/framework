@@ -151,9 +151,7 @@ class PdfReader
 				$part = str_replace(["</body>", "</html>"], "", $part);
 				$text .= $part;
 			}
-
 			return trim($text . "</body></html>");
-
 		}
 		catch(\Exception $e)
 		{

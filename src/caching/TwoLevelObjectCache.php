@@ -10,6 +10,7 @@ use minga\framework\Serializator;
 class TwoLevelObjectCache
 {
 	private $cache;
+
 	public function __construct($path, $avoidSqLite = false, $limitMB = -1)
 	{
 		$this->cache = Context::Settings()->Cache()->CreateFileCache($path, $avoidSqLite, $limitMB);
@@ -35,7 +36,6 @@ class TwoLevelObjectCache
 			$out = null;
 			Profiling::EndTimer();
 			return false;
-
 		}
 		catch(\Exception $e)
 		{
@@ -60,7 +60,6 @@ class TwoLevelObjectCache
 			$out = null;
 			Profiling::EndTimer();
 			return false;
-
 		}
 		catch(\Exception $e)
 		{
@@ -70,7 +69,7 @@ class TwoLevelObjectCache
 		}
 	}
 
-	public function ShowInfo($key)
+	public function ShowInfo($key) : void
 	{
 		echo "Usado: " . round($this->cache->DiskSizeMB($key), 2) . " MB\n";
 		echo "Recuperable: " . round($this->cache->DiskSizeMB($key) - $this->cache->DataSizeMB($key), 2) . " MB\n";

@@ -115,9 +115,13 @@ final class ReflectionTest extends TestCaseBase
 
 	public const CANT_PARAMS = 6;
 
-	private function ForTesting(string $a0, int $a1, float $a2, bool $a3, array $a4, ReflectionTest $a5) : void { }
+	private function ForTesting(string $a0, int $a1, float $a2, bool $a3, array $a4, ReflectionTest $a5) : void
+	{
+	}
 
-	private function ForTestingNoParams() : void { }
+	private function ForTestingNoParams() : void
+	{
+	}
 }
 
 class ForTesting
@@ -161,6 +165,8 @@ class ForTesting
 
 class ForTestingParams
 {
-	public function __construct(string $a0, array $a1) { }
+	public function __construct(string $a0, array $a1)
+	{
+	}
 }
 

@@ -381,9 +381,7 @@ class EncodingUtf8
 			);
 		}
 		else
-		{
 			$o = iconv("UTF-8", "Windows-1252" . ($option == self::ICONV_TRANSLIT ? '//TRANSLIT' : ($option == self::ICONV_IGNORE ? '//IGNORE' : '')), $text);
-		}
 
 		return $o;
 	}

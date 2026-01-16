@@ -31,7 +31,8 @@ class Request
 
 	public static function IsOpenAI() : bool
 	{
-		if (isset(self::$isOpenAI) == false) {
+		if (isset(self::$isOpenAI) == false)
+		{
 			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
 			self::$isOpenAI = Str::Contains($agent, "GPTBot");
 		}
@@ -40,7 +41,8 @@ class Request
 
 	public static function IsClaude() : bool
 	{
-		if (isset(self::$isClaude) == false) {
+		if (isset(self::$isClaude) == false)
+		{
 			$agent = Params::SafeServer('HTTP_USER_AGENT', 'null');
 			self::$isClaude = Str::Contains($agent, "ClaudeBot");
 		}

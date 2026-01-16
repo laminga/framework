@@ -105,7 +105,9 @@ class ServersSettings
 
 		if (isset($this->servers[$this->currentServer]) == false)
 		{
-			throw new ErrorException(Context::Trans('"{server}" está especificado como servidor actual pero no hay un servidor registrado con ese nombre en la configuración.', ['{server}' => $this->currentServer]));
+			throw new ErrorException(Context::Trans('"{server}" está especificado como servidor actual'
+				. ' pero no hay un servidor registrado con ese nombre en la configuración.',
+				['{server}' => $this->currentServer]));
 		}
 
 		return $this->servers[$this->currentServer];
@@ -123,7 +125,8 @@ class ServersSettings
 
 	public function GetTransactionServer() : ServerItem
 	{
-		foreach ($this->servers as $key => $value) {
+		foreach ($this->servers as $key => $value)
+		{
 			if ($value->type == 'transactions')
 				return $value;
 		}

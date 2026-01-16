@@ -151,10 +151,12 @@ class Mail
 	 */
 	protected function SetCC(PHPMailerSendGrid $mail, $cc, string $ccCaption) : void
 	{
-		if (is_array($cc)) {
+		if (is_array($cc))
+		{
 			foreach ($cc as $address)
 				$mail->addCC($address);
-		} else
+		}
+		else
 			$mail->addCC($cc, $ccCaption);
 	}
 

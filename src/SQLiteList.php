@@ -32,14 +32,18 @@ class SQLiteList
 		$this->quotedCommaColumns = "";
 		$this->commaArgs = "";
 		$n = 2;
-		if ($columns != null) {
-			foreach ($columns as $col) {
+		if ($columns != null)
+		{
+			foreach($columns as $col)
+			{
 				$this->quotedCommaColumns .= "," . Db::QuoteColumn($col);
 				$this->commaArgs .= ",:p" . ($n++);
 			}
 		}
-		if ($intColumns != null) {
-			foreach ($intColumns as $col) {
+		if ($intColumns != null)
+		{
+			foreach($intColumns as $col)
+			{
 				$this->quotedCommaColumns .= "," . Db::QuoteColumn($col);
 				$this->commaArgs .= ",:p" . ($n++);
 			}
@@ -51,7 +55,7 @@ class SQLiteList
 		return $this->db->query($sql);
 	}
 
-	public function QueryAll(string $sql, $args = null): array
+	public function QueryAll(string $sql, $args = null) : array
 	{
 		if ($args != null && is_array($args) == false)
 			$args = [$args];
@@ -60,12 +64,12 @@ class SQLiteList
 		else
 			$result = $this->Query($sql);
 		$ret = [];
-		while ($row = $result->fetchArray(SQLITE3_ASSOC))
+		while($row = $result->fetchArray(SQLITE3_ASSOC))
 			$ret[] = $row;
 		return $ret;
 	}
 
-	public function QueryRow(string $sql, $params = null): ?array
+	public function QueryRow(string $sql, $params = null) : ?array
 	{
 		$result = $this->Execute($sql, $params);
 		if ($result == null)
@@ -78,7 +82,7 @@ class SQLiteList
 		return $res;
 	}
 
-	public function Open(string $path, bool $readonly = false): void
+	public function Open(string $path, bool $readonly = false) : void
 	{
 		Profiling::BeginTimer();
 		$existed = file_exists($path);
@@ -98,13 +102,15 @@ class SQLiteList
 		Profiling::EndTimer();
 	}
 
-	private function CreateSql(): string
+	private function CreateSql() : string
 	{
 		$sql = "CREATE TABLE data ("
 			. "pID INTEGER PRIMARY KEY AUTOINCREMENT, "
 			. Db::QuoteColumn($this->keyColumn) . " VARCHAR(255) UNIQUE COLLATE NOCASE ";
-		if ($this->columns != null) {
-			foreach ($this->columns as $column) {
+		if ($this->columns != null)
+		{
+			foreach($this->columns as $column)
+			{
 				if ($this->blobColumns == false || in_array($column, $this->blobColumns) == false)
 					$sql .= ", " . Db::QuoteColumn($column) . " TEXT ";
 				else
@@ -115,8 +121,9 @@ class SQLiteList
 				$sql .= " COLLATE NOCASE ";
 			}
 		}
-		if ($this->intColumns != null) {
-			foreach ($this->intColumns as $column)
+		if ($this->intColumns != null)
+		{
+			foreach($this->intColumns as $column)
 				$sql .= ", " . Db::QuoteColumn($column) . " integer ";
 		}
 
@@ -124,14 +131,14 @@ class SQLiteList
 		return $sql;
 	}
 
-	public function Close(): void
+	public function Close() : void
 	{
 		Profiling::BeginTimer();
 		$this->db->close();
 		Profiling::EndTimer();
 	}
 
-	public function InsertOrUpdateBlob(): void
+	public function InsertOrUpdateBlob() : void
 	{
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -183,7 +190,7 @@ class SQLiteList
 		return $used / 1024 / 1024;
 	}
 
-	public function InsertOrUpdate(): void
+	public function InsertOrUpdate() : void
 	{
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -199,7 +206,8 @@ class SQLiteList
 	{
 		if (is_array($args) == false)
 			$args = [$args];
-		try {
+		try
+		{
 			$this->db->enableExceptions(true);
 
 			if ($doColumnCheck) {
@@ -208,22 +216,25 @@ class SQLiteList
 
 			$statement = $this->db->prepare($sql);
 			$n = 1;
-			foreach ($args as $arg) {
+			foreach($args as $arg)
+			{
 				$val = $arg;
-				if (is_bool($arg))
-					$val = (int) $arg;
+				if(is_bool($arg))
+					$val = (int)$arg;
 				if ($n - 1 === $blobIndex)
 					$statement->bindValue(':p' . ($n++), $val, SQLITE3_BLOB);
 				else
 					$statement->bindValue(':p' . ($n++), $val);
 			}
 			return $statement->Execute();
-		} catch (\Exception $e) {
+		}
+		catch(\Exception $e)
+		{
 			throw new ErrorException($this->ParamsToText($sql, $args) . '. Error nativo: ' . $e->getMessage() . ".");
 		}
 	}
 
-	private function ParamsToText(string $sql, array $args): string
+	private function ParamsToText(string $sql, array $args) : string
 	{
 		$text = 'No se ha podido completar la operación en SQLite. ';
 		if ($this->path != '')
@@ -231,7 +242,8 @@ class SQLiteList
 
 		$text .= '. Comando: ' . $sql;
 		$paramsAsText = '';
-		foreach ($args as $arg) {
+		foreach($args as $arg)
+		{
 			if ($paramsAsText != '')
 				$paramsAsText .= ', ';
 			$paramsAsText .= $arg;
@@ -242,7 +254,7 @@ class SQLiteList
 		return $text;
 	}
 
-	public function Insert(): void
+	public function Insert() : void
 	{
 		$args = func_get_args();
 		if (count($args) == 1 && is_array($args[0]))
@@ -256,19 +268,20 @@ class SQLiteList
 
 		$statement = $this->db->prepare($sql);
 		$n = 1;
-		foreach ($args as $arg) {
+		foreach($args as $arg)
+		{
 			$val = $arg;
-			if (is_bool($arg))
-				$val = (int) $arg;
+			if(is_bool($arg))
+				$val = (int)$arg;
 			$statement->bindValue(':p' . ($n++), $val);
 		}
 		$statement->execute();
 	}
 
-	public function Update($key, string $column, $value): void
+	public function Update($key, string $column, $value) : void
 	{
-		if (is_bool($value))
-			$value = (int) $value;
+		if(is_bool($value))
+			$value = (int)$value;
 
 		$sql = "UPDATE data SET " . Db::QuoteColumn($column) . " = :p2 WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
 
@@ -279,12 +292,12 @@ class SQLiteList
 		$statement->execute();
 	}
 
-	public function Replace($key, string $column, $oldValue, $newValue): void
+	public function Replace($key, string $column, $oldValue, $newValue) : void
 	{
-		if (is_bool($oldValue))
-			$oldValue = (int) $oldValue;
-		if (is_bool($newValue))
-			$newValue = (int) $newValue;
+		if(is_bool($oldValue))
+			$oldValue = (int)$oldValue;
+		if(is_bool($newValue))
+			$newValue = (int)$newValue;
 
 		$sql = "UPDATE data SET " . Db::QuoteColumn($column)
 			. " = REPLACE(" . Db::QuoteColumn($column) . ", :p2, :p3) WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
@@ -297,7 +310,7 @@ class SQLiteList
 		$statement->execute();
 	}
 
-	public function AppendColumn(string $columnName, bool $isNumber, bool $indexed, bool $caseSensitive): void
+	public function AppendColumn(string $columnName, bool $isNumber, bool $indexed, bool $caseSensitive) : void
 	{
 		$sql = "ALTER TABLE data ADD COLUMN " . Db::QuoteColumn($columnName) . " ";
 		if ($isNumber)
@@ -307,20 +320,21 @@ class SQLiteList
 
 		$this->Execute($sql);
 
-		if ($indexed) {
+		if ($indexed)
+		{
 			$sql = "CREATE INDEX " . Db::QuoteTable("short_" . $columnName) . " ON data (" . Db::QuoteColumn($columnName) . ");";
 			$this->Execute($sql);
 		}
 	}
 
-	public function DeleteAll(): void
+	public function DeleteAll() : void
 	{
 		$sql = "DELETE FROM data";
 		$statement = $this->db->prepare($sql);
 		$statement->execute();
 	}
 
-	public function Delete($key): void
+	public function Delete($key) : void
 	{
 		$sql = "DELETE FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
 
@@ -330,13 +344,13 @@ class SQLiteList
 		$statement->execute();
 	}
 
-	public function Truncate(): void
+	public function Truncate() : void
 	{
 		$this->Close();
 		unlink($this->path);
 	}
 
-	public function ReadBlobValue($key, string $column): string
+	public function ReadBlobValue($key, string $column) : string
 	{
 		Profiling::BeginTimer();
 		$row = $this->ReadValue($key, ['RowId', 'length', 'time']);
@@ -344,7 +358,7 @@ class SQLiteList
 			return '';
 
 		$lob = $this->GetBlob('data', $column, $row[1]);
-		if ($lob === null)
+		if($lob === null)
 			return '';
 		$tmpFilename = self::CreateNameStreamFromStream($lob, $row[2], $row[3]);
 		Profiling::EndTimer();
@@ -353,17 +367,20 @@ class SQLiteList
 
 	private function GetBlob(string $table, string $column, int $id)
 	{
-		try {
+		try
+		{
 			$ret = $this->db->openBlob($table, $column, $id);
-			if ($ret === false)
+			if($ret === false)
 				return null;
 			return $ret;
-		} catch (\Exception $e) {
+		}
+		catch(\Exception $e)
+		{
 			return null;
 		}
 	}
 
-	public static function CreateNamedStreamFromFile(string $filename): string
+	public static function CreateNamedStreamFromFile(string $filename) : string
 	{
 		$key = "streams::" . Str::Guid();
 		$lob = fopen($filename, 'rb');
@@ -373,7 +390,7 @@ class SQLiteList
 		return $key;
 	}
 
-	public static function CreateNameStreamFromStream($lob, int $size, $time): string
+	public static function CreateNameStreamFromStream($lob, int $size, $time) : string
 	{
 		$key = "streams::" . Str::Guid();
 		self::$OpenStreams[$key] = $lob;
@@ -387,7 +404,7 @@ class SQLiteList
 		return self::$OpenStreams[$key];
 	}
 
-	public static function GetNamedStreamSize(string $key): int
+	public static function GetNamedStreamSize(string $key) : int
 	{
 		return self::$OpenStreamsSizes[$key];
 	}
@@ -420,16 +437,19 @@ class SQLiteList
 	/**
 	 * @param array|string $column
 	 */
-	public function ReadValue($key, $column): ?array
+	public function ReadValue($key, $column) : ?array
 	{
 		Profiling::BeginTimer();
-		try {
-			if (is_array($column)) {
+		try
+		{
+			if(is_array($column))
+			{
 				$text = '';
-				foreach ($column as $col)
+				foreach($column as $col)
 					$text .= Db::QuoteColumn($col) . ',';
 				$text = rtrim($text, ',');
-			} else
+			}
+			else
 				$text = Db::QuoteColumn($column);
 
 			$sql = "SELECT pID, " . $text
@@ -446,12 +466,14 @@ class SQLiteList
 				return null;
 
 			return $res;
-		} finally {
+		}
+		finally
+		{
 			Profiling::EndTimer();
 		}
 	}
 
-	public function ReadRowByKey($key): ?array
+	public function ReadRowByKey($key) : ?array
 	{
 		$sql = "SELECT * FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1;";
 
@@ -467,27 +489,29 @@ class SQLiteList
 		return $res;
 	}
 
-	public function Begin(): void
+	public function Begin() : void
 	{
 		$this->Execute('PRAGMA journal_mode=DELETE');
 		$this->db->query("BEGIN TRANSACTION;");
 	}
 
-	public function Commit(): void
+	public function Commit() : void
 	{
 		$this->db->query("COMMIT TRANSACTION;");
 	}
 
-	public function Increment($key, string $column): void
+	public function Increment($key, string $column) : void
 	{
 		Profiling::BeginTimer();
-		try {
+		try
+		{
 
 			$res = $this->ReadValue($key, $column);
 
-			if ($res !== null) {
+			if ($res !== null)
+			{
 				$id = $res[0];
-				$n = (int) $res[1] + 1;
+				$n = (int)$res[1] + 1;
 				$sql = "UPDATE data SET " . Db::QuoteColumn($column) . " = :p1"
 					. " WHERE pID = :p2;";
 				$statement = $this->db->prepare($sql);
@@ -495,7 +519,9 @@ class SQLiteList
 				$statement->bindValue(':p2', $id);
 
 				$statement->execute();
-			} else {
+			}
+			else
+			{
 				$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . ", " . Db::QuoteColumn($column) . ", last_accessed) VALUES (:p1, 1, strftime('%s', 'now'));";
 				$statement = $this->db->prepare($sql);
 				$statement->bindValue(':p1', $key);
@@ -503,16 +529,20 @@ class SQLiteList
 				$statement->execute();
 			}
 
-		} catch (\Exception $e) {
+		}
+		catch(\Exception $e)
+		{
 			// Si se corrompe el archivo sqlite y es referer, se borra...
-			if (
-				Str::Contains($e->getMessage(), 'no such table: data')
-				&& Str::EndsWith($this->path, 'referers.db')
-			) {
+			if(Str::Contains($e->getMessage(), 'no such table: data')
+				&& Str::EndsWith($this->path, 'referers.db'))
+			{
 				IO::Delete($this->path);
-			} else
+			}
+			else
 				throw $e;
-		} finally {
+		}
+		finally
+		{
 			Profiling::EndTimer();
 		}
 	}
