@@ -152,14 +152,13 @@ class SQLiteList
 		$this->Execute($sql, $args, 1, true);
 	}
 
-	public function FreeQuota(int $percentage): int
+	public function FreeQuota(int $percentage) : int
 	{
 		// Calcular cuántos registros eliminar
 		$total = $this->db->querySingle("SELECT COUNT(*) FROM data");
-		$toDelete = (int) ($total * $percentage / 100);
-		if ($toDelete === 0) {
+		$toDelete = (int)($total * $percentage / 100);
+		if ($toDelete === 0)
 			return 0;
-		}
 		// Eliminar los más antiguos
 		$sql = "DELETE FROM data WHERE rowid IN (
 			SELECT rowid FROM data
@@ -173,7 +172,7 @@ class SQLiteList
 		return $this->db->changes();
 	}
 
-	public function DataSizeMB(): int
+	public function DataSizeMB() : int
 	{
 		// Tamaño actual
 		$used = $this->DiskSizeMB();
@@ -183,7 +182,7 @@ class SQLiteList
 		return $used - $free;
 	}
 
-	public function DiskSizeMB(): int
+	public function DiskSizeMB() : int
 	{
 		// Tamaño actual
 		$pc = $this->db->query('PRAGMA page_count')->fetchColumn();
@@ -200,7 +199,7 @@ class SQLiteList
 			$args = $args[0];
 
 		$sql = "INSERT OR REPLACE INTO data (pID, " . Db::QuoteColumn($this->keyColumn) . $this->quotedCommaColumns . ", last_accessed) VALUES
-					((SELECT pID FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1), :p1 " . $this->commaArgs . ", strftime('%s', 'now'));";
+			((SELECT pID FROM data WHERE " . Db::QuoteColumn($this->keyColumn) . " = :p1), :p1 " . $this->commaArgs . ", strftime('%s', 'now'));";
 
 		$this->Execute($sql, $args, -1, true);
 	}
@@ -213,9 +212,8 @@ class SQLiteList
 		{
 			$this->db->enableExceptions(true);
 
-			if ($doColumnCheck) {
+			if ($doColumnCheck)
 				$this->doColumnCheck();
-			}
 
 			$statement = $this->db->prepare($sql);
 			$n = 1;
@@ -412,24 +410,25 @@ class SQLiteList
 		return self::$OpenStreamsSizes[$key];
 	}
 
-	private function doColumnCheck()
+	private function doColumnCheck() : void
 	{
-		if (!$this->checked) {
-			$result = $this->db->query("PRAGMA table_info(data)");
+		if ($this->checked)
+			return;
 
-			$hasLastAccessed = false;
-			while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-				if ($row['name'] === 'last_accessed') {
-					$hasLastAccessed = true;
-					break;
-				}
+		$result = $this->db->query("PRAGMA table_info(data)");
+
+		$hasLastAccessed = false;
+		while ($row = $result->fetchArray(SQLITE3_ASSOC))
+		{
+			if ($row['name'] === 'last_accessed')
+			{
+				$hasLastAccessed = true;
+				break;
 			}
-			if (!$hasLastAccessed) {
-				$this->db->exec("ALTER TABLE data ADD COLUMN last_accessed INTEGER DEFAULT 0");
-			}
-			$this->checked = true;
 		}
-		return;
+		if ($hasLastAccessed == false)
+			$this->db->exec("ALTER TABLE data ADD COLUMN last_accessed INTEGER DEFAULT 0");
+		$this->checked = true;
 	}
 
 	public static function GetNamedStreamDateTime(string $key)

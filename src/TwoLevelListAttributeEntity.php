@@ -6,18 +6,18 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 {
 	protected bool $useInternalId = false;
 
-	public function AppendItem($section, $item) : void
+	public function AppendItem(string $section, $item) : void
 	{
 		$values = $this->SafeGetArray($section, 'items');
 		$id = null;
 		if ($this->useInternalId)
-			$id = $this->getNextId();
+			$id = $this->GetNextId();
 		$item['id'] = $id;
 		$values[] = json_encode($item);
 		$this->SafeSetArray($section, 'items', $values);
 	}
 
-	public function DeleteItem($section, $itemId) : void
+	public function DeleteItem(string $section, $itemId) : void
 	{
 		// Lo busca entre los decodificados
 		$items = $this->GetItems($section);
@@ -31,15 +31,14 @@ class TwoLevelListAttributeEntity extends TwoLevelAttributeEntity
 		$this->SafeSetArray($section, 'items', $values);
 	}
 
-	//TODO: cambiar case
-	public function getNextId() : int
+	private function GetNextId() : int
 	{
 		$id = (int)($this->SafeGet('__id_numbers__', 'id')) + 1;
 		$this->SetValue('__id_numbers__', 'id', $id);
 		return $id;
 	}
 
-	public function GetItems($section) : array
+	public function GetItems(string $section) : array
 	{
 		$values = $this->SafeGetArray($section, 'items');
 
