@@ -175,7 +175,7 @@ abstract class OauthConnector
 
 	private function CloseAndRedirect(string $target) : void
 	{
-		//TODO: validar el target.
+		//mejora: validar el target.
 		//-Que sea de este dominio (que no redirija a otro sitio).
 		//-Que no tenga funciones inválidas (deleteUser, etc.)
 		//-No tenga código javascript (xss).
