@@ -186,7 +186,10 @@ class SQLiteList
 	public function DiskSizeMB(): int
 	{
 		// Tamaño actual
-		$used = $this->db->querySingle("SELECT page_count * page_size FROM pragma_page_count(), pragma_page_size();");
+		$pc = $this->db->query('PRAGMA page_count')->fetchColumn();
+		$ps = $this->db->query('PRAGMA page_size')->fetchColumn();
+		$used = $pc * $ps;
+
 		return $used / 1024 / 1024;
 	}
 
