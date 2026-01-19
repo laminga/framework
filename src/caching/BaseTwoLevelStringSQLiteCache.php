@@ -154,7 +154,7 @@ class BaseTwoLevelStringSQLiteCache
 		if ($this->LimitMB === -1)
 			return;
 		// Le toca?
-		if (mt_rand(1, 100) !== 1)
+		if (mt_rand(1, 50) !== 1)
 			return;
 		// Puede leer?
 		if ($this->OpenRead($levelKey, false) == false)

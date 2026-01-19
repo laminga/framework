@@ -103,6 +103,7 @@ class BaseTwoLevelStringFileCache
 		// Le toca?
 		if (mt_rand(1, 50) !== 1)
 			return;
+
 		// Puede leer?
 		$folder = $this->ResolveFolder($key1, $key2, false);
 		if (!is_dir($folder))

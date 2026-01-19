@@ -69,6 +69,27 @@ class SQLiteList
 		return $ret;
 	}
 
+	public function QueryScalarInt(string $sql, $params = null): int
+	{
+		$ret = $this->QueryScalarIntNullable($sql, $params);
+		if ($ret === null) {
+			throw new ErrorException("Error al ejecutar la consulta de SQLite: " . $this->ParamsToText($sql, $params). ".");
+		}
+		return (int) $ret;
+	}
+
+	public function QueryScalarIntNullable(string $sql, $params = null): ?int
+	{
+		$result = $this->Execute($sql, $params);
+		if ($result == null)
+			return null;
+		$res = $result->fetchArray(SQLITE3_NUM);
+		if ($res === false)
+			return null;
+		else
+			return $res[0];
+	}
+
 	public function QueryRow(string $sql, $params = null) : ?array
 	{
 		$result = $this->Execute($sql, $params);
@@ -168,8 +189,11 @@ class SQLiteList
 		$statement = $this->db->prepare($sql);
 		$statement->bindValue(':limit', $toDelete, SQLITE3_INTEGER);
 		$statement->execute();
+		$rowcount = $this->db->changes();
+		// La compacta
+		// $this->db->exec('VACUUM');
 		// Retornar cuántos se eliminaron
-		return $this->db->changes();
+		return $rowcount;
 	}
 
 	public function DataSizeMB() : int
@@ -185,8 +209,8 @@ class SQLiteList
 	public function DiskSizeMB() : int
 	{
 		// Tamaño actual
-		$pc = $this->db->query('PRAGMA page_count')->fetchColumn();
-		$ps = $this->db->query('PRAGMA page_size')->fetchColumn();
+		$pc = $this->db->querySingle('PRAGMA page_count');
+		$ps = $this->db->querySingle('PRAGMA page_size');
 		$used = $pc * $ps;
 
 		return $used / 1024 / 1024;
@@ -210,8 +234,6 @@ class SQLiteList
 			$args = [$args];
 		try
 		{
-			$this->db->enableExceptions(true);
-
 			if ($doColumnCheck)
 				$this->doColumnCheck();
 
