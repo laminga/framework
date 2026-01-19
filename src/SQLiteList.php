@@ -524,10 +524,10 @@ class SQLiteList
 			}
 			else
 			{
+				$this->doColumnCheck();
 				$sql = "INSERT INTO data (" . Db::QuoteColumn($this->keyColumn) . ", " . Db::QuoteColumn($column) . ", last_accessed) VALUES (:p1, 1, strftime('%s', 'now'));";
 				$statement = $this->db->prepare($sql);
 				$statement->bindValue(':p1', $key);
-				$this->doColumnCheck();
 				$statement->execute();
 			}
 
