@@ -5,6 +5,9 @@ namespace minga\framework;
 class TwoLevelAttributeEntity
 {
 	public string $path = '';
+	//No está bueno que tenga estos dos tipos (se usa así en AA, Participants.php agregando roles).
+	//Sería mejor que tenga uno solo (el primero).
+	/** @var array<string, array<string, string>> | array<string, array<string, array<int, string>>> */
 	public array $sections = [];
 	protected bool $keepSectionCreationDate = false;
 

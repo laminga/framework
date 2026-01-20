@@ -288,6 +288,9 @@ class IO
 		return $ret;
 	}
 
+	/**
+	 * @return array<string, string>
+	 */
 	public static function ReadEscapedIniFile(string $file) : array
 	{
 		$attributes = self::ReadIniFile($file);
@@ -296,12 +299,17 @@ class IO
 		return $attributes;
 	}
 
+	/**
+	 * @return array<string, array<string, string>>
+	 */
 	public static function ReadEscapedIniFileWithSections(string $file) : array
 	{
 		$attributes = self::ReadIniFile($file, true);
 		foreach($attributes as &$values)
+		{
 			foreach($values as $key => $value)
 				$values[$key] = urldecode($value);
+		}
 		return $attributes;
 	}
 
