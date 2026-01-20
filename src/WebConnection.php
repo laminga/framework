@@ -466,7 +466,7 @@ class WebConnection
 					if (is_object($subValues) || is_array($subValues))
 						$subValues = json_encode($subValues);
 
-					$ret .= $key . '=' . urlencode($subValues);
+					$ret .= $key . '=' . urlencode((string)$subValues);
 				}
 			}
 		}
