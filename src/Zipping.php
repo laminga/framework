@@ -238,7 +238,7 @@ class Zipping
 
 	public static function Release() : void
 	{
-		foreach(self::$allFiles as $_ => $value)
+		foreach(self::$allFiles as $value)
 			$value->close();
 
 		foreach(self::$allLocks as $lock)
