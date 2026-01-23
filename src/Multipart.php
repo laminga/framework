@@ -19,7 +19,7 @@ class Multipart
 		$date = time();
 		if(file_exists($i))
 			$date = IO::FileMTime($i);
-		for($c = 0; $c < $fs; $c = $c + $s)
+		for($c = 0; $c < $fs; $c += $s)
 		{
 			$fileData = file_get_contents($i, false, null, $c, $s);
 			$fn = $i . "." . $p . ".part";

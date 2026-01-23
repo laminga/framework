@@ -56,7 +56,7 @@ class MultiQuery
 			if ($query->Params != null)
 				$params = array_merge($params, $query->Params);
 		}
-		if (substr($where, 0, 5) == " AND ")
+		if (Str::StartsWith($where, " AND "))
 			$where = (string)substr($where, 5);
 
 		$this->params = $params;

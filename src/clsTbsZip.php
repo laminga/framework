@@ -627,7 +627,7 @@ class clsTbsZip
 			if ($ReplInfo === false)
 			{
 				// The file is to be deleted
-				$Delta = $Delta - $info_old_len; // headers and footers are also deleted
+				$Delta -= $info_old_len; // headers and footers are also deleted
 				$DelLst[$ReplIdx] = true;
 			}
 			else
@@ -742,7 +742,7 @@ class clsTbsZip
 			// size of the central directory
 			$n = $this->_GetDec($b2, 12, 4);
 			$this->_PutDec($b2, $n + $DeltaCdLen, 12, 4);
-			$Delta = $Delta + $AddDataLen;
+			$Delta += $AddDataLen;
 		}
 		$this->_PutDec($b2, $this->CdPos + $Delta, 16, 4); // p_cd (offset of start of central directory with respect to the starting disk number)
 		$this->OutputFromString($b2);
@@ -818,7 +818,7 @@ class clsTbsZip
 			$l = min($len, $block);
 			$x = $this->_ReadData($l);
 			$this->OutputFromString($x);
-			$len = $len - $l;
+			$len -= $l;
 		}
 		unset($x);
 	}
@@ -879,7 +879,7 @@ class clsTbsZip
 		{
 			$asc = ord($x[$i]);
 			if ($asc > 0)
-				$z = $z + $asc * pow(256, $i);
+				$z += $asc * pow(256, $i);
 		}
 		return $z;
 	}
@@ -992,7 +992,7 @@ class clsTbsZip
 			}
 			$this->_MoveTo($pos);
 			$x = $this->_ReadData(256);
-			$p = strpos($x, $cd_info);
+			$p = strpos($x, (string)$cd_info);
 			if ($p === false)
 			{
 				$nbr++;

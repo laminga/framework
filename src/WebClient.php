@@ -283,7 +283,7 @@ class WebClient
 			foreach($value as $subValues)
 			{
 				if ($cad != '')
-					$cad = $cad . '&';
+					$cad .= '&';
 				if (is_a($subValues, 'CURLFile')) // Str::StartsWith($subValues, '@'))
 					$hasFile = true;
 				else

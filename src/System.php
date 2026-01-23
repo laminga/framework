@@ -147,7 +147,7 @@ class System
 		if(isset($_SERVER['SERVER_SOFTWARE']) == false)
 			return PHP_OS === "WINNT";
 		$software = Str::ToLower($_SERVER['SERVER_SOFTWARE']);
-		return strpos($software, 'microsoft-iis') !== false;
+		return Str::Contains($software, 'microsoft-iis');
 	}
 
 	/**

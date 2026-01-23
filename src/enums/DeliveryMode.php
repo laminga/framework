@@ -10,7 +10,7 @@ class DeliveryMode
 
 	public static function GetName(int $val) : string
 	{
-		$class = new \ReflectionClass(__CLASS__);
+		$class = new \ReflectionClass(self::class);
 		$constants = array_flip($class->getConstants());
 		return $constants[$val];
 	}

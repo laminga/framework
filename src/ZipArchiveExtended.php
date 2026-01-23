@@ -12,7 +12,7 @@ class ZipArchiveExtended extends \ZipArchive
 	public function hasSubdir($subdir) : bool
 	{
 		$subdir = str_replace(["/", "\\"], "/", $subdir);
-		if (substr($subdir, -1) != "/")
+		if (Str::EndsWith($subdir, "/") == false)
 			$subdir .= "/";
 		for ($i = 0; $i < $this->numFiles; $i++)
 		{
@@ -34,7 +34,7 @@ class ZipArchiveExtended extends \ZipArchive
 		if (substr($destination, mb_strlen(DIRECTORY_SEPARATOR, "UTF-8") * -1) != DIRECTORY_SEPARATOR)
 			$destination .= DIRECTORY_SEPARATOR;
 
-		if (substr($subdir, -1) != "/")
+		if (Str::EndsWith($subdir, "/") == false)
 			$subdir .= "/";
 
 		// Extract files
@@ -49,7 +49,7 @@ class ZipArchiveExtended extends \ZipArchive
 
 				if (mb_strlen($relativePath, "UTF-8") > 0)
 				{
-					if (substr($filename, -1) == "/") // Directory
+					if (Str::EndsWith($filename, "/")) // Directory
 					{
 						// New dir
 						if (!is_dir($destination . $relativePath))

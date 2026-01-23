@@ -10,7 +10,7 @@ final class ReflectionTest extends TestCaseBase
 {
 	public function testGetMethod() : void
 	{
-		$call = [__CLASS__, 'ForTesting'];
+		$call = [self::class, 'ForTesting'];
 		$method = Reflection::GetMethod($call);
 		$this->assertEquals($method->class, $call[0]);
 		$this->assertEquals($method->name, $call[1]);
@@ -27,20 +27,20 @@ final class ReflectionTest extends TestCaseBase
 
 	public function testGetParams() : void
 	{
-		$params = Reflection::GetParams([__CLASS__, 'ForTesting']);
+		$params = Reflection::GetParams([self::class, 'ForTesting']);
 		$this->assertEquals(count($params), self::CANT_PARAMS, 'Count GetParams(ForTesting)');
-		$params = Reflection::GetParams([__CLASS__, 'ForTestingNoParams']);
+		$params = Reflection::GetParams([self::class, 'ForTestingNoParams']);
 		$this->assertEquals(count($params), 0, 'Count GetParams(ForTestingNoParams)');
 	}
 
 	public function testGetParamNames() : void
 	{
-		$params = Reflection::GetParamNames([__CLASS__, 'ForTesting']);
+		$params = Reflection::GetParamNames([self::class, 'ForTesting']);
 		$this->assertEquals(count($params), self::CANT_PARAMS, 'Count GetParamNames(ForTesting)');
 		for($i = 0; $i < count($params); $i++)
 			$this->assertEquals($params[$i], 'a' . $i, 'Param' . $i);
 
-		$params = Reflection::GetParamNames([__CLASS__, 'ForTestingNoParams']);
+		$params = Reflection::GetParamNames([self::class, 'ForTestingNoParams']);
 		$this->assertEquals(count($params), 0, 'Count GetParamNames(ForTestingNoParams)');
 	}
 
@@ -48,9 +48,9 @@ final class ReflectionTest extends TestCaseBase
 	{
 		for($i = 0; $i < self::CANT_PARAMS; $i++)
 		{
-			$param = Reflection::GetParamClass([__CLASS__, 'ForTesting'], $i);
+			$param = Reflection::GetParamClass([self::class, 'ForTesting'], $i);
 			if($i == self::CANT_PARAMS - 1)
-				$this->assertEquals($param, __CLASS__, 'Type' . $i);
+				$this->assertEquals($param, self::class, 'Type' . $i);
 			else
 				$this->assertNull($param, 'Type' . $i);
 		}

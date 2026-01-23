@@ -75,7 +75,7 @@ class Str
 		];
 		foreach($tokens as $token)
 		{
-			if (strpos($str, $token) !== false)
+			if (self::Contains($str, $token))
 				return true;
 		}
 		return false;
@@ -532,13 +532,17 @@ class Str
 		return str_replace($search, $replace, $subject);
 	}
 
-	public static function ReplaceOnce(?string $subject, $str, $replace) : string
+	public static function ReplaceOnce(?string $subject, ?string $search, ?string $replace) : string
 	{
 		if($subject === null)
 			$subject = "";
-		$pos = strpos($subject, $str);
+		if($search === null)
+			$search = "";
+		if($replace === null)
+			$replace = "";
+		$pos = strpos($subject, $search);
 		if ($pos !== false)
-			return substr_replace($subject, $replace, $pos, strlen($str));
+			return substr_replace($subject, $replace, $pos, strlen($search));
 
 		return $subject;
 	}

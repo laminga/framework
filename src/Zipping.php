@@ -241,7 +241,7 @@ class Zipping
 		foreach(self::$allFiles as $_ => $value)
 			$value->close();
 
-		foreach(self::$allLocks as $_ => $lock)
+		foreach(self::$allLocks as $lock)
 			$lock->Release();
 
 		self::$allLocks = [];

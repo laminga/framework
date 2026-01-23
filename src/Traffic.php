@@ -286,7 +286,7 @@ class Traffic
 		$ret['ips'] = count($totalIps);
 		// filtra
 		$tmp = [];
-		foreach($results as $key => $value)
+		foreach($results as $value)
 		{
 			if ($value['hits'] >= $threshold)
 				$tmp[] = $value;
