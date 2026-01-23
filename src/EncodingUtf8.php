@@ -336,13 +336,13 @@ class EncodingUtf8
 		return $str;
 	}
 
-	protected static function Strlen($text)
+	protected static function Strlen($text) : int
 	{
 		return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload')) & 2)
 			? mb_strlen($text, '8bit') : strlen($text);
 	}
 
-	public static function NormalizeEncoding($encodingLabel)
+	public static function NormalizeEncoding($encodingLabel) : string
 	{
 		$encoding = strtoupper($encodingLabel);
 		$encoding = preg_replace('/[^a-zA-Z0-9\s]/', '', $encoding);

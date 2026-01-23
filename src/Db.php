@@ -737,7 +737,7 @@ class Db
 		Profiling::EndTimer();
 	}
 
-	public function execDDL(string $sql, array $params = [])
+	public function execDDL(string $sql, array $params = []) : int
 	{
 		// Los cambios de estructura finalizan la transacción activa
 		$wasInTransaction = $this->isInTransaction;

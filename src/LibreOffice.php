@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class LibreOffice
 {
-	public static function ConvertWordToPdf($srcFile, $dstPath) : void
+	public static function ConvertWordToPdf(string $srcFile, string $dstPath) : void
 	{
 		$command = self::GetExecutable() . ' --headless --convert-to pdf --outdir "'
 			. $dstPath . '" --norestore --nolockcheck "' . $srcFile . '" 2>&1';

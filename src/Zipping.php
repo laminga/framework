@@ -112,7 +112,7 @@ class Zipping
 		return self::CompressedFileExists($filename);
 	}
 
-	private static function ExtractToGetTempFile($filename) : string
+	private static function ExtractToGetTempFile(string $filename) : string
 	{
 		$path = dirname($filename);
 		$file = Str::EatUntil(basename($filename), '#');
@@ -126,7 +126,7 @@ class Zipping
 		return $tmpfile . '/' . $file;
 	}
 
-	private static function ReleaseTempFile($tmpFilename) : void
+	private static function ReleaseTempFile(string $tmpFilename) : void
 	{
 		$path = dirname($tmpFilename);
 		IO::Delete($tmpFilename);

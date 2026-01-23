@@ -10,7 +10,7 @@ abstract class SingleWriterLock extends Lock
 	private static $writeLock = null;
 	private static $readLock = null;
 
-	private static $refCount = 0;
+	private static int $refCount = 0;
 
 	public static function IsWriting() : bool
 	{
@@ -19,6 +19,7 @@ abstract class SingleWriterLock extends Lock
 
 	public static function BeginRead() : void
 	{
+		//TODO: esto no debería funcionar necesita un parámetro...
 		self::$readLock = new static();
 		self::$readLock->LockRead();
 	}

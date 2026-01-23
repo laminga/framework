@@ -82,9 +82,9 @@ class ServersSettings
 		return $this->currentServerObj;
 	}
 
-	public function RegisterServers($appUrl, $homeUrl = null) : void
+	public function RegisterServers(string $appUrl, ?string $homeUrl = null) : void
 	{
-		if ($homeUrl == false)
+		if ($homeUrl == null)
 			$homeUrl = $appUrl;
 		$this->RegisterServer('home', $homeUrl);
 		$this->RegisterServer('app', $appUrl);

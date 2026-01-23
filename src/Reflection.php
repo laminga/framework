@@ -37,12 +37,12 @@ class Reflection
 		return null;
 	}
 
-	public static function GetParams($method)
+	public static function GetParams($method) : array
 	{
 		return self::GetMethod($method)->getParameters();
 	}
 
-	public static function GetMethod($method)
+	public static function GetMethod($method) : \ReflectionMethod
 	{
 		if(is_array($method))
 		{
@@ -74,7 +74,7 @@ class Reflection
 		return $method->invoke($instance, ...$params);
 	}
 
-	public static function CallPrivateMethodRef($instance, $function, $param, &$refParam)
+	public static function CallPrivateMethodRef(object $instance, $function, $param, &$refParam)
 	{
 		$makePublic = function($param) use ($function, &$refParam) {
 			return self::$function($param, $refParam);
