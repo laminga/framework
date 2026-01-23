@@ -259,7 +259,7 @@ class Db
 		return $stmt->fetch($fetchStyle);
 	}
 
-	public function fetchAllColumn(string $query, array $params = [])
+	public function fetchAllColumn(string $query, array $params = []) : array
 	{
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();

@@ -4,7 +4,7 @@ namespace minga\framework;
 
 class System
 {
-	public static function GetServerInfo()
+	public static function GetServerInfo() : array
 	{
 		$flags = [];
 		// $flags[] = ['flag' => 'n', 'name' => 'Servidor'];

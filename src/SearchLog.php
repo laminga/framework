@@ -85,7 +85,7 @@ class SearchLog
 		return true;
 	}
 
-	public static function GetSearchTable($month = '', $includeHeaders = false)
+	public static function GetSearchTable($month = '', $includeHeaders = false) : array
 	{
 		$lock = new SearchLogLock();
 		$lock->LockRead();

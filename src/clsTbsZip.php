@@ -201,7 +201,7 @@ class clsTbsZip
 		return true;
 	}
 
-	public function CentralDirRead_End($cd_info)
+	public function CentralDirRead_End($cd_info) : array
 	{
 		$b = $cd_info . $this->_ReadData(18);
 		$x = [];
