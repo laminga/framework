@@ -252,7 +252,7 @@ class clsTbsZip
 		return $x;
 	}
 
-	public function RaiseError($Msg)
+	public function RaiseError($Msg) : bool
 	{
 		if ($this->DisplayError)
 		{
@@ -580,7 +580,7 @@ class clsTbsZip
 		return $nbr;
 	}
 
-	public function Flush($Render = TBSZIP_DOWNLOAD, $File = '', $ContentType = '')
+	public function Flush($Render = TBSZIP_DOWNLOAD, $File = '', $ContentType = '') : bool
 	{
 
 		if (($File !== '') && ($this->ArchFile === $File) && ($Render == TBSZIP_FILE))

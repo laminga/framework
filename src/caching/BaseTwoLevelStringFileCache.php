@@ -143,7 +143,7 @@ class BaseTwoLevelStringFileCache
 			return 0;
 
 		// Ordenar por acceso (más viejos primero)
-		usort($files, fn ($a, $b) => $a['atime'] <=> $b['atime']);
+		usort($files, fn ($a, $b) : int => $a['atime'] <=> $b['atime']);
 
 		// Eliminar los más viejos
 		$deleted = 0;
