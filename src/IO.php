@@ -35,11 +35,7 @@ class IO
 		closedir($dir);
 	}
 
-	//TODO: devolver string o throw...
-	/**
-	 * @return string|false
-	 */
-	public static function ReadAllText(string $path, ?int $maxLength = null)
+	public static function ReadAllText(string $path, ?int $maxLength = null) : string
 	{
 		$ret = file_get_contents($path, false, null, 0, $maxLength);
 		if($ret === false)
