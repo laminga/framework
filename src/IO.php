@@ -39,11 +39,12 @@ class IO
 	/**
 	 * @return string|false
 	 */
-	public static function ReadAllText(string $path, int $maxLength = -1)
+	public static function ReadAllText(string $path, ?int $maxLength = null)
 	{
-		if ($maxLength == -1)
-			return file_get_contents($path);
-		return file_get_contents($path, false, null, 0, $maxLength);
+		$ret = file_get_contents($path, false, null, 0, $maxLength);
+		if($ret === false)
+			throw new ErrorException('Error leyendo archivo.');
+		return $ret;
 	}
 
 	public static function GetDirectory(string $file) : string
