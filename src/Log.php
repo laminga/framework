@@ -157,11 +157,8 @@ class Log
 		}
 
 		//Sería bueno bloquear ese rango de IP en algún lado.
-		if(Str::Contains($remoteAddr, '116.179.33.')
-			&& Str::Contains($errorMessage, 'Uncaught ReferenceError: jqxBaseFramework is not defined'))
-		{
+		if(Str::Contains($remoteAddr, '116.179.33.'))
 			return true;
-		}
 
 		if(Str::Contains($errorMessage, 'Uncaught TypeError: n.find is not a function')
 			&& Str::Contains($errorSource, 'tippy'))
