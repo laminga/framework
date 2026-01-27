@@ -131,7 +131,7 @@ class IO
 		return self::WriteAllText($path, $json);
 	}
 
-	//TODO: renombrar a StreamFile o algo así
+	//Estaría bueno renombrar a StreamFile o algo así
 	public static function ReadFileChunked(string $file) : bool
 	{
 		$handle = fopen($file, 'rb');
