@@ -122,9 +122,6 @@ class Log
 
 		$text = self::FixLineEndings($text);
 
-		//TODO: en el js
-		// if (Context::Settings()->Debug()->showErrors)
-
 		if (Context::Settings()->Log()->LogErrorsToDisk)
 			self::PutToJsErrorLog($text);
 
@@ -159,7 +156,7 @@ class Log
 			return true;
 		}
 
-		//TODO: bloquear ese rango de IP.
+		//Sería bueno bloquear ese rango de IP en algún lado.
 		if(Str::Contains($remoteAddr, '116.179.33.')
 			&& Str::Contains($errorMessage, 'Uncaught ReferenceError: jqxBaseFramework is not defined'))
 		{
