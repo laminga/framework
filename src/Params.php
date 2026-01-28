@@ -91,13 +91,19 @@ class Params
 	{
 		$value = self::GetMandatory($param);
 		$value = self::CheckParseIntValue($value);
-		return self::ProcessRange($value, $min, $max);
+		return self::CheckRange($value, $min, $max);
 	}
 
 	public static function GetIntMandatory($param)
 	{
 		$value = self::GetMandatory($param);
 		return self::CheckParseIntValue($value);
+	}
+
+	public static function GetFloatMandatory($param)
+	{
+		$value = self::GetMandatory($param);
+		return self::CheckParseFloatValue($value);
 	}
 
 	public static function GetMonthMandatory($param)
@@ -129,6 +135,14 @@ class Params
 		return self::CheckParseIntValue($value);
 	}
 
+	public static function GetFloat($param, $default = null)
+	{
+		$value = self::Get($param, $default);
+		if ($value === null || $value === '' || $value === $default)
+			return $default;
+		return self::CheckParseFloatValue($value);
+	}
+
 	public static function GetMonth($param, $default = null)
 	{
 		$value = self::Get($param, $default);
@@ -151,7 +165,7 @@ class Params
 		return $arr;
 	}
 
-	private static function ProcessRange($value, $min, $max)
+	public static function CheckRange($value, $min, $max)
 	{
 		if ($value < $min || $value > $max)
 			throw new ErrorException(Context::Trans('El valor del parámetro {param} está fuera de rango.', ['{param}' => $value]));
@@ -218,6 +232,19 @@ class Params
 			return $default;
 
 		return $parts[$position];
+	}
+
+
+	public static function CheckParseFloatValue($value)
+	{
+		if (!is_numeric($value))
+			throw new ErrorException(Context::Trans('El valor del parámetro "{value}" no es válido.', ['{value}' => $value]));
+
+		$f = (float) $value;
+		if ((string) (float) $value !== (string) $f && trim((string) $value) !== (string) $f) {
+			throw new ErrorException(Context::Trans('El valor del parámetro "{value}" no es válido.', ['{value}' => $value]));
+		}
+		return $f;
 	}
 
 	public static function CheckParseIntValue($value)
