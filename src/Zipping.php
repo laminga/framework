@@ -106,8 +106,14 @@ class Zipping
 
 	public static function FileExists(string $filename) : bool
 	{
+		// Por un bug de php si el path es:
+		// /path/archivoexistente.txt/archivoinexistente.jpg
+		// file_exists() da error de open_basedir incluso si
+		// el directorio /path está en open_basedir.
+		// Con realpath se obtiene el mismo resultado sin el
+		// error.
 		if (self::IsZipped($filename) == false)
-			return file_exists($filename);
+			return realpath($filename) !== false;
 
 		return self::CompressedFileExists($filename);
 	}
