@@ -56,6 +56,16 @@ class Extensions
 		return self::RemoveExtension($filename) . $newExt;
 	}
 
+	/**
+	 * Detecta si el archivo fue renombrado con una extensión
+	 * distinta a su contenido y devuelve la extesión correcta.
+	 *
+	 * @param string $filename nombre del archivo (puede ser con path completo).
+	 * @param string $filePath path completo con o sin nombre del archivo incluido.
+	 * @param ?string &$extName setea la extensión del texto del nombre del
+	 *                          archivo (Ej. a.jpg pone como valor "jpg").
+	 * @return string la extensión real del archivo.
+	 */
 	public static function GetRealExtension(string $filename, string $filePath, ?string &$extName = '') : string
 	{
 		$extName = self::GetExtensionFromString($filename);
