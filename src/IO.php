@@ -168,8 +168,10 @@ class IO
 		Profiling::BeginTimer();
 		$text = self::ReadAllText($path);
 		$ret = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
-		if($ret === null && Str::ToLower($text) != 'null')
-			throw new ErrorException('Error al leer json.');
+		if ($ret === null && Str::ToLower($text) != 'null') 
+		{
+			throw new ErrorException('Error al leer json (' . $path . ')');
+		}
 		Profiling::EndTimer();
 		return $ret;
 	}
