@@ -37,7 +37,10 @@ class IO
 
 	public static function ReadAllText(string $path, ?int $maxLength = null) : string
 	{
-		$ret = file_get_contents($path, false, null, 0, $maxLength);
+		if (!$maxLength)
+			$ret = file_get_contents($path);
+		else
+			$ret = file_get_contents($path, false, null, 0, $maxLength);
 		if($ret === false)
 			throw new ErrorException('Error leyendo archivo.');
 		return $ret;
@@ -168,7 +171,7 @@ class IO
 		Profiling::BeginTimer();
 		$text = self::ReadAllText($path);
 		$ret = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
-		if ($ret === null && Str::ToLower($text) != 'null') 
+		if ($ret === null && Str::ToLower($text) != 'null')
 		{
 			throw new ErrorException('Error al leer json (' . $path . ')');
 		}
