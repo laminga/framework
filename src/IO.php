@@ -35,9 +35,9 @@ class IO
 		closedir($dir);
 	}
 
-	public static function ReadAllText(string $path, ?int $maxLength = null) : string
+	public static function ReadAllText(string $path, int $maxLength = -1) : string
 	{
-		if (!$maxLength)
+		if ($maxLength == -1)
 			$ret = file_get_contents($path);
 		else
 			$ret = file_get_contents($path, false, null, 0, $maxLength);
@@ -172,9 +172,7 @@ class IO
 		$text = self::ReadAllText($path);
 		$ret = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
 		if ($ret === null && Str::ToLower($text) != 'null')
-		{
 			throw new ErrorException('Error al leer json (' . $path . ')');
-		}
 		Profiling::EndTimer();
 		return $ret;
 	}
