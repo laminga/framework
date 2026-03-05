@@ -125,7 +125,7 @@ class Arr
 	public static function ToString(array $arr, bool $omitEmpty = false) : string
 	{
 		$ret = '';
-		foreach($arr as $key => $value)
+		foreach($arr as $value)
 		{
 			if ($omitEmpty == false || $value)
 			{
@@ -221,7 +221,7 @@ class Arr
 	{
 		$ret = [];
 		$interval = count($items) / $size;
-		$first = rand(0, (int)$interval - 1);
+		$first = random_int(0, (int)$interval - 1);
 		$pos = $first;
 		$count = 0;
 		while($count < $size)

@@ -79,7 +79,7 @@ class Settings
 	public bool $isBoxed = false;
 	public bool $isBoxValid = false;
 
-	public ?string $boxingContent;
+	public ?string $boxingContent = null;
 	public bool $isFramed = false;
 
 	public int $curlTimeout = 10;

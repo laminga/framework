@@ -30,7 +30,16 @@ class Traffic
 	{
 		$addr = inet_pton($ip);
 		if($addr === false)
+		{
+			if(Str::Contains($ip, ":"))
+			{
+				$parts = explode(':', $ip);
+				$addr = inet_pton($parts[0]);
+				if($addr === false)
+					throw new ErrorException(Context::Trans('Dirección no válida.') . " " . $ip);
+			}
 			throw new ErrorException(Context::Trans('Dirección no válida.') . " " . $ip);
+		}
 
 		$chars = str_split($addr);
 		$last = ord(end($chars));
@@ -286,7 +295,7 @@ class Traffic
 		$ret['ips'] = count($totalIps);
 		// filtra
 		$tmp = [];
-		foreach($results as $key => $value)
+		foreach($results as $value)
 		{
 			if ($value['hits'] >= $threshold)
 				$tmp[] = $value;

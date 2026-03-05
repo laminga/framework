@@ -108,7 +108,7 @@ class BaseTwoLevelStringFileCache
 		$folder = $this->ResolveFolder($key1, $key2, false);
 		if (!is_dir($folder))
 			return;
-		// ExcediÛ la cuota?
+		// Excedi√≥ la cuota?
 		$info = IO::GetDirectorySize($folder, false);
 		if ($info['size'] / 1024 / 1024 > $this->LimitMB)
 			$this->FreeQuota($folder, 10);
@@ -119,7 +119,7 @@ class BaseTwoLevelStringFileCache
 		if (is_dir($folder) == false)
 			return 0;
 
-		// Obtener archivos con sus tiempos de acceso (en linux es casi siempre la fecha de creaciÛn)
+		// Obtener archivos con sus tiempos de acceso (en linux es casi siempre la fecha de creaci√≥n)
 		$files = [];
 		foreach (scandir($folder) as $filename)
 		{
@@ -137,15 +137,15 @@ class BaseTwoLevelStringFileCache
 		if ($total === 0)
 			return 0;
 
-		// Calcular cu·ntos eliminar
+		// Calcular cu√°ntos eliminar
 		$toDelete = (int)($total * $percentage / 100);
 		if ($toDelete === 0)
 			return 0;
 
-		// Ordenar por acceso (m·s viejos primero)
-		usort($files, fn ($a, $b) => $a['atime'] <=> $b['atime']);
+		// Ordenar por acceso (m√°s viejos primero)
+		usort($files, fn ($a, $b) : int => $a['atime'] <=> $b['atime']);
 
-		// Eliminar los m·s viejos
+		// Eliminar los m√°s viejos
 		$deleted = 0;
 		for ($i = 0; $i < $toDelete; $i++)
 		{

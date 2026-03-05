@@ -106,13 +106,19 @@ class Zipping
 
 	public static function FileExists(string $filename) : bool
 	{
+		// Por un bug de php si el path es:
+		// /path/archivoexistente.txt/archivoinexistente.jpg
+		// file_exists() da error de open_basedir incluso si
+		// el directorio /path está en open_basedir.
+		// Con realpath se obtiene el mismo resultado sin el
+		// error.
 		if (self::IsZipped($filename) == false)
-			return file_exists($filename);
+			return realpath($filename) !== false;
 
 		return self::CompressedFileExists($filename);
 	}
 
-	private static function ExtractToGetTempFile($filename) : string
+	private static function ExtractToGetTempFile(string $filename) : string
 	{
 		$path = dirname($filename);
 		$file = Str::EatUntil(basename($filename), '#');
@@ -126,7 +132,7 @@ class Zipping
 		return $tmpfile . '/' . $file;
 	}
 
-	private static function ReleaseTempFile($tmpFilename) : void
+	private static function ReleaseTempFile(string $tmpFilename) : void
 	{
 		$path = dirname($tmpFilename);
 		IO::Delete($tmpFilename);
@@ -238,10 +244,10 @@ class Zipping
 
 	public static function Release() : void
 	{
-		foreach(self::$allFiles as $_ => $value)
+		foreach(self::$allFiles as $value)
 			$value->close();
 
-		foreach(self::$allLocks as $_ => $lock)
+		foreach(self::$allLocks as $lock)
 			$lock->Release();
 
 		self::$allLocks = [];

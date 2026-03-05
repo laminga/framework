@@ -35,15 +35,15 @@ class IO
 		closedir($dir);
 	}
 
-	//TODO: devolver string o throw...
-	/**
-	 * @return string|false
-	 */
-	public static function ReadAllText(string $path, int $maxLength = -1)
+	public static function ReadAllText(string $path, int $maxLength = -1) : string
 	{
 		if ($maxLength == -1)
-			return file_get_contents($path);
-		return file_get_contents($path, false, null, 0, $maxLength);
+			$ret = file_get_contents($path);
+		else
+			$ret = file_get_contents($path, false, null, 0, $maxLength);
+		if($ret === false)
+			throw new ErrorException('Error leyendo archivo.');
+		return $ret;
 	}
 
 	public static function GetDirectory(string $file) : string
@@ -134,7 +134,7 @@ class IO
 		return self::WriteAllText($path, $json);
 	}
 
-	//TODO: renombrar a StreamFile o algo así
+	//Estaría bueno renombrar a StreamFile o algo así
 	public static function ReadFileChunked(string $file) : bool
 	{
 		$handle = fopen($file, 'rb');
@@ -171,8 +171,8 @@ class IO
 		Profiling::BeginTimer();
 		$text = self::ReadAllText($path);
 		$ret = json_decode($text, true, 512, JSON_INVALID_UTF8_SUBSTITUTE);
-		if($ret === null && Str::ToLower($text) != 'null')
-			throw new ErrorException('Error al leer json.');
+		if ($ret === null && Str::ToLower($text) != 'null')
+			throw new ErrorException('Error al leer json (' . $path . ')');
 		Profiling::EndTimer();
 		return $ret;
 	}
@@ -288,6 +288,9 @@ class IO
 		return $ret;
 	}
 
+	/**
+	 * @return array<string, string>
+	 */
 	public static function ReadEscapedIniFile(string $file) : array
 	{
 		$attributes = self::ReadIniFile($file);
@@ -296,12 +299,17 @@ class IO
 		return $attributes;
 	}
 
+	/**
+	 * @return array<string, array<string, string>>
+	 */
 	public static function ReadEscapedIniFileWithSections(string $file) : array
 	{
 		$attributes = self::ReadIniFile($file, true);
 		foreach($attributes as &$values)
+		{
 			foreach($values as $key => $value)
 				$values[$key] = urldecode($value);
+		}
 		return $attributes;
 	}
 
@@ -646,36 +654,22 @@ class IO
 	 * Copia el directorio al destino y luego borra el de origen.
 	 * No mueve estrictamente hablando.
 	 */
-	public static function MoveDirectory(string $dirSource, string $dirDest, $dirName = "", ?array $exclusions = null, $timeFrom = null, bool $createEmptyFolders = true) : void
+	public static function MoveDirectory(string $dirSource, string $dirDest, string $dirName = "", array $exclusions = [], ?int $timeFrom = null, bool $createEmptyFolders = true) : void
 	{
 		self::CopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders);
 		self::RemoveDirectory($dirSource);
 	}
 
-	//TODO: no hace falta nullable en $exclusions
-	public static function CopyDirectory(string $dirSource, string $dirDest, $dirName = "", ?array $exclusions = null, $timeFrom = null, bool $createEmptyFolders = true, $excludedExtension = '') : bool
+	public static function CopyDirectory(string $dirSource, string $dirDest, string $dirName = "", array $exclusions = [], ?int $timeFrom = null, bool $createEmptyFolders = true, string $excludedExtension = '') : bool
 	{
-		// se fija si el source está excluido
-		if ($exclusions != null)
-		{
-			$exclusionsFull = [];
-			foreach($exclusions as $exclusion)
-				$exclusionsFull[] = $dirSource . "/" . $exclusion;
-			$exclusions = $exclusionsFull;
-		}
-		return self::doCopyDirectory($dirSource, $dirDest, $dirName, $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
+		$exclusionsFull = [];
+		foreach($exclusions as $exclusion)
+			$exclusionsFull[] = $dirSource . "/" . $exclusion;
+		return self::doCopyDirectory($dirSource, $dirDest, $dirName, $exclusionsFull, $timeFrom, $createEmptyFolders, $excludedExtension);
 	}
 
-	public static function CopyFiles(string $dirSource, string $dirDest, ?array $exclusions = null, $timeFrom = null) : bool
+	public static function CopyFiles(string $dirSource, string $dirDest, $timeFrom = null) : bool
 	{
-		// se fija si el source está excluido
-		if ($exclusions != null)
-		{
-			$exclusionsFull = [];
-			foreach($exclusions as $exclusion)
-				$exclusionsFull[] = $dirSource . "/" . $exclusion;
-			$exclusions = $exclusionsFull;
-		}
 		$dirHandle = self::OpenDirNoWarning($dirSource);
 
 		while($file = readdir($dirHandle))
@@ -692,16 +686,13 @@ class IO
 		return true;
 	}
 
-	private static function doCopyDirectory(string $dirSource, string $dirDest, $dirName, ?array $exclusions, $timeFrom, bool $createEmptyFolders, $excludedExtension = '') : bool
+	private static function doCopyDirectory(string $dirSource, string $dirDest, $dirName,
+		array $exclusions, ?int $timeFrom, bool $createEmptyFolders, string $excludedExtension = '') : bool
 	{
-		// se fija si el source está excluido
-		if ($exclusions != null)
+		foreach($exclusions as $exclusion)
 		{
-			foreach($exclusions as $exclusion)
-			{
-				if ($exclusion == $dirSource)
-					return false;
-			}
+			if ($exclusion == $dirSource)
+				return false;
 		}
 
 		// recursive function to copy all subdirectories and contents
@@ -734,7 +725,8 @@ class IO
 				else
 				{
 					$dirdest1 = $dirDest . '/' . $dirName;
-					self::doCopyDirectory($dirSource . '/' . $file, $dirdest1, '', $exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
+					self::doCopyDirectory($dirSource . '/' . $file, $dirdest1, '',
+						$exclusions, $timeFrom, $createEmptyFolders, $excludedExtension);
 				}
 			}
 		}

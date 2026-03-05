@@ -24,7 +24,7 @@ class WebResponse
 		print_r($this->headers);
 	}
 
-	public function GetString()
+	public function GetString() : string
 	{
 		if ($this->file == false)
 			throw new MessageException(Context::Trans('No se recibió el archivo.'));

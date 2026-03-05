@@ -89,20 +89,8 @@ class Ghostscript
 				$targetFile = IO::GetTempFilename() . ".jpg";
 
 			$args = '-dNOPAUSE -dBATCH -sDEVICE=jpeg -dFirstPage=1 -dAlignToPixels=0 -dGridFitTT=2'
-				. ' -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=75 -r30 -sOutputFile="'
-				. $targetFile . '" -c .setpdfwrite -f "' . $file . '"';
-
-			//TODO: implementar esto pasando proporciones para evitar llamar dos procesos
-			//1) gs para crear la imagen y 2) Functions::ReisizeImage para hacerla del tamaño esperado.
-			//Se puede unificar en un solo llamado
-			// Agregar estos parámetros: , ?int $width = null, ?int $height = null) : ?string
-
-			// $args = '-dBATCH -dNOPAUSE -sDEVICE=jpeg -dFirstPage=1 -dLastPage=1 -dPDFFitPage=true';
-			// // if($width != null)
-			// // 	$args .= ' -dDEVICEWIDTHPOINTS=' . $width;
-			// // if($height != null)
-			// // 	$args .= ' -dDEVICEHEIGHTPOINTS=' . $height;
-			// $args .= ' -sOutputFile="' . $targetFile . '" "' . $file . '"';
+				. ' -dLastPage=1 -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dJPEGQ=75 -r30'
+				. ' -sOutputFile="' . $targetFile . '" -f "' . $file . '"';
 
 			if (self::Run($args) == false)
 				IO::Delete($targetFile);

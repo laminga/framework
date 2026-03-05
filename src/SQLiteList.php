@@ -69,16 +69,15 @@ class SQLiteList
 		return $ret;
 	}
 
-	public function QueryScalarInt(string $sql, $params = null): int
+	public function QueryScalarInt(string $sql, $params = null) : int
 	{
 		$ret = $this->QueryScalarIntNullable($sql, $params);
-		if ($ret === null) {
-			throw new ErrorException("Error al ejecutar la consulta de SQLite: " . $this->ParamsToText($sql, $params). ".");
-		}
-		return (int) $ret;
+		if ($ret === null)
+			throw new ErrorException("Error al ejecutar la consulta de SQLite: " . $this->ParamsToText($sql, $params) . ".");
+		return (int)$ret;
 	}
 
-	public function QueryScalarIntNullable(string $sql, $params = null): ?int
+	public function QueryScalarIntNullable(string $sql, $params = null) : ?int
 	{
 		$result = $this->Execute($sql, $params);
 		if ($result == null)
@@ -86,8 +85,7 @@ class SQLiteList
 		$res = $result->fetchArray(SQLITE3_NUM);
 		if ($res === false)
 			return null;
-		else
-			return $res[0];
+		return $res[0];
 	}
 
 	public function QueryRow(string $sql, $params = null) : ?array
@@ -189,11 +187,10 @@ class SQLiteList
 		$statement = $this->db->prepare($sql);
 		$statement->bindValue(':limit', $toDelete, SQLITE3_INTEGER);
 		$statement->execute();
-		$rowcount = $this->db->changes();
+		return $this->db->changes();
 		// La compacta
 		// $this->db->exec('VACUUM');
 		// Retornar cuántos se eliminaron
-		return $rowcount;
 	}
 
 	public function DataSizeMB() : int

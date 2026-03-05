@@ -47,6 +47,7 @@ class MailDeferredSender
 	private static function SendMails(array $mails) : int
 	{
 		$path = Context::Paths()->GetLogLocalPath() . '/' . Log::MailsPath . '/' . Date::GetLogMonthFolder();
+		IO::EnsureExists($path);
 		$ret = 0;
 		foreach($mails as $to => $items)
 		{

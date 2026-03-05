@@ -162,7 +162,7 @@ abstract class Queue
 
 		$lock->LockWrite();
 
-		if ($this->clearLogOlderThanDays > 0 && rand(1, 100) === 1)
+		if ($this->clearLogOlderThanDays > 0 && random_int(1, 100) === 1)
 		{
 			$clean = $this->GetQueuePath('success');
 			IO::ClearFilesOlderThan($clean, $this->clearLogOlderThanDays);
