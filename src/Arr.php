@@ -41,7 +41,7 @@ class Arr
 		return count(array_keys($arr, $element));
 	}
 
-	public static function CastColumnAsFloat(array &$arr, $column) : void
+	public static function CastColumnAsFloat(array &$arr, string $column) : void
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
@@ -51,7 +51,7 @@ class Arr
 		}
 	}
 
-	public static function IntToBoolean(array &$arr, $fields) : array
+	public static function IntToBoolean(array &$arr, array $fields) : array
 	{
 		foreach($arr as &$item)
 		{
@@ -72,12 +72,12 @@ class Arr
 		return (string)$ret;
 	}
 
-	public static function Contains(array $array, $element): bool
+	public static function Contains(array $array, $element) : bool
 	{
 		return in_array($element, $array);
 	}
 
-	public static function IndexOf(array $array, $element): int
+	public static function IndexOf(array $array, $element) : int
 	{
 		$ret = array_search($element, $array);
 		if ($ret === false)
@@ -168,12 +168,10 @@ class Arr
 	public static function RemoveDuplicatesByNamedKey(array $arr, string $itemName) : array
 	{
 		$ret = [];
-
 		for($n = 0; $n < count($arr); $n++)
 		{
-			$current = $arr[$n];
-			if(self::IndexOfByNamedValue($arr, $itemName, $current[$itemName]) === $n)
-				$ret[] = $current;
+			if(self::IndexOfByNamedValue($arr, $itemName, $arr[$n][$itemName]) === $n)
+				$ret[] = $arr[$n];
 		}
 		return $ret;
 	}
@@ -181,26 +179,31 @@ class Arr
 	public static function InArrayByNamedValue(array $arr, string $itemName, $itemValue) : bool
 	{
 		$i = self::IndexOfByNamedValue($arr, $itemName, $itemValue);
-		return $i !== -1;
+		return $i != -1;
 	}
 
+	/**
+	 * Como IndexOfByNamedValue pero con índice en vez de namedKey.
+	 */
 	public static function IndexOfByIndexValue(array $arr, int $itemIndex, $itemValue) : int
 	{
 		for ($n = 0; $n < count($arr); $n++)
 		{
-			$current = $arr[$n];
-			if (isset($current[$itemIndex]) && $current[$itemIndex] == $itemValue)
+			if (isset($arr[$n][$itemIndex]) && $arr[$n][$itemIndex] == $itemValue)
 				return $n;
 		}
 		return -1;
 	}
 
+	/**
+	 * Devuelve el índice del array de dos dimensiones
+	 * que tiene elementos array[namedKey] = valor, -1 si no lo encuentra.
+	 */
 	public static function IndexOfByNamedValue(array $arr, string $itemName, $itemValue) : int
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
-			$current = $arr[$n];
-			if (isset($current[$itemName]) && $current[$itemName] == $itemValue)
+			if (isset($arr[$n][$itemName]) && $arr[$n][$itemName] == $itemValue)
 				return $n;
 		}
 		return -1;
@@ -210,8 +213,7 @@ class Arr
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
-			$current = $arr[$n];
-			if ($current->$itemProperty == $itemValue)
+			if ($arr[$n]->$itemProperty == $itemValue)
 				return $n;
 		}
 		return -1;
@@ -263,14 +265,20 @@ class Arr
 		return $roots;
 	}
 
-	public static function SafeGet(array $arr, $item, $default = "")
+	/**
+	 * @param int|string $key
+	 */
+	public static function SafeGet(array $arr, $key, $default = "")
 	{
-		if (isset($arr[$item]))
-			return $arr[$item];
+		if (isset($arr[$key]))
+			return $arr[$key];
 		return $default;
 	}
 
-	public static function RemoveByField($key, $arrayTotal, array $arrayItemsToRemove) : array
+	/**
+	 * @param int|string $key
+	 */
+	public static function RemoveByField($key, array $arrayTotal, array $arrayItemsToRemove) : array
 	{
 		$ret = [];
 		foreach($arrayItemsToRemove as $item)
@@ -278,6 +286,9 @@ class Arr
 		return $ret;
 	}
 
+	/**
+	 * @param int|string $field
+	 */
 	public static function SummarizeField(array $array, $field) : int
 	{
 		$ret = 0;
@@ -304,11 +315,12 @@ class Arr
 		return $ret;
 	}
 
-	public static function MeanValues(array $array, $weights = null)
+	public static function MeanValues(array $array, ?array $weights = null) : float
 	{
 		$sum = 0;
 		$count = 0;
-		if (!$weights)
+		if ($weights == null)
+		{
 			foreach($array as $value)
 			{
 				if ($value && $value !== '-')
@@ -317,7 +329,9 @@ class Arr
 					$count++;
 				}
 			}
+		}
 		else
+		{
 			for($n = 0; $n < count($array); $n++)
 			{
 				$value = $array[$n];
@@ -328,10 +342,10 @@ class Arr
 					$count += $weight;
 				}
 			}
+		}
+		$ret = 0;
 		if ($count > 0)
 			$ret = $sum / $count;
-		else
-			$ret = 0;
 		return $ret;
 	}
 
@@ -368,7 +382,7 @@ class Arr
 		return $ret;
 	}
 
-	public static function ToKeyByNamedValue(array $arr, $namedKey, $namedValue) : array
+	public static function ToKeyByNamedValue(array $arr, string $namedKey, string $namedValue) : array
 	{
 		$ret = [];
 		foreach($arr as $arrItem)
@@ -384,17 +398,17 @@ class Arr
 		return $ret;
 	}
 
-	public static function RemoveAt(array &$arr, $pos) : array
+	public static function RemoveAt(array &$arr, int $pos) : array
 	{
 		array_splice($arr, $pos, 1);
 		return $arr;
 	}
 
-	public static function RemoveItemByNamedKey(array $array, string $name, $key)
+	public static function RemoveItemByNamedKey(array $array, string $name, $key) : array
 	{
 		$pos = self::IndexOfByNamedValue($array, $name, $key);
 		if ($pos == -1)
-			return false;
+			return $array;
 
 		return self::RemoveAt($array, $pos);
 	}
@@ -414,6 +428,9 @@ class Arr
 		return $array;
 	}
 
+	/**
+	 * @param int|string $key
+	 */
 	public static function RemoveItemByKeyValue(array $array, $key, $value) : array
 	{
 		$ret = [];
@@ -478,6 +495,9 @@ class Arr
 		return $ret;
 	}
 
+	/**
+	 * @param int|string $field
+	 */
 	public static function FromSortedToKeyed(array $arr, $field) : array
 	{
 		$ret = [];
@@ -500,14 +520,19 @@ class Arr
 		return $ret;
 	}
 
-	public static function FromSortedToKeyedArrays(array $arr, $field, $value): array
+	/**
+	 * @param int|string $field
+	 */
+	public static function FromSortedToKeyedArrays(array $arr, $field, $value) : array
 	{
 		$ret = [];
 		$group = [];
 		$last = null;
-		foreach ($arr as $a) {
+		foreach ($arr as $a)
+		{
 			$id = $a[$field];
-			if ($id != $last) {
+			if ($id != $last)
+			{
 				if ($last !== null)
 					$ret[$last] = $group;
 				$group = [];
