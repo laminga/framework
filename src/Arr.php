@@ -72,7 +72,12 @@ class Arr
 		return (string)$ret;
 	}
 
-	public static function IndexOf(array $array, $element)
+	public static function Contains(array $array, $element): bool
+	{
+		return in_array($element, $array);
+	}
+
+	public static function IndexOf(array $array, $element): int
 	{
 		$ret = array_search($element, $array);
 		if ($ret === false)
@@ -489,6 +494,26 @@ class Arr
 				$last = $id;
 			}
 			$group[] = $a;
+		}
+		if ($last !== null)
+			$ret[$last] = $group;
+		return $ret;
+	}
+
+	public static function FromSortedToKeyedArrays(array $arr, $field, $value): array
+	{
+		$ret = [];
+		$group = [];
+		$last = null;
+		foreach ($arr as $a) {
+			$id = $a[$field];
+			if ($id != $last) {
+				if ($last !== null)
+					$ret[$last] = $group;
+				$group = [];
+				$last = $id;
+			}
+			$group[] = $a[$value];
 		}
 		if ($last !== null)
 			$ret[$last] = $group;
