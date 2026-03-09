@@ -785,6 +785,16 @@ class Db
 		}
 	}
 
+	public function PrepareGroupConcat() : void
+	{
+		Profiling::BeginTimer();
+
+		$sql = "SET group_concat_max_len = 102400; ";
+		$this->execute($sql);
+
+		Profiling::EndTimer();
+	}
+
 	public function setFetchMode(int $mode) : void
 	{
 		$this->db->setFetchMode($mode);

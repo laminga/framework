@@ -13,7 +13,8 @@ class PhpSession
 			self::SessionStart();
 			session_unset();
 			session_destroy();
-			$_SERVER["HTTP_SESSION_ID"] = null;
+			//unset($_SERVER["HTTP_SESSION_ID"]);
+			//= null;
 			// Crea una nueva
 			self::SessionStart();
 			session_regenerate_id();
@@ -99,7 +100,7 @@ class PhpSession
 //		if ($sessionId && preg_match('/^[a-zA-Z0-9,-]{1,128}$/', $sessionId)) {
 	//		echo 'gotit';
 		//	exit;
-		if ($sessionId)
+		if ($sessionId && $sessionId != 'null')
 			session_id($sessionId);
 		//}
 	}
