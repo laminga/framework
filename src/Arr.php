@@ -41,7 +41,7 @@ class Arr
 		return count(array_keys($arr, $element));
 	}
 
-	public static function CastColumnAsFloat(array &$arr, string $column) : void
+	public static function CastColumnAsFloat(array &$arr, int $column) : void
 	{
 		for($n = 0; $n < count($arr); $n++)
 		{
