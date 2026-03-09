@@ -5,7 +5,7 @@ namespace minga\framework;
 class Params
 {
 	//Método usado en aacademica.
-	public static function SafeGetCheckbox($param, $default = '0')
+	public static function SafeGetCheckbox(string $param, $default = '0')
 	{
 		$value = self::SafeGet($param, $default);
 		if ($value == 'on')
@@ -13,7 +13,7 @@ class Params
 		return $value;
 	}
 
-	public static function SafeServer($param, $default = '')
+	public static function SafeServer(string $param, $default = '')
 	{
 		if (isset($_SERVER[$param]) == false)
 			return $default;
@@ -25,7 +25,7 @@ class Params
 		return $ret;
 	}
 
-	public static function SafePost($param, $default = '')
+	public static function SafePost(string $param, $default = '')
 	{
 		if (isset($_POST[$param]) == false)
 			return $default;
@@ -38,7 +38,7 @@ class Params
 	}
 
 	//Método usado en aacademica.
-	public static function SafeGet($param, $default = '')
+	public static function SafeGet(string $param, $default = '')
 	{
 		$ret = $default;
 		if (isset($_GET[$param]))
@@ -51,7 +51,7 @@ class Params
 	}
 
 	//Método usado en mapas.
-	public static function Get($key, $default = null)
+	public static function Get(string $key, $default = null)
 	{
 		if (isset($_GET[$key]))
 		{
@@ -80,33 +80,33 @@ class Params
 		return $value;
 	}
 
-	public static function GetMandatory($key)
+	public static function GetMandatory(string $key)
 	{
 		$ret = self::Get($key, null);
 		self::CheckMandatoryValue($ret, $key);
 		return $ret;
 	}
 
-	public static function GetIntRangeMandatory($param, $min, $max)
+	public static function GetIntRangeMandatory(string $param, $min, $max) : int
 	{
 		$value = self::GetMandatory($param);
 		$value = self::CheckParseIntValue($value);
 		return self::CheckRange($value, $min, $max);
 	}
 
-	public static function GetIntMandatory($param)
+	public static function GetIntMandatory(string $param) : int
 	{
 		$value = self::GetMandatory($param);
 		return self::CheckParseIntValue($value);
 	}
 
-	public static function GetFloatMandatory($param)
+	public static function GetFloatMandatory(string $param) : float
 	{
 		$value = self::GetMandatory($param);
 		return self::CheckParseFloatValue($value);
 	}
 
-	public static function GetMonthMandatory($param)
+	public static function GetMonthMandatory(string $param) : string
 	{
 		$value = self::GetMandatory($param);
 		return self::CheckParseMonthValue($value);
@@ -119,7 +119,7 @@ class Params
 			return false;
 		if(strtolower($value) == 'true')
 			return true;
-		return self::CheckParseIntValue($value) !== 0;
+		return self::CheckParseIntValue($value) != 0;
 	}
 
 	public static function GetBool(string $param, bool $default = false) : bool
@@ -127,23 +127,23 @@ class Params
 		return (bool)self::SafeGet($param, $default);
 	}
 
-	public static function GetInt($param, $default = null)
+	public static function GetInt(string $param, ?int $default = null) : ?int
 	{
 		$value = self::Get($param, $default);
-		if ($value === null || $value === '' || $value === $default)
+		if ($value === null || $value === $default)
 			return $default;
 		return self::CheckParseIntValue($value);
 	}
 
-	public static function GetFloat($param, $default = null)
+	public static function GetFloat(string $param, ?float $default = null) : ?float
 	{
 		$value = self::Get($param, $default);
-		if ($value === null || $value === '' || $value === $default)
+		if ($value === null || $value === $default)
 			return $default;
 		return self::CheckParseFloatValue($value);
 	}
 
-	public static function GetMonth($param, $default = null)
+	public static function GetMonth(string $param, $default = null) : ?string
 	{
 		$value = self::Get($param, $default);
 		if ($value === null || $value === '')
@@ -151,7 +151,7 @@ class Params
 		return self::CheckParseMonthValue($value);
 	}
 
-	public static function GetIntArray($param, $default = [])
+	public static function GetIntArray(string $param, array $default = []) : array
 	{
 		$arr = self::GetArray($param, $default);
 		for($n = 0; $n < count($arr); $n++)
@@ -159,21 +159,17 @@ class Params
 		return $arr;
 	}
 
-	public static function GetArray($param, $default = []) 
+	public static function GetArray(string $param, $default = [])
 	{
 		$value = self::Get($param, null);
 		if ($value === null || $value === '' || $value === '[]')
 			return $default;
-		if (is_array($value)) {
-			$arr = $value;
-		} else {
-			if (Str::StartsWith($value, "[") && Str::EndsWith($value, "]"))
-				$value = substr($value, 1, strlen($value) - 2);
-			$arr = explode(',', $value);
-		}
-		return $arr;
+		if (is_array($value))
+			return $value;
+		if (Str::StartsWith($value, "[") && Str::EndsWith($value, "]"))
+			$value = substr($value, 1, strlen($value) - 2);
+		return explode(',', $value);
 	}
-
 
 	public static function CheckRange($value, $min, $max)
 	{
@@ -182,13 +178,13 @@ class Params
 		return $value;
 	}
 
-	public static function GetUploadedImageMemory(string $field, int $maxFileSize = -1)
+	public static function GetUploadedImageMemory(string $field, int $maxFileSize = -1) : string
 	{
 		$file = self::GetUploadedImage($field, $maxFileSize);
 		return IO::ReadAllBytes($file);
 	}
 
-	public static function GetUploadedFileMemory(string $field, array $validExtensions, int $maxFileSize = -1)
+	public static function GetUploadedFileMemory(string $field, array $validExtensions, int $maxFileSize = -1) : string
 	{
 		$file = self::GetUploadedFile($field, $validExtensions, $maxFileSize);
 		return IO::ReadAllBytes($file);
@@ -234,7 +230,7 @@ class Params
 		return '';
 	}
 
-	public static function FromPath($position, $default = null)
+	public static function FromPath(int $position, ?string $default = null) : ?string
 	{
 		$uri = Request::GetRequestURI(true);
 		$parts = explode('/', $uri);
@@ -244,20 +240,18 @@ class Params
 		return $parts[$position];
 	}
 
-
-	public static function CheckParseFloatValue($value)
+	public static function CheckParseFloatValue($value) : float
 	{
-		if (!is_numeric($value))
+		if (is_numeric($value) == false)
 			throw new ErrorException(Context::Trans('El valor del parámetro "{value}" no es válido.', ['{value}' => $value]));
 
-		$f = (float) $value;
-		if ((string) (float) $value !== (string) $f && trim((string) $value) !== (string) $f) {
+		$f = (float)$value;
+		if ((string)(float)$value !== (string)$f && trim((string)$value) !== (string)$f)
 			throw new ErrorException(Context::Trans('El valor del parámetro "{value}" no es válido.', ['{value}' => $value]));
-		}
 		return $f;
 	}
 
-	public static function CheckParseIntValue($value)
+	public static function CheckParseIntValue($value) : int
 	{
 		$i = (int)$value;
 		if ((string)$i !== (string)$value)
@@ -265,9 +259,9 @@ class Params
 		return $i;
 	}
 
-	public static function CheckParseMonthValue($value)
+	public static function CheckParseMonthValue(string $value) : string
 	{
-		if (strlen($value) !== 7 || substr($value, 4, 1) !== '-')
+		if (strlen($value) != 7 || substr($value, 4, 1) != '-')
 			throw new ErrorException(Context::Trans('El valor del parámetro "{value}" no es válido.', ['{value}' => $value]));
 		$y = self::CheckParseIntValue(substr($value, 0, 4));
 		$m = self::CheckParseIntValue(ltrim(substr($value, 5, 2), '0'));
@@ -276,15 +270,15 @@ class Params
 		return $value;
 	}
 
-	public static function GetJsonMandatory($param, bool $assoc = false)
+	public static function GetJsonMandatory(string $param, bool $assoc = false)
 	{
 		$value = self::GetMandatory($param);
 		return json_decode($value, $assoc);
 	}
 
-	public static function GetJson($param, bool $assoc = false)
+	public static function GetJson(string $param, bool $assoc = false)
 	{
-		$value = Params::Get($param);
+		$value = self::Get($param);
 		if ($value === null)
 			return null;
 		return json_decode($value, $assoc);
