@@ -143,10 +143,24 @@ class BaseTwoLevelStringSQLiteCache
 		if ($value !== null)
 		{
 			$value = $value[1];
+			if (Context::Settings()->Cache()->SQliteCompressionEnabled)
+			{
+				$value = $this->cache_unpack($value);
+			}
 			return true;
 		}
 
 		return false;
+	}
+
+	private function cache_pack(string $data): string
+	{
+		return base64_encode(gzcompress($data, 6));
+	}
+
+	private function cache_unpack(string $data): string
+	{
+		return gzuncompress(base64_decode($data));
 	}
 
 	private function CheckLimits($levelKey) : void
@@ -175,7 +189,7 @@ class BaseTwoLevelStringSQLiteCache
 		if ($key1 === null)
 			$key1 = 'cache';
 
-		return $this->path . "/" . $key1 . ".db";
+		return $this->path . "/" . $key1 . (Context::Settings()->Cache()->SQliteCompressionEnabled ? '-z' : '') . ".db";
 	}
 
 	public function PutDataIfMissing($key1, $key2, $value) : void
@@ -202,6 +216,9 @@ class BaseTwoLevelStringSQLiteCache
 		}
 		try
 		{
+			if (Context::Settings()->Cache()->SQliteCompressionEnabled) {
+				$value = $this->cache_pack($value);
+			}
 			$this->db->InsertOrUpdate($valueKey, $value);
 		}
 		catch(\Exception $e)

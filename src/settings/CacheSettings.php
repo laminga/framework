@@ -17,6 +17,7 @@ class CacheSettings
 	public int $Enabled = self::Enabled;
 
 	public int $FileSystemMode = self::SQLITE3;
+	public bool $SQliteCompressionEnabled = true;
 
 	public function CreateFileCache(string $path, bool $avoidSqLite = false, int $limitMB = -1)
 	{

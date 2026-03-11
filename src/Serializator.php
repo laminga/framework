@@ -16,6 +16,7 @@ class Serializator
 	public static function Serialize($obj) : string
 	{
 		Profiling::BeginTimer();
+		ini_set('serialize_precision', '-1');
 		$ret = serialize($obj);
 		Profiling::EndTimer();
 		return $ret;
