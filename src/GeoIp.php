@@ -126,7 +126,7 @@ class GeoIp
 		if ($dir1 != '' && file_exists($dir1 . '/' . $path))
 			return $dir1 . '/' . $path;
 		$dir2 = Context::Paths()->GetStorageRoot() . '/geoip';
-		if ($dir2 != '' && file_exists($dir2 . '/' . $path))
+		if (file_exists($dir2 . '/' . $path))
 			return $dir2 . '/' . $path;
 		throw new ErrorException(Context::Trans('Directorio no encontrado para ') . $path);
 	}
