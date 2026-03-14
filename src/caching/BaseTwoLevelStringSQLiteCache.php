@@ -153,12 +153,12 @@ class BaseTwoLevelStringSQLiteCache
 		return false;
 	}
 
-	private function cache_pack(string $data): string
+	private function cache_pack(string $data) : string
 	{
 		return base64_encode(gzcompress($data, 6));
 	}
 
-	private function cache_unpack(string $data): string
+	private function cache_unpack(string $data) : string
 	{
 		return gzuncompress(base64_decode($data));
 	}
@@ -216,7 +216,8 @@ class BaseTwoLevelStringSQLiteCache
 		}
 		try
 		{
-			if (Context::Settings()->Cache()->SQliteCompressionEnabled) {
+			if (Context::Settings()->Cache()->SQliteCompressionEnabled)
+			{
 				$value = $this->cache_pack($value);
 			}
 			$this->db->InsertOrUpdate($valueKey, $value);
