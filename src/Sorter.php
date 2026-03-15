@@ -74,16 +74,16 @@ class Sorter
 		return -1 * self::StringByKey($a, $b, $key);
 	}
 
-	private static function StringBySortKeysArray($a, $b) : int
-	{
-		for ($i = 0; $i < count($a->sortKeys); $i++)
-		{
-			$res = strcmp($b->sortKeys[$i], $a->sortKeys[$i]);
-			if ($res != 0)
-				return $res;
-		}
-		return 0;
-	}
+	// private static function StringBySortKeysArray($a, $b) : int
+	// {
+	// 	for ($i = 0; $i < count($a->sortKeys); $i++)
+	// 	{
+	// 		$res = strcmp($b->sortKeys[$i], $a->sortKeys[$i]);
+	// 		if ($res != 0)
+	// 			return $res;
+	// 	}
+	// 	return 0;
+	// }
 
 	public static function StringByTwoKeys(array $a, array $b, $key1, $key2) : int
 	{
