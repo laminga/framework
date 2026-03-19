@@ -99,7 +99,8 @@ class Db
 		$stmt = $this->db->prepare($query);
 		foreach($data as $k => $v)
 			$stmt->bindValue($k, $v, $this->getParamType($v));
-		$stmt->execute();
+		$result = $stmt->execute();
+		$stmt = ($result instanceof \Doctrine\DBAL\Result) ? $result : $stmt;
 		return $stmt->rowCount();
 	}
 
@@ -136,14 +137,21 @@ class Db
 			$query = $this->parseArrayParams($sql, $params);
 			$stmt = $this->db->prepare($query);
 			if(key($params) === 0)
-				$stmt->execute($params);
+				$result = $stmt->execute($params);
 			else
 			{
 				foreach($params as $k => $v)
 					$stmt->bindValue($k, $v, $this->getParamType($v));
-				$stmt->execute();
+				$result = $stmt->execute();
 			}
-			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+			$stmt = ($result instanceof \Doctrine\DBAL\Result) ? $result : $stmt;
+
+			if (method_exists($stmt, 'fetchAll'))
+				$ret = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+			else
+				$ret = $stmt->fetchAllAssociative();
+
+			return $ret;
 		}
 		finally
 		{
@@ -157,8 +165,14 @@ class Db
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
 		$stmt = $this->db->prepare($sql);
-		$stmt->execute($params);
-		$ret = $stmt->fetchAll(\PDO::FETCH_NUM);
+		$result = $stmt->execute($params);
+		$stmt = ($result instanceof \Doctrine\DBAL\Result) ? $result : $stmt;
+
+		if (method_exists($stmt, 'fetchAll'))
+			$ret = $stmt->fetchAll(\PDO::FETCH_NUM);
+		else
+			$ret = $stmt->fetchAllNumeric();
+
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
@@ -180,17 +194,25 @@ class Db
 			$stmt = $this->db->prepare($query);
 
 			if(key($params) === 0)
-				$stmt->execute($params);
+				$result = $stmt->execute($params);
 			else
 			{
 				foreach($params as $k => $v)
 					$stmt->bindValue($k, $v, $this->getParamType($v));
-				$stmt->execute();
+				$result = $stmt->execute();
 			}
+			$stmt = ($result instanceof \Doctrine\DBAL\Result) ? $result : $stmt;
 
 			$res = [];
 			do
-				$res[] = $stmt->fetchAll($fetchStyle);
+			{
+				if (method_exists($stmt, 'fetchAll'))
+					$res[] = $stmt->fetchAll($fetchStyle);
+				elseif ($fetchStyle == \PDO::FETCH_NUM)
+					$res[] = $stmt->fetchAllNumeric();
+				else
+					$res[] = $stmt->fetchAllAssociative();
+			}
 			while ($stmt->nextRowset());
 
 			return $res;
@@ -249,14 +271,22 @@ class Db
 		$query = $this->parseArrayParams($query, $params);
 		$stmt = $this->db->prepare($query);
 		if(key($params) === 0)
-			$stmt->execute($params);
+			$result = $stmt->execute($params);
 		else
 		{
 			foreach($params as $k => $v)
 				$stmt->bindValue($k, $v, $this->getParamType($v));
-			$stmt->execute();
+			$result = $stmt->execute();
 		}
-		return $stmt->fetch($fetchStyle);
+		$stmt = ($result instanceof \Doctrine\DBAL\Result) ? $result : $stmt;
+
+		if (method_exists($stmt, 'fetch'))
+			$ret = $stmt->fetch($fetchStyle);
+		elseif ($fetchStyle == \PDO::FETCH_NUM)
+			$ret = $stmt->fetchNumeric();
+		else
+			$ret = $stmt->fetchAssociative();
+		return $ret;
 	}
 
 	public function fetchAllColumn(string $query, array $params = []) : array
@@ -283,15 +313,21 @@ class Db
 		$query = $this->parseArrayParams($query, $params);
 		$stmt = $this->db->prepare($query);
 		if(key($params) === 0)
-			$stmt->execute($params);
+			$result = $stmt->execute($params);
 		else
 		{
 			foreach($params as $k => $v)
 				$stmt->bindValue($k, $v, $this->getParamType($v));
-			$stmt->execute();
+			$result = $stmt->execute();
 		}
-		$stmt->execute($params);
-		$ret = $stmt->fetchColumn($colnum);
+		$result = $stmt->execute($params);
+		$stmt = ($result instanceof \Doctrine\DBAL\Result) ? $result : $stmt;
+
+		if (method_exists($stmt, 'fetchColumn'))
+			$ret = $stmt->fetchColumn($colnum);
+		else
+			$ret = $stmt->fetchOne($colnum);
+
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
