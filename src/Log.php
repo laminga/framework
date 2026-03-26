@@ -221,7 +221,7 @@ class Log
 	public static function TrimMessage(?string $text) : ?string
 	{
 		if ($text != null && strlen($text) > 15000)
-			$text = substr($text, 0, 10240) . " (trimmed at 10240 bytes) " . substr($text, strlen($text) - 1024);
+			$text = substr($text, 0, 10240) . " (trimmed at 10240 bytes by LOG OUTPUT) " . substr($text, strlen($text) - 1024);
 		return $text;
 	}
 

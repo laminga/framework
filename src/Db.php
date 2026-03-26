@@ -133,7 +133,6 @@ class Db
 			if (method_exists($this->db, 'fetchAll'))
 				return $this->db->fetchAll($sql, $params);
 
-
 			$query = $this->parseArrayParams($sql, $params);
 			$stmt = $this->db->prepare($query);
 			if(key($params) === 0)
@@ -830,11 +829,11 @@ class Db
 
 		Profiling::EndTimer();
 	}
-
-	public function setFetchMode(int $mode) : void
+	// Deprecated
+	/*public function setFetchMode(int $mode) : void
 	{
 		$this->db->setFetchMode($mode);
-	}
+	}*/
 
 	public function lastRowsAffected() : int
 	{

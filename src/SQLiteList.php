@@ -198,7 +198,9 @@ class SQLiteList
 		// Tamaño actual
 		$used = $this->DiskSizeMB();
 		// Páginas libres (espacio recuperable)
-		$free = $this->db->querySingle("SELECT freelist_count * page_size FROM pragma_freelist_count(), pragma_page_size();") / 1024 / 1024;
+		$freelist = $this->db->querySingle("PRAGMA freelist_count;");
+		$pageSize = $this->db->querySingle("PRAGMA page_size;");
+		$free = ($freelist * $pageSize) / 1024 / 1024;
 
 		return $used - $free;
 	}
