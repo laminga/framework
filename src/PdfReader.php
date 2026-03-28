@@ -45,6 +45,9 @@ class PdfReader
 		// Remueve caracter inválido: 0xf0b7
 		$text = str_replace("", "\n", $text);
 
+		// El texto puede tener caracteres inválidos, los quita.
+		$text = iconv("UTF-8", "UTF-8//IGNORE", $text);
+
 		if($truncate)
 			$text = self::Truncate64k(trim($text));
 
