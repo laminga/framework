@@ -128,7 +128,7 @@ class Lock
 		}
 		if ($this->handle != null)
 		{
-			$this->AppendLockInfo('Liberar: ');
+			$this->AppendLockInfo('Unlocked: ');
 
 			flock($this->handle, LOCK_UN);
 			fclose($this->handle);
