@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace minga\tests;
+namespace minga\framework\tests;
 
 use minga\framework\tests\TestCaseBase;
 
