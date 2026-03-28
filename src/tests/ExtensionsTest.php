@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
-use minga\framework\tests\TestCaseBase;
-
 class ExtensionsTest extends TestCaseBase
 {
 	public function testExtensions() : void
