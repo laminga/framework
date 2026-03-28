@@ -190,9 +190,6 @@ class EncodingUtf8
 			return $text;
 		}
 
-		if(!is_string($text))
-			return $text;
-
 		$max = self::Strlen($text);
 
 		$buf = "";

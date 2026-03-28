@@ -376,15 +376,15 @@ class IO
 		$file = $pi['filename'];
 
 		// ej: .htaccess
-		if(isset($pi['basename']) && Str::StartsWith($pi['basename'], '.') && $pi['filename'] == "")
+		if(Str::StartsWith($pi['basename'], '.') && $pi['filename'] == "")
 			$file = $pi['basename'];
 
 		if(isset($pi['dirname']) == false)
 			return $file;
 
-		if(isset($pi['dirname']) && $pi['dirname'] == '.')
+		if($pi['dirname'] == '.')
 			$dir = "";
-		else if(isset($pi['dirname']) && ($pi['dirname'] == '/' || $pi['dirname'] == "\\"))
+		else if($pi['dirname'] == '/' || $pi['dirname'] == "\\")
 			$dir = $pi['dirname'];
 		else
 			$dir = $pi['dirname'] . DIRECTORY_SEPARATOR;
