@@ -104,11 +104,12 @@ class SQLiteList
 	public function Open(string $path, bool $readonly = false) : void
 	{
 		Profiling::BeginTimer();
-		$existed = file_exists($path);
-		$flag = ($readonly && $existed ? SQLITE3_OPEN_READONLY : SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+		$exists = file_exists($path);
+		$flag = ($readonly && $exists ? SQLITE3_OPEN_READONLY : SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 		$db = new \SQLite3($path, $flag);
+		$db->busyTimeout(1000);
 		$db->enableExceptions(true);
-		if ($existed == false)
+		if ($exists == false)
 			$db->query(self::CreateSql());
 
 		$this->db = $db;
