@@ -162,6 +162,8 @@ class EncodingUtf8
 		{
 			if(is_string($v))
 				$arr[$k] = self::ToUTF8($v);
+			elseif(is_array($v))
+				$arr[$k] = self::ToUTF8Arr($v);
 		}
 		return $arr;
 	}
@@ -281,6 +283,8 @@ class EncodingUtf8
 		{
 			if(is_string($v))
 				$arr[$k] = self::ToWin1252($v, $option);
+			elseif(is_array($v))
+				$arr[$k] = self::ToWin1252Arr($v, $option);
 		}
 		return $arr;
 	}
@@ -316,6 +320,8 @@ class EncodingUtf8
 		{
 			if(is_string($v))
 				$arr[$k] = self::FixUTF8($v, $option);
+			elseif(is_array($v))
+				$arr[$k] = self::FixUTF8Arr($v, $option);
 		}
 
 		return $arr;
