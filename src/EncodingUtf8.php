@@ -157,7 +157,6 @@ class EncodingUtf8
 		"\xc5\xb8" => "\x9f",
 	];
 
-
 	public static function ToUTF8Arr(array $arr) : array
 	{
 		foreach($arr as $k => $v)
@@ -278,7 +277,6 @@ class EncodingUtf8
 		return $buf;
 	}
 
-
 	public static function ToWin1252Arr(array $arr, string $option = self::ICONV_IGNORE) : array
 	{
 		foreach($arr as $k => $v)
@@ -328,7 +326,6 @@ class EncodingUtf8
 
 		return $arr;
 	}
-
 
 	public static function FixUTF8(string $text, string $option = self::ICONV_IGNORE) : string
 	{
@@ -401,7 +398,7 @@ class EncodingUtf8
 			throw new \Exception('Error Utf8Decode no existe iconv.');
 
 		if($option == self::ICONV_TRANSLIT)
-			$extra =  '//TRANSLIT';
+			$extra = '//TRANSLIT';
 		else if($option == self::ICONV_IGNORE)
 			$extra = '//IGNORE';
 		else if($option == self::ICONV_NONE)
