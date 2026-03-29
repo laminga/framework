@@ -46,9 +46,11 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 class EncodingUtf8
 {
-	public const ICONV_TRANSLIT = "TRANSLIT";
+	//DEFAULT:
 	public const ICONV_IGNORE = "IGNORE";
-	public const WITHOUT_ICONV = "";
+
+	public const ICONV_TRANSLIT = "TRANSLIT";
+	public const ICONV_NONE = "";
 
 	protected static array $win1252ToUtf8 = [
 		128 => "\xe2\x82\xac",
@@ -277,7 +279,7 @@ class EncodingUtf8
 	}
 
 
-	public static function ToWin1252Arr(array $arr, string $option = self::WITHOUT_ICONV) : array
+	public static function ToWin1252Arr(array $arr, string $option = self::ICONV_IGNORE) : array
 	{
 		foreach($arr as $k => $v)
 		{
@@ -299,7 +301,7 @@ class EncodingUtf8
 		return self::ToWin1252Arr($arr);
 	}
 
-	public static function ToWin1252(string $text, string $option = self::WITHOUT_ICONV) : string
+	public static function ToWin1252(string $text, string $option = self::ICONV_IGNORE) : string
 	{
 		return static::Utf8Decode($text, $option);
 	}
@@ -314,7 +316,7 @@ class EncodingUtf8
 		return self::ToWin1252($text);
 	}
 
-	public static function FixUTF8Arr(array $arr, string $option = self::WITHOUT_ICONV) : array
+	public static function FixUTF8Arr(array $arr, string $option = self::ICONV_IGNORE) : array
 	{
 		foreach($arr as $k => $v)
 		{
@@ -328,7 +330,7 @@ class EncodingUtf8
 	}
 
 
-	public static function FixUTF8(string $text, string $option = self::WITHOUT_ICONV) : string
+	public static function FixUTF8(string $text, string $option = self::ICONV_IGNORE) : string
 	{
 		$last = "";
 		while($last != $text)
@@ -393,20 +395,23 @@ class EncodingUtf8
 		return self::ToUTF8($text);
 	}
 
-	protected static function Utf8Decode(string $text, string $option) : string
+	protected static function Utf8Decode(string $text, string $option = self::ICONV_IGNORE) : string
 	{
-		if ($option == self::WITHOUT_ICONV || !function_exists('iconv'))
-		{
-			$o = utf8_decode(
-				str_replace(array_keys(self::$utf8ToWin1252), array_values(self::$utf8ToWin1252), self::ToUTF8($text))
-			);
-		}
+		if (function_exists('iconv') == false)
+			throw new \Exception('Error Utf8Decode no existe iconv.');
+
+		if($option == self::ICONV_TRANSLIT)
+			$extra =  '//TRANSLIT';
+		else if($option == self::ICONV_IGNORE)
+			$extra = '//IGNORE';
+		else if($option == self::ICONV_NONE)
+			$extra = '';
 		else
-			$o = iconv("UTF-8", "Windows-1252" . ($option == self::ICONV_TRANSLIT ? '//TRANSLIT' : ($option == self::ICONV_IGNORE ? '//IGNORE' : '')), $text);
+			throw new \Exception("Utf8Decode, opción de iconv inválida.");
+		$res = iconv("UTF-8", "Windows-1252" . $extra, $text);
+		if($res === false)
+			throw new \Exception('Error Utf8Decode.');
 
-		if($o === false)
-			throw new \Exception('Error Utf8Decode');
-
-		return $o;
+		return $res;
 	}
 }
