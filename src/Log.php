@@ -461,7 +461,7 @@ class Log
 	public static function PutToLog(string $branch, string $text, bool $doNotSaveMonthly = false) : void
 	{
 		// Lo graba en log
-		$logPath = Context::Paths()->GetLogLocalPath() . '/' . $branch;
+		$logPath = Context::Paths()->GetLogLocalPath($branch);
 		$path = $logPath;
 		if ($doNotSaveMonthly == false)
 			$path .= '/' . Date::GetLogMonthFolder();

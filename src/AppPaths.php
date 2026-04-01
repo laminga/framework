@@ -85,9 +85,14 @@ class AppPaths
 		return $path;
 	}
 
-	public function GetLogLocalPath() : string
+	public function GetLogLocalPath(string $type = '', string $month = '') : string
 	{
-		return $this->GetStorageRoot() . $this->PathName()->LogLocalPath;
+		$path = $this->GetStorageRoot() . $this->PathName()->LogLocalPath;
+		if($type != '')
+			$path .= '/' . $type;
+		if($month != '')
+			$path .= '/' . $month;
+		return $path;
 	}
 
 	public function GetDumpLocalPath() : string
