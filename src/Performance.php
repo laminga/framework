@@ -467,6 +467,12 @@ class Performance
 		];
 	}
 
+	public static function SaveTotalGroupedEmails(string $text, string $month = '') : void
+	{
+		$file = self::ResolveFilenameTotalGroupedEmails($month);
+		IO::WriteAllText($file, $text);
+	}
+
 	public static function SaveTotalEmails(int $cant) : int
 	{
 		$file = self::ResolveFilenameTotalEmails();
@@ -713,6 +719,12 @@ class Performance
 		return $path . '/' . $user . '.txt';
 	}
 
+	public static function ResolveFilenameTotalGroupedEmails(string $month = '') : string
+	{
+		$path = self::ResolveFolder($month);
+		return $path . '/totalGroupedEmails.txt';
+	}
+
 	public static function ResolveFilenameTotalEmails(string $month = '') : string
 	{
 		$path = self::ResolveFolder($month);
@@ -930,7 +942,8 @@ class Performance
 		// lee los datos desde disco
 		foreach(IO::GetFiles($path, '.txt') as $file)
 		{
-			if ($file != 'processor.txt' && $file != 'locks.txt')
+			if ($file != 'processor.txt' && $file != 'locks.txt'
+				&& $file != 'totalEmails.txt' && $file != 'totalGroupedEmails.txt')
 			{
 				$controller = Str::Replace(IO::RemoveExtension($file), '#', '/');
 				if ($getUsers == Str::StartsWith($controller, '@'))
@@ -1060,6 +1073,11 @@ class Performance
 				$share = '<b>' . $share . '</b>';
 		}
 		return $share;
+	}
+
+	public static function GetMailsTable(string $month) : array
+	{
+		return MailLogSummarizer::GetTotals($month);
 	}
 
 	public static function GetLocksTable(string $month) : array
