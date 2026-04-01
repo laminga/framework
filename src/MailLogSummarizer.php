@@ -26,9 +26,9 @@ class MailLogSummarizer
 		$last->modify("+1 month");
 
 		if($curr > $last)
-			return $last->modify("-1 second")->format("d/m/Y H:i:s");
+			return $last->modify("-1 second")->format("d/m/Y H:i:s") . " (GMT-3)";
 
-		return date("d/m/Y H:i:s", $date);
+		return Date::UserFormattedAr($date);
 	}
 
 	private static function GetMonth(string $month) : string
