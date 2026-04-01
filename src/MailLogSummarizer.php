@@ -117,6 +117,9 @@ class MailLogSummarizer
 	{
 		$month = self::GetMonth($month);
 		$res = self::doCalculate($month);
+		if($ret == [])
+			return;
+
 		$text = '';
 		foreach($res as $k => $v)
 			$text .= $k . '=' . $v . "\n";
