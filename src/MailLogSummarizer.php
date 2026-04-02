@@ -117,7 +117,7 @@ class MailLogSummarizer
 	{
 		$month = self::GetMonth($month);
 		$res = self::doCalculate($month);
-		if($res == [])
+		if(empty($res))
 			return;
 
 		$text = '';
