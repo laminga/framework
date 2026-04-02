@@ -100,7 +100,7 @@ class Cron
 			return '';
 
 		$lines = IO::ReadAllLines($log);
-		if(count($lines) == 0)
+		if(empty($lines))
 			return '';
 
 		$lastLine = str_replace("\\", "/", trim($lines[count($lines) - 1]));

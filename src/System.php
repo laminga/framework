@@ -226,7 +226,7 @@ class System
 		if ($returnCode == 126)
 			throw new ErrorException('Error de permisos: "' . $command . '".');
 
-		if (count($out) == 0)
+		if (empty($out))
 			return '';
 		else if ($returnFirstLineOnly)
 			return $out[0];

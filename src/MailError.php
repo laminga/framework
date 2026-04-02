@@ -12,7 +12,7 @@ class MailError extends Mail
 	{
 		//TODO: quitar esto cuando se actualicen los settings de todas las implementaciones [2022/10/05]
 		//TODO: cambiar tipo de MailSettings::NotifyAddressErrors a arrray (string[])
-		if(is_array($this->to) == false || count($this->to) == 0 || is_string(key($this->to)) == false)
+		if(is_array($this->to) == false || empty($this->to) || is_string(key($this->to)) == false)
 		{
 			$this->Send();
 			return;
