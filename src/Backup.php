@@ -271,7 +271,7 @@ class Backup
 		$ms = round(microtime(true) * 1000);
 		$text .= "." . ($ms % 1000);
 		if ($append == false)
-			IO::WriteAllText($ret, $text . "\r\n");
+			IO::WriteAllText($ret, $text . "\n");
 		else
 			IO::AppendLine($ret, $text);
 	}

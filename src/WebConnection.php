@@ -505,7 +505,7 @@ class WebConnection
 	{
 		if ($this->logFile == null)
 			return;
-		IO::AppendLine($this->logFile, "\r\n" . $value . ' [' . Date::FormattedArNow() . ']');
+		IO::AppendLine($this->logFile, "\n" . $value . ' [' . Date::FormattedArNow() . ']');
 	}
 
 	private function AppendLogData(string $key, string $value) : void

@@ -179,12 +179,12 @@ class IO
 
 	public static function AppendLine(string $file, string $line) : bool
 	{
-		return (bool)file_put_contents($file, $line . "\r\n", FILE_APPEND);
+		return (bool)file_put_contents($file, $line . "\n", FILE_APPEND);
 	}
 
 	public static function AppendLines(string $file, array $lines) : bool
 	{
-		return self::AppendLine($file, implode("\r\n", $lines));
+		return self::AppendLine($file, implode("\n", $lines));
 	}
 
 	public static function ReadTitleTextFile(string $file, ?string &$title, ?string &$text) : void
@@ -334,9 +334,9 @@ class IO
 
 	private static function AssocArraySectionToString(string $section, array $assocArr) : string
 	{
-		$content = "[" . $section . "]\r\n";
+		$content = "[" . $section . "]\n";
 		foreach($assocArr as $key => $value)
-			$content .= $key . "=" . urlencode($value) . "\r\n";
+			$content .= $key . "=" . urlencode($value) . "\n";
 		return $content;
 	}
 
@@ -344,7 +344,7 @@ class IO
 	{
 		$content = "";
 		foreach ($assocArr as $key => $elem)
-			$content .= $key . '="' . $elem . "\"\r\n";
+			$content .= $key . '="' . $elem . "\"\n";
 
 		return self::WriteAllText($file, $content);
 	}
