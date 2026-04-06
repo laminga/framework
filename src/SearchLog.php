@@ -108,12 +108,13 @@ class SearchLog
 		if ($includeHeaders)
 			$ret['Id'] = ['Fecha', 'Búsqueda', 'Resultados', 'Duración (ms)', 'Usuario o sesión'];
 
-			$currentDay = Date::FormattedArDate();
+		$currentDay = Date::FormattedArDate();
 		for ($n = count($rows) - 1; $n >= 0; $n--)
 		{
 			$line = $rows[$n];
 			if (self::ParseHit($line, $user, $dateTime, $text, $matches, $ellapsed))
 			{
+				$text = str_replace(',', ', ', $text);
 				if ($month !== 'dayly' || Str::StartsWith($dateTime, $currentDay))
 				{
 					$cells = [$dateTime, $text, $matches, $ellapsed, $user];
