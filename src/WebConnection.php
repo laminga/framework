@@ -494,6 +494,7 @@ class WebConnection
 		if ($this->isClosed == false)
 		{
 			curl_close($this->ch);
+			unset($this->ch);
 			$this->isClosed = true;
 			if ($this->cherr != null)
 				fclose($this->cherr);

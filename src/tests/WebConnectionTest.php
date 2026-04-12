@@ -23,7 +23,7 @@ class WebConnectionTest extends TestCaseBase
 	private function Clean() : void
 	{
 		IO::Delete(Context::Paths()->GetTempPath() . '/README.md');
-		// IO::Delete(Context::Paths()->GetTempPath() . '/cookie.txt');
+		IO::Delete(Context::Paths()->GetTempPath() . '/cookie.txt');
 		IO::Delete(Context::Paths()->GetTempPath() . '/log.txt');
 		IO::Delete(Context::Paths()->GetTempPath() . '/log.txt.extra.txt');
 		IO::Delete(Context::Paths()->GetTempPath() . '/response.dat');
@@ -38,12 +38,13 @@ class WebConnectionTest extends TestCaseBase
 		$wc = new WebConnection();
 		$wc->Initialize($base);
 		$wc->Get($url, $base . "/README.md");
+		$wc->Finalize();
 		$this->assertTrue(file_exists($base . '/README.md'));
 		$this->assertEquals(filesize($base . '/README.md'), $size);
 		$this->assertTrue(file_exists($base . '/log.txt'), 'log file');
 		$this->assertTrue(file_exists($base . '/log.txt.extra.txt'), 'log extra file');
 		$this->assertTrue(file_exists($base . '/response.dat'), 'response dat file');
-		// $this->assertTrue(file_exists($base . '/cookie.txt'), 'cookie file');
+		$this->assertTrue(file_exists($base . '/cookie.txt'), 'cookie file');
 	}
 }
 
