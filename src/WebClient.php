@@ -4,17 +4,18 @@ namespace minga\framework;
 
 class WebClient
 {
+	// TODO: descomentar y ponerlo como tipo cuando se migre a php 8
+	/** @var \CurlHandle */
 	protected $ch;
-	protected $cherr = null;
 	protected bool $isClosed = true;
 
-	public $httpCode;
-	public $error;
+	public int $httpCode;
+
+	public string $error;
 	public bool $throwErrors = true;
-	public $logFile = null;
-	public $logFile2 = null;
-	public $contentType = '';
-	public $requestHeaders = [];
+	private string $logFile;
+	public string $contentType = '';
+	public array $requestHeaders = [];
 
 	private string $cookieFile = '';
 
@@ -41,17 +42,6 @@ class WebClient
 			$this->logFile = $path . '/log.txt';
 		}
 		$this->isClosed = false;
-
-	}
-
-	public function ExtraLog() : void
-	{
-		$this->logFile2 = $this->logFile . '.extra.txt';
-
-		$handle = fopen($this->logFile2, 'w');
-		curl_setopt($this->ch, CURLOPT_VERBOSE, true);
-		curl_setopt($this->ch, CURLOPT_STDERR, $handle);
-		$this->cherr = $handle;
 	}
 
 	public function SetFollowRedirects(bool $value) : void
@@ -69,12 +59,8 @@ class WebClient
 		curl_setopt($this->ch, CURLOPT_REFERER, $referer);
 	}
 
-	public function ExecuteWithSizeLimit($url, $maxFileSize, $file = '', $args = [])
-	{
-		return $this->Execute($url, $file, $args, true, $maxFileSize);
-	}
-
-	public function Execute($url, $file = '', $args = [], $saveHeaders = false, $maxFileSize = -1)
+	public function Execute(string $url, string $file = '', array $args = [],
+		bool $saveHeaders = false, int $maxFileSize = -1) : string
 	{
 		Profiling::BeginTimer();
 		try
@@ -86,16 +72,13 @@ class WebClient
 				$headers = $this->get_headers_from_curl_response2($contents);
 				IO::WriteEscapedIniFile($file . '.headers.txt', $headers);
 				IO::Delete($file . '.headers.res');
-				if ($maxFileSize != -1)
+				if ($maxFileSize != -1 && $this->HasContentLength($headers))
 				{
-					if ($this->HasContentLength($headers))
+					$length = $this->GetContentLength($headers);
+					if ($length > $maxFileSize)
 					{
-						$length = $this->GetContentLength($headers);
-						if ($length > $maxFileSize)
-						{
-							IO::Delete($file . '.headers.txt');
-							return false;
-						}
+						IO::Delete($file . '.headers.txt');
+						return '';
 					}
 				}
 			}
@@ -124,22 +107,7 @@ class WebClient
 		return 0;
 	}
 
-	public function ExecuteForRedirect($url, $file = '', $args = [])
-	{
-		Profiling::BeginTimer();
-
-		$ret = $this->doExecuteForRedirect($url, $file . '.headers.res', $args);
-		$contents = IO::ReadAllText($file . '.headers.res');
-		$headers = $this->get_headers_from_curl_response2($contents);
-		IO::WriteEscapedIniFile($file . '.headers.txt', $headers);
-		$body = $this->get_content_from_curl_response2($contents);
-		IO::WriteAllText($file, $body);
-
-		Profiling::EndTimer();
-		return $ret;
-	}
-
-	private function doExecute($url, $file = '', $args = null, $saveHeaders = false)
+	private function doExecute(string $url, string $file = '', array $args = [], bool $saveHeaders = false) : string
 	{
 		curl_setopt($this->ch, CURLOPT_URL, $url);
 		$this->requestHeaders = [
@@ -151,7 +119,7 @@ class WebClient
 			// 'Accept-Encoding: gzip, deflate',
 		];
 
-		if ($args != null)
+		if (empty($args) == false)
 		{
 			$method = 'POST ';
 			$this->AddPostFields($args);
@@ -186,13 +154,12 @@ class WebClient
 
 		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->requestHeaders);
 
-
 		// Execute the request
 		$ret = curl_exec($this->ch);
-		if ($fh != null && $file != '')
+		if ($fh != null)
 			fclose($fh);
 
-		$this->contentType = curl_getinfo($this->ch, CURLINFO_CONTENT_TYPE);
+		$this->contentType = (string)curl_getinfo($this->ch, CURLINFO_CONTENT_TYPE);
 		// toma error
 		$this->ParseErrorCodes($ret);
 
@@ -205,74 +172,12 @@ class WebClient
 			}
 			return '';
 		}
-
-			return $ret;
+		return $ret;
 	}
 
-	private function doExecuteForRedirect($url, $file, $args = null)
-	{
-		curl_setopt($this->ch, CURLOPT_URL, $url);
-
-		if ($args != null)
-		{
-			$method = 'POST ';
-			$this->AddPostFields($args);
-		}
-		else
-		{
-			$method = 'GET ';
-			curl_setopt($this->ch, CURLOPT_POST, false);
-		}
-		$this->AppendLog($method . $url);
-		$this->AppendLogData('File', $file);
-
-		curl_setopt($this->ch, CURLOPT_HEADER, true);
-		curl_setopt($this->ch, CURLOPT_NOBODY, false);
-
-		// indica el archivo
-		$fh = null;
-		if ($file != '')
-		{
-			$fh = fopen($file, 'w');
-			curl_setopt($this->ch, CURLOPT_FILE, $fh);
-		}
-		else
-			curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-		// Execute the request
-		$ret = curl_exec($this->ch);
-		if ($fh != null && $file != '')
-			fclose($fh);
-
-		$this->contentType = curl_getinfo($this->ch, CURLINFO_CONTENT_TYPE);
-		// toma error
-		$this->ParseErrorCodes($ret);
-
-		if ($ret === false)
-		{
-			if ($this->throwErrors)
-			{
-				MessageBox::ThrowMessage('Error: ' . $this->error);
-				$this->Finalize();
-			}
-			return '';
-		}
-
-			return $ret;
-	}
-
-	private function AddPostFields($args) : void
+	private function AddPostFields(array $args) : void
 	{
 		curl_setopt($this->ch, CURLOPT_POST, true);
-		if (is_array($args) == false)
-		{
-			// json
-			$this->requestHeaders[] = 'Content-Type: application/json';
-			curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'POST');
-			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
-			return;
-		}
-		//curl_setopt($this->ch, CURLOPT_HTTPHEADER, [
-		//'Content-Type: application/x-www-form-urlencoded']);
 
 		$cad = '';
 		$hasFile = false;
@@ -290,22 +195,22 @@ class WebClient
 					$cad = $cad . $key . '=' . urlencode($subValues);
 			}
 		}
-		if ($hasFile == false)
-			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $cad);
-		else
+		if ($hasFile)
 			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $args);
+		else
+			curl_setopt($this->ch, CURLOPT_POSTFIELDS, $cad);
 	}
 
-	private function ParseErrorCodes($ret) : void
+	private function ParseErrorCodes(bool $ret) : void
 	{
 		$this->httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		$this->error = curl_error($this->ch);
 		// guarda resultado en el log
-		$this->AppendLogData('Status', $this->httpCode);
+		$this->AppendLogData('Status', (string)$this->httpCode);
 		if ($ret == false)
 			$this->AppendLogData('Error', $this->error);
 		else
-			$this->AppendLogData('Content-Length', curl_getinfo($this->ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD));
+			$this->AppendLogData('Content-Length', (string)curl_getinfo($this->ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD));
 	}
 
 	public function printInfo() : void
@@ -341,25 +246,23 @@ class WebClient
 
 	public function Finalize() : void
 	{
-		if ($this->isClosed == false)
-		{
-			curl_close($this->ch);
-			$this->isClosed = true;
-			if ($this->cherr != null)
-				fclose($this->cherr);
-		}
+		if ($this->isClosed)
+			return;
+
+		curl_close($this->ch);
+		$this->isClosed = true;
 	}
 
-	public function AppendLog($value) : void
+	public function AppendLog(string $value) : void
 	{
-		if ($this->logFile == null)
+		if (isset($this->logFile) == false)
 			return;
 		IO::AppendLine($this->logFile, "\r\n" . $value . ' [' . Date::FormattedArNow() . ']');
 	}
 
-	private function AppendLogData($key, $value) : void
+	private function AppendLogData(string $key, string $value) : void
 	{
-		if ($this->logFile == null)
+		if (isset($this->logFile) == false)
 			return;
 		IO::AppendLine($this->logFile, '=> ' . $key . ': ' . $value);
 	}
