@@ -4,7 +4,10 @@ namespace minga\framework;
 
 class WebConnection
 {
+	// TODO: descomentar y ponerlo como tipo cuando se migre a php 8
+	/** @var \CurlHandle */
 	protected $ch;
+	/** @var ?resource */
 	protected $cherr = null;
 	protected bool $isClosed = true;
 	protected bool $followRedirects = true;
@@ -62,14 +65,15 @@ class WebConnection
 
 	public function EnableExtraLog() : void
 	{
-		if ($this->cherr == null)
-		{
-			$this->logFile2 = $this->logFile . '.extra.txt';
-			$handle = fopen($this->logFile2, 'w');
-			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
-			curl_setopt($this->ch, CURLOPT_STDERR, $handle);
-			$this->cherr = $handle;
-		}
+		if (isset($this->cherr))
+			return;
+
+		$handle = fopen($this->logFile . '.extra.txt', 'w');
+		if($handle === false)
+			throw new ErrorException('No se pudo abrir el log extra.');
+		curl_setopt($this->ch, CURLOPT_VERBOSE, true);
+		curl_setopt($this->ch, CURLOPT_STDERR, $handle);
+		$this->cherr = $handle;
 	}
 
 	public function SetUserAgent(string $userAgent) : void
