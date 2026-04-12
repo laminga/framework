@@ -24,22 +24,14 @@ class Traffic
 	}
 
 	/**
-	 * a.b.c.d => d
+	 * Devuelve la última parte de una ip funciona con IPv4 y IPv6
+	 * Ej: a.b.c.d => d
 	 */
 	private static function GetIpLastPart(string $ip) : int
 	{
 		$addr = inet_pton($ip);
 		if($addr === false)
-		{
-			if(Str::Contains($ip, ":"))
-			{
-				$parts = explode(':', $ip);
-				$addr = inet_pton($parts[0]);
-				if($addr === false)
-					throw new ErrorException(Context::Trans('Dirección no válida.') . " " . $ip);
-			}
 			throw new ErrorException(Context::Trans('Dirección no válida.') . " " . $ip);
-		}
 
 		$chars = str_split($addr);
 		$last = ord(end($chars));

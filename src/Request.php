@@ -51,28 +51,27 @@ class Request
 
 	public static function Protocol() : string
 	{
-		if (
-			isset($_SERVER['HTTPS'])
-			&& $_SERVER['HTTPS'] !== 'off'
-			&& $_SERVER['HTTPS'] !== '')
-		{
+		if (Params::SafeServer('HTTPS', 'off') != 'off')
 			return 'https';
-		}
 		return 'http';
 	}
 
-	public static function IP($default = '') : string
+	public static function IP(string $default = '') : string
 	{
-		$addr = Params::SafeServer('HTTP_X_FORWARDED_FOR', $default);
-		if ($addr !== $default)
+		$ip = Params::SafeServer('HTTP_X_FORWARDED_FOR', $default);
+		if ($ip != $default)
 		{	// Si hay varias, retiene solo la primera
-			$parts = explode(',', $addr);
+			$parts = explode(',', $ip);
 			if (count($parts) > 1)
-				$addr = $parts[0];
+				$ip = trim($parts[0]);
 		}
-		if ($addr === $default)
-			$addr = Params::SafeServer('REMOTE_ADDR', $default);
-		return $addr;
+		if ($ip == $default)
+			$ip = Params::SafeServer('HTTP_X_REAL_IP', $default);
+
+		if (filter_var($ip, FILTER_VALIDATE_IP))
+			 return $ip;
+
+		return Params::SafeServer('REMOTE_ADDR', $default);
 	}
 
 	public static function UserAgent() : string
