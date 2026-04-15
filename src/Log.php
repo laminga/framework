@@ -140,6 +140,9 @@ class Log
 		if(Str::Contains($errorMessage, 'function_bar'))
 			return true;
 
+		if(Str::Contains($errorSource, 'addtoany.com'))
+			return true;
+
 		if(Str::Contains($errorMessage, "setting 'theme'"))
 			return true;
 
@@ -183,6 +186,9 @@ class Log
 			return true;
 
 		if(Str::ContainsI($errorMessage, "ResizeObserver loop limit"))
+			return true;
+
+		if(Str::ContainsI($errorMessage, "ResizeObserver loop completed with undelivered notifications"))
 			return true;
 
 		if(Str::Contains($errorMessage, "__gCrWeb"))
