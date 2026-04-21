@@ -31,6 +31,7 @@ class KeysSettings
 	public string $RemoteBackupAuthKey = '';
 	public string $DeploymentAuthKey = '';
 	public string $RemoteEmailKey = '';
+	public string $AutomationKey = '';
 
 	public string $MicrosftSpeechToTextKey = '';
 	public string $MicrosftSpeechToTextRegion = '';
@@ -76,6 +77,12 @@ class KeysSettings
 			$resultado .= sprintf('%02x', $ofuscado);
 		}
 		return $resultado;
+	}
+
+	public function IsAutomationKeyValid($key): bool
+	{
+		return $this->AutomationKey != ''
+			&& hash_equals($this->AutomationKey, $key);
 	}
 
 	public function IsRemoteBackupAuthKeyValid($key) : bool

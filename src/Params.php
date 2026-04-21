@@ -130,7 +130,7 @@ class Params
 	public static function GetInt(string $param, ?int $default = null) : ?int
 	{
 		$value = self::Get($param, $default);
-		if ($value === null || $value === $default)
+		if ($value === null || $value === '' || $value === $default)
 			return $default;
 		return self::CheckParseIntValue($value);
 	}
@@ -138,7 +138,7 @@ class Params
 	public static function GetFloat(string $param, ?float $default = null) : ?float
 	{
 		$value = self::Get($param, $default);
-		if ($value === null || $value === $default)
+		if ($value === null || $value === '' || $value === $default)
 			return $default;
 		return self::CheckParseFloatValue($value);
 	}

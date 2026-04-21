@@ -108,7 +108,8 @@ class Db
 	{
 		$stmt = $this->db->prepare($query);
 		$data = $this->fixBoolParams($data);
-		$stmt->execute($data);
+		$result = $stmt->execute($data);
+		$stmt = ($result instanceof \Doctrine\DBAL\Result) ? $result : $stmt;
 		return $stmt->rowCount();
 	}
 
