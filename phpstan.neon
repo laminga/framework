@@ -11,8 +11,8 @@ parameters:
 			message: '#Unsafe usage of new static\(\)#'
 			path: src/locking/SingleWriterLock.php
 		-
-			message: '#Method SQLite3::openBlob\(\) invoked with 3 parameters, 4-5 required#'
-			path: src/SQLiteList.php
-	treatPhpDocTypesAsCertain: 
-		false
+			message: '#Class Doctrine\\DBAL\\Result not found.#'
+			path: src/Db.php
+	treatPhpDocTypesAsCertain:
+		true
 

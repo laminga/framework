@@ -17,8 +17,8 @@ class MailDeferredSender
 
 	private static function GroupByEmailAndType() : array
 	{
-		$path = Context::Paths()->GetLogLocalPath() . '/' . Log::UnsentMailsPath;
-		$destPath = Context::Paths()->GetLogLocalPath() . '/' . Log::MailsPath . '/' . Date::GetLogMonthFolder();
+		$path = Context::Paths()->GetLogLocalPath(Log::UnsentMailsPath);
+		$destPath = Context::Paths()->GetLogLocalPath(Log::MailsPath, Date::GetLogMonthFolder());
 
 		$files = IO::GetFilesFullPath($path, '.txt');
 
@@ -46,7 +46,7 @@ class MailDeferredSender
 
 	private static function SendMails(array $mails) : int
 	{
-		$path = Context::Paths()->GetLogLocalPath() . '/' . Log::MailsPath . '/' . Date::GetLogMonthFolder();
+		$path = Context::Paths()->GetLogLocalPath(Log::MailsPath, Date::GetLogMonthFolder());
 		IO::EnsureExists($path);
 		$ret = 0;
 		foreach($mails as $to => $items)

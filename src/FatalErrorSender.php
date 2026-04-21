@@ -6,7 +6,7 @@ class FatalErrorSender
 {
 	private static function GetFatalLogPath() : string
 	{
-		return Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
+		return Context::Paths()->GetLogLocalPath(Log::FatalErrorsPath);
 	}
 
 	private static function ResolveFataLogSentPath() : string
@@ -34,7 +34,7 @@ class FatalErrorSender
 
 	public static function SendFatalErrors(bool $silent = false) : void
 	{
-		$path = Context::Paths()->GetLogLocalPath() . '/' . Log::FatalErrorsPath;
+		$path = Context::Paths()->GetLogLocalPath(Log::FatalErrorsPath);
 		$sentPath = self::ResolveFataLogSentPath();
 
 		$files = IO::GetFilesFullPath($path, '.txt');

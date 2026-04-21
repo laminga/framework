@@ -102,12 +102,12 @@ class Date
 		return substr($str, 0, 4) . "-" . substr($str, 5, 2) . "-" . substr($str, 8, 2);
 	}
 
-	public static function DateToDDMMYYYY($date) : string
+	public static function DateToDDMMYYYY(int $date) : string
 	{
 		return date("d/m/Y", $date);
 	}
 
-	public static function FormattedDate($date) : string
+	public static function FormattedDate(int $date) : string
 	{
 		return date("Y-m-d@H.i.s", $date);
 	}
@@ -142,17 +142,17 @@ class Date
 		return substr($date, 6, 4) . '-' . substr($date, 3, 2) . '-' . substr($date, 0, 2);
 	}
 
-	public static function AbsoluteMonth($date) : int
+	public static function AbsoluteMonth(\DateTime $date) : int
 	{
 		return self::DateTimeGetYear($date) * 12 + self::DateTimeGetMonth($date) - 1;
 	}
 
-	public static function DateTimeGetMonth($date) : int
+	public static function DateTimeGetMonth(\DateTime $date) : int
 	{
 		return (int)$date->format('m');
 	}
 
-	public static function DateTimeGetYear($date) : int
+	public static function DateTimeGetYear(\DateTime $date) : int
 	{
 		return (int)$date->format('Y');
 	}
@@ -200,7 +200,7 @@ class Date
 		return $ret . "hs";
 	}
 
-	private static function AddZerosInDate($date)
+	private static function AddZerosInDate($date) : string
 	{
 		$date = str_replace("-", "/", $date);
 		$date = str_replace(" ", "", $date);
@@ -216,7 +216,7 @@ class Date
 		return $parts[0] . '/' . $parts[1] . '/' . $parts[2];
 	}
 
-	public static function UserFormattedAr($date)
+	public static function UserFormattedAr(int $date) : string
 	{
 		return date("d/m/Y g:i:s (\G\M\T-3)", $date - 60 * 60 * 3);
 	}

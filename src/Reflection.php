@@ -6,7 +6,7 @@ class Reflection
 {
 	public static function InstanciateClass($class, ...$constructorParams)
 	{
-		if(count($constructorParams) == 0)
+		if(empty($constructorParams))
 			return new $class();
 
 		$rc = new \ReflectionClass($class);

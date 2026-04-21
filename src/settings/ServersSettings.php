@@ -97,7 +97,7 @@ class ServersSettings
 		{
 			if (count($this->servers) > 1)
 				throw new ErrorException(Context::Trans('Hay varios servidores en el archivo de configuración pero ninguno especificado como el actual. Llamando Context::Settings()->Servers()->SetCurrentServer(name) se configura uno.'));
-			if (count($this->servers) == 0)
+			if (empty($this->servers))
 				throw new ErrorException(Context::Trans('No hay servidores en el archivo de configuración.'));
 			$keys = array_keys($this->servers);
 			return $this->servers[$keys[0]];
@@ -156,7 +156,7 @@ class ServersSettings
 		$servers = [];
 		foreach($cdns as $value)
 			$servers[] = $value->publicUrl;
-		if (count($servers) == 0)
+		if (empty($servers))
 		{
 			$tran = $this->GetTransactionServer();
 			$servers = [$tran->publicUrl];

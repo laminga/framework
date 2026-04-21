@@ -46,11 +46,13 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 class EncodingUtf8
 {
-	public const ICONV_TRANSLIT = "TRANSLIT";
+	//DEFAULT:
 	public const ICONV_IGNORE = "IGNORE";
-	public const WITHOUT_ICONV = "";
 
-	protected static $win1252ToUtf8 = [
+	public const ICONV_TRANSLIT = "TRANSLIT";
+	public const ICONV_NONE = "";
+
+	protected static array $win1252ToUtf8 = [
 		128 => "\xe2\x82\xac",
 
 		130 => "\xe2\x80\x9a",
@@ -85,7 +87,7 @@ class EncodingUtf8
 		159 => "\xc5\xb8",
 	];
 
-	protected static $brokenUtf8ToUtf8 = [
+	protected static array $brokenUtf8ToUtf8 = [
 		"\xc2\x80" => "\xe2\x82\xac",
 
 		"\xc2\x82" => "\xe2\x80\x9a",
@@ -120,7 +122,7 @@ class EncodingUtf8
 		"\xc2\x9f" => "\xc5\xb8",
 	];
 
-	protected static $utf8ToWin1252 = [
+	protected static array $utf8ToWin1252 = [
 		"\xe2\x82\xac" => "\x80",
 
 		"\xe2\x80\x9a" => "\x82",
@@ -155,6 +157,18 @@ class EncodingUtf8
 		"\xc5\xb8" => "\x9f",
 	];
 
+	public static function ToUTF8Arr(array $arr) : array
+	{
+		foreach($arr as $k => $v)
+		{
+			if(is_string($v))
+				$arr[$k] = self::ToUTF8($v);
+			elseif(is_array($v))
+				$arr[$k] = self::ToUTF8Arr($v);
+		}
+		return $arr;
+	}
+
 	/**
 	 * Function \ForceUTF8\Encoding::ToUTF8
 	 *
@@ -176,23 +190,12 @@ class EncodingUtf8
 	 *
 	 * @name ToUTF8
 	 *
-	 * @param array|string $text  Any string.
+	 * @param string $text  Any string.
 	 *
-	 * @return array|string  The same string, UTF8 encoded
+	 * @return string  The same string, UTF8 encoded
 	 */
-	public static function ToUTF8($text)
+	public static function ToUTF8(string $text) : string
 	{
-		if(is_array($text))
-		{
-			foreach($text as $k => $v)
-				$text[$k] = self::ToUTF8($v);
-
-			return $text;
-		}
-
-		if(!is_string($text))
-			return $text;
-
 		$max = self::Strlen($text);
 
 		$buf = "";
@@ -274,41 +277,58 @@ class EncodingUtf8
 		return $buf;
 	}
 
-	public static function ToWin1252($text, $option = self::WITHOUT_ICONV)
+	public static function ToWin1252Arr(array $arr, string $option = self::ICONV_IGNORE) : array
 	{
-		if(is_array($text))
+		foreach($arr as $k => $v)
 		{
-			foreach($text as $k => $v)
-				$text[$k] = self::ToWin1252($v, $option);
-
-			return $text;
+			if(is_string($v))
+				$arr[$k] = self::ToWin1252($v, $option);
+			elseif(is_array($v))
+				$arr[$k] = self::ToWin1252Arr($v, $option);
 		}
-		elseif(is_string($text))
-			return static::Utf8Decode($text, $option);
-
-			return $text;
+		return $arr;
 	}
 
-	public static function ToISO8859($text)
+	public static function ToISO8859Arr(array $arr) : array
+	{
+		return self::ToWin1252Arr($arr);
+	}
+
+	public static function ToLatin1Arr(array $arr) : array
+	{
+		return self::ToWin1252Arr($arr);
+	}
+
+	public static function ToWin1252(string $text, string $option = self::ICONV_IGNORE) : string
+	{
+		return static::Utf8Decode($text, $option);
+	}
+
+	public static function ToISO8859(string $text) : string
 	{
 		return self::ToWin1252($text);
 	}
 
-	public static function ToLatin1($text)
+	public static function ToLatin1(string $text) : string
 	{
 		return self::ToWin1252($text);
 	}
 
-	public static function FixUTF8($text, $option = self::WITHOUT_ICONV)
+	public static function FixUTF8Arr(array $arr, string $option = self::ICONV_IGNORE) : array
 	{
-		if(is_array($text))
+		foreach($arr as $k => $v)
 		{
-			foreach($text as $k => $v)
-				$text[$k] = self::FixUTF8($v, $option);
-
-			return $text;
+			if(is_string($v))
+				$arr[$k] = self::FixUTF8($v, $option);
+			elseif(is_array($v))
+				$arr[$k] = self::FixUTF8Arr($v, $option);
 		}
 
+		return $arr;
+	}
+
+	public static function FixUTF8(string $text, string $option = self::ICONV_IGNORE) : string
+	{
 		$last = "";
 		while($last != $text)
 		{
@@ -319,7 +339,7 @@ class EncodingUtf8
 		return $text;
 	}
 
-	public static function UTF8FixWin1252Chars($text)
+	public static function UTF8FixWin1252Chars(string $text) : string
 	{
 		// If you received an UTF-8 string that was converted from Windows-1252 as it was ISO8859-1
 		// (ignoring Windows-1252 chars from 80 to 9F) use this function to fix it.
@@ -328,7 +348,7 @@ class EncodingUtf8
 		return str_replace(array_keys(self::$brokenUtf8ToUtf8), array_values(self::$brokenUtf8ToUtf8), $text);
 	}
 
-	public static function RemoveBOM($str = "")
+	public static function RemoveBOM(string $str) : string
 	{
 		if(substr($str, 0, 3) == pack("CCC", 0xEF, 0xBB, 0xBF))
 			$str = substr($str, 3);
@@ -336,13 +356,13 @@ class EncodingUtf8
 		return $str;
 	}
 
-	protected static function Strlen($text) : int
+	protected static function Strlen(string $text) : int
 	{
 		return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload')) & 2)
 			? mb_strlen($text, '8bit') : strlen($text);
 	}
 
-	public static function NormalizeEncoding($encodingLabel) : string
+	public static function NormalizeEncoding(string $encodingLabel) : string
 	{
 		$encoding = strtoupper($encodingLabel);
 		$encoding = preg_replace('/[^a-zA-Z0-9\s]/', '', $encoding);
@@ -364,7 +384,7 @@ class EncodingUtf8
 		return $equivalences[$encoding];
 	}
 
-	public static function Encode($encodingLabel, $text)
+	public static function Encode(string $encodingLabel, string $text) : string
 	{
 		$encodingLabel = self::NormalizeEncoding($encodingLabel);
 		if($encodingLabel == 'ISO-8859-1')
@@ -372,17 +392,23 @@ class EncodingUtf8
 		return self::ToUTF8($text);
 	}
 
-	protected static function Utf8Decode($text, $option)
+	protected static function Utf8Decode(string $text, string $option = self::ICONV_IGNORE) : string
 	{
-		if ($option == self::WITHOUT_ICONV || !function_exists('iconv'))
-		{
-			$o = utf8_decode(
-				str_replace(array_keys(self::$utf8ToWin1252), array_values(self::$utf8ToWin1252), self::ToUTF8($text))
-			);
-		}
-		else
-			$o = iconv("UTF-8", "Windows-1252" . ($option == self::ICONV_TRANSLIT ? '//TRANSLIT' : ($option == self::ICONV_IGNORE ? '//IGNORE' : '')), $text);
+		if (function_exists('iconv') == false)
+			throw new \Exception('Error Utf8Decode no existe iconv.');
 
-		return $o;
+		if($option == self::ICONV_TRANSLIT)
+			$extra = '//TRANSLIT';
+		else if($option == self::ICONV_IGNORE)
+			$extra = '//IGNORE';
+		else if($option == self::ICONV_NONE)
+			$extra = '';
+		else
+			throw new \Exception("Utf8Decode, opción de iconv inválida.");
+		$res = iconv("UTF-8", "Windows-1252" . $extra, $text);
+		if($res === false)
+			throw new \Exception('Error Utf8Decode.');
+
+		return $res;
 	}
 }

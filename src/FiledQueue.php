@@ -68,7 +68,7 @@ class FiledQueue
 
 	public function Flush() : void
 	{
-		if (count($this->valuesToQueue) == 0)
+		if (empty($this->valuesToQueue))
 			return;
 		Profiling::BeginTimer();
 

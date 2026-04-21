@@ -2,9 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace minga\tests;
-
-use minga\framework\tests\TestCaseBase;
+namespace minga\framework\tests;
 
 class ExtensionsTest extends TestCaseBase
 {
