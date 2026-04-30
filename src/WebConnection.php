@@ -312,7 +312,7 @@ class WebConnection
 		$this->AppendLogData('HeaderFile', $headerFile);
 		$this->AppendLogData('HeaderResponseFile', $headerFile);
 
-		IO::WriteAllText($requestHeaderFile, Str::Replace(print_r($this->requestHeaders, true), "[", "\r\n["));
+		IO::WriteAllText($requestHeaderFile, Str::Replace(print_r($this->requestHeaders, true), "[", "\n["));
 
 		$fheader = fopen($headerFile, 'w');
 		curl_setopt($this->ch, CURLOPT_WRITEHEADER, $fheader);
