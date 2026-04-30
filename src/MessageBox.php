@@ -13,13 +13,13 @@ class MessageBox
 		Log::HandleSilentException(new ErrorException($message));
 	}
 
-	public static function ThrowAndLogMessage($message, $action = '') : void
+	public static function ThrowAndLogMessage(string $message, string $action = '') : void
 	{
 		Log::HandleSilentException(new ErrorException($message));
 		self::ThrowMessage($message, $action);
 	}
 
-	public static function ThrowMessage($message, $action = '', $title = '__Atención', $caption = '__Continuar') : void
+	public static function ThrowMessage(string $message, string $action = '', string $title = '__Atención', string $caption = '__Continuar') : void
 	{
 		if($title == '__Atención')
 			$title = Context::Trans('Atención');
@@ -67,7 +67,7 @@ class MessageBox
 		self::Render($params);
 	}
 
-	public static function ThrowBackMessage($message) : void
+	public static function ThrowBackMessage(string $message) : void
 	{
 		$params = [
 			'page' => 'Oops!',
@@ -79,7 +79,7 @@ class MessageBox
 		self::Render($params);
 	}
 
-	private static function Render($params) : void
+	private static function Render(array $params) : void
 	{
 		$params['useSearchBar'] = false;
 		if (Context::Settings()->isTesting == false)
@@ -141,18 +141,17 @@ class MessageBox
 		Context::Calls()->RenderTemplate('dialogPopup.html.twig', $params);
 	}
 
-	public static function ShowDocNotFound($file, $content) : void
+	public static function ShowDocNotFound(string $file, bool $onlyFiles, string $url, string $fullName, string $location) : void
 	{
-		$contentUrl = $content->Links()->ContentLink();
-		if ($content->OnlyFiles())
+		if ($onlyFiles)
 			self::ThrowFileNotFound($file);
-		else
-		{
-			self::Set404NotFoundHeaders();
-			Performance::SetController('cErrDocNotFound', 'Show');
-			$link = '<a href="' . $contentUrl . '">' . $content->GetFullName() . '</a>';
-			self::ThrowMessage(Context::Trans('El documento <b>{file}</b> no está disponible.<p>Sin embargo, si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>', ['{file}' => $file, '{link}' => $link]), $contentUrl, $content->GetFullName() . ' - ' . $content->GetLocation());
-		}
+
+		self::Set404NotFoundHeaders();
+		Performance::SetController('cErrDocNotFound', 'Show');
+		$link = '<a href="' . $url . '">' . $fullName . '</a>';
+		self::ThrowMessage(Context::Trans('El documento <b>{file}</b> no está disponible.<p>Sin embargo, "
+			. "si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>',
+			['{file}' => $file, '{link}' => $link]), $url, $fullName . ' - ' . $location);
 	}
 
 	public static function ThrowInternalServerError(?\Exception $exception = null) : void
@@ -164,19 +163,22 @@ class MessageBox
 			$msg = '';
 			if ($exception != null)
 				$msg = $exception->getMessage();
-			MessageBox::ThrowMessage(Context::Trans('Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.') . ' ' . $msg . $log, Context::Settings()->GetMainServerPublicUrl());
+			MessageBox::ThrowMessage(Context::Trans('Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.')
+				. ' ' . $msg . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
-		MessageBox::ThrowMessage(Context::Trans('Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.'), Context::Settings()->GetMainServerPublicUrl());
+		MessageBox::ThrowMessage(Context::Trans('Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.'),
+		  	Context::Settings()->GetMainServerPublicUrl());
 	}
 
-	public static function ThrowFileNotFound($extraInfo = '') : void
+	public static function ThrowFileNotFound(string $extraInfo = '') : void
 	{
 		self::Set404NotFoundHeaders();
 		Performance::SetController('cErrPageNotFound', 'Show');
 		if (Context::Settings()->Debug()->debug)
 		{
 			$log = Log::FormatTraceLog(debug_backtrace());
-			MessageBox::ThrowMessage(Context::Trans('Página no encontrada.') . ' ' . $extraInfo . $log, Context::Settings()->GetMainServerPublicUrl());
+			MessageBox::ThrowMessage(Context::Trans('Página no encontrada.')
+				. ' ' . $extraInfo . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
 		MessageBox::ThrowMessage(Context::Trans('Página no encontrada.'), Context::Settings()->GetMainServerPublicUrl());
 	}
@@ -188,7 +190,8 @@ class MessageBox
 		if (Context::Settings()->Debug()->debug)
 		{
 			$log = Log::FormatTraceLog(debug_backtrace());
-			MessageBox::ThrowMessage(Context::Trans('Acceso denegado.') . ' ' . $extraInfo . $log, Context::Settings()->GetMainServerPublicUrl());
+			MessageBox::ThrowMessage(Context::Trans('Acceso denegado.')
+				. ' ' . $extraInfo . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
 		MessageBox::ThrowMessage(Context::Trans('Acceso denegado.'), Context::Settings()->GetMainServerPublicUrl());
 	}
