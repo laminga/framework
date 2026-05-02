@@ -145,8 +145,8 @@ class Extensions
 		if($retExt == '')
 			$retExt = $fileExt;
 
-		//si originalmente no tenía extensión o era tmp no loguea
-		if($fileExt == '' || $fileExt == 'tmp')
+		//si originalmente no tenía extensión o era tmp o bin no loguea
+		if($fileExt == '' || $fileExt == 'bin' || $fileExt == 'tmp')
 			return $retExt;
 
 		//No loguea si es lo esperado, o algún tipo conocido.
@@ -172,8 +172,7 @@ class Extensions
 
 		$e = new \Exception('GetExtensionFromFile: mime: ' . $fileMime . ', type: ' . $fileType . ', fileExt: '
 			. $fileExt . ', retExt: ' . $retExt . ', original: ' . $original . '", temp: "' . $temp . '".');
-
-		Log::HandleSilentException($e);
+		Log::LogException($e, true);
 
 		return $retExt;
 	}
