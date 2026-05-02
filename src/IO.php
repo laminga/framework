@@ -101,7 +101,7 @@ class IO
 		return $ret;
 	}
 
-	public static function ReadAllLines(string $path, $maxLines = null) : array
+	public static function ReadAllLines(string $path, ?int $maxLines = null) : array
 	{
 		$handle = fopen($path, 'r');
 		$ret = [];
