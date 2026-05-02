@@ -480,7 +480,7 @@ class Performance
 		if(file_exists($file))
 			$total += (int)file_get_contents($file);
 
-		IO::WriteAllText($file, $total);
+		IO::WriteAllText($file, (string)$total);
 		return $total;
 	}
 
