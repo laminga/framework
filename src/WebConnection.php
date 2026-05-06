@@ -58,7 +58,7 @@ class WebConnection
 		curl_setopt($this->ch, CURLOPT_COOKIEJAR, $path . '/cookie.txt');
 		curl_setopt($this->ch, CURLOPT_COOKIEFILE, $path . '/cookie.txt');
 		$this->logFile = $path . '/log.txt';
-		$this->responseFile = $path . '/response.dat';
+		$this->responseFile = $path . '/response' . sprintf('%.9f', microtime(true)) . '.dat';
 		$this->isClosed = false;
 	}
 
