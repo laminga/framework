@@ -175,6 +175,9 @@ class Log
 			return true;
 		}
 
+		if(Str::Contains($errorMessage, "xbrowser is not defined"))
+			return true;
+
 		if(Str::Contains($errorMessage, "Can't find variable: _AutofillCallbackHandler"))
 			return true;
 
