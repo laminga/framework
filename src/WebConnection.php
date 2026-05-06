@@ -60,7 +60,6 @@ class WebConnection
 		$this->logFile = $path . '/log.txt';
 		$this->responseFile = $path . '/response.dat';
 		$this->isClosed = false;
-
 	}
 
 	public function EnableExtraLog() : void
