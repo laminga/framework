@@ -167,7 +167,7 @@ class MessageBox
 				. ' ' . $msg . $log, Context::Settings()->GetMainServerPublicUrl());
 		}
 		MessageBox::ThrowMessage(Context::Trans('Oops. Se produjo un error… por favor, intente nuevamente en unos instantes.'),
-		  	Context::Settings()->GetMainServerPublicUrl());
+			Context::Settings()->GetMainServerPublicUrl());
 	}
 
 	public static function ThrowFileNotFound(string $extraInfo = '') : void
