@@ -28,7 +28,7 @@ class IO
 
 				if (is_dir($rutaOrigen)) // Si es un directorio, llamar recursivamente a la función
 					self::MoveDirectoryContents($rutaOrigen, $rutaDestino);
-				else // Si es un archivo, moverlo
+				else if(file_exists($rutaOrigen)) // Si es un archivo, moverlo
 					rename($rutaOrigen, $rutaDestino);
 			}
 		}
