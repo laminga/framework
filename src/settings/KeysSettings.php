@@ -31,7 +31,6 @@ class KeysSettings
 	public string $RemoteBackupAuthKey = '';
 	public string $DeploymentAuthKey = '';
 	public string $RemoteEmailKey = '';
-	public string $AutomationKey = '';
 
 	public string $MicrosftSpeechToTextKey = '';
 	public string $MicrosftSpeechToTextRegion = '';
@@ -81,8 +80,24 @@ class KeysSettings
 
 	public function IsAutomationKeyValid($key): bool
 	{
-		return $this->AutomationKey != ''
-			&& hash_equals($this->AutomationKey, $key);
+		foreach($this->AutomationKey as $item)
+		{
+			if (hash_equals($item['key'], $key))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function GetAutomationKey($key): array
+	{
+		foreach ($this->AutomationKey as $item) {
+			if (hash_equals($item['key'], $key)) {
+				return $item;
+			}
+		}
+		return [];
 	}
 
 	public function IsRemoteBackupAuthKeyValid($key) : bool

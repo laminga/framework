@@ -137,8 +137,24 @@ class BaseTwoLevelStringSQLiteCache
 			if ($this->OpenRead($levelKey, false) == false)
 				return false;
 		}
-
-		$value = $this->db->ReadValue($valueKey, 'v');
+		try
+		{
+			$value = $this->db->ReadValue($valueKey, 'v');
+		}
+		catch(\Exception $exception)
+		{
+			$err = $exception->getMessage();
+			if (Str::Contains($err, "no such table: data"))
+			{
+				$this->Close();
+				$filename = $this->ResolveFilename($levelKey);
+				IO::Delete($filename);
+				if ($this->OpenRead($levelKey, false) == false)
+					return false;
+				else
+					$value = $this->db->ReadValue($valueKey, 'v');
+			}
+		}
 		$this->Close();
 		if ($value !== null)
 		{
