@@ -78,28 +78,6 @@ class KeysSettings
 		return $resultado;
 	}
 
-	public function IsAutomationKeyValid($key): bool
-	{
-		foreach($this->AutomationKey as $item)
-		{
-			if (hash_equals($item['key'], $key))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public function GetAutomationKey($key): array
-	{
-		foreach ($this->AutomationKey as $item) {
-			if (hash_equals($item['key'], $key)) {
-				return $item;
-			}
-		}
-		return [];
-	}
-
 	public function IsRemoteBackupAuthKeyValid($key) : bool
 	{
 		return $this->RemoteBackupAuthKey != ''
