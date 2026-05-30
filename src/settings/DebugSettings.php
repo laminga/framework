@@ -14,6 +14,10 @@ class DebugSettings
 	public bool $settingsDebug = false;
 	public bool $sessionDebug = false;
 
+	// Settings para reemplazar una url remota por una local de debug:
+	public bool $useDebugUrl = false;
+	public string $debugUrl = '';
+
 	public function LoadSessionDebugging() : void
 	{
 		$this->sessionDebug = PhpSession::GetSessionValue("debugging", false);

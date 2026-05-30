@@ -13,6 +13,7 @@ parameters:
 		-
 			message: '#Class Doctrine\\DBAL\\Result not found.#'
 			path: src/Db.php
+		- '#Parameter \#1 \$ch of function curl_.* expects resource, CurlHandle given.#'
+		- '#Property minga\\framework\\Web(Client|Connection)::\$ch .*CurlHandle.*(accept|type)#'
 	treatPhpDocTypesAsCertain:
 		true
-

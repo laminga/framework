@@ -175,6 +175,9 @@ class Log
 			return true;
 		}
 
+		if(Str::Contains($errorMessage, "xbrowser is not defined"))
+			return true;
+
 		if(Str::Contains($errorMessage, "Can't find variable: _AutofillCallbackHandler"))
 			return true;
 
@@ -396,7 +399,9 @@ class Log
 	{
 		$textToShow = self::LogException($e, true);
 
-		if(Context::Settings()->Debug()->debug && Str::StartsWith($e->getMessage(), 'Error running: "pdf') == false)
+		if(Context::Settings()->Debug()->debug
+			&& Str::StartsWith($e->getMessage(), 'Error running: "pdf') == false
+			&& Str::StartsWith($e->getMessage(), 'GetExtensionFromFile: mime') == false)
 		{
 			if(System::IsCli())
 			{

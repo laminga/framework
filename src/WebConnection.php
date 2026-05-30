@@ -58,9 +58,8 @@ class WebConnection
 		curl_setopt($this->ch, CURLOPT_COOKIEJAR, $path . '/cookie.txt');
 		curl_setopt($this->ch, CURLOPT_COOKIEFILE, $path . '/cookie.txt');
 		$this->logFile = $path . '/log.txt';
-		$this->responseFile = $path . '/response.dat';
+		$this->responseFile = $path . '/response' . sprintf('%.9f', microtime(true)) . '.dat';
 		$this->isClosed = false;
-
 	}
 
 	public function EnableExtraLog() : void
@@ -312,7 +311,7 @@ class WebConnection
 		$this->AppendLogData('HeaderFile', $headerFile);
 		$this->AppendLogData('HeaderResponseFile', $headerFile);
 
-		IO::WriteAllText($requestHeaderFile, Str::Replace(print_r($this->requestHeaders, true), "[", "\r\n["));
+		IO::WriteAllText($requestHeaderFile, Str::Replace(print_r($this->requestHeaders, true), "[", "\n["));
 
 		$fheader = fopen($headerFile, 'w');
 		curl_setopt($this->ch, CURLOPT_WRITEHEADER, $fheader);

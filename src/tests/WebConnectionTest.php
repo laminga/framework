@@ -26,7 +26,9 @@ class WebConnectionTest extends TestCaseBase
 		IO::Delete(Context::Paths()->GetTempPath() . '/cookie.txt');
 		IO::Delete(Context::Paths()->GetTempPath() . '/log.txt');
 		IO::Delete(Context::Paths()->GetTempPath() . '/log.txt.extra.txt');
-		IO::Delete(Context::Paths()->GetTempPath() . '/response.dat');
+		$files = glob(Context::Paths()->GetTempPath() . '/response*.dat');
+		foreach($files as $file)
+			IO::Delete($file);
 	}
 
 	public function testGet() : void
@@ -43,8 +45,9 @@ class WebConnectionTest extends TestCaseBase
 		$this->assertEquals(filesize($base . '/phpunit.xml'), $size);
 		$this->assertTrue(file_exists($base . '/log.txt'), 'log file');
 		$this->assertTrue(file_exists($base . '/log.txt.extra.txt'), 'log extra file');
-		$this->assertTrue(file_exists($base . '/response.dat'), 'response dat file');
 		$this->assertTrue(file_exists($base . '/cookie.txt'), 'cookie file');
+		$response = glob($base . '/response*.dat');
+		$this->assertNotEmpty($response, "response dat file");
 	}
 }
 
