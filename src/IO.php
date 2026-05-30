@@ -108,7 +108,7 @@ class IO
 		$i = 0;
 		while (feof($handle) == false)
 		{
-			$ret[] = fgets($handle);
+			$ret[] = rtrim(stream_get_line($handle, 1024 * 1024 * 100, "\n"), "\r");
 			if($maxLines !== null && ++$i >= $maxLines)
 				break;
 		}
@@ -334,9 +334,9 @@ class IO
 
 	private static function AssocArraySectionToString(string $section, array $assocArr) : string
 	{
-		$content = "[" . $section . "]\n";
+		$content = "[" . $section . "]\r\n";
 		foreach($assocArr as $key => $value)
-			$content .= $key . "=" . urlencode($value) . "\n";
+			$content .= $key . "=" . urlencode($value) . "\r\n";
 		return $content;
 	}
 
@@ -344,7 +344,7 @@ class IO
 	{
 		$content = "";
 		foreach ($assocArr as $key => $elem)
-			$content .= $key . '="' . $elem . "\"\n";
+			$content .= $key . '="' . $elem . "\"\r\n";
 
 		return self::WriteAllText($file, $content);
 	}
