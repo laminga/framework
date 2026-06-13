@@ -421,7 +421,7 @@ class Arr
 		return self::RemoveAt($array, $n);
 	}
 
-	public static function RemoveByValue(array $array, $value) : array
+	public static function RemoveByValue(array &$array, $value) : array
 	{
 		if (isset($array[$value]))
 			unset($array[$value]);
@@ -509,7 +509,9 @@ class Arr
 			if ($id != $last)
 			{
 				if ($last !== null)
+				{
 					$ret[$last] = $group;
+				}
 				$group = [];
 				$last = $id;
 			}
