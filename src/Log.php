@@ -203,6 +203,9 @@ class Log
 		if(Str::ContainsI($errorMessage, 'loadTippy') && Str::ContainsI($trace, 'Failed to fetch'))
 			return true;
 
+		if(Str::Contains($errorMessage, "PuppeteerPage"))
+			return true;
+
 		//No funciona...
 		// if(Str::ContainsI($errorMessage, 'redefine non-configurable property "userAgent"'))
 		//A ver si por separado funciona
