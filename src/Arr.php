@@ -364,6 +364,24 @@ class Arr
 		return $ret;
 	}
 
+	public static function UnsetKeys(array $array, array $fields): array
+	{
+		foreach ($fields as $field) {
+			unset($array[$field]);
+		}
+		return $array;
+	}
+
+	public static function UnsetKeysArray(array $array, array $fields): array
+	{
+		foreach ($array as &$item) {
+			foreach ($fields as $field) {
+				unset($item[$field]);
+			}
+		}
+		return $array;
+	}
+
 	public static function RemoveItem(array &$array, $item) : array
 	{
 		foreach (array_keys($array, $item) as $key)
