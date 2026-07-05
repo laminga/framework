@@ -66,7 +66,7 @@ class PhpSession
 			if (self::$sessionValues === null)
 			{
 				$hasSession = isset($_COOKIE["PHPSESSID"]) || Params::SafeServer('HTTP_SESSION_ID', null);
-				if (!$readOperation || $hasSession)
+				if ($readOperation == false || $hasSession)
 				{
 					$newSessionStarted = ($hasSession == false);
 					self::SessionStart();

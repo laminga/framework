@@ -13,7 +13,7 @@ class AttributeEntity
 		Profiling::BeginTimer();
 		$this->path = $path;
 		$this->attributes = [];
-		if ($path != "" && file_exists($path))
+		if (file_exists($path))
 			$this->attributes = IO::ReadEscapedIniFile($path);
 		Profiling::EndTimer();
 	}

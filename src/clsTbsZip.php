@@ -603,7 +603,7 @@ class clsTbsZip
 		$date = $this->_MsDos_Date($now);
 		$time = $this->_MsDos_Time($now);
 
-		if (!$this->OutputOpen($Render, $File, $ContentType))
+		if ($this->OutputOpen($Render, $File, $ContentType) == false)
 			return false;
 
 		// output modified zipped files and unmodified zipped files that are beetween them

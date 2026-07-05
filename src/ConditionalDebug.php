@@ -9,7 +9,7 @@ class ConditionalDebug
 	public function __construct(string $user)
 	{
 		$this->user = $user;
-		if (!$this->user)
+		if ($this->user == '')
 			Log::HandleSilentException(new \Exception("Debe indicarse un usuario para realizar la depuración condicional"));
 	}
 

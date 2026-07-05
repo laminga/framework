@@ -11,7 +11,7 @@ class MailError extends Mail
 	public function SendByType(int $type) : void
 	{
 		//TODO: quitar esto cuando se actualicen los settings de todas las implementaciones [2022/10/05]
-		//TODO: cambiar tipo de MailSettings::NotifyAddressErrors a arrray (string[])
+		//TODO: cambiar tipo de MailSettings::NotifyAddressErrors a array (string[])
 		if(is_array($this->to) == false || empty($this->to) || is_string(key($this->to)) == false)
 		{
 			$this->Send();
