@@ -149,8 +149,8 @@ class MessageBox
 		self::Set404NotFoundHeaders();
 		Performance::SetController('cErrDocNotFound', 'Show');
 		$link = '<a href="' . $url . '">' . $fullName . '</a>';
-		self::ThrowMessage(Context::Trans('El documento <b>{file}</b> no está disponible.<p>Sin embargo, "
-			. "si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>',
+		self::ThrowMessage(Context::Trans('El documento <b>{file}</b> no está disponible.<p>Sin embargo, '
+			. 'si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>',
 			['{file}' => $file, '{link}' => $link]), $url, $fullName . ' - ' . $location);
 	}
 
