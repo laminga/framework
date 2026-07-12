@@ -2,27 +2,8 @@
 
 namespace minga\framework;
 
-class CompressedDirectory
+class CompressedDirectory extends CompressedDirectoryBase
 {
-	public string $path;
-	public string $expandedPath = '';
-	private bool $expanded = false;
-	private string $file;
-
-	public function __construct(string $path, string $file = 'content.zip')
-	{
-		$this->path = $path;
-		$this->file = $file;
-	}
-
-	public function Release() : void
-	{
-		if ($this->expanded == false)
-			return;
-		IO::RemoveDirectory($this->expandedPath);
-		$this->expanded = false;
-	}
-
 	public function GetFilename() : string
 	{
 		return $this->path . '/' . $this->file;
@@ -37,29 +18,30 @@ class CompressedDirectory
 	{
 		if ($this->IsCompressed())
 			return false;
+
 		Profiling::BeginTimer();
-		// Crea el zip
-		if (IO::GetFilesCount($this->path) > 0)
+		try
 		{
+			if (IO::GetFilesCount($this->path) == 0)
+				return false;
+
 			$tmp = IO::GetTempFilename();
 			$zip = new Zip($tmp);
 			$target = $this->GetFilename();
 			IO::Delete($target);
 			$zip->AppendFilesToZip($this->path, "");
-			// Lo mueve
 			IO::Move($tmp, $target);
-			// Vacía la carpeta
 			foreach(IO::GetFiles($this->path) as $file)
 			{
 				if ($this->path . "/" . $file != $target)
 					IO::Delete($this->path . "/" . $file);
 			}
-			$ret = true;
+			return true;
 		}
-		else
-			$ret = false;
-		Profiling::EndTimer();
-		return $ret;
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	public function Expand() : void
@@ -69,17 +51,14 @@ class CompressedDirectory
 		Profiling::BeginTimer();
 		$zip = new \ZipArchive();
 		$res = $zip->open($this->GetFilename());
-		if ($res === true)
-		{
-			$this->expandedPath = IO::GetTempFilename();
-			IO::EnsureExists($this->expandedPath);
-			$zip->extractTo($this->expandedPath);
-			$zip->close();
-			$this->expanded = true;
-		}
-		else
+		if ($res !== true)
 			throw new ErrorException(Context::Trans('No se pudo acceder a los contenidos.'));
 
+		$this->expandedPath = IO::GetTempFilename();
+		IO::EnsureExists($this->expandedPath);
+		$zip->extractTo($this->expandedPath);
+		$zip->close();
+		$this->expanded = true;
 		Profiling::EndTimer();
 	}
 }

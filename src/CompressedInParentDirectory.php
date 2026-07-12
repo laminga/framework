@@ -2,27 +2,14 @@
 
 namespace minga\framework;
 
-class CompressedInParentDirectory
+class CompressedInParentDirectory extends CompressedDirectoryBase
 {
-	public string $path;
-	public string $expandedPath;
-	private bool $expanded = false;
 	private string $dirName;
-	private string $file;
 
 	public function __construct(string $path, string $file = 'content.zip')
 	{
-		$this->path = $path;
+		parent::__construct($path, $file);
 		$this->dirName = IO::GetFilenameNoExtension($path);
-		$this->file = $file;
-	}
-
-	public function Release() : void
-	{
-		if ($this->expanded == false)
-			return;
-		IO::RemoveDirectory($this->expandedPath);
-		$this->expanded = false;
 	}
 
 	public function GetFilename() : string
@@ -36,37 +23,40 @@ class CompressedInParentDirectory
 			return false;
 
 		Profiling::BeginTimer();
-		$zip = new ZipArchiveExtended();
-		$res = $zip->open($this->GetFilename());
-		if ($res === true)
+		try
 		{
+			$zip = new ZipArchiveExtended();
+			$res = $zip->open($this->GetFilename());
+			if ($res !== true)
+				throw new ErrorException(Context::Trans('No se pudo acceder a los contenidos.'));
+
 			$hasSubdir = $zip->hasSubdir($this->dirName);
 			$zip->close();
+			return $hasSubdir;
 		}
-		else
+		finally
 		{
 			Profiling::EndTimer();
-			throw new ErrorException(Context::Trans('No se pudo acceder a los contenidos.'));
 		}
-		Profiling::EndTimer();
-		return $hasSubdir;
 	}
 
 	public function Compress() : bool
 	{
 		if ($this->IsCompressed())
 			return false;
+
 		Profiling::BeginTimer();
-		// Crea el zip
-		if (IO::GetFilesCount($this->path) > 0)
+		try
 		{
+			if (IO::GetFilesCount($this->path) == 0)
+				return false;
+
 			$useTemp = (file_exists($this->GetFilename()) == false);
 			if ($useTemp)
 				$tmp = IO::GetTempFilename();
 			else
 				$tmp = $this->GetFilename();
 
-			new Zip($tmp);
 			$files = [];
 			$sources = [];
 			foreach(IO::GetFiles($this->path) as $file)
@@ -75,22 +65,19 @@ class CompressedInParentDirectory
 				$sources[] = $this->path . '/' . $file;
 			}
 			Zipping::AddOrUpdate($tmp, $files, $sources);
-			// Lo mueve
 			if ($useTemp)
 			{
 				$target = $this->GetFilename();
 				IO::Delete($target);
 				IO::Move($tmp, $target);
 			}
-			// Vacía la carpeta
 			IO::RemoveDirectory($this->path);
-			$ret = true;
+			return true;
 		}
-		else
-			$ret = false;
-
-		Profiling::EndTimer();
-		return $ret;
+		finally
+		{
+			Profiling::EndTimer();
+		}
 	}
 
 	public function Expand() : void
@@ -100,17 +87,14 @@ class CompressedInParentDirectory
 		Profiling::BeginTimer();
 		$zip = new ZipArchiveExtended();
 		$res = $zip->open($this->GetFilename());
-		if ($res === true)
-		{
-			$this->expandedPath = IO::GetTempFilename();
-			IO::EnsureExists($this->expandedPath);
-			$zip->extractSubdirTo($this->expandedPath, $this->dirName);
-			$zip->close();
-			$this->expanded = true;
-		}
-		else
+		if ($res !== true)
 			throw new ErrorException(Context::Trans('No se pudo acceder a los contenidos.'));
 
+		$this->expandedPath = IO::GetTempFilename();
+		IO::EnsureExists($this->expandedPath);
+		$zip->extractSubdirTo($this->expandedPath, $this->dirName);
+		$zip->close();
+		$this->expanded = true;
 		Profiling::EndTimer();
 	}
 }

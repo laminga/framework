@@ -974,10 +974,7 @@ class IO
 		return $dir->IsCompressed();
 	}
 
-	/**
-	 * @return CompressedDirectory|CompressedInParentDirectory
-	 */
-	public static function GetCompressedDirectory(string $path)
+	public static function GetCompressedDirectory(string $path) : CompressedDirectoryBase
 	{
 		if (isset(self::$compressedDirectories))
 		{
