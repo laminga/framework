@@ -151,8 +151,7 @@ class BaseTwoLevelStringSQLiteCache
 				IO::Delete($filename);
 				if ($this->OpenRead($levelKey, false) == false)
 					return false;
-				else
-					$value = $this->db->ReadValue($valueKey, 'v');
+				$value = $this->db->ReadValue($valueKey, 'v');
 			}
 		}
 		$this->Close();
@@ -160,9 +159,7 @@ class BaseTwoLevelStringSQLiteCache
 		{
 			$value = $value[1];
 			if (Context::Settings()->Cache()->SQliteCompressionEnabled)
-			{
 				$value = $this->cache_unpack($value);
-			}
 			return true;
 		}
 
@@ -233,9 +230,7 @@ class BaseTwoLevelStringSQLiteCache
 		try
 		{
 			if (Context::Settings()->Cache()->SQliteCompressionEnabled)
-			{
 				$value = $this->cache_pack($value);
-			}
 			$this->db->InsertOrUpdate($valueKey, $value);
 		}
 		catch(\Exception $e)
