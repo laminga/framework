@@ -349,6 +349,16 @@ class Str
 		return trim($ret);
 	}
 
+	/**
+	 * @return int|string
+	 */
+	public static function ToIntIfNumeric(string $value)
+	{
+		if(filter_var($value, FILTER_VALIDATE_INT) !== false)
+			return (int)$value;
+		return $value;
+	}
+
 	public static function EatUntil(string $haystack, string $needle) : string
 	{
 		$pos = mb_strpos($haystack, $needle);

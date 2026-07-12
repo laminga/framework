@@ -141,6 +141,11 @@ class MessageBox
 		Context::Calls()->RenderTemplate('dialogPopup.html.twig', $params);
 	}
 
+	public static function ShowDocNotFoundById(int $id, bool $onlyFiles, string $url, string $fullName, string $location) : void
+	{
+		self::ShowDocNotFound((string)$id, $onlyFiles, $url, $fullName, $location);
+	}
+
 	public static function ShowDocNotFound(string $file, bool $onlyFiles, string $url, string $fullName, string $location) : void
 	{
 		if ($onlyFiles)
