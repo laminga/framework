@@ -364,7 +364,7 @@ class WebConnection
 		if ($this->error != '')
 			$this->AppendLogData('error retornando: ', $this->error);
 
-		if (!$this->keepHeaders)
+		if ($this->keepHeaders == false)
 		{
 			IO::Delete($headerFile);
 			IO::Delete($requestHeaderFile);

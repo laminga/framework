@@ -141,6 +141,11 @@ class MessageBox
 		Context::Calls()->RenderTemplate('dialogPopup.html.twig', $params);
 	}
 
+	public static function ShowDocNotFoundById(int $id, bool $onlyFiles, string $url, string $fullName, string $location) : void
+	{
+		self::ShowDocNotFound((string)$id, $onlyFiles, $url, $fullName, $location);
+	}
+
 	public static function ShowDocNotFound(string $file, bool $onlyFiles, string $url, string $fullName, string $location) : void
 	{
 		if ($onlyFiles)
@@ -149,8 +154,8 @@ class MessageBox
 		self::Set404NotFoundHeaders();
 		Performance::SetController('cErrDocNotFound', 'Show');
 		$link = '<a href="' . $url . '">' . $fullName . '</a>';
-		self::ThrowMessage(Context::Trans('El documento <b>{file}</b> no está disponible.<p>Sin embargo, "
-			. "si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>',
+		self::ThrowMessage(Context::Trans('El documento <b>{file}</b> no está disponible.<p>Sin embargo, '
+			. 'si así lo desea, lo invitamos a visitar el perfil de {link} para consultar otros documentos relacionados.</p>',
 			['{file}' => $file, '{link}' => $link]), $url, $fullName . ' - ' . $location);
 	}
 

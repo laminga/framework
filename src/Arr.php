@@ -364,20 +364,19 @@ class Arr
 		return $ret;
 	}
 
-	public static function UnsetKeys(array $array, array $fields): array
+	public static function UnsetKeys(array $array, array $fields) : array
 	{
-		foreach ($fields as $field) {
+		foreach ($fields as $field)
 			unset($array[$field]);
-		}
 		return $array;
 	}
 
-	public static function UnsetKeysArray(array $array, array $fields): array
+	public static function UnsetKeysArray(array $array, array $fields) : array
 	{
-		foreach ($array as &$item) {
-			foreach ($fields as $field) {
+		foreach ($array as &$item)
+		{
+			foreach ($fields as $field)
 				unset($item[$field]);
-			}
 		}
 		return $array;
 	}
