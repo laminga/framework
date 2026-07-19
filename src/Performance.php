@@ -662,8 +662,8 @@ class Performance
 		return [$hits, $duration, $locked, $google, $mails, $dbMs, $dbHits, $newExtraHits];
 	}
 
-	private static function ParseHit(string $value, ?int &$hits, ?int &$duration, ?int &$locked,
-		?int &$p4 = null, ?int &$p5 = null, ?int &$p6 = null, ?int &$p7 = null, ?array &$extra = null) : void
+	private static function ParseHit(string $value, int &$hits, int &$duration, int &$locked,
+		int &$p4 = 0, int &$p5 = 0, int &$p6 = 0, int &$p7 = 0, ?array &$extra = null) : void
 	{
 		$parts = explode(';', $value);
 		$hits = (int)$parts[0];
