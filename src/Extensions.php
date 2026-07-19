@@ -92,7 +92,7 @@ class Extensions
 		if($fileExt == '')
 			$fileExt = self::GetExtensionFromString($original);
 
-		Str::RemoveBegining($fileExt, '.');
+		$fileExt = Str::RemoveBegining($fileExt, '.');
 
 		// primero busca por mime type
 		// (es más confiable, salvo alguna excepción).

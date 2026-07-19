@@ -66,7 +66,7 @@ class CompressedInParentDirectory
 			else
 				$tmp = $this->GetFilename();
 
-			new Zip($tmp);
+			// new Zip($tmp); <-- esto parecería que no hace nada
 			$files = [];
 			$sources = [];
 			foreach(IO::GetFiles($this->path) as $file)
