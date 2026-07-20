@@ -36,7 +36,7 @@ class PerformanceItem
 	public static function Parse(string $value) : self
 	{
 		$parts = explode(';', $value);
-		$hits = isset($parts[0]) ? (int)$parts[0] : 0;
+		$hits = (int)$parts[0];
 		$duration = isset($parts[1]) ? (int)$parts[1] : 0;
 		$locked = isset($parts[2]) ? (int)$parts[2] : 0;
 		$google = isset($parts[3]) ? (int)$parts[3] : 0;
