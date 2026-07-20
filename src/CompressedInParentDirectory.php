@@ -57,7 +57,6 @@ class CompressedInParentDirectory extends CompressedDirectoryBase
 			else
 				$tmp = $this->GetFilename();
 
-			new Zip($tmp);
 			$files = [];
 			$sources = [];
 			foreach(IO::GetFiles($this->path) as $file)
