@@ -359,7 +359,7 @@ class Log
 		self::$extraErrorInfo[] = $info;
 	}
 
-	private static function LogErrorSendMail($text) : void
+	private static function LogErrorSendMail(string $text) : void
 	{
 		if (self::$isLoggingMailError)
 			return;
@@ -384,14 +384,14 @@ class Log
 		}
 	}
 
-	private static function RemovePassword($text)
+	private static function RemovePassword(string $text) : string
 	{
 		$words = ['password', 'passwordi', 'pppassword', 'reg_password', 'reg_verification'];
 		foreach($words as $word)
 		{
 			if(Str::Contains($text, '[' . $word . ']'))
 			{
-				$text = preg_replace('/(\[' . $word . '\] => ).*/',
+				$text = preg_replace('/(\[' . $word . '\] => ).+/',
 					'$1[removido]<br>', $text);
 			}
 		}
