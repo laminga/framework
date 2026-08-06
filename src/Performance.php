@@ -41,7 +41,6 @@ class Performance
 
 	public static int $mailsSent = 0;
 
-
 	/**
 	 * @deprecated usar PerformanceTable::GetDaylyTable()
 	 */
@@ -49,6 +48,7 @@ class Performance
 	{
 		return PerformanceTable::GetDaylyTable($month, $appendTotals);
 	}
+
 	/**
 	 * @deprecated usar PerformanceTable::GetHistoryTable()
 	 */
@@ -56,6 +56,7 @@ class Performance
 	{
 		return PerformanceTable::GetHistoryTable($months);
 	}
+
 	/**
 	 * @deprecated usar PerformanceTable::GetControllerTable()
 	 */
@@ -63,6 +64,7 @@ class Performance
 	{
 		return PerformanceTable::GetControllerTable($month, $adminControllers, $getUsers, $methods);
 	}
+
 	/**
 	 * @deprecated usar PerformanceTable::GetMailsTable()
 	 */
@@ -70,6 +72,7 @@ class Performance
 	{
 		return PerformanceTable::GetMailsTable($month);
 	}
+
 	/**
 	 * @deprecated usar PerformanceTable::GetLocksTable()
 	 */
