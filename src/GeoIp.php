@@ -73,12 +73,12 @@ class GeoIp
 
 	private static function GetIpFromGeoPluginWebService(string $addr) : ?array
 	{
-		$path = 'http://www.geoplugin.net/php.gp?ip=' . $addr;
-		$geoplugin = unserialize(file_get_contents($path));
-		if (is_numeric($geoplugin['geoplugin_latitude']) && is_numeric($geoplugin['geoplugin_longitude']))
+		$path = 'http://ip-api.com/json/' . $addr;
+		$geoplugin = json_decode(file_get_contents($path), true);
+		if (is_numeric($geoplugin['lat']) && is_numeric($geoplugin['lon']))
 		{
-			$lat = $geoplugin['geoplugin_latitude'];
-			$long = $geoplugin['geoplugin_longitude'];
+			$lat = $geoplugin['lat'];
+			$long = $geoplugin['lon'];
 			return ['lat' => $lat, 'lon' => $long];
 		}
 		return null;
