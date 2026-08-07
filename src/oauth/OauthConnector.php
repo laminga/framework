@@ -191,7 +191,6 @@ abstract class OauthConnector
 
 		// Guarda info de profiling
 		Profiling::SaveBeforeRedirect();
-		Context::EndRequest();
 	}
 
 	/**
