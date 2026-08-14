@@ -151,6 +151,10 @@ class Log
 
 		if(Str::Contains($agent, "applebot"))
 			return true;
+		if(Str::Contains($agent, "Googlebot"))
+			return true;
+		if(Str::Contains($agent, "meta-webindexer"))
+			return true;
 
 		if($errorLine == 1 && $errorColumn == 1
 			&& (Str::Contains($errorMessage, "Unexpected token '&lt;'")
