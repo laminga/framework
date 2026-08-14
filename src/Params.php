@@ -124,6 +124,10 @@ class Params
 
 	public static function GetBool(string $param, bool $default = false) : bool
 	{
+		if(strtolower($value) == 'false')
+			return false;
+		if(strtolower($value) == 'true')
+			return true;
 		return (bool)self::SafeGet($param, $default);
 	}
 
