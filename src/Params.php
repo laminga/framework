@@ -124,11 +124,12 @@ class Params
 
 	public static function GetBool(string $param, bool $default = false) : bool
 	{
+		$value = self::SafeGet($param, $default);
 		if(strtolower($value) == 'false')
 			return false;
 		if(strtolower($value) == 'true')
 			return true;
-		return (bool)self::SafeGet($param, $default);
+		return (bool) $value;
 	}
 
 	public static function GetInt(string $param, ?int $default = null) : ?int
