@@ -43,4 +43,5 @@ class Response
 		header('Location: ' . $url, true, 301);
 		exit();
 	}
+
 }
