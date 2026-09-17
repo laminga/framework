@@ -113,7 +113,7 @@ class Db
 		return $stmt->rowCount();
 	}
 
-		/**
+	/**
 	 * Prints an SQL query and its parameters.
 	 */
 	public function dump(string $sql, array $params = []) : array
@@ -125,6 +125,7 @@ class Db
 		echo "\n<P>----------------------------------------------------------------<P>\n";
 		exit;
 	}
+
 	/**
 	 * Prepares and executes an SQL query and returns the result as an associative array.
 	 */

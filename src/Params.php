@@ -129,7 +129,7 @@ class Params
 			return false;
 		if(strtolower($value) == 'true')
 			return true;
-		return (bool) $value;
+		return (bool)$value;
 	}
 
 	public static function GetInt(string $param, ?int $default = null) : ?int

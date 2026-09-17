@@ -55,6 +55,8 @@ class Settings
 	public bool $useOpenIdFacebook = false;
 	public bool $useOpenIdGoogle = false;
 
+	public bool $useEprints = false;
+
 	public bool $normalizeNames = false;
 	public bool $setupInstallOnly = true;
 
