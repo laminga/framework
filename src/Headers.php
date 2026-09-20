@@ -18,7 +18,7 @@ class Headers
 
 	public static function SetErrorHeader(string $error) : void
 	{
-		header('Error-Header: ' . $error);
+		header('Error-Header: ' . rawurlencode($error));
 	}
 
 }
