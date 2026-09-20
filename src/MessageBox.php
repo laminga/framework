@@ -9,7 +9,7 @@ class MessageBox
 	public static function ThrowInternalError(string $message) : void
 	{
 		if(Context::Settings()->isTesting)
-			echo 'ERROR. ' . $message . '<br>';
+			echo "ERROR. " . $message . "<br>\n";
 		Log::HandleSilentException(new ErrorException($message));
 	}
 
@@ -89,7 +89,7 @@ class MessageBox
 		}
 		else
 		{
-			echo 'Test Failed.<br>Error: ' . $params['message'];
+			echo "Test Failed.<br>Error: " . $params['message'] . "\n";
 			return;
 		}
 		Context::EndRequest();
@@ -97,6 +97,11 @@ class MessageBox
 
 	private static function Set500InternalServerErrorHeaders() : void
 	{
+		if(System::IsCli())
+		{
+			echo "Status: 500 Internal Server Error\n";
+			return;
+		}
 		header('HTTP/1.1 ');
 		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 		header('Status: 500 Internal Server Error');
@@ -104,16 +109,26 @@ class MessageBox
 
 	private static function Set403AccessDeniedHeaders() : void
 	{
+		Context::Settings()->section = 'accessDenied';
+		if(System::IsCli())
+		{
+			echo "Status: 403 Forbidden\n";
+			return;
+		}
 		header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 		header('Status: 403 Forbidden');
-		Context::Settings()->section = 'accessDenied';
 	}
 
 	public static function Set404NotFoundHeaders() : void
 	{
+		Context::Settings()->section = 'notFound';
+		if(System::IsCli())
+		{
+			echo "Status: 404 Not Found\n";
+			return;
+		}
 		header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 		header('Status: 404 Not Found');
-		Context::Settings()->section = 'notFound';
 	}
 
 	public static function ShowMessagePopup(string $message, string $title = '__Enviar mensaje') : void
