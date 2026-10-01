@@ -131,13 +131,13 @@ abstract class OauthConnector
 		return '';
 	}
 
-	public function RedirectSuccess(OauthData $data, string $state) : void
+	public function RedirectSuccess(OauthData $data, string $state, string $rememberToken = '') : void
 	{
 		if($data->email == '' || $data->verified == false)
 			$this->RedirectErrorNoEmail();
 
 		$data->SerializeToSession();
-		$this->RedirectSession($state);
+		$this->RedirectSession($state, $rememberToken);
 	}
 
 	public function RedirectErrorNoEmail() : void
@@ -156,15 +156,15 @@ abstract class OauthConnector
 		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido realizar la interacción con {provider} para la identificación.', ['{provider}' => $this->ProviderName()]), Context::Trans('Atención'));
 	}
 
-	private function RedirectSession(string $state) : void
+	private function RedirectSession(string $state, string $rememberToken) : void
 	{
 		$this->CleanOldFiles();
 
 		$url = PhpSession::GetSessionValue(static::Provider . 'OauthRedirect');
 		if($url == '')
-			$url = self::GetSessionFromFile($state);
+			self::GetSessionFromFile($state);
 
-		$this->CloseAndRedirect($url);
+		$this->NotifyOpener($rememberToken);
 	}
 
 	public function ProviderName() : string
@@ -173,24 +173,30 @@ abstract class OauthConnector
 		return Str::Capitalize($c::Provider);
 	}
 
-	private function CloseAndRedirect(string $target) : void
+	// La aplicación corre en otro dominio: recibe la sesión por mensaje porque no comparte cookies con este popup.
+	private function NotifyOpener(string $rememberToken) : void
 	{
-		//mejora: validar el target.
-		//-Que sea de este dominio (que no redirija a otro sitio).
-		//-Que no tenga funciones inválidas (deleteUser, etc.)
-		//-No tenga código javascript (xss).
-		if($target == '')
-		{
-			Log::HandleSilentException(new ErrorException('Parámetro "target" no definido.'));
-			$target = Context::Settings()->GetMainServerPublicUrl();
-		}
-
-		$js = "window.opener.location='" . $target . "';";
+		$message = [
+			'type' => 'oauthLogin',
+			'sessionId' => PhpSession::SessionId(),
+			'rememberToken' => $rememberToken,
+		];
+		$flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+		$js = 'window.opener.postMessage(' . json_encode($message, $flags) . ',' . json_encode($this->GetOpenerOrigin(), $flags) . ');';
 		$js .= 'window.close();';
-		echo '<!doctype html><html><head><meta charset="utf-8"></head><body onload="' . $js . '"></body></html>';
+		echo '<!doctype html><html><head><meta charset="utf-8"></head><body><script>' . $js . '</script></body></html>';
 
 		// Guarda info de profiling
 		Profiling::SaveBeforeRedirect();
+	}
+
+	private function GetOpenerOrigin() : string
+	{
+		$parts = parse_url(Context::Settings()->GetMainServerPublicUrl());
+		$origin = $parts['scheme'] . '://' . $parts['host'];
+		if(isset($parts['port']))
+			$origin .= ':' . $parts['port'];
+		return $origin;
 	}
 
 	/**
