@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
-class ExtensionsTest extends TestCaseBase
+class PhpExtensionsTest extends TestCaseBase
 {
-	public function testExtensions() : void
+	public function testPhpExtensions() : void
 	{
 		$ext = get_loaded_extensions();
 		$exts = array_map('strtolower', $ext);
