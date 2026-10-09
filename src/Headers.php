@@ -20,5 +20,4 @@ class Headers
 	{
 		header('Error-Header: ' . rawurlencode($error));
 	}
-
 }
