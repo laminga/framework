@@ -66,7 +66,7 @@ class Mail
 		Performance::$mailsSent += $this->GetSentEmailsCount($mail);
 	}
 
-	protected function GetSentEmailsCount(PHPMailerSendGrid $mail) : int
+	public function GetSentEmailsCount(PHPMailerSendGrid $mail) : int
 	{
 		return count($mail->getToAddresses()) + count($mail->getBccAddresses());
 	}
@@ -101,7 +101,7 @@ class Mail
 	/**
 	 * @param string[]|string $recipient
 	 */
-	protected function SetProvider(PHPMailerSendGrid $mail, $recipient) : void
+	public function SetProvider(PHPMailerSendGrid $mail, $recipient) : void
 	{
 		$provider = $this->ResolveProvider($recipient);
 
@@ -135,7 +135,7 @@ class Mail
 	/**
 	 * @param string[]|string $to
 	 */
-	protected function SetAddress(PHPMailerSendGrid $mail, $to, string $caption) : void
+	public function SetAddress(PHPMailerSendGrid $mail, $to, string $caption) : void
 	{
 		if(is_array($to))
 		{
@@ -169,7 +169,7 @@ class Mail
 	/**
 	 * @param string[]|string $bcc
 	 */
-	protected function SetBCC(PHPMailerSendGrid $mail, $bcc) : void
+	public function SetBCC(PHPMailerSendGrid $mail, $bcc) : void
 	{
 		if(is_array($bcc))
 		{

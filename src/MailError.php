@@ -56,7 +56,7 @@ class MailError extends Mail
 		}
 	}
 
-	protected function LogMail(string $type, string $to, int $mode, ?string $originalTo = '') : void
+	public function LogMail(string $type, string $to, int $mode, ?string $originalTo = '') : void
 	{
 		if(empty($originalTo))
 			$originalTo = $to;
