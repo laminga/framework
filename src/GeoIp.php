@@ -43,7 +43,7 @@ class GeoIp
 
 			$location = self::GetCityLocation($addr);
 
-			if ($location === null)
+			if ($location === null && Context::Settings()->isTesting == false)
 				$location = self::GetIpFromGeoPluginWebService($addr);
 
 			return $location;

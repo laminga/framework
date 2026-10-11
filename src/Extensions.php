@@ -51,7 +51,7 @@ class Extensions
 	 */
 	public static function ChangeExtension(string $filename, string $newExt) : string
 	{
-		if(Str::StartsWith($newExt, '.') == false)
+		if($newExt != "" && Str::StartsWith($newExt, '.') == false)
 			$newExt = '.' . $newExt;
 		return self::RemoveExtension($filename) . $newExt;
 	}
@@ -82,6 +82,20 @@ class Extensions
 	public static function GetExtensionFromString(string $str) : string
 	{
 		return Str::ToLower(pathinfo($str, PATHINFO_EXTENSION));
+	}
+
+	/**
+	 * Remueve caracteres que no sean alfanuméricos,
+	 * nada más se considera válido para una extensión.
+	 * El punto solo inicial y único, no soporta extensiones
+	 * combinadas como tar.xz.
+	 */
+	public static function RemoveInvalidChars(string $ext) : string
+	{
+		$ret = "";
+		if(Str::StartsWith($ext, "."))
+			$ret = ".";
+		return $ret . preg_replace("/[^A-Za-z0-9]/", "", $ext);
 	}
 
 	public static function GetExtensionFromFile(string $filePath, string $fileExt, string $original = '') : string

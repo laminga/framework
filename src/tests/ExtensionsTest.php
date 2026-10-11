@@ -4,32 +4,40 @@ declare(strict_types = 1);
 
 namespace minga\framework\tests;
 
+use minga\framework\Extensions;
+
 class ExtensionsTest extends TestCaseBase
 {
-	public function testExtensions() : void
+	public function testRemoveInvalidChars() : void
 	{
-		$ext = get_loaded_extensions();
-		$exts = array_map('strtolower', $ext);
-		sort($exts);
-		// Quizás no todas son necesarias
-		$required = [
-			"bcmath", "calendar", "core", "ctype", "curl",
-			"date", "dom", "fileinfo", "filter", "gd",
-			"gettext", "gmp", "hash", "iconv", "intl",
-			"json", "libxml", "mbstring", "pcre", "pdo",
-			"pdo_mysql", "pdo_sqlite", "reflection",
-			"session", "simplexml", "sqlite3", "standard",
-			"xml", "xmlreader", "xmlwriter", "xsl", "zip",
-		];
+		$this->assertEquals("", Extensions::RemoveInvalidChars(""));
+		$this->assertEquals(".ext", Extensions::RemoveInvalidChars(".ext"));
+		$this->assertEquals("ext", Extensions::RemoveInvalidChars("ext"));
+		$this->assertEquals("ext1", Extensions::RemoveInvalidChars("ext1"));
+		$this->assertEquals(".extrar", Extensions::RemoveInvalidChars(".ext.rar"));
+		$this->assertEquals("ext", Extensions::RemoveInvalidChars("ext."));
+		$this->assertEquals("ext", Extensions::RemoveInvalidChars("ex.t."));
+		$this->assertEquals("ext", Extensions::RemoveInvalidChars("ext\0"));
+		$this->assertEquals("ext", Extensions::RemoveInvalidChars("e-xát/."));
+		$this->assertEquals("ext", Extensions::RemoveInvalidChars("!@#$%%^&*(-+ext<?>{}:"));
+	}
 
-		$ret = array_diff($required, $exts);
-		$this->assertCount(0, $ret, 'Debe habilitar las siguientes extensiones para que el sitio funcione correctamente: ' . implode(', ', $ret));
+	public function testRemoveExtension() : void
+	{
+		$this->assertEquals("", Extensions::RemoveExtension(""));
+		$this->assertEquals("file", Extensions::RemoveExtension("file"));
+		$this->assertEquals("file", Extensions::RemoveExtension("file.txt"));
+		$this->assertEquals("file.tar", Extensions::RemoveExtension("file.tar.gz"));
+		$this->assertEquals("/var/a.b/file", Extensions::RemoveExtension("/var/a.b/file.txt"));
+	}
 
-
-		$recommended = [
-			// "opcache",
-		];
-		$ret = array_diff($recommended, $exts);
-		$this->assertCount(0, $ret, 'Es recomendado habilitar las siguientes extensiones: ' . implode(', ', $ret));
+	public function testChangeExtension() : void
+	{
+		$this->assertEquals("", Extensions::ChangeExtension("", ""));
+		$this->assertEquals("file", Extensions::ChangeExtension("file.txt", ""));
+		$this->assertEquals("file.txt", Extensions::ChangeExtension("file.pdf", "txt"));
+		$this->assertEquals("file.txt", Extensions::ChangeExtension("file.pdf", ".txt"));
+		$this->assertEquals("file.txt", Extensions::ChangeExtension("file", ".txt"));
+		$this->assertEquals("/var/a.b/file.txt", Extensions::ChangeExtension("/var/a.b/file.pdf", "txt"));
 	}
 }

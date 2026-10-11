@@ -415,6 +415,7 @@ class Log
 				echo strip_tags($textToShow);
 				exit();
 			}
+			Headers::SetErrorHeader("[PD-E]:" . $e->getMessage());
 			MessageBox::ThrowBackMessage($textToShow);
 			exit();
 		}
