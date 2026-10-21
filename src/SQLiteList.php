@@ -20,6 +20,7 @@ class SQLiteList
 	private static array $OpenStreams = [];
 	private static array $OpenStreamsSizes = [];
 	private static array $OpenStreamsTimes = [];
+	private static array $OpenStreamsConnections = [];
 
 	public function __construct(string $key, ?array $columns = null, ?array $intColumns = null, ?array $uniqueColumns = null, ?array $blobColumns = null)
 	{
@@ -383,7 +384,7 @@ class SQLiteList
 		$lob = $this->GetBlob('data', $column, $row[1]);
 		if($lob === null)
 			return '';
-		$tmpFilename = self::CreateNameStreamFromStream($lob, $row[2], $row[3]);
+		$tmpFilename = self::CreateNameStreamFromStream($lob, $row[2], $row[3], $this->db);
 		Profiling::EndTimer();
 		return $tmpFilename;
 	}
@@ -413,22 +414,32 @@ class SQLiteList
 		return $key;
 	}
 
-	public static function CreateNameStreamFromStream($lob, int $size, $time) : string
+	public static function CreateNameStreamFromStream($lob, int $size, $time, ?\SQLite3 $connection = null) : string
 	{
 		$key = "streams::" . Str::Guid();
 		self::$OpenStreams[$key] = $lob;
 		self::$OpenStreamsSizes[$key] = $size;
 		self::$OpenStreamsTimes[$key] = $time;
+		if ($connection !== null)
+			self::$OpenStreamsConnections[$key] = $connection;
 		return $key;
 	}
 
+	/**
+	 * Es seguro invocarla con cualquier valor: si no es un stream abierto, no hace nada.
+	 * Cierra el stream y, si lo hay, la conexión que lo sostiene (en ese orden).
+	 */
 	public static function ReleaseNamedStream(string $key) : void
 	{
-		if (isset(self::$OpenStreams[$key]))
-		{
-			fclose(self::$OpenStreams[$key]);
-			unset(self::$OpenStreams[$key], self::$OpenStreamsSizes[$key], self::$OpenStreamsTimes[$key]);
-		}
+		if (isset(self::$OpenStreams[$key]) == false)
+			return;
+
+		fclose(self::$OpenStreams[$key]);
+		if (isset(self::$OpenStreamsConnections[$key]))
+			self::$OpenStreamsConnections[$key]->close();
+
+		unset(self::$OpenStreams[$key], self::$OpenStreamsSizes[$key],
+			self::$OpenStreamsTimes[$key], self::$OpenStreamsConnections[$key]);
 	}
 
 	public static function GetNamedStream(string $key)

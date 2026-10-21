@@ -130,12 +130,6 @@ class BaseTwoLevelBlobSQLiteCache
 		return $value != '';
 	}
 
-	public function ReleaseData(string $namedStream) : void
-	{
-		SQLiteList::ReleaseNamedStream($namedStream);
-		$this->Close();
-	}
-
 	private function ResolveFilename($key1) : string
 	{
 		if ($key1 === null)
@@ -164,6 +158,7 @@ class BaseTwoLevelBlobSQLiteCache
 			if ($this->OpenWrite($levelKey, false) == false)
 				return;
 		}
+		$namedStream = null;
 		try
 		{
 			$namedStream = SQLiteList::CreateNamedStreamFromFile($valueFilename);
@@ -178,7 +173,12 @@ class BaseTwoLevelBlobSQLiteCache
 				$this->db->Truncate();
 			throw $e;
 		}
-		$this->Close();
+		finally
+		{
+			if ($namedStream !== null)
+				SQLiteList::ReleaseNamedStream($namedStream);
+			$this->Close();
+		}
 	}
 }
 
