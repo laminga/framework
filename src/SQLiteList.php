@@ -442,6 +442,12 @@ class SQLiteList
 			self::$OpenStreamsTimes[$key], self::$OpenStreamsConnections[$key]);
 	}
 
+	public static function ReleaseAllNamedStreams() : void
+	{
+		foreach (array_keys(self::$OpenStreams) as $key)
+			self::ReleaseNamedStream($key);
+	}
+
 	public static function GetNamedStream(string $key)
 	{
 		return self::$OpenStreams[$key];

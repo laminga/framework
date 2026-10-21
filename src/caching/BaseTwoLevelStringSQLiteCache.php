@@ -154,7 +154,10 @@ class BaseTwoLevelStringSQLiteCache
 				$value = $this->db->ReadValue($valueKey, 'v');
 			}
 		}
-		$this->Close();
+		finally
+		{
+			$this->Close();
+		}
 		if ($value !== null)
 		{
 			$value = $value[1];
@@ -186,15 +189,20 @@ class BaseTwoLevelStringSQLiteCache
 		// Puede leer?
 		if ($this->OpenRead($levelKey, false) == false)
 			return;
-		// Excedió la cuota?
-		if ($this->db->DataSizeMB() > $this->LimitMB)
+		try
+		{
+			// ExcediÃ³ la cuota?
+			if ($this->db->DataSizeMB() > $this->LimitMB)
+			{
+				$this->Close();
+				if ($this->OpenWrite($levelKey, false))
+					$this->db->FreeQuota(10);
+			}
+		}
+		finally
 		{
 			$this->Close();
-			if ($this->OpenWrite($levelKey, false))
-				$this->db->FreeQuota(10);
 		}
-		// Sale
-		$this->Close();
 	}
 
 	private function ResolveFilename($key1) : string
@@ -240,7 +248,10 @@ class BaseTwoLevelStringSQLiteCache
 				$this->db->Truncate();
 			throw $e;
 		}
-		$this->Close();
+		finally
+		{
+			$this->Close();
+		}
 	}
 }
 
