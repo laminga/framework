@@ -422,6 +422,15 @@ class SQLiteList
 		return $key;
 	}
 
+	public static function ReleaseNamedStream(string $key) : void
+	{
+		if (isset(self::$OpenStreams[$key]))
+		{
+			fclose(self::$OpenStreams[$key]);
+			unset(self::$OpenStreams[$key], self::$OpenStreamsSizes[$key], self::$OpenStreamsTimes[$key]);
+		}
+	}
+
 	public static function GetNamedStream(string $key)
 	{
 		return self::$OpenStreams[$key];

@@ -125,7 +125,15 @@ class BaseTwoLevelBlobSQLiteCache
 				return false;
 		}
 		$value = $this->db->ReadBlobValue($valueKey, 'v');
+		if ($value == '')
+			$this->Close();
 		return $value != '';
+	}
+
+	public function ReleaseData(string $namedStream) : void
+	{
+		SQLiteList::ReleaseNamedStream($namedStream);
+		$this->Close();
 	}
 
 	private function ResolveFilename($key1) : string
