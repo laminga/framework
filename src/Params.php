@@ -46,7 +46,10 @@ class Params
 		else if (isset($_POST[$param]))
 			$ret = $_POST[$param];
 		if (is_array($ret) == false)
-			$ret = trim($ret);
+		{
+			if($ret !== null && is_string($ret))
+				$ret = trim($ret);
+		}
 		return $ret;
 	}
 
