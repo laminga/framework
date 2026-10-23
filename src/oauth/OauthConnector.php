@@ -188,6 +188,9 @@ abstract class OauthConnector
 
 		// Guarda info de profiling
 		Profiling::SaveBeforeRedirect();
+
+		// Evita que cOauth::Show continúe y emita RedirectError() tras una autenticación exitosa.
+		exit;
 	}
 
 	private function GetOpenerOrigin() : string
