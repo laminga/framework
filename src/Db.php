@@ -516,7 +516,7 @@ class Db
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
 		$query = 'TRUNCATE TABLE ' . self::QuoteTable($tableName);
-		$ret = $this->doExecute($query);
+		$ret = $this->execDDL($query);
 		Performance::EndDbWait();
 		Profiling::EndTimer();
 		return $ret;
@@ -626,8 +626,11 @@ class Db
 	public function ensureBegin() : bool
 	{
 		if ($this->isInTransaction == false)
+		{
 			return $this->begin();
-		return true;
+		}
+		else
+			return true;
 	}
 
 	public function ensureCommit() : bool
@@ -741,7 +744,7 @@ class Db
 		$this->execDDL($sql);
 
 		$this->markTableUpdate($tableName);
-
+		
 		Profiling::EndTimer();
 	}
 
@@ -793,12 +796,10 @@ class Db
 		// Cierra si había una
 		if ($wasInTransaction)
 			$this->commit();
-
-		$ret = $this->executeQuery($sql, $params);
+		$ret = $this->executeQueryNoTransaction($sql, $params);
 
 		if ($wasInTransaction)
 		{
-			$this->commit();
 			// Reabre
 			$this->ensureBegin();
 		}
@@ -864,6 +865,16 @@ class Db
 		Profiling::BeginTimer();
 		Performance::BeginDbWait();
 		$this->ensureBegin();
+		$this->lastRows = $this->db->executeQuery($query, $params)->rowCount();
+		Performance::EndDbWait();
+		Profiling::EndTimer();
+		return $this->lastRows;
+	}
+
+	public function executeQueryNoTransaction(string $query, array $params = []) : int
+	{
+		Profiling::BeginTimer();
+		Performance::BeginDbWait();
 		$this->lastRows = $this->db->executeQuery($query, $params)->rowCount();
 		Performance::EndDbWait();
 		Profiling::EndTimer();
