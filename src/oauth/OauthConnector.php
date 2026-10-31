@@ -100,9 +100,13 @@ abstract class OauthConnector
 		parse_str($uri->getQuery(), $query);
 		if(isset($query['state']))
 		{
-			$path = Context::Paths()->GetTempPath() . '/oauth_' . $query['state'] . '.json';
-			IO::WriteJson($path, $sess);
+			IO::WriteJson($this->GetStateFilePath($query['state']), $sess);
 		}
+	}
+
+	private function GetStateFilePath(string $state) : string
+	{
+		return Context::Paths()->GetTempPath() . '/oauth_' . $state . '.json';
 	}
 
 	private function CleanOldFiles() : void
@@ -116,28 +120,44 @@ abstract class OauthConnector
 		}
 	}
 
-	private function GetSessionFromFile(string $state) : string
+	/**
+	 * Cada $state se emite al iniciar el ingreso y se puede usar una sola vez.
+	 * El provider entrega un $code de un solo uso, por lo que un segundo pedido
+	 * con el mismo $state (recarga de la ventana, restauración de pestañas,
+	 * previsualización de enlaces) debe descartarse antes de consultar al provider.
+	 * Al reclamarlo se restauran los datos de sesión guardados al iniciar.
+	 */
+	public function ClaimState(string $state) : bool
 	{
 		$this->CleanOldFiles();
 
-		$file = Context::Paths()->GetTempPath() . '/oauth_' . $state . '.json';
-		if(file_exists($file))
-		{
-			$data = IO::ReadJson($file);
-			$this->SetSession($data[static::Provider . 'OauthRedirect'], $data[static::Provider . 'OauthReturnUrl'], $data['OauthTerms']);
-			IO::Delete($file);
-			return $data[static::Provider . 'OauthRedirect'];
-		}
-		return '';
+		if(preg_match('/^[a-f0-9]{32}$/', $state) !== 1)
+			return false;
+
+		$file = $this->GetStateFilePath($state);
+		if(file_exists($file) == false)
+			return false;
+
+		$data = IO::ReadJson($file);
+		IO::Delete($file);
+		$this->SetSession($data[static::Provider . 'OauthRedirect'], $data[static::Provider . 'OauthReturnUrl'], $data['OauthTerms']);
+		return true;
 	}
 
-	public function RedirectSuccess(OauthData $data, string $state, string $rememberToken = '') : void
+	public function RedirectStateUsed() : void
+	{
+		MessageBox::ShowDialogPopup(Context::Trans('El ingreso con {provider} ya fue procesado o venció. Cierre esta ventana y, si no pudo ingresar, vuelva a intentarlo.', [
+			'{provider}' => $this->ProviderName(),
+		]), Context::Trans('Atención'));
+	}
+
+	public function RedirectSuccess(OauthData $data, string $rememberToken = '') : void
 	{
 		if($data->email == '' || $data->verified == false)
 			$this->RedirectErrorNoEmail();
 
 		$data->SerializeToSession();
-		$this->RedirectSession($state, $rememberToken);
+		$this->RedirectSession($rememberToken);
 	}
 
 	public function RedirectErrorNoEmail() : void
@@ -156,15 +176,30 @@ abstract class OauthConnector
 		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido realizar la interacción con {provider} para la identificación.', ['{provider}' => $this->ProviderName()]), Context::Trans('Atención'));
 	}
 
-	private function RedirectSession(string $state, string $rememberToken) : void
+	private function RedirectSession(string $rememberToken) : void
 	{
-		$this->CleanOldFiles();
+		$target = PhpSession::GetSessionValue(static::Provider . 'OauthRedirect');
 
-		$url = PhpSession::GetSessionValue(static::Provider . 'OauthRedirect');
-		if($url == '')
-			self::GetSessionFromFile($state);
+		$this->NotifyOpener($rememberToken, $this->ResolveTarget($target));
+	}
 
-		$this->NotifyOpener($rememberToken);
+	/**
+	 * El target proviene de un parámetro enviado por el cliente al iniciar el ingreso:
+	 * solo se admiten rutas del sitio para no redirigir a otro dominio ni ejecutar código.
+	 */
+	private function ResolveTarget(string $target) : string
+	{
+		$isRelative = Str::StartsWith($target, '/')
+			&& Str::StartsWith($target, '//') == false
+			&& Str::StartsWith($target, '/\\') == false;
+		$isPublicUrl = Str::StartsWithI($target, Context::Settings()->GetPublicUrl() . '/');
+		$isMainUrl = Str::StartsWithI($target, Context::Settings()->GetMainServerPublicUrl() . '/');
+
+		if($isRelative || $isPublicUrl || $isMainUrl)
+			return $target;
+
+		Log::HandleSilentException(new ErrorException('Parámetro "target" no definido o inválido: ' . $target));
+		return Context::Settings()->GetMainServerPublicUrl();
 	}
 
 	public function ProviderName() : string
@@ -174,23 +209,30 @@ abstract class OauthConnector
 	}
 
 	// La aplicación corre en otro dominio: recibe la sesión por mensaje porque no comparte cookies con este popup.
-	private function NotifyOpener(string $rememberToken) : void
+	// Si el popup perdió su opener (navegadores embebidos, pestañas restauradas) continúa en esta misma ventana,
+	// y si no puede cerrarse queda un texto en lugar de una página en blanco que el usuario recargaría.
+	private function NotifyOpener(string $rememberToken, string $target) : void
 	{
 		$message = [
 			'type' => 'oauthLogin',
 			'sessionId' => PhpSession::SessionId(),
 			'rememberToken' => $rememberToken,
+			'redirect' => $target,
 		];
 		$flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
-		$js = 'window.opener.postMessage(' . json_encode($message, $flags) . ',' . json_encode($this->GetOpenerOrigin(), $flags) . ');';
+		$js = 'var message = ' . json_encode($message, $flags) . ';';
+		$js .= 'if (window.opener && !window.opener.closed) {';
+		$js .= 'window.opener.postMessage(message, ' . json_encode($this->GetOpenerOrigin(), $flags) . ');';
 		$js .= 'window.close();';
-		echo '<!doctype html><html><head><meta charset="utf-8"></head><body><script>' . $js . '</script></body></html>';
+		$js .= '} else {';
+		$js .= 'window.location.replace(message.redirect);';
+		$js .= '}';
+		$text = htmlspecialchars(Context::Trans('Ingreso completado. Puede cerrar esta ventana.'), ENT_QUOTES, 'UTF-8');
+		echo '<!doctype html><html><head><meta charset="utf-8"></head><body><p>' . $text . '</p><script>' . $js . '</script></body></html>';
 
 		// Guarda info de profiling
 		Profiling::SaveBeforeRedirect();
-
-		// Evita que cOauth::Show continúe y emita RedirectError() tras una autenticación exitosa.
-		exit;
+		Context::EndRequest();
 	}
 
 	private function GetOpenerOrigin() : string
