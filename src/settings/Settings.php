@@ -38,6 +38,8 @@ class Settings
 	public bool $allowExport = true;
 	public bool $allowExportDoc = false;
 
+	public bool $canEditHelp = false;
+
 	public bool $showNewUploading = false;
 	public bool $showMoveUrl = false;
 
