@@ -131,6 +131,11 @@ abstract class OauthConnector
 	{
 		$this->CleanOldFiles();
 
+		return $this->RestoreSessionFromFile($state);
+	}
+
+	private function RestoreSessionFromFile(string $state) : bool
+	{
 		if(preg_match('/^[a-f0-9]{32}$/', $state) !== 1)
 			return false;
 
@@ -151,13 +156,13 @@ abstract class OauthConnector
 		]), Context::Trans('Atención'));
 	}
 
-	public function RedirectSuccess(OauthData $data, string $rememberToken = '') : void
+	public function RedirectSuccess(OauthData $data, string $state, string $rememberToken = '') : void
 	{
 		if($data->email == '' || $data->verified == false)
 			$this->RedirectErrorNoEmail();
 
 		$data->SerializeToSession();
-		$this->RedirectSession($rememberToken);
+		$this->RedirectSession($state, $rememberToken);
 	}
 
 	public function RedirectErrorNoEmail() : void
@@ -176,9 +181,14 @@ abstract class OauthConnector
 		MessageBox::ShowDialogPopup(Context::Trans('No se ha podido realizar la interacción con {provider} para la identificación.', ['{provider}' => $this->ProviderName()]), Context::Trans('Atención'));
 	}
 
-	private function RedirectSession(string $rememberToken) : void
+	private function RedirectSession(string $state, string $rememberToken) : void
 	{
 		$target = PhpSession::GetSessionValue(static::Provider . 'OauthRedirect');
+		if($target == '')
+		{
+			$this->RestoreSessionFromFile($state);
+			$target = PhpSession::GetSessionValue(static::Provider . 'OauthRedirect');
+		}
 
 		$this->NotifyOpener($rememberToken, $this->ResolveTarget($target));
 	}
@@ -186,20 +196,29 @@ abstract class OauthConnector
 	/**
 	 * El target proviene de un parámetro enviado por el cliente al iniciar el ingreso:
 	 * solo se admiten rutas del sitio para no redirigir a otro dominio ni ejecutar código.
+	 * Un target vacío es normal en las aplicaciones que no navegan desde el opener.
 	 */
 	private function ResolveTarget(string $target) : string
 	{
-		$isRelative = Str::StartsWith($target, '/')
-			&& Str::StartsWith($target, '//') == false
-			&& Str::StartsWith($target, '/\\') == false;
-		$isPublicUrl = Str::StartsWithI($target, Context::Settings()->GetPublicUrl() . '/');
-		$isMainUrl = Str::StartsWithI($target, Context::Settings()->GetMainServerPublicUrl() . '/');
+		$mainUrl = Context::Settings()->GetMainServerPublicUrl();
+		if($target == '')
+			return $mainUrl;
 
-		if($isRelative || $isPublicUrl || $isMainUrl)
+		if(Str::StartsWithI($target, Context::Settings()->GetPublicUrl() . '/')
+			|| Str::StartsWithI($target, $mainUrl . '/'))
 			return $target;
 
-		Log::HandleSilentException(new ErrorException('Parámetro "target" no definido o inválido: ' . $target));
-		return Context::Settings()->GetMainServerPublicUrl();
+		// Sin barra inicial se antepone para que nunca se interprete como esquema (javascript:) ni como otro host.
+		$relative = $target;
+		if(Str::StartsWith($relative, '/') == false)
+			$relative = '/' . $relative;
+
+		if(Str::StartsWith($relative, '//') || Str::StartsWith($relative, '/\\'))
+		{
+			Log::HandleSilentException(new ErrorException('Parámetro "target" inválido: ' . $target));
+			return $mainUrl;
+		}
+		return $relative;
 	}
 
 	public function ProviderName() : string
