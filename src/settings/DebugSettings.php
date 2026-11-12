@@ -18,6 +18,21 @@ class DebugSettings
 	public bool $useDebugUrl = false;
 	public string $debugUrl = '';
 
+	/**
+	 * Permite apagar el debug desde el entorno del servidor (`AA_DEBUG=0`, `off` o `false`) sin editar
+	 * `config/settings.php`. Nunca lo enciende: así una variable de entorno no puede abrir un sitio en producción
+	 * a las trazas técnicas.
+	 */
+	public function ApplyEnvironmentOverride() : void
+	{
+		$requested = strtolower(trim((string)getenv('AA_DEBUG')));
+		if (in_array($requested, ['0', 'off', 'false'], true))
+		{
+			$this->debug = false;
+			$this->showErrors = false;
+		}
+	}
+
 	public function LoadSessionDebugging() : void
 	{
 		$this->sessionDebug = PhpSession::GetSessionValue("debugging", false);

@@ -40,6 +40,9 @@ class Settings
 
 	public bool $canEditHelp = false;
 
+	/** Activa la instrumentación que necesitan las pruebas automáticas de Arturito (data-testid y window.__arturito). Solo en entornos de prueba. */
+	public bool $arturitoEnabled = false;
+
 	public bool $showNewUploading = false;
 	public bool $showMoveUrl = false;
 

@@ -51,6 +51,16 @@ class MessageBox
 		self::Render($params);
 	}
 
+	/**
+	 * Muestra un mensaje con estado 403: el contenido existe pero la persona no puede verlo. Con el estado 200
+	 * un archivo privado, pedido desde una imagen o un enlace, parecía un archivo válido.
+	 */
+	public static function ThrowForbiddenMessage(string $message) : void
+	{
+		self::Set403AccessDeniedHeaders();
+		self::ThrowMessage($message);
+	}
+
 	public static function ThrowWaitMessage(string $message, string $action = '', string $title = '__Atención') : void
 	{
 		if($title == '__Atención')
