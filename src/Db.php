@@ -10,7 +10,8 @@ class Db
 	public bool $NoDb = false;
 	public string $Password = '';
 	public int $Port = 3306;
-	public string $Charset = 'utf8';
+	public string $Charset = '';
+	public string $Collation = '';
 
 	// comentado esto por ahora: \PDO|\Doctrine\DBAL\Connection
 	public $db = null;
@@ -58,12 +59,14 @@ class Db
 		$this->User = Context::Settings()->Db()->User;
 		$this->Port = Context::Settings()->Db()->Port;
 		$this->Password = Context::Settings()->Db()->Password;
-		$this->Charset = 'utf8';
+		$this->Charset = Context::Settings()->Db()->Charset;
+		$this->Collation = Context::Settings()->Db()->Collation;
 
 		$this->db = new \PDO('mysql:host=' . $this->Host
 			. ';port=' . $this->Port
 			. ';dbname=' . $this->Name
-			. ';charset=' . $this->Charset,
+			. ';charset=' . $this->Charset
+			. ';collation=' . $this->Collation,
 			$this->User,
 			$this->Password);
 		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -744,7 +747,7 @@ class Db
 		$this->execDDL($sql);
 
 		$this->markTableUpdate($tableName);
-		
+
 		Profiling::EndTimer();
 	}
 

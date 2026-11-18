@@ -14,7 +14,8 @@ class DbSettings
 	public string $Engine = 'mysql'; //opciones posibles 'mysql' o 'sphinx'
 	public ?string $RemoteUrl = null;
 
-	public string $Charset = 'utf8';
+	public string $Charset = 'utf8'; //No recomendado, setear a utf8mb4 (si es compatible con la base)
+	public string $Collation = ''; //Recomendado setear a utf8mb4_unicode_ci (si es compatible con la base)
 
 	public int $FullTextMinWordLength = 4;
 
